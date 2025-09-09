@@ -1,0 +1,40 @@
+type = "Service"
+name = "example2_service"
+icon = "example2_service_icon"
+display_name.en = "Example2 service"
+display_name.ru = "Пример2 сервиса"
+
+[parameters.password]
+display_name.en = "Пароль"
+display_name.ru = "Password"
+type = "string"
+password = true
+required = [
+    "deploy"
+]
+context = [
+    "deploy",
+]
+
+[parameters.predeploy]
+type = "boolean"
+default = true
+constant = true
+context = [
+    "diag"
+]
+
+[parameters.realm]
+display_name.en = "REALM"
+display_name.ru = "REALM"
+type = "string"
+context = [
+    "deploy",
+    "diag"
+]
+
+[resources.config]
+display_name.en = "Configuration file"
+display_name.ru = "Файл конфигурации"
+type = "file"
+path.value = "/ect/param.conf"

@@ -1,0 +1,281 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Alterator Service",
+    "type": "object",
+    "propertyNames": {
+        "enum": [
+            "type",
+            "name",
+            "category",
+            "icon",
+            "enable_force_deploy",
+            "diag_tools",
+            "display_name",
+            "parameters",
+            "resources",
+            "comment"
+        ]
+    },
+    "required": [
+        "type",
+        "name",
+        "parameters"
+    ],
+    "properties": {
+        "type": {
+            "type": "string",
+            "const": "Service"
+        },
+        "name": {
+            "type": "string"
+        },
+        "display_name": {
+            "type": "object",
+            "propertyNames": {
+                "pattern": "^[a-z]{2}(_[A-Z]{2})?$"
+            },
+            "additionalProperties": {
+                "type": "string"
+            },
+            "required": [
+                "en"
+            ]
+        },
+        "enable_force_deploy": {
+            "type": "boolean"
+        },
+        "diag_tools": {
+            "type": "object",
+            "additionalProperties": {
+                "propertyNames": { "enum": ["bus", "path"] },
+                "properties": {
+                    "bus":  {"type": "string", "enum": ["system", "session"]},
+                    "path": {"type": "string", "pattern": "^\/(.+)$"}
+                },
+                "required": ["bus", "path"]
+            }
+        },
+        "parameters": {
+            "type": "object",
+            "additionalProperties": {
+                "allOf": [
+                    {"$ref": "#/definitions/property"},
+                    {
+                        "type": "object",
+                        "properties": {
+                            "context":  {"$ref": "#/definitions/context"},
+                            "required": {"$ref": "#/definitions/context"}
+                        },
+                        "required": ["context"]
+                    }
+                ]
+            },
+            "propertyNames": { "pattern": "^(?!(force_deploy|deployed|started)$).+$" }
+        },
+        "resources": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "object",
+                "propertyNames": {
+                    "enum": [
+                        "display_name",
+                        "type",
+                        "path",
+                        "inet_service",
+                        "tcp",
+                        "udp",
+                        "unit_name",
+                        "comment"
+                    ]
+                },
+                "properties": {
+                    "display_name": {
+                        "$ref": "#/definitions/field_with_locale"
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "file",
+                            "directory",
+                            "port",
+                            "systemd_unit"
+                        ]
+                    },
+                    "path": {
+                        "type": "object",
+                        "propertyNames": {
+                            "value": "string",
+                            "parameter": "string"
+                        }
+                    },
+                    "inet_service": {
+                        "type": "object",
+                        "propertyNames": {
+                            "value": "integer",
+                            "parameter": "string"
+                        }
+                    },
+                    "tcp": {
+                        "type": "boolean"
+                    },
+                    "udp": {
+                        "type": "boolean"
+                    },
+                    "unit_name": {
+                        "type": "object",
+                        "propertyNames": {
+                            "value": "string",
+                            "parameter": "string"
+                        }
+                    },
+                    "comment": {
+                        "$ref": "#/definitions/field_with_locale"
+                    },
+                    "context": {
+                        "$ref": "#/definitions/context"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "field_with_locale": {
+            "type": "object",
+            "propertyNames": {
+                "pattern": "^[a-z]{2}(_[A-Z]{2})?$"
+            },
+            "additionalProperties": {
+                "type": "string"
+            },
+            "required": [
+                "en"
+            ]
+        },
+        "context": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "enum": [
+                    "deploy",
+                    "configure",
+                    "backup",
+                    "restore",
+                    "diag",
+                    "status",
+                    "undeploy"
+                ]
+            }
+        },
+        "property": {
+            "type": "object",
+            "properties": {
+                "display_name": {
+                    "$ref": "#/definitions/field_with_locale"
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "string",
+                        "integer",
+                        "enum",
+                        "boolean",
+                        "array",
+                        "object"
+                    ]
+                },
+                "password": { "type": "boolean" },
+                "array_type": {
+                    "type": "string",
+                    "enum": [
+                        "string",
+                        "integer",
+                        "enum",
+                        "object"
+                    ]
+                },
+                "array_min": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "array_max": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "constant": {
+                    "type": "boolean"
+                },
+                "values": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "object",
+                        "properties": {
+                            "display_name": {
+                                "$ref": "#/definitions/field_with_locale"
+                            }
+                        },
+                        "required": ["display_name"]
+                    }
+                },
+                "pattern": {
+                    "type": "string"
+                },
+                "min": {
+                    "type": "integer"
+                },
+                "max": {
+                    "type": "integer"
+                },
+                "default": {
+                    "type": [ "string", "integer", "boolean", "array" ]
+                },
+                "comment": {
+                    "$ref": "#/definitions/field_with_locale"
+                }
+            },
+
+            "allOf": [
+                {
+                    "$comment": "for type=object either a prototype or a table of child properties should be declared",
+                    "if": { "properties": {"type": { "const": "object"} } },
+                    "then": {
+                        "oneOf": [
+                            { "properties": { "prototype": { "type": "string" } }, "required": ["prototype"] },
+                            {
+                                "properties": {
+                                    "exclusive": { "type":"boolean" },
+                                    "default": { "type":"string" },
+                                    "properties": {
+                                        "type": "object",
+                                        "additionalProperties":  { "$ref": "#/definitions/property"}
+                                    }
+                                },
+                                "required": ["properties"],
+                                "if": { "properties": {"exclusive": { "const":true }}, "required": ["exclusive"] },
+                                "then": {
+                                    "properties": {
+                                        "default": false,
+                                        "properties":{
+                                            "additionalProperties":{
+                                                "properties": {"required": false}
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    "$comment": "if parameter is constant, a default value should be set",
+                    "if": { "properties": {"constant": { "const": true} }, "required": ["constant"] },
+                    "then": { "required": ["default"] }
+                },
+                {
+                    "$comment": "only a string parameter may be a password",
+                    "if": {"properties": {"password": true }, "required": ["password"] },
+                    "then": {"properties": {"type": { "const": "string"} }, "required": ["type"] }
+                }
+            ]
+        }
+    }
+}

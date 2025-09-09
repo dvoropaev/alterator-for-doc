@@ -1,0 +1,87 @@
+#!/usr/bin/python3
+import alterator_entry as ae
+
+import os
+import sys
+import platform
+import argparse
+
+EDITIONS_DIR = os.getenv("ALTERATOR_EDITIONS_DIR", "/usr/share/alterator/editions")
+COMPONENTS_DIR = os.getenv(
+    "ALTERATOR_COMPONENTS_DIR", "/usr/share/alterator/components"
+)
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--section",
+        "-s",
+        help="Section to extract packages for",
+        default=None,
+    )
+    parser.add_argument(
+        "--arch",
+        "-a",
+        metavar="ARCH",
+        help="Architecture to extract packages for",
+        default=platform.machine(),
+    )
+    parser.add_argument(
+        "--kflavours",
+        "-k",
+        help="Kernel(s) to extract packages for",
+        default=["6.12"],
+        nargs="+",
+    )
+    parser.add_argument(
+        "--desktop",
+        "-d",
+        help="Desktop environment to extract packages for",
+        default="GNOME",
+    )
+    parser.add_argument(
+        "--language",
+        "-l",
+        help="Language to extract packages for",
+        default="ru",
+    )
+    parser.add_argument(
+        "files",
+        help="edition files to extract components and therefore packages",
+        nargs="*",
+    )
+    args = parser.parse_args()
+
+    if args.files:
+        edition_files = args.files
+    else:
+        edition_files = []
+        for dirname in os.listdir(EDITIONS_DIR):
+            expected_filename = f"{EDITIONS_DIR}/{dirname}/{dirname}.edition"
+            if os.path.isfile(expected_filename):
+                edition_files.append(expected_filename)
+            else:
+                print(
+                    f"WARNING: expected file {expected_filename} does not exists",
+                    file=sys.stderr,
+                )
+
+    pkgs = set()
+    for file in edition_files:
+        options = ae.PackagesFilterOptions(
+            kflavours=args.kflavours,
+            arch=args.arch,
+            section=args.section,
+            desktop=args.desktop,
+            language=args.language,
+            image_ignore=False,
+        )
+
+        pkgs.update(ae.extract_packages_from_edition(file, options, COMPONENTS_DIR))
+
+    print(*sorted(pkgs))
+
+
+if __name__ == "__main__":
+    main()

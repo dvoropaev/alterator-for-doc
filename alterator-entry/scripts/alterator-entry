@@ -1,0 +1,62 @@
+#!/usr/bin/python3
+import alterator_entry as ae
+
+import argparse
+import sys
+from pathlib import Path
+from typing import Sequence, Optional
+
+
+def handle_get(args: argparse.Namespace) -> int:
+    try:
+        value = ae.get_field(args.file, args.pattern)
+        if isinstance(value, list):
+            for el in value:
+                print(el)
+        else:
+            print(value)
+        return 0
+    except ae.FieldNotFoundError as e:
+        print(f"Field '{e.key}' not found in path '{e.pattern}'", file=sys.stderr)
+        return 1
+    except ae.UnsupportedValueTypeError as e:
+        print(str(e), file=sys.stderr)
+        return 1
+
+
+def handle_validate(args: argparse.Namespace) -> int:
+    exit_code = 0
+    for file in args.files:
+        try:
+            ae.validate(file)
+            if len(args.files) > 1:
+                print(f"{file}: OK")
+        except ae.ValidationError as e:
+            print(f"{file}: {str(e)}", file=sys.stderr)
+            exit_code = 1
+    return exit_code
+
+
+def main(argv: Optional[Sequence[str]] = None) -> int:
+    parser = argparse.ArgumentParser(description="Alterator Entry parsing tool")
+    subparsers = parser.add_subparsers(required=True)
+
+    get_parser = subparsers.add_parser("get", help="Get field value from TOML file")
+    get_parser.add_argument("file", type=Path, help="TOML file path")
+    get_parser.add_argument("pattern", help="Field pattern (e.g. server.ports)")
+    get_parser.set_defaults(func=handle_get)
+
+    validate_parser = subparsers.add_parser(
+        "validate", help="Validate TOML files against schemas"
+    )
+    validate_parser.add_argument(
+        "files", type=Path, nargs="+", help="TOML files to validate"
+    )
+    validate_parser.set_defaults(func=handle_validate)
+
+    args = parser.parse_args(argv)
+    return args.func(args)
+
+
+if __name__ == "__main__":
+    sys.exit(main())

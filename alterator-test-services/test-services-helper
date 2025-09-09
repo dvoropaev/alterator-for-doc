@@ -1,0 +1,263 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+. shell-getopt
+. shell-ini-config
+
+PROG_NAME="${0##*/}"
+MODE="status"
+GLOBAL_EXIT=0
+input_json=
+service=
+entryfile=
+conf=
+parameters=()
+
+OPTIONS_LIST="help,
+              version,
+              service:,
+              deploy,
+              undeploy,
+              restore,
+              backup,
+              status,
+              start,
+              stop,
+              configure,
+              input:"
+
+OPTIONS_SHORT_LIST="h,v,n:,d,u,r,b,s,c,i:"
+
+TEMP=$(getopt -n "$PROG_NAME" -o "$OPTIONS_SHORT_LIST" -l "$OPTIONS_LIST" -- "$@")
+eval set -- "$TEMP"
+
+while :
+do
+    case "$1" in
+        -n|--service)
+            shift
+            service="$1"
+            conf="/etc/test-services/$service.conf"
+            deployfile="/var/cache/$service/deployed"
+            startfile="/var/cache/$service/started"
+            entryfile="/usr/share/alterator/services/$service.service"
+            ;;
+        -d|--deploy)
+            MODE="deploy"
+            ;;
+        -u|--undeploy)
+            MODE="undeploy"
+            ;;
+        -r|--restore)
+            MODE="restore"
+            ;;
+        -b|--backup)
+            MODE="backup"
+            ;;
+        -s|--status)
+            MODE="status"
+            ;;
+        --start)
+            MODE="start"
+            ;;
+        --stop)
+            MODE="stop"
+            ;;
+        -c|--configure)
+            MODE="configure"
+            ;;
+        -i|--input)
+            shift
+            input_json="$1"
+            ;;
+        --) shift; break
+            ;;
+        *) fatal "Unrecognized option: $1"
+            ;;
+    esac
+    shift
+done
+
+
+if [ -z "$input_json" ]; then
+    case $MODE in
+        deploy|configure|undeploy|backup|restore)
+            while read -r line; do
+                input_json+="$line"
+            done
+        ;;
+    esac
+fi
+
+validate_json(){
+    local context="$1"
+    local path_to_schema="/usr/lib/test-services/${service}/${context}-parameter-validation.schema.json"
+    jsonschema "$path_to_schema" <<< "$input_json" &>/dev/stderr
+}
+
+parse_json() {
+    local param_name="$1"
+
+    local param_value=
+    param_value=`jq -r ".$param_name" <<< "$input_json"`
+    if [ -z "$param_value" ]; then
+        false
+    else
+        echo "$param_value"
+    fi
+}
+
+backup_conf(){
+    if [ -f "$conf" ]
+    then
+        mv -f "$conf"{,.back}
+    fi
+}
+
+edit_conf() {
+    backup_conf
+    echo "$input_json" > "$conf"
+}
+
+call_deploy() {
+    local force=false
+
+    echo deploying $service...
+
+    sleep 3
+    echo checking parameters...
+
+    if validate_json deploy; then
+        echo parameters validated
+    else
+        echo "Invalid parameters" > /dev/stderr
+        exit 1
+    fi
+
+    force=`parse_json "force_deploy"`
+    if [ -f "$deployfile" ]
+    then
+        if [ $force != true ]
+        then
+            echo "$service already deployed" > /dev/stderr
+            exit 2
+        fi
+    fi
+
+    sleep 3
+    echo saving configuration...
+
+    mkdir -p /etc/test-services
+
+    edit_conf
+
+    sleep 3
+    echo initializing service cache...
+
+    mkdir -p /var/cache/$service
+    touch $deployfile
+
+    echo $service successfully deployed
+}
+
+call_undeploy() {
+    echo undeploying $service...
+
+    sleep 3
+    echo checking parameters...
+
+    if validate_json undeploy; then
+        echo parameters validated
+    else
+        echo "Invalid parameters" > /dev/stderr
+        exit 1
+    fi
+
+    if [ -f $startfile ]
+    then
+        echo $service is running.
+        echo stopping $service...
+        sleep 2
+        rm $startfile
+        echo $service stopped...
+    fi
+
+    rm $deployfile
+    echo $service undeployed
+}
+
+
+props_not_in_context(){
+    grep '^\[.*[.].*\]' "$entryfile" | tr -d '[]' | while read prop
+    do
+        taplo get "$prop.context" < "$entryfile" | grep "$1" &> /dev/null ||
+            echo .$prop
+    done
+}
+
+filter(){
+    local to_remove=(`props_not_in_context "$1"`)
+    local IFS=,
+    jq "del(${to_remove[*]})" -c
+}
+
+call_status() {
+    if [ -f "$deployfile" ]
+    then
+        cat "$conf" | sed 's/^$/{}/' | filter status
+        [ -f "$startfile" ] && exit 128
+        exit 127
+    fi
+
+    echo '{}'
+}
+
+call_backup() {
+    validate_json backup || exit 1
+}
+
+call_restore() {
+    validate_json restore || exit 1
+}
+
+case "$MODE" in
+    deploy)
+        call_deploy || GLOBAL_EXIT=1
+        ;;
+    undeploy)
+        call_undeploy || GLOBAL_EXIT=1
+        ;;
+    status)
+        call_status
+        ;;
+    backup)
+        call_backup || GLOBAL_EXIT=1
+        ;;
+    restore)
+        call_restore || GLOBAL_EXIT=1
+        ;;
+    start)
+        if [ -f "$deployfile" ]
+        then
+            touch $startfile
+        else
+            echo 'service is not deployed!' > /dev/stderr
+            GLOBAL_EXIT=1
+        fi
+        ;;
+    stop)
+        if [ -f "$startfile" ]
+        then
+            rm $startfile
+        else
+            echo 'service is not started!' > /dev/stderr
+            GLOBAL_EXIT=1
+        fi
+        ;;
+    configure)
+        edit_conf
+        ;;
+esac
+
+exit $GLOBAL_EXIT

@@ -1,0 +1,31 @@
+name = "<SERVICE>"
+type = "Backend"
+module = "executor"
+interface = "diag1"
+
+[methods.Info]
+execute = "cat /usr/share/alterator/test_service_diag/<SERVICE>.diag"
+stdout_bytes = true
+thread_limit = 3
+action_id = "Info"
+
+[methods.Run]
+execute = "/usr/lib/test-services/diag-helper <SERVICE> {param}"
+stdout_signal_name = "diag1_stdout_signal"
+stderr_signal_name = "diag1_stderr_signal"
+action_id = "Run"
+
+[methods.List]
+execute = "/usr/lib/test-services/diag-helper <SERVICE> -l"
+stdout_strings = true
+action_id = "List"
+
+[methods.Report]
+execute = "/usr/lib/test-services/diag-helper <SERVICE> -r"
+stdout_bytes = true
+action_id = "Report"
+
+
+[methods.List.environment.service_path]
+[methods.List.environment.service_deploy_mode]
+[methods.List.environment.service_required_only]

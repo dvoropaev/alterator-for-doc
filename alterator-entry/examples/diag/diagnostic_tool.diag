@@ -1,0 +1,23 @@
+name = "diagnostic_tool"
+type = "Diag"
+category = "adtCategory"
+icon = "system-run"
+report_suffix = "zip"
+display_name.en = "diagnostic tool"
+display_name.ru = "диагностический инструмент"
+comment.en = "description diag tool"
+comment.ru = "описание диагностического инструмента1"
+
+
+[tests.test1]
+display_name.en = "test1 of diagnostic tool 1"
+display_name.ru = "тест1 диагностического инструмента 1"
+comment.en = "default description of test 1 in diagnostic tool 1"
+comment.ru = "описание теста 1 диагностического инструмента 1"
+
+
+[tests.test2]
+display_name.en = "test2 of diagnostic tool 1"
+display_name.ru = "тест2 диагностического инструмента 1"
+comment.en = "default description of test 2 in diagnostic tool 1"
+comment.ru = "описание теста 2 диагностического инструмента"

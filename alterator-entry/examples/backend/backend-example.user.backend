@@ -1,0 +1,15 @@
+name = "home-lister"
+type = "Backend"
+module = "executor"
+interface = "lister1"
+
+[methods.List]
+execute = "ls {param}"
+stdout_strings = true
+action_id = "List"
+
+[methods.ListAllLong]
+execute = "ls -al {dir}"
+stdout_strings = true
+action_id = "ListAllLong"
+

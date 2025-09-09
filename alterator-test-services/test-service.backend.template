@@ -1,0 +1,59 @@
+type = "Backend"
+module = "executor"
+interface = "service1"
+name = "<SERVICE>"
+thread_limit = 100
+
+[methods.Info]
+execute = "cat /usr/share/alterator/services/<SERVICE>.service"
+action_id = "Info"
+stdout_bytes = true
+
+[methods.Start]
+execute = "test-services-helper -n <SERVICE> --start"
+action_id = "Start"
+timeout = 600
+
+[methods.Stop]
+execute = "test-services-helper -n <SERVICE> --stop"
+action_id = "Stop"
+timeout = 600
+
+[methods.Configure]
+execute = "test-services-helper -n <SERVICE> -c"
+action_id = "Configure"
+timeout = 600
+stdin_string = true
+
+[methods.Deploy]
+execute = "test-services-helper -n <SERVICE> -d"
+action_id = "Deploy"
+timeout = 600
+stdin_string = true
+stdout_signal_name = "service_stdout_signal"
+stderr_signal_name = "service_stderr_signal"
+
+[methods.Undeploy]
+execute = "test-services-helper -n <SERVICE> -u"
+action_id = "Undeploy"
+timeout = 600
+stdin_string = true
+stdout_signal_name = "service_stdout_signal"
+stderr_signal_name = "service_stderr_signal"
+
+[methods.Backup]
+execute = "test-services-helper -n <SERVICE> -b"
+action_id = "Backup"
+timeout = 600
+stdin_string = true
+
+[methods.Restore]
+execute = "test-services-helper -n <SERVICE> -r"
+action_id = "Restore"
+timeout = 600
+stdin_string = true
+
+[methods.Status]
+execute = "test-services-helper -n <SERVICE> -s"
+action_id = "Status"
+stdout_bytes = true

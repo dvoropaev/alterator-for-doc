@@ -1,0 +1,35 @@
+[project]
+name = "alterator-entry"
+license = {text = "GPLv3+"}
+authors = [
+  {name = "Evgeny Sinelnikov", email = "sin@altlinux.org"},
+  {name = "Michael Chernigin", email = "chernigin@altlinux.org"},
+]
+keywords = ["alterator", "specification"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Operating System :: Unix",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries",
+]
+requires-python = ">=3.9"
+dependencies = [
+    "jsonschema",
+    "tomlkit"
+]
+dynamic = ["version"]
+
+[project.urls]
+source = "https://gitlab.basealt.space/alt/alterator-entry"
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta:__legacy__"

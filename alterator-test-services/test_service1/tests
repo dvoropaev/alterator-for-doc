@@ -1,0 +1,77 @@
+#!/bin/bash
+
+list(){
+    case $service_deploy_mode in
+        pre)
+            echo test1
+            [ -z $service_required_only ] && echo test2
+            echo test3
+        ;;
+
+        post)
+            [ -z $service_required_only ] && echo test1
+            echo test3
+        ;;
+
+        *)
+            echo test1
+        ;;
+    esac
+}
+
+test1() {
+    echo "Test 1: begin"
+    sleep 0.1
+    printenv | while IFS= read -r line; do
+            echo "$line"
+    done
+    for(( i=0; i<10; i++ ))
+    do
+        echo "Test 1 : step $i"
+        sleep 0.5
+    done
+    sleep 0.1
+    echo "Test 1: end"
+    exit $?
+}
+
+test2() {
+#This test is failed if trying to deploy on friday
+    echo "Test 2: begin"
+    sleep 1
+
+    if [ -z $dow ]
+    then
+        echo 'ERROR: parameter is not set' >&2
+        echo "Test 2: failed" >&2
+        exit 1
+    fi
+
+    case $dow in
+        friday)
+            echo 'ERROR: never deploy on friday!' >&2
+            echo "Test 2: failed" >&2
+            exit 1
+            ;;
+        *)
+            echo "$dow ok"
+            echo "Test 2: end"
+            exit 0
+            ;;
+    esac
+}
+
+test3() {
+    echo "Test 3: begin"
+
+    RET=0
+
+    jq '.[]' <<< $string_array_example | xargs printf '%s\n' |
+    while read host
+    do
+        ping -c 4 $host || exit 1
+    done
+    exit $?
+
+    echo "Test 3: end"
+}

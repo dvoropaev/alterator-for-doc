@@ -1,0 +1,25 @@
+type = "Service"
+name = "test_service4"
+category = "X-Alterator-Servers"
+display_name.en = "test service 4"
+display_name.ru = "тестовый сервис 4"
+comment.en = "This service has no editable parameters"
+comment.ru = "Этот сервис не имеет редактируемых параметров"
+
+[diag_tools.missing_diag]
+bus="session"
+path="/org/altlinux/alterator/never_existed_diag"
+
+[parameters.lonely_constant]
+display_name.en = "Hidden parameter"
+display_name.ru = "Скрытый параметр"
+type = "integer"
+default = 42
+constant = true
+context = ["deploy", "configure", "restore", "backup"]
+
+[parameters.status_property]
+display_name.en = "Status-only string"
+type = "string"
+default = "test string"
+context = ["status"]

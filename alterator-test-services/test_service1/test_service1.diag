@@ -1,0 +1,68 @@
+name = "test_service1"
+type = "Diag"
+category = "adtCategory"
+icon = "system-run"
+report_suffix = "zip"
+display_name.en = "Test service 1 diagnostic tool"
+display_name.ru = "диагностический инструмент тестового сервиса 1"
+comment.en = "Test service 1 diagnostic tool description"
+comment.ru = "описание диагностического инструмента тестового сервиса 1"
+
+
+[parameters.deploy_mode]
+display_name.en = "mode"
+display_name.ru = "режим"
+comment.en = "This parameter determines current diagnostic step"
+comment.ru = "Этот параметр определяет текущий этап диагностики"
+type = "enum"
+enum_values = { type = "string", values = ["pre", "post"], default = "post" }
+
+
+[parameters.dow]
+display_name.en = "day of week"
+display_name.ru = "день недели"
+comment.en = "This is mode comment for param1 in diagnostic_tool4"
+comment.ru = "Это комментарий для параметра 1 диагностического инструмента 4"
+type = "enum"
+enum_values = {type = "string", values = ["monday","tuesday","wednesday","thursday","friday","saturday","sunday"], default = "monday"}
+
+[parameters.string_array_example]
+display_name.en = "Host list"
+display_name.ru = "Список серверов"
+comment.en = "Servers availability will be checked"
+comment.ru = "Будет проверена доступность указанных серверов"
+type = "string"
+
+[parameters.int_example2]
+display_name.en = "Hidden parameter"
+display_name.ru = "Скрытый параметр"
+comment.en = "Hidden parameter example"
+comment.ru = "Пример скрытого параметра"
+type = "int"
+
+[parameters.string_example]
+display_name.en = "String parameter"
+display_name.ru = "Строковый параметр"
+comment.en = "Parameter example, that takes place in all contexts"
+comment.ru = "Пример параметра, участвующего во всех контекстах"
+type = "string"
+
+
+[tests.test1]
+display_name.en = "test 1"
+display_name.ru = "тест 1"
+comment.en = "default description of test 1"
+comment.ru = "описание теста 1"
+
+[tests.test2]
+display_name.en = "test 2"
+display_name.ru = "тест 2"
+comment.en = "default description of test 2"
+comment.ru = "описание теста 2"
+
+[tests.test3]
+display_name.en = "test 3"
+display_name.ru = "тест 3"
+comment.en = "this test does its checks in predeploy only"
+comment.ru = "это тест производит проверки только в предварительной диагностике"
+

@@ -1,0 +1,122 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Alterator Entry",
+    "description": "This object describes all possible Alterator objects",
+    "type": "object",
+    "required": [
+        "type"
+    ],
+    "properties": {
+        "type": {
+            "type": "string",
+            "enum": [
+                "Backend",
+                "Object",
+                "Application",
+                "Category",
+                "Component",
+                "Edition",
+                "Diag",
+                "Service"
+            ]
+        }
+    },
+    "allOf": [
+        {
+            "if": {
+                "properties": {
+                    "type": {
+                        "const": "Backend"
+                    }
+                }
+            },
+            "then": {
+                "$ref": "file:///usr/share/alterator/schemas/backend.schema.json"
+            }
+        },
+        {
+            "if": {
+                "properties": {
+                    "type": {
+                        "const": "Object"
+                    }
+                }
+            },
+            "then": {
+                "$ref": "file:///usr/share/alterator/schemas/object.schema.json"
+            }
+        },
+        {
+            "if": {
+                "properties": {
+                    "type": {
+                        "const": "Application"
+                    }
+                }
+            },
+            "then": {
+                "$ref": "file:///usr/share/alterator/schemas/application.schema.json"
+            }
+        },
+        {
+            "if": {
+                "properties": {
+                    "type": {
+                        "const": "Category"
+                    }
+                }
+            },
+            "then": {
+                "$ref": "file:///usr/share/alterator/schemas/category.schema.json"
+            }
+        },
+        {
+            "if": {
+                "properties": {
+                    "type": {
+                        "const": "Component"
+                    }
+                }
+            },
+            "then": {
+                "$ref": "file:///usr/share/alterator/schemas/component.schema.json"
+            }
+        },
+        {
+            "if": {
+                "properties": {
+                    "type": {
+                        "const": "Edition"
+                    }
+                }
+            },
+            "then": {
+                "$ref": "file:///usr/share/alterator/schemas/schemas/edition.schema.json"
+            }
+        },
+        {
+            "if": {
+                "properties": {
+                    "type": {
+                        "const": "Diag"
+                    }
+                }
+            },
+            "then": {
+                "$ref": "file:///usr/share/alterator/schemas/schemas/diag.schema.json"
+            }
+        },
+        {
+            "if": {
+                "properties": {
+                    "type": {
+                        "const": "Service"
+                    }
+                }
+            },
+            "then": {
+                "$ref": "file:///usr/share/alterator/schemas/schemas/service.schema.json"
+            }
+        }
+    ]
+}

@@ -1,0 +1,120 @@
+type = "Service"
+name = "test_service3"
+category = "X-Alterator-Servers"
+display_name.en = "test service 3"
+display_name.ru = "тестовый сервис 3"
+comment.en = "Description for test service 3"
+comment.ru = "Описание тестового сервиса 3"
+
+
+[parameters.string_example]
+display_name.en = "String parameter"
+display_name.ru = "Строковый параметр"
+comment.en = "String parameter example"
+comment.ru = "Пример строкового параметра"
+type = "string"
+context = [
+    "status"
+]
+default = "test value"
+
+[parameters.int_example]
+display_name.en = "Integer parameter"
+display_name.ru = "Целочисленный параметр"
+comment.en = "Integer parameter example"
+comment.ru = "Пример целочисленного параметра"
+type = "integer"
+context = [
+    "status",
+    "deploy",
+    "configure"
+]
+
+[parameters.int_example2]
+display_name.en = "Integer parameter 2"
+display_name.ru = "Целочисленный параметр 2"
+comment.en = "Integer parameter example"
+comment.ru = "Пример целочисленного параметра"
+type = "integer"
+context = [
+    "status",
+    "deploy",
+    "configure"
+]
+
+[parameters.boolean_example]
+display_name.en = "Boolean parameter"
+display_name.ru = "Булевый параметр"
+comment.en = "Boolean parameter example"
+comment.ru = "Пример булевого параметра"
+type = "boolean"
+context = [
+    "deploy",
+    "configure"
+]
+default = true
+
+[parameters.force_deploy]
+display_name.en = "Force deploy"
+display_name.ru = "Принудительно еразвёртывание"
+comment.en = "Do not check current status"
+comment.ru = "Не проверять текущий статус"
+type = "boolean"
+context = [
+    "deploy",
+    "configure"
+]
+
+[resources.configuration]
+display_name.en = "test_service3.conf"
+display_name.ru = "test_service3.conf"
+comment.en = "test_service3.conf file"
+comment.ru = "Файл test_service3.conf"
+type = "file"
+path.value = "/etc/test-services/test_service3.conf"
+
+
+[parameters.cache_override]
+display_name.en = "Cahce folder"
+display_name.ru = "Папка cache"
+comment.en = "Cahce folder override"
+comment.ru = "Переопределение папки cache"
+type = "string"
+context = [
+    "deploy",
+    "configure"
+]
+
+
+[resources.cache]
+display_name.en = "Cache folder"
+display_name.ru = "Папка cache"
+comment.en = "Cache folder test_service1"
+comment.ru = "Папка cache test_service1"
+type = "directory"
+path.value = "/var/cache/test_service1"
+path.parameter = "cache_override"
+
+[resources.Samba]
+display_name.en = "Samba service"
+display_name.ru = "Сервис samba"
+comment.en =   "Samba service"
+comment.ru = "Управляющий юнит samba"
+type = "systemd_unit"
+unit_name.value = "samba.service"
+
+[resources.sample_port1]
+display_name.en = "Example port 1"
+display_name.ru = "Пример порта 1"
+type = "port"
+inet_service.value = 8080
+tcp = true
+udp = true
+
+[resources.sample_port2]
+display_name.en = "Example port 2"
+display_name.ru = "Пример порта 2"
+type = "port"
+inet_service.value = 8081
+tcp = false
+udp = true

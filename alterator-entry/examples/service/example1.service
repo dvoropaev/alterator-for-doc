@@ -1,0 +1,223 @@
+type = "Service"
+name = "example_service"
+icon = "example_service_icon"
+display_name.en = "example service"
+display_name.ru = "Пример сервиса"
+comment.en = "This is an example service"
+comment.ru = "Это пример сервиса"
+enable_force_deploy = true
+
+
+[diag_tools.test_tool]
+bus = "session"
+path = "/org/altlinux/alterator/test_tool"
+
+[diag_tools.test_tool2]
+bus = "system"
+path = "/org/altlinux/alterator/test_tool2"
+
+
+[parameters.enumParam]
+display_name.en = "Some parameter name"
+display_name.ru = "Параметр"
+comment.en = "Comment"
+comment.ru = "Комментарий"
+type = "enum" # string|integer|enum
+context = [
+    "deploy",
+    "diag",
+    "status"
+]
+[parameters.enumParam.values.value1]
+display_name.en = "Value 1"
+display_name.ru = "Значение 1"
+[parameters.enumParam.values.value2]
+display_name.en = "Value 2"
+display_name.ru = "Значение 2"
+[parameters.enumParam.values.value3]
+display_name.en = "Value 3"
+display_name.ru = "Значение 3"
+
+[parameters.emptyParam]
+display_name.en = "Some parameter name"
+display_name.ru = "Параметр"
+comment.en = "Comment"
+comment.ru = "Комментарий"
+type = "string" # string|integer|enum|boolean
+context = [
+    "deploy",
+    "diag",
+    "status"
+]
+
+[parameters.paramWithDefault]
+display_name.en = "Some parameter name"
+display_name.ru = "Параметр"
+comment.en = "Comment"
+comment.ru = "Комментарий"
+type = "string" # string|integer|enum|boolean
+default = "default_value"
+context = [
+    "deploy",
+    "diag"
+]
+
+[parameters.hostList]
+display_name.en = "A list of servers"
+display_name.ru = "Список серверов"
+comment.en = "An array of strings, constrainted by a regular expression"
+comment.ru = "Массив строк, ограниченных регулярным выражением"
+type = "array"
+array_type = "string"
+array_min  = 1
+array_max  = 10
+pattern = "^([a-zA-Z0-9]*\\.)*([A-Za-z0-9]*)$"
+default = [ "altlinux.org", "kernel.org", "www.foo.bar" ]
+context = [
+    "deploy",
+    "diag"
+]
+
+
+
+[parameters.composite_param]
+display_name.en = "Some composite parameter name"
+display_name.ru = "Имя составного параметра"
+comment.en = "Comment"
+comment.ru = "Комментарий"
+type = "object"
+context = [
+    "deploy",
+    "status"
+]
+[parameters.composite_param.properties.string_1]
+display_name.en = "String field"
+display_name.ru = "Поле типа строка"
+comment.en = "Comment"
+comment.ru = "Комментарий"
+type = "string"
+required = true
+
+[parameters.composite_param.properties.enum_1]
+display_name.en = "Enum field"
+display_name.ru = "Поле типа перечисление"
+comment.en = "Comment"
+comment.ru = "Комментарий"
+type = "enum"
+required = true
+[parameters.composite_param.properties.enum_1.values.value1]
+display_name.en = "Value 1"
+display_name.ru = "Значение 1"
+[parameters.composite_param.properties.enum_1.values.value2]
+display_name.en = "Value 2"
+display_name.ru = "Значение 2"
+[parameters.composite_param.properties.enum_1.values.value3]
+display_name.en = "Value 3"
+display_name.ru = "Значение 3"
+
+[parameters.composite_param.properties.int_1]
+display_name.en = "Integer field"
+display_name.ru = "Поле типа число"
+comment.en = "This field is not required"
+comment.ru = "Это поле необязательное"
+type = "integer"
+required = false
+
+
+[parameters.composite_array]
+display_name.en = "Some composite array parameter name"
+display_name.ru = "Имя составного массива"
+comment.en = "Comment"
+comment.ru = "Комментарий"
+type = "array"
+array_type = "object"
+prototype = "composite_param"
+array_min  = 3
+array_max  = 10
+context = [
+    "deploy",
+    "status"
+]
+
+
+[parameters.group_param]
+display_name.en = "Group type"
+display_name.ru = "Группа"
+comment.en = "Group alows to select one of values, just like enum."
+comment.ru = "Группа позволяет выбрать одно из значений, подобно перечислению."
+context = [
+    "deploy",
+    "status"
+]
+exclusive = true
+[parameters.group_param.properties.param1]
+display_name.en = "Variant 1"
+display_name.ru = "Вариант 1"
+comment.en = "comment"
+comment.ru = "комментарий"
+type = "boolean"
+default = true
+constant = true
+[parameters.group_param.properties.param2]
+display_name.en = "Variant 2"
+display_name.ru = "Вариант 2"
+comment.en = "When this variant is selected, additional parameters are available."
+comment.ru = "Этот вариант содержит дополнительные параметры."
+type = "object"
+prototype = "sample_composite"
+[parameters.group_param.properties.param3]
+display_name.en = "Composite parameter array example"
+display_name.ru = "Пример массива составных параметров"
+comment.en = "This parameter consist of different values"
+comment.ru = "Этот параметр состоит из различных значений"
+type = "array"
+array_type = "object"
+array_min = 2
+array_max = 10
+prototype = "sample_composite"
+
+
+
+
+
+[parameters.linkedParam]
+display_name.en = "Some linked parameter name"
+display_name.ru = "Имя связанного параметра"
+comment.en = "Comment"
+comment.ru = "Комментарий"
+type = "integer" # string|integer|enum|boolean
+default = 80
+min = 0
+max = 65535
+context = [
+    "deploy",
+    "status"
+]
+
+
+[resources.file]
+display_name.en = "Some resource name"
+display_name.ru = "Ресурс"
+comment.en = "Comment"
+comment.ru = "Комментарий"
+type = "file" # or directory
+path.value = "/some/path"
+
+[resources.unit]
+display_name.en = "Some service name"
+display_name.ru = "Имя сервиса"
+comment.en = "Comment"
+comment.ru = "Комментарий"
+type = "systemd_unit"
+unit_name.value = "some.service"
+
+[resources.port]
+display_name.en = "Some port"
+display_name.ru = "Порт"
+comment.en = "Comment"
+comment.ru = "Комментарий"
+type = "port"
+inet_service.value = 80
+inet_service.parameter = "linkedParam"
+tcp = true
+udp = false

@@ -1,0 +1,149 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Alterator Component",
+    "type": "object",
+    "propertyNames": {
+        "enum": [
+            "type",
+            "draft",
+            "name",
+            "category",
+            "arches",
+            "icon",
+            "display_name",
+            "short_display_name",
+            "comment",
+            "packages",
+            "tags"
+        ]
+    },
+    "required": [
+        "type",
+        "name",
+        "packages"
+    ],
+    "properties": {
+        "type": {
+            "type": "string",
+            "const": "Component"
+        },
+        "name": {
+            "type": "string"
+        },
+        "draft": {
+            "type": "boolean"
+        },
+        "category": {
+            "type": "string"
+        },
+        "arches": {
+            "type": "array",
+            "$ref": "#/definitions/arches_set"
+        },
+        "icon": {
+            "type": "string"
+        },
+        "display_name": {
+            "$ref": "#/definitions/field_with_locale"
+        },
+        "short_display_name": {
+            "$ref": "#/definitions/field_with_locale"
+        },
+        "comment": {
+            "$ref": "#/definitions/field_with_locale"
+        },
+        "packages": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "object",
+                "propertyNames": {
+                    "enum": [
+                        "meta",
+                        "kernel_module",
+                        "image_ignore",
+                        "language",
+                        "arch",
+                        "exclude_arch",
+                        "desktop"
+                    ]
+                },
+                "properties": {
+                    "meta": {
+                        "type": "boolean"
+                    },
+                    "kernel_module": {
+                        "type": "boolean"
+                    },
+                    "image_ignore": {
+                        "type": "boolean"
+                    },
+                    "language": {
+                        "type": "string"
+                    },
+                    "arch": {
+                        "$ref": "#/definitions/arches_set"
+                    },
+                    "exclude_arch": {
+                        "$ref": "#/definitions/arches_set"
+                    },
+                    "desktop": {
+                        "$ref": "#/definitions/desktops_set"
+                    }
+                }
+            }
+        },
+        "tags": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        }
+    },
+    "definitions": {
+        "field_with_locale": {
+            "type": "object",
+            "propertyNames": {
+                "pattern": "^[a-z]{2}(_[A-Z]{2})?$"
+            },
+            "additionalProperties": {
+                "type": "string"
+            },
+            "required": [
+                "en"
+            ]
+        },
+        "arches_set": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "$comment": "NOTE(chernigin): not sure if those are all needed arches",
+                "enum": [
+                    "x86_64",
+                    "i586",
+                    "aarch64",
+                    "riscv64",
+                    "loongarch64",
+                    "e2k",
+                    "e2kv4",
+                    "e2kv5",
+                    "e2kv6"
+                ]
+            }
+        },
+        "desktops_set": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "$comment": "TODO(chernigin): fill enum with all needed desktops",
+                "enum": [
+                    "CINNAMON",
+                    "GNOME",
+                    "KDE5",
+                    "KDE6",
+                    "MATE",
+                    "XFCE"
+                ]
+            }
+        }
+    }
+}
