@@ -1,0 +1,122 @@
+== Пользовательское руководство ==
+
+=== Определение приложения ===
+Alterator Services — модуль Alterator-manager-services для управления системными службами в среде Альтератора.【F:alterator-manager-servises.wiki†L1-L6】
+
+=== Функциональные возможности ===
+* Получение описаний сервисов в формате Alterator Entry через метод Info.【F:alterator-interface-service/doc/README.md†L9-L33】【F:alterator-interface-service/org.altlinux.alterator.service1.xml†L14-L55】
+* Развертывание, настройка, запуск и остановка сервисов методами Deploy, Configure, Start и Stop.【F:alterator-interface-service/doc/README.md†L12-L23】【F:alterator-interface-service/org.altlinux.alterator.service1.xml†L19-L35】
+* Отмена развёртывания методами Undeploy и Status с контролем кодов 0/127/128 для недоступного, развёрнутого и запущенного состояния.【F:alterator-interface-service/doc/README.md†L24-L34】【F:alterator-manager-servises.wiki†L145-L169】
+* Создание резервных копий и восстановление конфигураций методами Backup и Restore с передачей параметров через stdin.【F:alterator-interface-service/doc/README.md†L5-L31】【F:alterator-interface-service/org.altlinux.alterator.service1.xml†L42-L50】
+* Передача журналов развёртывания и ошибок через сигналы service_stdout_signal и service_stderr_signal.【F:alterator-interface-service/doc/README.md†L36-L43】
+
+=== Способы запуска ===
+==== Центр управления системой ====
+1. Установить пакеты alterator-manager, alterator-entry, alt-services и alterator-interface-service через apt-get; при необходимости обновить систему и дополнить набор сервисов пакетом alterator-test-services.【F:alterator-manager-servises.wiki†L14-L31】
+2. Открыть модуль управления службами в интерфейсе Альтератора: на левой панели выбрать нужный сервис, на правой проверить его статус и воспользоваться кнопками «Развернуть», «Настроить», «Запустить», «Отменить развёртывание».【F:alterator-manager-servises.wiki†L33-L56】
+3. На вкладке «Параметры» указать значения, передаваемые в JSON помощнику сервиса, и подтвердить запуск операции; на вкладке «Ресурсы» контролировать файлы, каталоги и systemd-юниты, занятые сервисом.【F:alterator-manager-servises.wiki†L42-L55】
+4. После выполнения операции проверить окно логов; убедиться, что статус и ресурсы обновились, и что сервис перешёл в ожидаемое состояние (код 0, 127 или 128).【F:alterator-manager-servises.wiki†L47-L55】【F:alterator-manager-servises.wiki†L162-L169】
+
+==== alteratorctl ====
+1. Текущая версия alteratorctl регистрирует модули manager, packages, components, editions, diag и systeminfo; клиентского модуля для интерфейса service1 нет.【F:alteratorctl/main.c†L23-L40】
+2. Для операций над сервисами следует использовать GUI или прямые вызовы D-Bus; появление модуля alteratorctl для service1 потребуется отслеживать в будущих обновлениях.【F:alteratorctl/main.c†L23-L40】
+
+=== Подробное описание функциональных возможностей ===
+==== Info ====
+* Назначение: вернуть описание сервиса в формате Alterator Entry (stdout_bytes) и код завершения response.【F:alterator-interface-service/doc/README.md†L9-L11】【F:alterator-interface-service/org.altlinux.alterator.service1.xml†L14-L17】
+* Использование: метод без входных параметров, пригоден для загрузки метаданных в UI или инструменты автоматизации.【F:alterator-interface-service/doc/README.md†L9-L11】
+* Результат: файл .service, полученный helper’ом из каталога `/usr/share/alterator/services/`, как указано в .backend сервисов.【F:alterator-service-samba-share/src/service-samba-shares.backend†L6-L9】
+
+==== Deploy ====
+* Назначение: развернуть сервис с параметрами из JSON, переданными через stdin.【F:alterator-interface-service/doc/README.md†L5-L13】【F:alterator-interface-service/org.altlinux.alterator.service1.xml†L19-L22】
+* Порядок: UI формирует JSON из секции parameters описания сервиса и передаёт helper’у через .backend (stdin_string = true).【F:alterator-service-samba-share/src/service-samba-shares.backend†L11-L17】【F:alterator-entry/doc/README.md†L514-L564】
+* Результат: helper выполняет подготовку окружения, включает systemd-юниты и сообщает JSON-ответ с итоговым состоянием; ошибки сопровождаются stderr-сигналами.【F:alterator-service-samba-share/src/service-samba-shares†L290-L315】【F:alterator-interface-service/doc/README.md†L36-L43】
+
+==== Configure ====
+* Назначение: изменить конфигурацию уже развернутого сервиса по входным данным JSON.【F:alterator-interface-service/doc/README.md†L21-L23】
+* Порядок: метод .backend передаёт строки stdin helper’у; параметры берутся из контекста configure описания .service.【F:alterator-service-samba-share/src/service-samba-shares.backend†L27-L33】【F:alterator-service-chrony/service-chrony.service†L18-L50】
+* Результат: helper применяет изменения к конфигурационным файлам и ресурсам, после чего возвращает код завершения и журналы в сигналах stdout/stderr.【F:alterator-service-chrony/service-chrony†L555-L719】【F:alterator-interface-service/doc/README.md†L36-L43】
+
+==== Start и Stop ====
+* Назначение: управлять systemd-юнитами сервиса без изменения конфигурации.【F:alterator-interface-service/doc/README.md†L15-L19】【F:alterator-interface-service/org.altlinux.alterator.service1.xml†L24-L30】
+* Порядок: методы запускают или останавливают systemd через helper; в .backend не требуется stdin.【F:alterator-service-chrony/service-chrony.backend†L35-L43】
+* Результат: helper подтверждает операцию сообщением и кодом возврата; статусы обновляются через метод Status.【F:alterator-service-chrony/service-chrony†L415-L437】【F:alterator-service-samba-share/src/service-samba-shares†L349-L399】
+
+==== Undeploy ====
+* Назначение: отключить сервис и восстановить исходные конфигурации.【F:alterator-interface-service/doc/README.md†L24-L25】【F:alterator-interface-service/org.altlinux.alterator.service1.xml†L37-L40】
+* Порядок: helper получает JSON (при необходимости) и выполняет остановку, отключение юнитов и возврат файлов из бэкапа.【F:alterator-service-samba-share/src/service-samba-shares†L318-L347】【F:alterator-service-vsftpd/vsftpd-service/service-vsftpd†L243-L280】
+* Результат: вывод JSON о завершении и восстановлении, код возврата 0 при успехе, иначе ошибка.【F:alterator-service-samba-share/src/service-samba-shares†L340-L347】
+
+==== Backup ====
+* Назначение: сформировать резервную копию конфигурации и данных сервиса по параметрам JSON (имя бэкапа, путь).【F:alterator-interface-service/doc/README.md†L27-L29】
+* Порядок: helper создаёт каталог для резервов и сохраняет конфигурацию и связанные данные в указанные файлы.【F:alterator-service-samba-share/src/service-samba-shares†L403-L438】【F:alterator-service-vsftpd/vsftpd-service/service-vsftpd†L283-L299】
+* Результат: JSON со ссылками на созданные файлы, который возвращается в stdout_bytes метода.【F:alterator-service-samba-share/src/service-samba-shares†L419-L437】
+
+==== Restore ====
+* Назначение: восстановить конфигурацию из ранее созданной резервной копии; имя бэкапа передаётся в JSON.【F:alterator-interface-service/doc/README.md†L30-L31】
+* Порядок: helper ищет указанный файл резервной копии, распаковывает данные и перезапускает сервис.【F:alterator-service-samba-share/src/service-samba-shares†L440-L490】【F:alterator-service-vsftpd/vsftpd-service/service-vsftpd†L302-L376】
+* Результат: JSON с путями восстановленных файлов и код завершения; при отсутствии бэкапа helper возвращает ошибку.【F:alterator-service-samba-share/src/service-samba-shares†L450-L490】【F:alterator-service-vsftpd/vsftpd-service/service-vsftpd†L326-L376】
+
+==== Status ====
+* Назначение: вернуть текущее состояние сервиса и сопутствующие данные; коды 0/127/128 отражают неразвёрнутый, развёрнутый и запущенный сервис соответственно.【F:alterator-interface-service/doc/README.md†L33-L34】【F:alterator-manager-servises.wiki†L162-L169】
+* Порядок: helper собирает состояние systemd, читает сохранённый JSON и формирует ответ; .backend включает stdout_bytes (и при необходимости stdout_json).【F:alterator-service-samba-share/src/service-samba-shares.backend†L57-L61】【F:alterator-service-samba-share/src/service-samba-shares†L371-L400】
+* Результат: JSON со списком ресурсов и параметров, дополняемый кодом возврата для классификации состояния; UI обновляет вкладки «Статус» и «Ресурсы».【F:alterator-service-chrony/service-chrony†L465-L487】【F:alterator-service-vsftpd/vsftpd-service/service-vsftpd†L379-L395】
+
+=== Описание сервисов ===
+==== alterator-service-samba-share ====
+* Назначение: управление общими папками Samba, включая создание, изменение и удаление записей в `/etc/samba/smb.conf` и контроль systemd-юнитов `smb` и `nmb`.【F:alterator-service-samba-share/src/service-samba-shares†L158-L399】
+* Helper: скрипт `/usr/bin/service-samba-shares` поддерживает операции create, delete, update, deploy, undeploy, start, stop, status, backup и restore, принимает JSON-параметры и возвращает ответы в JSON.【F:alterator-service-samba-share/src/service-samba-shares†L158-L551】
+* Развёртывание: при deploy сохраняет оригинальный `smb.conf`, включает службы и публикует событие `alterator-announce`, возвращая состояние deployed.【F:alterator-service-samba-share/src/service-samba-shares†L290-L315】
+* Статус: формирует JSON с полями `status`, `services` и `shares`, завершает работу кодами 0/127/128 в зависимости от активных юнитов.【F:alterator-service-samba-share/src/service-samba-shares†L371-L400】
+* Бэкап и восстановление: сохраняет конфигурацию в `/var/lib/alterator/service/service-samba-share/config-backup` и архивы данных в `.../data-backup`, восстанавливает по имени или последнему бэкапу.【F:alterator-service-samba-share/src/service-samba-shares†L403-L490】
+* Backend: `service-samba-shares.backend` вызывает helper с нужными методами, включает передачу stdin и сигналы stdout/stderr для долгих операций; метод Status возвращает JSON как байтовый поток.【F:alterator-service-samba-share/src/service-samba-shares.backend†L1-L61】
+* Описание .service: содержит параметры `operation`, `share_name`, `share_path`, `access_user`, `access_type`, `allowed_users`, `enabled`, а также ресурсы `smb_conf`, `backups`, `smb_service`, `nmb_service` и массив `shares` для вкладки статуса.【F:alterator-service-samba-share/src/service-samba-shares.service†L1-L177】
+* Проверка: после операций убедиться, что JSON статуса отражает актуальные пути и права; ресурсы на вкладке UI должны совпадать с содержимым `smb.conf` и состоянием юнитов.【F:alterator-service-samba-share/src/service-samba-shares†L389-L398】
+
+==== alterator-service-chrony ====
+* Назначение: настройка службы chronyd, управление серверами и пулами NTP, подсетями клиентов и параметрами makestep/rtcsync, а также резервирование конфигурации `/etc/chrony.conf`.【F:alterator-service-chrony/service-chrony†L189-L719】
+* Helper: `service-chrony` обрабатывает режимы deploy, configure, start, stop, status, backup, restore и undeploy; читает JSON из stdin и модифицирует `chrony.conf` через sed и jq.【F:alterator-service-chrony/service-chrony†L189-L747】
+* Развёртывание: сохраняет оригинальный конфиг, отключает или включает пул `pool.ntp.org`, добавляет сервера и подсети согласно JSON и фиксирует входные данные в `.../deployment-config.json`.【F:alterator-service-chrony/service-chrony†L345-L404】
+* Конфигурация: удаляет устаревшие записи серверов, пулов и подсетей, затем применяет параметры clientsSettings и NTP-настроек, записывая их в `.../configuring-config.json`.【F:alterator-service-chrony/service-chrony†L555-L719】
+* Статус: выводит текущий JSON (deploy или configure) и возвращает код 128, если `chrony.service` активен, либо 127, если остановлен.【F:alterator-service-chrony/service-chrony†L465-L487】
+* Резервное копирование: сохраняет `chrony.conf` с суффиксами в каталоге `/var/lib/alterator/service/chrony/backups` и обрабатывает пользовательские имена бэкапов.【F:alterator-service-chrony/service-chrony†L491-L553】
+* Backend: `service-chrony.backend` задаёт маппинг методов к helper’у и подключает сигналы stdout/stderr для длительных операций.【F:alterator-service-chrony/service-chrony.backend†L1-L60】
+* Описание .service: параметры охватывают массивы `ntpServersSettings`, `ntpPoolsSettings`, объект `ntpDefaultPool`, подсети клиентов и ресурсы `chronyConf` и `Chronyd` (systemd unit).【F:alterator-service-chrony/service-chrony.service†L1-L200】
+* Проверка: после deploy или configure сравнить `chrony.conf` с ожидаемыми значениями и убедиться, что статус возвращает актуальный JSON и код 128/127 в зависимости от активного состояния службы.【F:alterator-service-chrony/service-chrony†L355-L487】
+
+==== alterator-service-vsftpd ====
+* Назначение: конфигурация FTP-сервера vsftpd, управление параметрами доступа, пассивными портами и резервными копиями конфигурации в `/etc/vsftpd`.【F:alterator-service-vsftpd/vsftpd-service/service-vsftpd†L118-L376】
+* Helper: `service-vsftpd` реализует режимы deploy, configure, start, stop, status, backup, restore и undeploy; принимает JSON, модифицирует `/etc/vsftpd/conf` и `/etc/vsftpd/vsftpd.conf`, создаёт бэкапы и архивы.【F:alterator-service-vsftpd/vsftpd-service/service-vsftpd†L158-L505】
+* Развёртывание: сохраняет текущий конфиг, применяет параметры (`anonymous_enable`, `local_enable`, `write_enable`, порты) и записывает итоговый JSON в `/usr/share/alterator-service-vsftpd/deployment-config.json`.【F:alterator-service-vsftpd/vsftpd-service/service-vsftpd†L158-L240】
+* Отмена развёртывания: восстанавливает последний `.original` из `/etc/vsftpd/backups`, удаляет JSON и каталог состояния, останавливает службу.【F:alterator-service-vsftpd/vsftpd-service/service-vsftpd†L243-L280】
+* Резервное копирование: архивирует `/etc/vsftpd` в `/var/backups/vsftpd/vsftpd_backup_<timestamp>.tar.gz`; restore ищет указанный файл или последний архив и перезапускает службу.【F:alterator-service-vsftpd/vsftpd-service/service-vsftpd†L283-L376】
+* Статус: читает deployment-config.json, выводит его содержимое и завершает работу кодом 128 при активной службе или 127 при остановленной.【F:alterator-service-vsftpd/vsftpd-service/service-vsftpd†L379-L395】
+* Backend: `service-vsftpd.backend` использует helper и включает сигналы stdout/stderr; метод Status возвращает байтовый поток с JSON.【F:alterator-service-vsftpd/vsftpd-service/service-vsftpd.backend†L1-L65】
+* Описание .service: предоставляет параметры доступа (`anonymous_enable`, `local_enable`, `write_enable`) и порты (`listen_port`, `pasv_min_port`, `pasv_max_port`), а также поле `backup_name` для восстановления.【F:alterator-service-vsftpd/vsftpd-service/service-vsftpd.service†L11-L75】
+* Проверка: убедиться, что `vsftpd.conf` содержит обновлённые параметры, JSON статуса совпадает с настройками, а архивы доступны в каталоге бэкапов.【F:alterator-service-vsftpd/vsftpd-service/service-vsftpd†L209-L299】【F:alterator-service-vsftpd/vsftpd-service/service-vsftpd†L379-L395】
+
+== Руководство администратора ==
+
+=== Принцип работы ===
+* Сервисы описываются файлами Alterator Entry (`.service` и `.backend`), которые загружаются модулем Alterator-manager-services и отображаются в UI.【F:alterator-entry/doc/README.md†L514-L564】【F:alterator-manager-servises.wiki†L1-L56】
+* Методы управления предоставляются D-Bus интерфейсом `org.altlinux.alterator.service1`; параметры передаются в формате строк JSON через stdin helper’ов.【F:alterator-interface-service/org.altlinux.alterator.service1.xml†L14-L55】【F:alterator-interface-service/doc/README.md†L4-L33】
+* Backend-файлы связывают вызовы интерфейса с исполняемыми помощниками, перенаправляют stdout/stderr в сигналы и определяют таймауты.【F:alterator-entry/doc/README.md†L410-L458】【F:alterator-service-chrony/service-chrony.backend†L1-L60】
+* Helper-скрипты реализуют операционную логику: редактируют конфигурации, управляют systemd и формируют JSON-ответы со статусом и артефактами (логи, пути к бэкапам).【F:alterator-service-samba-share/src/service-samba-shares†L158-L551】【F:alterator-service-vsftpd/vsftpd-service/service-vsftpd†L158-L505】
+
+=== Описание .backend ===
+* Обязательные поля: `type = "Backend"`, `module = "executor"`, `interface = "service1"`, `name = <идентификатор>`; методы описываются в секции `[methods.<Method>]`.【F:alterator-service-samba-share/src/service-samba-shares.backend†L1-L24】
+* Для методов, требующих входных данных, указывается `stdin_string = true`; длительные операции транслируют stdout/stderr в сигналы `service_stdout_signal` и `service_stderr_signal`.【F:alterator-service-samba-share/src/service-samba-shares.backend†L11-L33】【F:alterator-interface-service/doc/README.md†L36-L43】
+* Метод Status обычно возвращает JSON через `stdout_bytes = true` (при необходимости `stdout_json = true`), что позволяет UI парсить данные статуса и ресурсов.【F:alterator-service-samba-share/src/service-samba-shares.backend†L57-L61】
+* Timeout задаётся в секундах (например, 600) и соответствует рекомендациям спецификации `.backend` для модуля executor.【F:alterator-service-chrony/service-chrony.backend†L11-L59】【F:alterator-entry/doc/README.md†L410-L458】
+
+=== Описание .service ===
+* Глобальные ключи: `type`, `name`, `category`, `display_name`, `comment`, дополнительные флаги `enable_force_deploy` и `no_default_diag` по необходимости.【F:alterator-service-chrony/service-chrony.service†L1-L7】【F:alterator-entry/doc/README.md†L514-L532】
+* Секция `parameters` описывает поля, их типы (`string`, `boolean`, `enum`, `array`, `object`), контексты (`deploy`, `configure`, `status`, `backup`, `restore`) и обязательность; составные типы задаются через `prototype` или `properties`.【F:alterator-entry/doc/README.md†L534-L564】
+* Секция `resources` перечисляет файлы, каталоги, порты и systemd-юниты с указанием свойств и привязок к параметрам; используется для контроля конфликтов и отображения в UI.【F:alterator-entry/doc/README.md†L566-L616】
+* Служебные параметры `deployed`, `started` и `force_deploy` доступны в контексте status/deploy и автоматически добавляются при необходимости; enable_force_deploy включает передачу `force_deploy`.【F:alterator-entry/doc/README.md†L618-L626】
+
+=== Как сделать свой сервис (на примере) ===
+1. Подготовить файл `<имя>.service` в каталоге `/usr/share/alterator/services/` или `/etc/alterator/services/`: указать глобальные поля, описать параметры с контекстами и ресурсы (файлы, systemd-юниты, порты). В качестве примера использовать `service_samba_shares.service` с параметрами доступа и ресурсами `smb.service`/`nmb.service`.【F:alterator-entry/doc/README.md†L514-L616】【F:alterator-service-samba-share/src/service-samba-shares.service†L1-L134】
+2. Создать файл `<имя>.backend` в `/usr/share/alterator/backends/system/`: для каждого метода перечислить команду helper’а, настроить передачу stdin и сигналы, задать таймауты. Сослаться на `service-samba-shares.backend` или `service-chrony.backend` как образец. Убедиться, что Info читает .service-файл, а методы Deploy/Configure/Undeploy/Backup/Restore вызывают helper с нужными аргументами.【F:alterator-service-samba-share/src/service-samba-shares.backend†L1-L61】【F:alterator-entry/doc/README.md†L410-L458】
+3. Реализовать helper (например, `/usr/bin/service-samba-shares`) с поддержкой всех методов интерфейса: чтение JSON из stdin, обработка аргумента `operation`, управление конфигурациями и systemd, генерация JSON-ответов, сохранение бэкапов. Для проверки использовать `jq` и `systemctl`, как показано в готовых скриптах Samba, Chrony и vsftpd.【F:alterator-service-samba-share/src/service-samba-shares†L498-L551】【F:alterator-service-chrony/service-chrony†L345-L747】【F:alterator-service-vsftpd/vsftpd-service/service-vsftpd†L158-L505】
+4. Убедиться, что helper возвращает корректные коды завершения и JSON, а метод Status выдаёт ожидаемые коды 0/127/128. Проверить, что UI отображает параметры и ресурсы без конфликтов и что операции deploy/undeploy обновляют состояние в соответствии с описанием .service.【F:alterator-manager-servises.wiki†L162-L169】【F:alterator-service-samba-share/src/service-samba-shares†L371-L400】
