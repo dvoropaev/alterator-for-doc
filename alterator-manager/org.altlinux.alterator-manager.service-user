@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=org.altlinux.alterator
+Exec=/usr/sbin/alterator-manager --user
+SystemdService=alterator-manager.service

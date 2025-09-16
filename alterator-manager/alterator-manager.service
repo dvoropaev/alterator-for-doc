@@ -1,0 +1,15 @@
+[Unit]
+Description=alterator-manager service
+
+[Service]
+Type=dbus
+BusName=org.altlinux.alterator
+ExecStart=/usr/sbin/alterator-manager
+Restart=on-success
+
+#[Install]
+#WantedBy=multi-user.target
+#[D-BUS Service]
+#Name=org.altlinux.alterator
+#Exec=/usr/sbin/alterator-manager
+#SystemdService=alterator-manager.service
