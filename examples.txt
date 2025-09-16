@@ -1,0 +1,731 @@
+=========================================================
+[[Category:Sisyphus]]
+[[Category:Alterator_на_D-Bus]]
+
+{| style="border:1px solid #AAA; background:#F9F9F9; width:200px; margin: 0 0 1em 1em; padding:.2em; text-align:center; float: right;" class=noprint
+|-
+|[[Image:stub.png]]
+|-
+| '''Данная страница находится в [[:Категория:Неоконченные страницы|разработке]]'''.<br /><small style="line-height:1.1em;">Эта страница ещё не закончена. Информация, представленная здесь, может оказаться неполной или неверной.</small>
+|}
+<noinclude>[[Категория:Неоконченные страницы|{{PAGENAME}}]]</noinclude>
+'''alt-components''' - приложение с графическим интерфейсом для управления наборами пакетов, называемых компонентами.
+
+=== Цель создания ===
+alt-components позволяет устанавливать и удалять компоненты.  
+Компонент представляет собой набор пакетов, предоставляющих определенную функциональность, и некоторую последовательность действий (deploy) для его конфигурации. alt-components должен запускаться при первом запуске системы, но доступен всегда, т.е. набор установленных компонентов можно поменять в любой момент.
+
+Работа с компонентами в консоли доступна в приложении [[Alteratorctl | '''alteratorctl''']].
+
+=== Назначение ===
+Приложение alt-components предназначено для управления группами пакетов под названием компоненты. Использование компонентов позволяет работать с функциональными подсистемами без необходимости самостоятельного поиска отдельных пакетов. Для работы достаточно выбрать желаемый компонент, после чего alt-components установит недостающие пакеты или удалит избыточные. Приложение ориентировано на корпоративную инфраструктуру.
+
+Предназначен для:
+# Администраторов
+# Продвинутых пользователей
+Возможности программы:
+* Установка компонентов.
+* Удаление компонентов.
+* Проверка наличия компонентов.
+
+=== Условия применения ===
+Приложение alt-components может использоваться как на серверах, так и на рабочих станциях. Для корректной работы alt-components требуется apt, сконфигурированный на работу с репозиториями, содержащими необходимые RPM-пакеты и доступ к этим репозиториям. 
+
+= Установка =
+== Установка из репозитория ==
+Команды установки
+<pre>
+# apt-get update
+# apt-get install alterator-application-components
+</pre>
+
+= Запуск =
+Вызов инструмента alt-components возможен через графическое меню либо через терминал.
+=== Через графическое окружение ===
+# Запустить [[Alterator_Browser | Alterator Browser]] из меню приложений.
+# Ввести пароль учетной записи root.
+# Выбрать пункт '''Управление компонентами'''.
+=== Через терминал ===
+Выполнить команду
+<pre>
+$ alt-components
+</pre>
+[[Файл:Интерфейс нового AMC.png|безрамки|800x800пкс]]
+
+=== Интерфейс ===
+Пользовательский интерфейс программы состоит из секций: 
+* Компоненты - представлен список компонентов по категориям.
+* Описание - выводится информация о компонентах.
+
+= Спецификация =
+* [https://gitlab.basealt.space/alt/alterator-interface-component/-/blob/main/README.md Реализация интерфейса component].
+* [https://gitlab.basealt.space/alt/alterator-interface-component/-/blob/main/categories/README.md Реализация интерфейса component-categories].
+* [https://gitlab.basealt.space/alt/alterator-entry/-/blob/kozyrevid/specification/doc/README.md#%D1%81%D1%83%D1%89%D0%BD%D0%BE%D1%81%D1%82%D1%8C-%D1%82%D0%B8%D0%BF%D0%B0-component Документация на Component].
+
+= Руководство пользователя =
+* Чтобы раскрыть список компонентов в категории, необходимо нажать на её имя.
+* Чтобы увидеть информацию о компоненте, необходимо нажать на его имя.
+* Чтобы установить/удалить компонент, необходимо установить/снять галочку рядом с его именем.
+* Чтобы установить/удалить все компоненты из одной категории, необходимо установить/снять галочку рядом с именем категории.
+* Чтобы изменения вступили в силу, необходимо нажать Применить.
+* Чтобы отменить непримененные изменения, необходимо нажать Cбросить.
+
+= Руководство администратора =
+
+== Принцип работы ==
+
+Приложение alt-components представлено объектом на шине межпроцессного взаимодействия D-Bus. Этот объект создает сервис alterator-manager, выполнив инструкции файлов типа "alterator entry":
+
+* '''.backend''' - описывает интерфейс компонента на D-BUS, обеспечивающий взаимодействие с D-Bus. В нем же описаны методы интерфейса: 
+** Description - выводит описание компонента;
+** Info - выводит содержимое файла .component;
+** Status - Проверяет, установлены пакеты компоненты или нет (возвращает 0 при положительном результате);
+* '''.component''' - Описывает компонент. Содержит название компонента и список пакетов компонента;
+
+Также для компонента необходим файл с описанием в формате html.
+
+Порядок обработки составляющих alt-components:
+# alterator-module-executor собирает информацию из файлов .backend обо всех компонентах, и создает объекты на D-Bus с именами вида org.altlinux.alterator.<Имя компонента>;<br>[[Файл:Компоненты в d-feet.png|безрамки|600x600пкс]]
+# alt-components обращается к D-Bus, чтобы получить информацию о существующих компонентах;
+# Чтобы получить описание определенного компонента alt-components вызывает метод Description;
+# Чтобы получить список пакетов определенного компонента alt-components вызывает метод Info;
+# Чтобы проверить, установлены ли пакеты для определенного компонента alt-components вызывает метод Status;
+
+== Добавление компонентов в базовый набор ==
+Базовый набор компонентов содержится в пакета '''alt-components-base''' ([https://altlinux.space/alterator/alt-components-base ссылка на репозиторий]).
+
+Добавление нового компонента представляет из себя добавление файлов в каталог репозитория '''./components/<имя компонента>'''
+
+<big>'''Процедура добавления категории'''</big>
+
+[[Файл:AMC категории.png|безрамки|500x500пкс]]
+
+Необходимо создать файл с именем вида '''name.category''' и разместить его в каталоге '''./categories'''
+
+Содержимое предоставляется в формате TOML и имеет вид:
+<syntaxhighlight>
+type = "Category"
+name = "имя категории"
+category = "родительская категория"
+display_name.en = "Имя категории на английском"
+display_name.ru = "Имя категории на русском"
+comment.en = "Комментарий на английском"
+comment.ru = "Комментарий на русском"
+</syntaxhighlight>
+Поле category необходимо только если это вложенная категория.
+
+<big>'''Процедура добавления компонента'''</big>
+
+[[Файл:Компоненты AMC.png|безрамки|500x500пкс]]
+
+каждый компонент описывается файлами:
+* <имя компонента>.component - файл компонента
+* description.html - описание компонента на английском
+* description.ru.html - описание компонента на русском
+* <имя компонента>.backend - отображает объект компонента в сервисе alterator-manager на шине D-bus;
+Файл .backend создавать не нужно, он генерируется автоматически. 
+Файлы описания необходимо составлять в формате '''markdown'''. В '''html''' формат они будут автоматически переведены при установке пакета.
+Все созданные файлы необходимо разместить в каталоге '''./components/<имя компонента>'''
+'''Создание файла .component'''
+Содержимое предоставляется в формате TOML и имеет вид:
+<syntaxhighlight>
+type = "Component"
+name = "компонент"
+category = "категория"
+display_name.en = "Имя компонента на английском"
+display_name.ru = "Имя компонента на русском"
+
+[packages]
+"имя_пакета_1" = {}
+"имя_пакета_2" = {}
+"имя_пакета_3" = {}
+
+</syntaxhighlight>
+Сначала идут параметры компонента, а затем секция [packages], содержащая списки пакетов.
+
+[[Файл:Пакеты AMC.png|безрамки|500x500пкс]]
+
+Если имя пакета содержит пробелы или спецсимволы, необходимо указывать их имена в кавычках.
+Для каждого пакета в фигурных скобках указываются его параметры/фильтры (пока не реализовано)
+
+'''Создание описания'''
+
+[[Файл:Описание компонента AMC.png|безрамки|500x500пкс]]
+
+Для создания описания необходимо составить 2 файла в формате MarkDown
+* description.md - на английском
+* description.ru.md - на русском
+Эти файлы имеют вид:
+<syntaxhighlight>
+# Имя компонента
+Абзац 1
+Абзац 2
+Абзац 3
+</syntaxhighlight>
+
+<big>'''Проверка корректности работы'''</big>
+Соберите пакет '''alt-components-base''' со своими изменениями, установите и проверьте одним из следующих способов:
+'''Проверка через alt-components'''
+
+# Запустите alt-components
+# Выберете нужную категорию и подкатегорию
+# Выберете нужный компонент. Проверьте правильность описания и список пакетов
+
+[[Файл:AMC без подписей.png|безрамки|500x500пкс]]
+
+'''Проверка через alteratorctl'''
+<syntaxhighlight>
+$ alteratorctl components list
+</syntaxhighlight>
+Убедитесь, что ваш компонент появился в списке.
+'''Проверка через D-Feet'''
+[[Файл:Компоненты в d-feet.png|безрамки|500x500пкс]]
+# Запустите D-Feet
+# В левой секции выберете службу org.altlinux.alterator
+# В правой выберете созданный компонент
+# Найдите интерфейс org.altlinux.alterator.component1
+# Проверьте правильность работы следующих методов:
+#* Вызовите метод ''Description'' через alt-components для отображения описания.
+#* Убедитесь, что метод ''Info'' корректно выводит содержимое файла .component.
+#* Проверьте, что метод ''Status'' возвращает 0 при установке необходимых пакетов.
+=========================================================
+== Введение ==
+Alterator-manager-services - модуль [[Инфраструктурные решения/Проекты/Alterator на D-Bus | Альтератора ]] для управления системными службами.
+=== Краткое описание возможностей ===
+* Развертывание системных служб
+* Конфигурация системных служб
+* Запуск и остановка системных служб
+=== Назначение ===
+Модуль предназначен для:
+* Системных администраторов
+* Опытных пользователей
+
+== Подготовка к работе ==
+
+=== Установка необходимых пакетов ===
+<pre>
+apt-get update
+apt-get install alterator-manager
+apt-get alterator-entry
+apt-get alt-services
+apt-get alterator-interface-service
+</pre>
+Возможно потребуется обновление системы:
+<pre>
+apt-get dist-upgrade
+</pre>
+
+=== Пример установки сервисов ===
+На текущий момент доступен только тестовый пакет с сервисами. Эти сервисы не несут полезной нагрузки и предназначены только для демонстрации функционала alterator-application-services
+<pre>
+apt-get install alterator-test-services
+</pre>
+
+== Описание интерфейса и операций ==
+Интерфейс разбит на две секции. В левой перечислены все доступные сервисы. На правой выводится информация о выбранном сервисе, его статус. А также, в зависимости от статуса сервиса,  доступен набор кнопок управления сервисом:
+
+* Развернуть / Отменить развертывание
+* Запустить / Остановить
+* Настроить
+
+[[Файл:ALTERATOR-MANAGER-SERVICES.png|безрамки|446x446пкс]][[Файл:Развернутый сервис.png|безрамки|497x497пкс]]
+
+На правой панели есть две вкладки:
+
+* Параметры - используются для настройки сервиса.
+* Ресурсы - тут перечислены файлы, каталоги, порты, и службы systemd, которые используются данным сервисом. В alt-services присутствуют механизмы, выявляющие конфликты между сервисами за эти ресурсы.
+
+При нажатии на кнопку "развернуть" появляются окно, через которое можно сконфигурировать сервис
+
+[[Файл:Конфигурация сервиса.png|безрамки]]
+
+После конфигурации и нажатия на кнопку '''ок''' появится окно с логами развертывания сервиса
+
+[[Файл:Логи разворачивания.png|безрамки]]
+
+Для запуска сервиса остается нажать кнопку '''запустить'''.
+
+== Создание сервисов ==
+В качестве примера есть [https://gitlab.basealt.space/alt/alterator-test-services репозиторий с тестовыми сервисами]
+
+Для создания сервиса нужно как минимум 3 файла:
+
+* '''<имя сервиса>.service''' - файл описывает основную информацию о сервисе, а также параметры и составные типы этих параметров.
+* '''<имя сервиса>.backend''' - описывает интерфейс сервиса на шине d-bus и его методы для взаимодействия с ним
+* '''<имя сервиса>-helper''' - исполняемый файл, реализующий логику развертывания, настройки, и запуска сервисов. В отличие от '''service''' и '''backend''' может быть один на несколько сервисов. В таком случае он должен принимать в качестве параметра командной строки имя сервиса, для которого запускается.
+
+=== Файл .service ===
+Файл составляется в соответствии со [https://gitlab.basealt.space/alt/alterator-entry/-/tree/alekseevam/service_improvements/doc#%D1%81%D1%83%D1%89%D0%BD%D0%BE%D1%81%D1%82%D1%8C-%D1%82%D0%B8%D0%BF%D0%B0-service спецификацией] 
+* Расположение: <code>/usr/share/alterator/services/&lt;имя&gt;.service</code> (или в <code>/etc/alterator/services/</code> если создается пользователем).  
+
+==== Структура ====
+<pre>
+# Глобальные поля
+type                = "Service"
+name                = "имя_сервиса"
+display_name.en     = "Имя на английском"
+display_name.ru     = "Имя на русском"
+comment.en          = "Описание на английском"
+comment.ru         = "Описание на русском"
+enable_force_deploy = true
+
+# Параметры
+[parameters.&lt;param_name&gt;]
+display_name.en = "Отображаемое имя"
+comment.en      = "Описание параметра"
+type            = "string"        # string|integer|boolean|enum|array|object
+context         = ["deploy","configure","status"]
+default         = "значение"      # или default = 42 для integer
+required        = ["deploy"]      # в каких действиях обязательно
+
+# Составные типы (для object)
+[types.&lt;type_name&gt;]
+display_name.en = "Имя типа"
+[types.&lt;type_name&gt;.properties.&lt;prop1&gt;]
+type     = "string"
+required = true
+
+# Ресурсы
+[resources.&lt;res_name&gt;]
+display_name.en = "Имя ресурса"
+type            = "file"          # file|directory|systemd_unit|port
+path.value      = "/etc/.../foo"
+</pre>
+
+==== Как описывать параметры и ресурсы ====
+* Каждый параметр в секции <code>parameters</code> задаётся подписью <code>[parameters.&lt;имя&gt;]</code>.  
+* Обязательные ключи внутри:
+  * <code>type</code> — тип параметра.  
+  * <code>context</code> — список действий (см. ниже), в которых этот параметр имеет смысл.  
+* Дополнительные опции:
+  * <code>default</code>, <code>required</code>, <code>hidden</code>, <code>values</code> (enum), <code>array_type/array_min/array_max</code> (array), <code>prototype</code> (object).  
+* Ресурсы описываются в <code>resources</code> аналогично: имя ресурса, <code>type</code> и вложенные поля <code>path.value</code>, <code>unit_name.value</code>, <code>inet_service.value</code>, а для портов — <code>tcp</code>/<code>udp</code>.
+
+=== Файл .backend ===
+Файл составляется в соответствии со [https://gitlab.basealt.space/alt/alterator-entry/-/tree/alekseevam/service_improvements/doc#%D1%81%D1%83%D1%89%D0%BD%D0%BE%D1%81%D1%82%D1%8C-%D1%82%D0%B8%D0%BF%D0%B0-backend спецификацией]
+
+Определяет D-Bus интерфейс и методы для управления сервисом.  
+* Расположение: <code>/usr/share/alterator/backends/(system|user)/&lt;имя&gt;.backend</code>.  
+
+==== Описываемые методы ====
+* Info
+<pre>
+Info () -> (Array of [Byte] stdout_bytes, Int32 response)
+</pre>
+Предназначен для предоставления информации об инструменте диагностики, представленном данным объектом, в формате Alterator Entry - сущность service. Результатом выполнения метода является пара массива байтов stdout_bytes, который содержит Alterator Entry, и response - код взврата.
+* Deploy
+<pre>
+Deploy (String stdin) -> (Int32 response)
+</pre>
+предназначен для развертывания сервиса. Возвращает  response - код возврата.
+* Start
+<pre>
+Start () -> (Int32 response)
+</pre>
+Предназначен для запуска сервиса. Возвращает response - код возврата.
+* Stop
+<pre>
+Stop () -> (Int32 response)
+</pre>
+Предназначен для остановки сервиса. Возвращает response - код возврата.
+* Configure
+<pre>
+Configure (String stdin) -> (Int32 response)
+</pre>
+Предназначен для настройки уже развёрнутого сервиса. Возвращает response - код возврата.
+* Undeploy
+<pre>
+Undeploy (String stdin) -> (Int32 response)
+</pre>
+Предназначен для отключения сервиса. Возвращает  код возврата.
+* Backup
+<pre>
+Backup (String stdin) -> (Int32 response)
+</pre>
+Предназначен для создания резервной копии сервиса. 
+Отдаёт response - код возврата.
+* Restore
+<pre>
+Restore (String stdin) -> (Int32 response)
+</pre>
+Предназначен для восстановления резервной копии сервиса.Возвращает response - код возврата.
+* Status
+<pre>
+Status () -> (Array of stdout_strings, Int32 response)
+</pre>
+Предназначен для получения статуса сервиса. Результатом выполнения метода является пара массива строк stdout_strings, который содержит информацию о текущем состоянии сервиса, развёрнут/не развёрнут, как был развёрнут, и response - код возврата, имеющий следующие значения:
+* 0 - сервис не задеплоен
+* 127 - сервис задеплоен
+* 128 - задеплоен и запущен
+* любой другой код - ошибка
+
+==== Структура ====
+<pre>
+[Alterator Entry]
+Type        = "Backend"
+Module      = "executor"
+Interface   = "имя_интерфейса"   # полное org.altlinux.alterator.X или короткое X
+name        = "имя_сервиса"
+thread_limit= 10
+
+[methods.Info]
+execute          = "cat /usr/share/alterator/services/имя.service"
+action_id        = "Info"
+stdout_bytes     = enabled
+
+[methods.Deploy]
+execute           = "helper-имя --deploy"
+action_id         = "Deploy"
+stdin_string      = enabled
+stdout_signal_name= "svc_stdout"
+stderr_signal_name= "svc_stderr"
+timeout           = 600
+</pre>
+
+==== Описание метода ====
+* Группа: <code>[methods.<имя_метода>]</code>.  
+* <code>execute</code> — команда, которую нужно выполнять.  
+* <code>stdin_string</code> | <code>stdout_strings</code> | <code>stdout_bytes</code> — что передавать/принимать.  
+* <code>stdout_signal_name</code>, <code>stderr_signal_name</code> — имена сигналов D-Bus.  
+* <code>action_id</code> — совпадает с именем метода.  
+* <code>timeout</code>, <code>thread_limit</code> — опционально.
+
+=== Контекст ===
+Каждый параметр в <code>.service</code> указывает <code>context</code> — список действий (или методов .backend), в которых он будет передан helper’у:
+* '''deploy''' — развертывание  
+* '''configure''' — настройка  
+* '''start/stop''' — управление состоянием  
+* '''backup/restore''' — резервирование  
+* '''status''' — получение состояния  
+Параметры с другими контекстами игнорируются при вызове соответствующего метода.
+
+=== Составной параметр ===
+* Объявляется как <code>type = "object"</code> (или <code>array_type = "object"</code> для массива).  
+* Указывает <code>prototype = "&lt;type_name&gt;"</code> — блок под <code>[types.&lt;type_name&gt;]</code>, где в <code>.properties</code> описаны вложенные поля.  
+* При deploy/configure helper получит JSON с полностью развёрнутыми значениями по prototype.
+
+=== Файл helper ===
+Исполняемый файл в <code>/usr/bin/имя-helper</code>  
+* Вызывается из .backend через <code>execute</code>.  
+* На stdin получает JSON с параметрами, актуальными для данного метода.
+Пример JSON:
+<pre>
+{"composite_array":[{"param1":"test string","param2":12,"param3":"value2"},{"param1":"test string","param2":12,"param3":"value2"}],"composite_param":{"param1":"test string","param2":12,"param3":"value2"},"int_example2":42,"string_array_example":["altlinux.org","kernel.org","www.foo.bar"],"string_example2":"test string"}
+</pre>
+
+* Возвращает:
+  в stdout — лог или JSON-ответ (для Status).  
+  код возврата — 0 при успехе, != 0 при ошибке.  
+* Обрабатывает команды:
+  deploy, undeploy, configure, start, stop, backup, restore, status.  
+
+Пример исполняемого файла:
+<pre>
+#!/usr/bin/env bash
+# /usr/bin/test-service-helper
+set -euo pipefail
+
+# Читаем действие и сервис
+ACTION="${1:-status}"
+SERVICE="${2:-test_service}"
+
+# Считываем всё JSON из stdin
+read -r PARAMS_JSON
+
+# --- Заготовки функций ---
+deploy() {
+  # пример: сохранить конфиг и отметить как развернутый
+  echo "$PARAMS_JSON" > /etc/test-services/"$SERVICE".conf
+  echo "deployed"
+}
+
+configure() {
+  echo "$PARAMS_JSON" > /etc/test-services/"$SERVICE".conf
+  echo "configured"
+}
+
+start() {
+  systemctl start "$SERVICE".service
+}
+
+stop() {
+  systemctl stop "$SERVICE".service
+}
+
+status() {
+  cat /etc/test-services/"$SERVICE".conf 2>/dev/null || echo "{}"
+  systemctl is-active --quiet "$SERVICE".service
+  echo "status code: $?"
+}
+
+backup() {
+  tar czf /var/backups/"$SERVICE"-$(date +%F).tar.gz /etc/test-services/"$SERVICE".conf
+}
+
+restore() {
+  tar xzf "$(ls -1t /var/backups/"$SERVICE"-*.tar.gz | head -1)" -C /
+}
+
+# --- Вызов нужного действия ---
+case "$ACTION" in
+  deploy)    deploy    ;;
+  configure) configure ;;
+  start)     start     ;;
+  stop)      stop      ;;
+  status)    status    ;;
+  backup)    backup    ;;
+  restore)   restore   ;;
+  *)         echo "Unknown action: $ACTION" >&2; exit 1 ;;
+esac
+
+exit 0
+</pre>
+=========================================================
+= Описание ADT =
+'''ADT''' (Alt diagnostic tool) — программа для диагностики операционной системы. Имеет как графический, так и терминальный интерфейс.
+
+[[Файл:Adt-0.1.11-alt1_главное_окно.png|граница|безрамки|656x656пкс]]
+
+
+[[Файл:Adt-0.1.11-alt1 результат выполнения набора тестов.png|безрамки|656x656px|граница]]
+
+
+
+Возможности программы:
+# Диагностика системы через набор подготовленных утилит, называемых диагностическими инструментами;
+# Запуск диагностических инструментов с различными параметрами
+# Вывод на экран результата диагностики;
+# Сохранение файла журнала;
+# Выполнение операций, требующих привилегий, от учетной записи непривилегированного пользователя.
+
+Программа в своей работе использует D-Bus обертку, предоставляющую интерфейс взаимодействия со службой D-Bus, а также сторонние диагностические пакеты, описывающие запускаемые тесты. По результатам выполнения каждого теста формируется отчет.
+
+== Описание компонентов ==
+
+'''Alterator-manager''' - модульный сервис, предназначенный для конфигурации посредством D-bus.
+Весь функционал реализуется в виде модулей, а интерфейсы описываются в конфигурационных файлах "alterator entry".
+
+Система межпроцессного взаимодействия '''D-bus''' - механизм для обмена сообщениями между различными программами в операционной системе. DBus позволяет программам отправлять сообщения и вызывать методы других программ, обеспечивая совместную работу и координацию между приложениями. D-Bus используется для управления событиями, обмена данными, управления ресурсами и т. д.
+
+С точки зрения alterator-manager'а диагностический инструмент является объектом на dbus, описанном в двух файлах "alterator entry":
+* .backend - описывает интерфейс диагностического инструмента, обеспечивающий взаимодействие с dbus. В нем же описаны методы интерфейса: info, run, list, report
+* .diagnostictool - описывает отображение диагностического инструмента в ADT. Содержит информацию о тестах, доступных в рамках описываемого диагностического инструмента.
+
+'''alterator-module-executor''' - модуль альтератора для обработки файлов .backend и запуска исполняемых файлов.
+
+== Алгоритм работы ==
+# alterator-manager во время запуска создает на шине D-Bus службу с именем "org.altlinux.alterator"
+# alterator-module-executor собирает информацию из файлов .backend обо всех установленных диагностических инструментах, и создает объекты на D-Bus с именами вида ru.altlinux.alterator.<имя инструмента>
+# ADT формирует список диагностических инструментов. Для этого обращается к D-Bus и получает информацию обо всех объектах сервиса ''ru.altlinux.alterator'', имеющих интерфейс ''ru.altlinux.alterator.diag1'' 
+# Для каждого диагностического инструмента ADT вызывает на D-Bus метод ''List'', чтобы получить список всех возможных тестов.
+# ADT запускает через D-Bus метод ''Run'', передав ему в качестве параметра имя теста.
+# По коду возврата ADT получает информацию об успешном/не успешном прохождении теста, а из данных, полученных из stderr и stdout формирует журнал выполнения теста
+
+= Ссылки =
+
+#[[Руководство пользователя ADT]]
+#[[Руководство администратора ADT]]
+#[[Пример создания диагностического инструмента для ADT]]
+#[https://gitlab.basealt.space/alt/diag-example Шаблон примера инструмента диагностики]
+#[https://gitlab.basealt.space/alt/alterator-entry/-/blob/master/doc/README.md Спецификация]
+
+*Статья в журнале [[http://samag.ru/archive/article/4906 "Системный администратор"]]
+
+= Название инструмента диагностики =
+Называть инструмент диагностики необходимо согласно принятому шаблону:
+
+'''''diag-'''функционал-инструмента''
+
+Слова в инструменте разделяются дефисом <code>-</code>  и начинаются с маленькой буквы.
+
+Примеры:
+
+* diag-domain-client
+* diag-domain-pre-client
+* diag-domain-controller
+* diag-domain
+* diag-domain-controller-pre-create
+* diag-domain-controller-pre-join
+
+* diag-network-client
+* diag-network-internet
+* diag-storage-system
+* diag-storage-fs
+* diag-storage-raid
+* diag-storage-disk
+* diag-security
+* diag-seсurity-selinux
+* diag-timedate
+
+= Список основных диагностических инструментов =
+#[https://intranet.altlinux.ru/Инфраструктурные_решения/domain-client-diag '''Диагностика клиента в домене'''] ([https://gitea.basealt.ru/saratov/diag-domain-client diag-domain-client]) (программа в разработке)
+#[[Инфраструктурные решения/Проекты/ADT/diag-disks|Диагностика состояния жестких дисков/RAID]] (требуется аналитика)
+#[https://intranet.altlinux.ru/Инфраструктурные_решения/Проекты/ADT/diag-network '''Диагностика интернет-соединения/сети'''] ([https://gitlab.basealt.space/alt/diag-network diag-network]) (программа в разработке)
+#[https://intranet.altlinux.ru/Инфраструктурные_решения/Проекты/ADT/dc-preinstall-diag Диагностика предусловий к разворачиванию контроллера домена] (требуется аналитика)
+#[https://intranet.altlinux.ru/Инфраструктурные_решения/Проекты/ADT/SambaDC-diag Диагностика контроллера домена SambaDC] ([https://github.com/altlinuxteam/alterator-diag-domain-controller alterator-diag-domain-controller]) (программа в разработке; [https://my.basealt.space/issues/142815 redmine - 142815])
+#[https://intranet.altlinux.ru/Инфраструктурные_решения/Проекты/ADT/SambaAD-diag Диагностика домена SambaAD]
+#Диагностика сервера служб (требуется аналитика)
+#[https://intranet.altlinux.ru/Инфраструктурные_решения/Проекты/ADT/gp-client-diag '''Диагностика групповых политик на клиенте'''] ([https://github.com/abramovav64/gp-client-diag/tree/master github]) (программа в разработке)
+#Диагностика ядра (требуется аналитика)
+## Загруженные модули ядра lsmod
+#[https://intranet.altlinux.ru/Инфраструктурные_решения/Проекты/ADT/time-diag Диагностика времени клиента/сервера] (требуется аналитика)
+# Проверка возможности выполнения dist-upgrade ([[ Инфраструктурные_решения/dist-upgrade-diag | dist-upgrade-diag]], требуется аналитика)
+
+=========================================================
+Диагностический инструмент для Alt-dignostic-tool состоит как минимум из трех файлов:
+
+==Исполняемый файл==
+
+Может быть как бинарным, так и текстовым (написанным на интерпретируемом языке). Должен поддерживать запуск со следующими опциями:
+*	-h, --help      выводит справку
+*	-V, --version      выводит версию
+*	-l, --list     выводит список возможных тестов
+*   -r, --report   создает файл с отчетом. Имя файла будет иметь вид: <имя инструмента>_дата_.zip
+Так же в качестве параметра должен принимать имя теста, который требуется выполнить. При успешном завершении теста исполняемый файл должен завершиться с кодом возврата 0. При не успешном завершении теста - с кодом возврата отличным от 0.
+
+==Файлы .backend и .alterator==
+ 
+С точки зрения alterator-browser диагностический инструмент является объектом типа "diag1" и описывается файлами .backend  и .alterator. Эти файлы являются текстовыми и представляет описание в виде секций. Имеет следующий синтаксис:
+<pre>
+[имя секции1]
+Поле1 = значение
+Поле2 = значение
+ПолеN = значение
+
+[имя секции2]
+Поле1 = значение
+Поле2 = значение
+ПолеN = значение
+
+[имя секциN]
+Поле1 = значение
+Поле2 = значение
+ПолеN = значение
+</pre>
+*	Все поля чувствительны к регистру и начинаются с большой буквы.
+*	Перед и после знака <code>=</code> пробелы. (обязательны? )
+*	Значения полей указываются без ковычек.
+*	Значения могут содержать пробелы
+*	Если строка начинается с <code>#</code>, то она считается комментарием и при чтении информации из файла игнорируется.
+
+Файлы .alterator хранятся в каталоге <code>/usr/share/alterator/objects/%name/</code>, где <code>name</code> - имя соответствующего диагностического инструмента.
+Файлы .backend хранятся в каталоге <code>/etc/alterator/backends/</code>
+
+
+=== Файл .backend===
+
+файл .backend описывает объект типа Backend и содержит 4 секции:
+
+*	[Alterator Entry] - описывает информацию об объекте и содержит следующие поля:
+** Type - содержит тип метода. Всегда имеет значение <code>Backend</code>
+** Module - всегда <code>executor</code>
+** Name - идентификатор инструмента (имя)
+** Interface - идентификатор интерфейса (описанного в файле .alterator)
+*	[Info] описывает метод Info и содержит следующие поля:
+** execute - в качестве параметра необходимо передать команду, выводящую содержимое файла .alterator (cat <путь к файлу>)
+** stdout_bytes - всегда <code>enabled</code>
+** thread_limit - всегда <code>3</code>
+** action_id - содержит идентификатор метода. Всегда имеет значение Info
+*	[Run] описывает метод Run и содержит следующие поля:
+** execute - содержит строку для запуска тестов вида <code><путь к исполняемому файлу> {param}</code>
+** stdout_signal_name - всегда <code>diag1_stdout_signal</code>
+** stderr_signal_name - всегда <code>diag1_stderr_signal</code>
+** action_id - содержит идентификатор метода. Всегда имеет значение <code>Run</code>
+*	[List] описывает метод List и содержит следующие поля:
+** execute - содержит команду для вывода списка всех возможных тестов в виде <code><путь к исполняемому файлу> -l</code>
+** stdout_strings - всегда <code>enabled</code>
+** action_id - содержит идентификатор метода. Всегда имеет значение <code>List</code>
+* [Report]
+** execute = содержит команду для создания отчета в виде <code><путь к исполняемому файлу> -R</code>
+** stdout_bytes = enabled
+** action_id = Report
+Пример файла:
+<pre>
+[Alterator Entry]
+Type = Backend
+Module = executor
+Name = example_tool
+Interface = diag1
+
+[Info]
+execute = cat /usr/share/alterator/objects/adt-tool-example/adt-example.alterator
+stdout_bytes = enabled
+thread_limit = 3
+action_id = Info
+
+[Run]
+execute = /usr/lib/adt-tool-example/adt-tool-example {param}
+stdout_signal_name = diag1_stdout_signal
+stderr_signal_name = diag1_stderr_signal
+action_id = Run
+
+[List]
+execute = /usr/lib/adt-tool-example/adt-tool-example -l
+stdout_strings = enabled
+action_id = List
+
+[Report]
+execute = /usr/lib/adt-test-tools/adt-test-tool -r
+stdout_bytes = enabled
+action_id = Report
+</pre>
+
+
+https://gitlab.basealt.space/alt/alterator-manager/-/blob/master/docs/README-ru.md?ref_type=heads
+
+===файл .alterator===
+Хранит в себе информацию для GUI. Содержит секции [Alterator Entry] и секции, описывающие варианты тестирования:
+
+* [Alterator Entry]
+** Type
+** Name - идентификатор 
+** Name[локаль] - имя инструмента, выводящиеся в GUI с использованием интерфейса с использованием указанной в скобках локали
+** Comment - описание инструмента
+** Comment[локаль] - описание, выводящиеся в GUI с использованием интерфейса с использованием указанной в скобках локали
+** Icon - имя файла с иконкой
+** ReportSuffix - суффикс файла с отчетом. Этот файл будет создаваться при вызове метода <code>Report</code>секции, описывающие варианты тестирования имеют следующий вид:
+* [Название секции соответствует названию теста]
+** Name - идентификатор 
+** Name[локаль] - имя теста, выводящиеся в GUI с использованием интерфейса с использованием указанной в скобках локали
+** Comment - описание теста
+** Comment[локаль] - описание теста, выводящиеся в GUI с использованием интерфейса с использованием указанной в скобках локали
+Пример:
+<pre>
+[Alterator Entry]
+Name=example_tool
+Name[ru_RU]=пример диагностического инструмента 
+Name[en_EN]=example tool 
+
+Comment=example tool default Comment
+Comment[ru_RU]=описание примера диагностического инструмента
+Comment[en_EN]=Comment of example diagnostic tool
+
+ReportSuffix=zip
+Icon=system-run
+
+[test1]
+Name=test1
+Name[ru_RU]=тест1 примера диагностического инструмента
+Name[en_US]=test1 of example diagnostic tool
+Comment=default Comment of test 1 in example diagnostic tool
+Comment[ru_RU]=описание теста 1 примера диагностического инструмента
+Comment[en_US]=default Comment of test 1 in example diagnostic tool
+
+[test2]
+Name=test2
+Name[ru_RU]=тест2 примера диагностического инструмента
+Name[en_US]=test2 of example tool
+Comment=default Comment of test 2 in example diagnostic tool
+Comment[ru_RU]=описание теста 2 примера диагностического инструмента
+Comment[en_US]=default Comment of test 2 in example diagnostic tool
+
+[test3]
+Name=test3
+Name[ru_RU]=тест3 примера диагностического инструмента
+Name[en_US]=test3 of example diagnistic tool
+Comment=default Comment of test 3 in example diagnostic tool
+Comment[ru_RU]=описание теста 3 примера диагностического инструмента
+Comment[en_US]=default Comment of test 3 in example diagnostic tool
+</pre>
+
+=========================================================
