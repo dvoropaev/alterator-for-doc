@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Глава 1. Общая архитектура</title>
+</head>
+<body>
+  <nav><a href="index.html">На главную</a></nav>
+  <h1>Глава 1. Общая архитектура</h1>
+  <p>Alterator — платформа для описания системных сущностей (сервисов, компонентов, диагностик) в формате Alterator Entry и управления ими через D-Bus-менеджер. Стек включает менеджер процессов, спецификацию метаданных, GUI и вспомогательные утилиты.</p>
+  <h2>Ключевые понятия</h2>
+  <ul>
+    <li><strong>Alterator Entry</strong> — файл в формате TOML, описывающий сущность (service, backend, component и др.). Спецификация представлена в <a href="../alterator-entry/doc/README.md">alterator-entry/doc/README.md</a>.</li>
+    <li><strong>Alterator Manager</strong> — системная служба, которая загружает backend-файлы, экспортирует D-Bus-дерево и делегирует вызовы в модули. Основная документация находится в <a href="../alterator-manager/docs/README-ru.md">alterator-manager/docs/README-ru.md</a>.</li>
+    <li><strong>Модули</strong> — динамические библиотеки, расширяющие менеджер (executor, remote и др.). Они размещаются в каталоге модулей и подключаются через <code>alterator_manager_modules.c</code>.</li>
+    <li><strong>Интерфейсы</strong> — DBus-интерфейсы (service1, diag1, manager и др.), описанные XML-файлами в пакетах (например, <a href="../alterator-interface-service/org.altlinux.alterator.service1.xml">org.altlinux.alterator.service1.xml</a>).</li>
+    <li><strong>Helper-скрипты</strong> — утилиты, реализующие развёртывание/настройку сервисов (см. <a href="../alterator-test-services/test-services-helper">alterator-test-services/test-services-helper</a>).</li>
+  </ul>
+  <h2>Слоистая модель</h2>
+  <ol>
+    <li><strong>Уровень описаний</strong>. Содержит наборы Entry-файлов для сервисов (<code>.service</code>), backend-интерфейсов (<code>.backend</code>), компонентов, диагностик. Форматы нормируются схемами из каталога <a href="../alterator-entry/schemas">alterator-entry/schemas</a>.</li>
+    <li><strong>Уровень менеджера</strong>. Демон <code>alterator-manager</code> читает backend-файлы, регистрирует объекты и следит за изменениями (см. функции в <a href="../alterator-manager/alterator_manager_backends.c">alterator_manager_backends.c</a> и <a href="../alterator-manager/alterator_manager_backend_monitor.c">alterator_manager_backend_monitor.c</a>).</li>
+    <li><strong>Уровень модулей</strong>. Модули предоставляют vtable методов и реализацию логики (например, executor запускает команды, remote строит ssh-туннели). Менеджер загружает их динамически через код в <a href="../alterator-manager/alterator_manager_modules.c">alterator_manager_modules.c</a>.</li>
+    <li><strong>Уровень прикладных сервисов</strong>. Сервисы ALT Services описываются Entry-файлами и реализуются helper-скриптами (пример в <a href="../alterator-service-chrony/service-chrony.backend">service-chrony.backend</a> и <a href="../alterator-service-chrony/service-chrony/service-chrony">service-chrony/service-chrony</a>).</li>
+    <li><strong>Пользовательские интерфейсы</strong>. GUI (alterator-manager-services) и CLI (alteratorctl) используют D-Bus-интерфейсы и отображают информацию из менеджера (см. <a href="../alterator-manager-servises.wiki">alterator-manager-servises.wiki</a> и <a href="../alteratorctl/main.c">alteratorctl/main.c</a>).</li>
+  </ol>
+  <h2>Главные потоки данных</h2>
+  <ul>
+    <li><em>Описание → Менеджер</em>: при старте менеджер сканирует <code>/usr/share/alterator/backends</code> и <code>/etc/alterator/backends</code>, парсит TOML-описания и загружает их в память. Разбор реализован функциями <code>read_backend_file_names</code> и <code>save_methods_environment</code> в <a href="../alterator-manager/alterator_manager_backends.c">alterator_manager_backends.c</a>.</li>
+    <li><em>Менеджер → Модули</em>: во время вызова метода менеджер извлекает модуль и вызывает зарегистрированную vtable. Модуль executor читает поле <code>execute</code> и запускает внешнюю программу (описано в разделе «executor» файла <a href="../alterator-manager/docs/README-ru.md">README-ru.md</a>).</li>
+    <li><em>Сервис → Пользователь</em>: helper возвращает код и stdout/строки. Эти данные передаются либо как результат вызова, либо через сигналы, имена которых перечислены в разделе «Сигналы» спецификации интерфейса service (<a href="../alterator-interface-service/doc/README.md">alterator-interface-service/doc/README.md</a>).</li>
+    <li><em>Конфигурация → Проверка</em>: Alterator Entry проверяется по JSON Schema с помощью <code>alterator-entry validate</code> (см. <a href="../alterator-entry/scripts/alterator-entry">scripts/alterator-entry</a> и функции в <a href="../alterator-entry/alterator_entry/alterator_entry.py">alterator_entry.py</a>).</li>
+  </ul>
+  <h2>Роли компонентов</h2>
+  <dl>
+    <dt>alterator-manager</dt>
+    <dd>Запускается systemd-юнитом <a href="../alterator-manager/alterator-manager.service">alterator-manager.service</a>, регистрирует имя <code>org.altlinux.alterator</code> и предоставляет корневой интерфейс <code>org.altlinux.alterator.manager</code> (<a href="../alterator-manager/alterator_manager_default_interfaces.c">alterator_manager_default_interfaces.c</a>).</dd>
+    <dt>alterator-entry</dt>
+    <dd>Библиотека и CLI для работы с Entry-файлами: чтение полей, валидация, извлечение пакетов из изданий (<a href="../alterator-entry/scripts/editions2packages">scripts/editions2packages</a>).</dd>
+    <dt>alterator-interface-service</dt>
+    <dd>Описывает D-Bus-интерфейс сервисов и политику безопасности (<a href="../alterator-interface-service/doc/README.md">doc/README.md</a>, <a href="../alterator-interface-service/org.altlinux.alterator.service1.policy">org.altlinux.alterator.service1.policy</a>).</dd>
+    <dt>alterator-manager-services</dt>
+    <dd>Графический фронтенд, представляющий список сервисов и кнопки управления, как описано в <a href="../alterator-manager-servises.wiki">alterator-manager-servises.wiki</a>.</dd>
+    <dt>alteratorctl</dt>
+    <dd>Консольная утилита, подключающаяся к менеджеру и предоставляющая команды управления (инициализация модулей показана в <a href="../alteratorctl/main.c">alteratorctl/main.c</a>).</dd>
+  </dl>
+  <p>В следующих главах рассматриваются форматы описаний, работа менеджера, устройство модулей и подход к созданию сервисов.</p>
+</body>
+</html>

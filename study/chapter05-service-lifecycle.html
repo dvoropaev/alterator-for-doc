@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Глава 5. Жизненный цикл сервиса</title>
+</head>
+<body>
+  <nav><a href="index.html">На главную</a> · <a href="chapter04-modules-and-backends.html">Предыдущая глава</a></nav>
+  <h1>Глава 5. Жизненный цикл сервиса</h1>
+  <p>Сервис Alterator описывается тремя слоями: Entry-файл типа <code>service</code>, backend-интерфейс <code>service1</code> и helper-утилита. Эта глава показывает, как данные проходят от описания до выполнения команд.</p>
+  <h2>Сущность service</h2>
+  <p>Структура <code>.service</code> определяется спецификацией (<a href="../interface-service.wiki">interface-service.wiki</a> и <a href="../alterator-interface-service/doc/README.md">alterator-interface-service/doc/README.md</a>). В файле задаются:</p>
+  <ul>
+    <li><code>type = "Service"</code>, <code>name</code>, <code>category</code>, <code>display_name.*</code>, <code>comment.*</code>.</li>
+    <li>Флаги <code>enable_force_deploy</code>, <code>no_default_diag</code> (если диагностика не нужна).</li>
+    <li>Секции <code>[parameters.*]</code>, <code>[types.*]</code>, <code>[resources.*]</code>, <code>[services.*]</code> (<a href="../alterator-manager-servises.wiki">alterator-manager-servises.wiki</a>).</li>
+    <li>Привязки к diag-инструментам через <code>[diag_tools]</code> (<a href="../alterator-test-services/test_service1/test_service1.service">пример test_service1</a>).</li>
+  </ul>
+  <p>Контексты параметров определяют, в какие методы backend они передаются: <code>deploy</code>, <code>configure</code>, <code>status</code>, <code>backup</code>, <code>restore</code>, <code>undeploy</code>, <code>diag</code> (<a href="../interface-service.wiki">interface-service.wiki</a>).</p>
+  <h2>Backend интерфейса service1</h2>
+  <p>Backend-файл связывает Entry и helper (см. <a href="../alterator-service-chrony/service-chrony.backend">service-chrony.backend</a> и <a href="../alterator-test-services/test-service.backend.template">шаблон</a>). Методы:</p>
+  <ul>
+    <li><code>Info</code> — возвращает содержимое <code>.service</code> файла (<code>stdout_bytes = true</code>).</li>
+    <li><code>Deploy</code>, <code>Undeploy</code>, <code>Configure</code> — вызывают helper с режимами <code>-d</code>, <code>-u</code>, <code>-c</code>, передавая параметры в stdin.</li>
+    <li><code>Start</code>, <code>Stop</code> — запускают или останавливают systemd-юниты.</li>
+    <li><code>Backup</code>, <code>Restore</code> — управляют резервным копированием.</li>
+    <li><code>Status</code> — выдаёт текущее состояние (байтовый поток или строки).</li>
+  </ul>
+  <p>Сигналы <code>service_stdout_signal</code> и <code>service_stderr_signal</code> транслируют ход операций (<a href="../alterator-interface-service/doc/README.md">README</a>).</p>
+  <h2>Helper-утилита</h2>
+  <p>Helper реализует реальную логику сервиса. В тестовом наборе <a href="../alterator-test-services/test-services-helper">test-services-helper</a> используются опции:</p>
+  <ul>
+    <li><code>--deploy</code>, <code>--undeploy</code>, <code>--configure</code>, <code>--start</code>, <code>--stop</code>, <code>--status</code>, <code>--backup</code>, <code>--restore</code>.</li>
+    <li><code>--service</code> для выбора Entry-файла и каталога кэша.</li>
+    <li><code>--input</code> или stdin для получения JSON с параметрами.</li>
+  </ul>
+  <p>В режиме <code>deploy</code> helper валидирует параметры через JSON Schema, сохраняет конфигурацию в <code>/etc/test-services/&lt;service&gt;.conf</code>, создаёт отметку развёртывания и формирует вывод (<a href="../alterator-test-services/test-services-helper">test-services-helper</a>).</p>
+  <p><code>status</code> читает конфигурацию, фильтрует значения по контексту с помощью <code>taplo</code>, и возвращает JSON; коды возврата 127/128 сигнализируют о развёрнутом состоянии (<a href="../alterator-test-services/test-services-helper">скрипт</a>).</p>
+  <p>Боевые сервисы, такие как Chrony, используют отдельный helper (<a href="../alterator-service-chrony/service-chrony/service-chrony">service-chrony</a>), который управляет конфигурацией и systemd-юнитами chronyd.</p>
+  <h2>Диагностика</h2>
+  <p>Диагностические описания (<code>.diag</code>) содержат наборы тестов. Пример — <a href="../alterator-test-services/test_service1/test_service1.diag">test_service1.diag</a>. Backend <code>diag1</code> запускает <a href="../alterator-test-services/diag-helper">diag-helper</a>, который умеет перечислять тесты (<code>-l</code>), выполнять и формировать отчёты (<code>-r</code>) (<a href="../alterator-test-services/test-service-diag.backend.template">шаблон</a>).</p>
+  <h2>Интерфейс пользователя</h2>
+  <p>GUI модуль <a href="../alterator-manager-servises.wiki">alterator-manager-services</a> отображает:</p>
+  <ul>
+    <li>Список сервисов в левой панели, статус и параметры — в правой.</li>
+    <li>Кнопки «Развернуть/Отменить», «Запустить/Остановить», «Настроить».</li>
+    <li>Вкладки «Параметры» и «Ресурсы», заполняемые на основе <code>.service</code> файла.</li>
+  </ul>
+  <p>При развертывании показывается диалог конфигурации и окно логов. Ресурсы (файлы, каталоги, юниты, порты) берутся из секции <code>[resources]</code> и используются для выявления конфликтов (<a href="../alterator-manager-servises.wiki">wiki</a>).</p>
+  <h2>Типовой сценарий</h2>
+  <ol>
+    <li>Администратор выбирает сервис в GUI/CLI. Клиент вызывает <code>Info</code>, получает Entry, выводит параметры.</li>
+    <li>Пользователь вводит значения. Клиент формирует JSON и вызывает метод <code>Deploy</code> интерфейса service1.</li>
+    <li>Менеджер передаёт JSON helper-утилите. Helper проверяет схему, применяет настройки, обновляет ресурсы.</li>
+    <li>Helper выводит ход операции в stdout/stderr. Менеджер пересылает данные клиенту через сигналы.</li>
+    <li>После завершения helper возвращает код: <code>0</code> — успех, <code>&gt;0</code> — ошибка. Клиент отображает лог и статус.</li>
+    <li>Дальнейшее управление (configure/start/stop/backup/restore) повторяет те же шаги, используя свои контексты.</li>
+  </ol>
+  <p>Такой конвейер одинаков для тестовых и боевых сервисов. Различаются только параметры и реализующий helper.</p>
+</body>
+</html>
