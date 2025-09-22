@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<title>Глава 6. Карта каталогов проекта</title>
+</head>
+<body>
+<h1>Глава 6. Карта каталогов проекта</h1>
+<p>Каталоги репозитория сгруппированы по функциональным слоям: ядро менеджера, спецификация сущностей, сервисы, тестовые материалы и инструменты. Ниже приведена структура с кратким описанием назначения.</p>
+<h2>6.1. Основные компоненты</h2>
+<ul>
+<li><code>alterator-manager/</code> — исходный код демона alterator-manager, включая C-файлы, polkit-политику, systemd-юниты и документацию.<br />Источник: <a href="../alterator-manager/docs/README-ru.md">alterator-manager/docs/README-ru.md</a>.</li>
+<li><code>alterator-entry/</code> — Python-модуль для работы с файлами Alterator Entry, json-schema схемы, примеры и документация спецификации.<br />Источники: <a href="../alterator-entry/doc/README.md">alterator-entry/doc/README.md</a>, <a href="../alterator-entry/alterator_entry/alterator_entry.py">alterator-entry/alterator_entry/alterator_entry.py</a>.</li>
+<li><code>alterator-interface-service/</code> — спецификация интерфейса <code>service1</code> и артефакты D-Bus (XML, polkit).<br />Источник: <a href="../alterator-interface-service/doc/README.md">alterator-interface-service/doc/README.md</a>.</li>
+<li><code>alteratorctl/</code> — исходный код консольной утилиты управления, включающий C-модули, autocompletion и спецификацию RPM.<br />Источники: <a href="../alteratorctl/alteratorctl.usage">alteratorctl/alteratorctl.usage</a>, <a href="../alteratorctl/alteratorctlpackagesmodule.c">alteratorctl/alteratorctlpackagesmodule.c</a>.</li>
+</ul>
+<h2>6.2. Сервисы и примеры</h2>
+<ul>
+<li><code>alterator-service-chrony/</code>, <code>alterator-service-*</code> — реальные сервисы с файлами <code>.service</code>, <code>.backend</code> и исполняемыми помощниками.<br />Источник: <a href="../alterator-service-chrony/service-chrony.service">alterator-service-chrony/service-chrony.service</a>.</li>
+<li><code>alterator-test-services/</code> — тестовые сервисы, backend-шаблоны, helper-скрипты и генератор схем для обучения и отладки.<br />Источники: <a href="../alterator-test-services/test_service1/test_service1.service">alterator-test-services/test_service1/test_service1.service</a>, <a href="../alterator-test-services/test-services-helper">alterator-test-services/test-services-helper</a>, <a href="../alterator-test-services/schema-generator">alterator-test-services/schema-generator</a>.</li>
+<li><code>alterator-manager-servises.wiki</code>, <code>interface-service.wiki</code> — пользовательская документация по GUI-модулю и интерфейсу сервисов.<br />Источники: <a href="../alterator-manager-servises.wiki">alterator-manager-servises.wiki</a>, <a href="../interface-service.wiki">interface-service.wiki</a>.</li>
+<li><code>examples.txt</code> — примеры стиля документации (используется как ориентир для оформления текстов).<br />Источник: <a href="../examples.txt">examples.txt</a>.</li>
+</ul>
+<h2>6.3. Backend-пакеты и вспомогательные файлы</h2>
+<ul>
+<li><code>alterator-backend-packages/</code> — набор backend-файлов и скриптов для управления пакетами (APT, RPM, репозитории).<br />Источники: <a href="../alterator-backend-packages/apt/apt.backend">alterator-backend-packages/apt/apt.backend</a>, <a href="../alterator-backend-packages/apt/apt-wrapper">alterator-backend-packages/apt/apt-wrapper</a>, <a href="../alterator-backend-packages/rpm/rpm-wrapper">alterator-backend-packages/rpm/rpm-wrapper</a>.</li>
+<li><code>alterator-entry/examples/</code> — шаблоны сущностей (applications, services) для ускорения разработки.<br />Источник: <a href="../alterator-entry/examples">alterator-entry/examples</a>.</li>
+<li><code>alterator-manager/docs/</code> и <code>alterator-interface-service/doc/</code> содержат README с подробным описанием назначения и форматов.<br />Источники: <a href="../alterator-manager/docs/README-ru.md">alterator-manager/docs/README-ru.md</a>, <a href="../alterator-interface-service/doc/README.md">alterator-interface-service/doc/README.md</a>.</li>
+<li><code>AGENTS.md</code>, <code>apt1.md</code> — служебные файлы с указаниями по стилю и дополнительными сведениями для документирования.<br />Источник: <a href="../AGENTS.md">AGENTS.md</a>.</li>
+</ul>
+<h2>6.4. Сборка и лицензии</h2>
+<ul>
+<li><code>alterator-*/LICENSE</code>, <code>COPYING</code> — лицензии GPL и сопутствующие условия распространения.<br />Источник: <a href="../alterator-entry/COPYING">alterator-entry/COPYING</a>.</li>
+<li><code>*.spec</code>, <code>pyproject.toml</code>, <code>setup.py</code> — файлы сборки RPM или Python-пакетов.<br />Источники: <a href="../alterator-entry/pyproject.toml">alterator-entry/pyproject.toml</a>, <a href="../alterator-manager/alterator-manager.spec">alterator-manager/alterator-manager.spec</a>.</li>
+<li><code>scripts/</code> и <code>schemas/</code> в каждом пакете содержат вспомогательные утилиты и схемы валидации.<br />Источник: <a href="../alterator-entry/schemas/service.schema.json">alterator-entry/schemas/service.schema.json</a>.</li>
+</ul>
+<p>Эта карта каталогов помогает ориентироваться в репозитории и быстро находить исходники ядра, описания сервисов и инструменты поддержки.</p>
+</body>
+</html>

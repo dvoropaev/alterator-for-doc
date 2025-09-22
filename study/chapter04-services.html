@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<title>Глава 4. Сервисы и интерфейс управления</title>
+</head>
+<body>
+<h1>Глава 4. Сервисы и интерфейс управления</h1>
+<p>Сервис Alterator — это набор описаний и сценариев, обеспечивающих развёртывание, настройку и эксплуатацию конкретной функции (например, Chrony, Samba, тестовый сервис). Управление выполняется через D-Bus интерфейс <code>org.altlinux.alterator.service1</code> и GUI-модуль alterator-manager-services.</p>
+<h2>4.1. Интерфейс service1</h2>
+<ul>
+<li>Методы Info/Deploy/Start/Stop/Configure/Undeploy/Backup/Restore/Status определены в спецификации интерфейса и возвращают коды завершения и полезные данные (stdout_bytes, stdout_strings).<br />Источники: <a href="../alterator-interface-service/doc/README.md">alterator-interface-service/doc/README.md</a>, <a href="../interface-service.wiki">interface-service.wiki</a>.</li>
+<li>Сигналы <code>service_stdout_signal</code> и <code>service_stderr_signal</code> транслируют поток вывода процессов, связанных с операциями сервиса.<br />Источник: <a href="../alterator-interface-service/doc/README.md">alterator-interface-service/doc/README.md</a>.</li>
+<li>GUI-модуль отображает список сервисов слева и подробности справа, предоставляя кнопки «Развернуть/Отменить», «Запустить/Остановить», «Настроить», а также вкладки «Параметры» и «Ресурсы».<br />Источник: <a href="../alterator-manager-servises.wiki">alterator-manager-servises.wiki</a>.</li>
+</ul>
+<h2>4.2. Файл <code>.service</code></h2>
+<ul>
+<li>Глобальные поля включают <code>type = "Service"</code>, имя, категорию, локализованные <code>display_name</code> и комментарии.<br />Источник: <a href="../alterator-manager-servises.wiki">alterator-manager-servises.wiki</a>.</li>
+<li>Параметры описываются в секции <code>[parameters.*]</code> с типами <code>string</code>, <code>integer</code>, <code>boolean</code>, <code>enum</code>, <code>array</code>, <code>object</code>, списком контекстов и правилами обязательности.<br />Источники: <a href="../alterator-manager-servises.wiki">alterator-manager-servises.wiki</a>, <a href="../alterator-test-services/test_service1/test_service1.service">alterator-test-services/test_service1/test_service1.service</a>.</li>
+<li>Ресурсы описываются в секции <code>[resources.*]</code> и фиксируют используемые файлы, каталоги, порты и systemd-юниты.<br />Источник: <a href="../alterator-manager-servises.wiki">alterator-manager-servises.wiki</a>.</li>
+<li>Сложные структуры допускают прототипы объектов и массивы; пример — описания <code>ntpServersSettings</code> и <code>ntpPoolsSettings</code> в Chrony.<br />Источник: <a href="../alterator-service-chrony/service-chrony.service">alterator-service-chrony/service-chrony.service</a>.</li>
+</ul>
+<h2>4.3. Backend сервиса</h2>
+<ul>
+<li>Backend связывает сервис с интерфейсом <code>service1</code>, выбирает модуль (часто <code>executor</code>) и задаёт команды для операций.<br />Источник: <a href="../alterator-service-chrony/service-chrony.backend">alterator-service-chrony/service-chrony.backend</a>.</li>
+<li>Метод Info возвращает содержимое файла <code>.service</code> для отображения параметров в клиенте; действия с параметрами используют <code>stdin_string</code> или <code>stdout_bytes</code> для передачи данных.<br />Источник: <a href="../alterator-service-chrony/service-chrony.backend">alterator-service-chrony/service-chrony.backend</a>.</li>
+<li>Шаблон тестового backend показывает использование утилиты <code>test-services-helper</code> для всех операций и настройку сигналов вывода.<br />Источник: <a href="../alterator-test-services/test-service.backend.template">alterator-test-services/test-service.backend.template</a>.</li>
+<li>Диагностический backend (<code>diag1</code>) определяет методы Run/List/Report и указывает вспомогательный скрипт <code>diag-helper</code>.<br />Источник: <a href="../alterator-test-services/test-service-diag.backend.template">alterator-test-services/test-service-diag.backend.template</a>.</li>
+</ul>
+<h2>4.4. Исполняемые помощники</h2>
+<ul>
+<li><code>test-services-helper</code> управляет состоянием тестовых сервисов: валидирует JSON через <code>jsonschema</code>, сохраняет конфигурацию и управляет файлами состояния (deployed/started).<br />Источник: <a href="../alterator-test-services/test-services-helper">alterator-test-services/test-services-helper</a>.</li>
+<li><code>diag-helper</code> выполняет тесты и формирует отчёт; поддерживает команды <code>--list</code>, <code>--report</code>, <code>test1..test3</code>.<br />Источник: <a href="../alterator-test-services/diag-helper">alterator-test-services/diag-helper</a>.</li>
+<li>Сервис Chrony предоставляет одноимённый скрипт, который взаимодействует с systemd и конфигурационными файлами; backend передаёт строки параметров через stdin.<br />Источник: <a href="../alterator-service-chrony/service-chrony.backend">alterator-service-chrony/service-chrony.backend</a>.</li>
+</ul>
+<h2>4.5. Диагностика и интеграция</h2>
+<ul>
+<li>При наличии diag-интерфейса модуль alterator-manager-services показывает флаг диагностики и может запускать проверку перед деплоем.<br />Источник: <a href="../alterator-manager-servises.wiki">alterator-manager-servises.wiki</a>.</li>
+<li>Секция <code>[diag_tools.*]</code> внутри файла сервиса связывает сервис с диагностическими объектами на шине.<br />Источник: <a href="../alterator-test-services/test_service1/test_service1.service">alterator-test-services/test_service1/test_service1.service</a>.</li>
+<li>Результаты диагностики или статуса возвращаются в виде stdout_strings или stdout_bytes и отображаются в GUI вкладке «Статус».<br />Источники: <a href="../interface-service.wiki">interface-service.wiki</a>, <a href="../alterator-manager-servises.wiki">alterator-manager-servises.wiki</a>.</li>
+</ul>
+<h2>4.6. Практическая последовательность</h2>
+<ol>
+<li>Создать файл <code>.service</code> с параметрами, ресурсами и диагоналями (при необходимости).<br />Источники: <a href="../alterator-manager-servises.wiki">alterator-manager-servises.wiki</a>, <a href="../alterator-service-chrony/service-chrony.service">alterator-service-chrony/service-chrony.service</a>.</li>
+<li>Сгенерировать backend на основе шаблона или вручную, указав команды развертывания и сигналы.<br />Источники: <a href="../alterator-test-services/test-service.backend.template">alterator-test-services/test-service.backend.template</a>, <a href="../alterator-service-chrony/service-chrony.backend">alterator-service-chrony/service-chrony.backend</a>.</li>
+<li>Написать вспомогательный скрипт, который реализует операции (deploy/configure/start/stop и др.), и установить его в <code>/usr/lib/alterator</code> или соответствующий каталог пакета.<br />Источник: <a href="../alterator-test-services/test-services-helper">alterator-test-services/test-services-helper</a>.</li>
+<li>При необходимости оформить diag-интерфейс и добавить записи в секцию <code>diag_tools</code>.<br />Источник: <a href="../alterator-test-services/test-service-diag.backend.template">alterator-test-services/test-service-diag.backend.template</a>.</li>
+<li>Проверить сервис через интерфейс alterator-manager-services и убедиться в корректности статуса и логов.<br />Источник: <a href="../alterator-manager-servises.wiki">alterator-manager-servises.wiki</a>.</li>
+</ol>
+<p>Сервисы обеспечивают единый сценарий жизненного цикла: описание параметров, выполнение операций через backend, отображение состояния и диагностики в GUI.</p>
+</body>
+</html>

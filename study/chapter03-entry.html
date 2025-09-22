@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<title>Глава 3. Формат Alterator Entry и схемы</title>
+</head>
+<body>
+<h1>Глава 3. Формат Alterator Entry и схемы</h1>
+<p>Alterator Entry — стандартизированный формат описания сущностей Alterator на основе TOML. Файлы описывают приложения, категории, сервисы, backend-интерфейсы и другие типы объектов.</p>
+<h2>3.1. Общие требования</h2>
+<ul>
+<li>Файлы хранятся в UTF-8 и используют синтаксис TOML; группы обозначаются в квадратных скобках, записи — парами <code>Key = Value</code>.<br />Источник: <a href="../alterator-entry/doc/README.md">alterator-entry/doc/README.md</a>.</li>
+<li>Комментарии начинаются с <code>#</code> и должны сохраняться при чтении/записи.<br />Источник: <a href="../alterator-entry/doc/README.md">alterator-entry/doc/README.md</a>.</li>
+<li>Обязательна секция с именем сущности (например, <code>[Service]</code>, <code>[Backend]</code>); имена ключей регистрозависимы.<br />Источник: <a href="../alterator-entry/doc/README.md">alterator-entry/doc/README.md</a>.</li>
+<li>Пути размещения зависят от типа: системные файлы располагаются в <code>/usr/share/alterator/&lt;директория&gt;</code>, пользовательские — в <code>/etc/alterator/&lt;директория&gt;</code>.<br />Источник: <a href="../alterator-entry/doc/README.md">alterator-entry/doc/README.md</a>.</li>
+</ul>
+<h2>3.2. Именование и расширения</h2>
+<ul>
+<li>Имя файла заканчивается на суффикс типа: <code>.application</code>, <code>.backend</code>, <code>.service</code>, <code>.diag</code> и др.; для diagnostictool разрешены варианты <code>.diag</code> и <code>.diagnostictool</code>.<br />Источник: <a href="../alterator-entry/doc/README.md">alterator-entry/doc/README.md</a>.</li>
+<li>Backend-файлы в пользовательском режиме размещаются в подкаталоге <code>backends/user</code> с разделением по режимам <code>system</code>/<code>user</code>.<br />Источник: <a href="../alterator-entry/doc/README.md">alterator-entry/doc/README.md</a>.</li>
+</ul>
+<h2>3.3. Типы значений</h2>
+<ul>
+<li>Поддерживаются типы <code>string</code>, <code>localestring</code>, <code>iconstring</code>, <code>stringlist</code>, <code>command</code>, <code>boolean</code>, <code>numeric</code>.<br />Источник: <a href="../alterator-entry/doc/README.md">alterator-entry/doc/README.md</a>.</li>
+<li>Списки задаются через пробелы, строки локализации кодируются в UTF-8, команды передаются как строки оболочки.<br />Источник: <a href="../alterator-entry/doc/README.md">alterator-entry/doc/README.md</a>.</li>
+</ul>
+<h2>3.4. JSON Schema и валидация</h2>
+<ul>
+<li>Схемы расположены в <code>alterator-entry/schemas</code> и охватывают типы <code>application</code>, <code>backend</code>, <code>service</code>, <code>component</code>, <code>edition</code> и др.<br />Источник: <a href="../alterator-entry/schemas/service.schema.json">alterator-entry/schemas/service.schema.json</a>.</li>
+<li>Функция <code>validate()</code> из модуля <code>alterator_entry.py</code> определяет тип файла по полю <code>type</code>, подбирает schema-файл <code>&lt;type&gt;.schema.json</code> и запускает jsonschema.<br />Источник: <a href="../alterator-entry/alterator_entry/alterator_entry.py">alterator-entry/alterator_entry/alterator_entry.py</a>.</li>
+<li>При ошибке загрузки схемы или несоответствии данных возбуждается <code>ValidationError</code>; необрабатываемые ключи сохраняются без изменений.<br />Источники: <a href="../alterator-entry/doc/README.md">alterator-entry/doc/README.md</a>, <a href="../alterator-entry/alterator_entry/alterator_entry.py">alterator-entry/alterator_entry/alterator_entry.py</a>.</li>
+<li>Функция <code>get_field()</code> позволяет извлекать вложенные значения по шаблону с точками и возвращает строки, числа или списки; при отсутствии поля выбрасывается <code>FieldNotFoundError</code>.<br />Источник: <a href="../alterator-entry/alterator_entry/alterator_entry.py">alterator-entry/alterator_entry/alterator_entry.py</a>.</li>
+</ul>
+<h2>3.5. Сущность Service</h2>
+<ul>
+<li>Схема требует наличия <code>type = "Service"</code>, имени, локализованных заголовков, секции <code>parameters</code> и допускает описания ресурсов и диагностических инструментов.<br />Источник: <a href="../alterator-entry/schemas/service.schema.json">alterator-entry/schemas/service.schema.json</a>.</li>
+<li>Параметры описываются объектами с полем <code>context</code> (deploy/configure/status/backup/restore/diag/undeploy), типами (string/integer/boolean/enum/array/object) и опциями обязательности.<br />Источники: <a href="../alterator-entry/schemas/service.schema.json">alterator-entry/schemas/service.schema.json</a>, <a href="../alterator-service-chrony/service-chrony.service">alterator-service-chrony/service-chrony.service</a>.</li>
+<li>Ресурсы фиксируют файлы, каталоги, порты и systemd-юниты, поддерживая ссылки на параметры или явные значения.<br />Источник: <a href="../alterator-entry/schemas/service.schema.json">alterator-entry/schemas/service.schema.json</a>.</li>
+<li>Сложные параметры могут использовать тип <code>array</code> с прототипом объекта; пример реализации — массив <code>ntpServersSettings</code> в сервисе Chrony.<br />Источник: <a href="../alterator-service-chrony/service-chrony.service">alterator-service-chrony/service-chrony.service</a>.</li>
+</ul>
+<h2>3.6. Сущность Backend</h2>
+<ul>
+<li>Backend описывает интерфейс D-Bus: модуль, имя узла, имя интерфейса, лимит потоков и action ID для polkit.<br />Источник: <a href="../alterator-manager/docs/README-ru.md">alterator-manager/docs/README-ru.md</a>.</li>
+<li>Методы перечисляются в секции <code>[methods.method_name]</code>, где задаются команды для модуля (например, <code>execute</code> для executor) и сигналы вывода.<br />Источники: <a href="../alterator-manager/docs/README-ru.md">alterator-manager/docs/README-ru.md</a>, <a href="../alterator-backend-packages/apt/apt.backend">alterator-backend-packages/apt/apt.backend</a>.</li>
+<li>Окружение метода определяется подтаблицей <code>environment</code> с парами <code>VARIABLE = {}</code>; значения берутся из таблицы отправителя.<br />Источник: <a href="../alterator-manager/docs/README-ru.md">alterator-manager/docs/README-ru.md</a>.</li>
+</ul>
+<h2>3.7. Дополнительные сущности</h2>
+<ul>
+<li><code>component</code> и <code>edition</code> описывают наборы пакетов и их фильтрацию. Функции <code>extract_packages_from_component()</code> и <code>extract_packages_from_edition()</code> подбирают пакеты по архитектуре, окружению рабочего стола и языку.<br />Источник: <a href="../alterator-entry/alterator_entry/alterator_entry.py">alterator-entry/alterator_entry/alterator_entry.py</a>.</li>
+<li><code>diag</code> и <code>diagnostictool</code> используются для описания диагностических сценариев; примеры приведены в тестовых сервисах.<br />Источник: <a href="../alterator-test-services/test_service1/test_service1.diag">alterator-test-services/test_service1/test_service1.diag</a>.</li>
+<li><code>object</code> и <code>application</code> описывают интерфейсы пользовательских модулей и пунктов меню; структура аналогична Desktop Entry и расширяется локализованными полями.<br />Источник: <a href="../alterator-entry/doc/README.md">alterator-entry/doc/README.md</a>.</li>
+</ul>
+<h2>3.8. Практика ведения файлов</h2>
+<ul>
+<li>Рекомендуется группировать связанные параметры и добавлять комментарии для пояснения нестандартных полей; менеджер сохраняет неизвестные ключи.<br />Источник: <a href="../alterator-entry/doc/README.md">alterator-entry/doc/README.md</a>.</li>
+<li>Для сложных структур используйте шаблоны из <code>alterator-entry/examples</code> и тестовых сервисов, чтобы обеспечить совместимость с интерфейсом.<br />Источник: <a href="../alterator-service-chrony/service-chrony.service">alterator-service-chrony/service-chrony.service</a>.</li>
+<li>После изменений выполняйте <code>alterator_entry.validate</code> или встроенную проверку в CI, чтобы гарантировать соответствие JSON Schema.<br />Источник: <a href="../alterator-entry/alterator_entry/alterator_entry.py">alterator-entry/alterator_entry/alterator_entry.py</a>.</li>
+</ul>
+<p>Формат Alterator Entry обеспечивает единый способ описания сущностей и упрощает разработку интерфейсов и модулей.</p>
+</body>
+</html>

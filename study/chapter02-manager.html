@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<title>Глава 2. Alterator Manager и модули</title>
+</head>
+<body>
+<h1>Глава 2. Alterator Manager и модули</h1>
+<p>Alterator Manager — центральный демон, который публикует интерфейсы Alterator на D-Bus, выполняет методы backend-модулей и контролирует окружение отправителей.</p>
+<h2>2.1. Инициализация демона</h2>
+<ol>
+<li>Парсинг параметров запуска: ключи <code>--debug</code> и <code>--user</code> переключают уровень логирования и режим работы.<br />Источник: <a href="../alterator-manager/main.c">alterator-manager/main.c</a>.</li>
+<li>Загрузка backend-файлов и построение памяти <code>backends_data</code> из хеш-таблиц узлов, интерфейсов и методов.<br />Источники: <a href="../alterator-manager/main.c">alterator-manager/main.c</a>, <a href="../alterator-manager/alterator_manager_backends.c">alterator-manager/alterator_manager_backends.c</a>, <a href="../alterator-manager/docs/README-ru.md">alterator-manager/docs/README-ru.md</a>.</li>
+<li>Инициализация polkit (кроме пользовательского режима) и таблицы переменных окружения отправителей.<br />Источник: <a href="../alterator-manager/main.c">alterator-manager/main.c</a>.</li>
+<li>Подготовка данных менеджера (структура <code>ManagerData</code>) и регистрация модулей.<br />Источник: <a href="../alterator-manager/alterator_manager_data.c">alterator-manager/alterator_manager_data.c</a>.</li>
+<li>Запуск мониторинга backend-файлов и регистрация имени на шине D-Bus с использованием цикла GLib.<br />Источник: <a href="../alterator-manager/main.c">alterator-manager/main.c</a>.</li>
+</ol>
+<h2>2.2. Структуры хранения</h2>
+<p>Менеджер хранит описания интерфейсов в каскаде хеш-таблиц:</p>
+<ul>
+<li><code>backends_data</code> → узлы D-Bus (ключ — путь объекта).<br />Источник: <a href="../alterator-manager/docs/README-ru.md">alterator-manager/docs/README-ru.md</a>.</li>
+<li><code>interfaces</code> → интерфейсы узла (ключ — имя интерфейса, значение — <code>InterfaceObjectInfo</code> с модулем, лимитом потоков, introspection и таблицей методов).<br />Источник: <a href="../alterator-manager/docs/README-ru.md">alterator-manager/docs/README-ru.md</a>.</li>
+<li><code>methods</code> → методы интерфейса (значение — <code>MethodObjectInfo</code> с данными backend-файла и переменными окружения).<br />Источник: <a href="../alterator-manager/docs/README-ru.md">alterator-manager/docs/README-ru.md</a>.</li>
+<li>Отдельная таблица <code>sender_environment_data</code> хранит переменные окружения, заданные клиентами, и очищается по таймеру.<br />Источник: <a href="../alterator-manager/alterator_manager_sender_environment.c">alterator-manager/alterator_manager_sender_environment.c</a>.</li>
+</ul>
+<h2>2.3. Парсинг backend-файлов</h2>
+<ul>
+<li>Чтение директорий <code>/usr/share/alterator/backends</code>, <code>/etc/alterator/backends</code> (и пользовательских подкаталогов) выполняется функцией <code>read_backend_file_names</code> с фильтрацией по суффиксу <code>.backend</code>.<br />Источник: <a href="../alterator-manager/alterator_manager_backends.c">alterator-manager/alterator_manager_backends.c</a>.</li>
+<li>Менеджер проверяет корректность имён методов, параметров и action_id, запрещая недопустимые символы и слишком длинные строки.<br />Источник: <a href="../alterator-manager/alterator_manager_backends.c">alterator-manager/alterator_manager_backends.c</a>.</li>
+<li>При разборе методов формируются таблицы параметров и окружения; поддерживается флаг <code>stdout_bytes</code>, <code>stdout_strings</code>, имя сигналов для асинхронных операций.<br />Источник: <a href="../alterator-manager/docs/README-ru.md">alterator-manager/docs/README-ru.md</a>.</li>
+<li>Интроспекция интерфейсов сравнивается с шаблонами из <code>/usr/share/dbus-1/interfaces</code>, чтобы гарантировать соответствие D-Bus спецификациям.<br />Источник: <a href="../alterator-manager/alterator_manager_interface.c">alterator-manager/alterator_manager_interface.c</a>.</li>
+</ul>
+<h2>2.4. Динамические модули</h2>
+<ul>
+<li>Исполняемые модули располагаются в каталоге <code>/usr/lib/alterator/modules/</code> и подключаются через GLib Module API.<br />Источник: <a href="../alterator-manager/alterator_manager_modules.c">alterator-manager/alterator_manager_modules.c</a>.</li>
+<li>Каждый модуль обязан экспортировать функцию <code>alterator_module_init</code>, возвращающую <code>AlteratorModuleInterface</code> с методами <code>init</code>, <code>destroy</code>, <code>is_module_busy</code> и номером версии интерфейса.<br />Источник: <a href="../alterator-manager/alterator_manager_interface.c">alterator-manager/alterator_manager_interface.c</a>.</li>
+<li>При инициализации модулю передаётся структура <code>ManagerData</code>, содержащая ссылку на таблицу backend-описаний, политику polkit и режим работы.<br />Источник: <a href="../alterator-manager/alterator_manager_data.c">alterator-manager/alterator_manager_data.c</a>.</li>
+<li>Список модулей обновляется при старте путём обхода каталога; закрытие библиотек пока не выполняется, чтобы сохранить зарегистрированные vtable.<br />Источник: <a href="../alterator-manager/alterator_manager_modules.c">alterator-manager/alterator_manager_modules.c</a>.</li>
+</ul>
+<h2>2.5. Управление окружением отправителей</h2>
+<ul>
+<li>Таблица <code>sender_environment_data</code> индексируется уникальными именами на шине (например, <code>:1.951</code>) и хранит пары переменных окружения.<br />Источник: <a href="../alterator-manager/alterator_manager_sender_environment.c">alterator-manager/alterator_manager_sender_environment.c</a>.</li>
+<li>Менеджер отслеживает доступность <code>org.freedesktop.DBus</code> и периодически удаляет записи клиентов, которые отключились.<br />Источник: <a href="../alterator-manager/alterator_manager_sender_environment.c">alterator-manager/alterator_manager_sender_environment.c</a>.</li>
+<li>При вызове backend-методов значения подставляются из этой таблицы; если значение отсутствует, используются значения по умолчанию из backend-файла.<br />Источник: <a href="../alterator-manager/docs/README-ru.md">alterator-manager/docs/README-ru.md</a>.</li>
+</ul>
+<h2>2.6. Мониторинг backend-файлов</h2>
+<ul>
+<li>Менеджер создаёт мониторинг директорий <code>/usr/share/alterator/backends</code> и <code>/etc/alterator/backends</code> (system/user) через <code>GFileMonitor</code>.<br />Источник: <a href="../alterator-manager/alterator_manager_backend_monitor.c">alterator-manager/alterator_manager_backend_monitor.c</a>.</li>
+<li>При изменении файлов устанавливается флаг и основной цикл завершается, чтобы systemd перезапустил службу и перечитал конфигурацию.<br />Источник: <a href="../alterator-manager/alterator_manager_backend_monitor.c">alterator-manager/alterator_manager_backend_monitor.c</a>.</li>
+<li>Выход из цикла выполняется только когда ни один модуль не занят обработкой запросов (проверка <code>alterator_manager_interface_modules_are_busy()</code>).<br />Источник: <a href="../alterator-manager/alterator_manager_interface.c">alterator-manager/alterator_manager_interface.c</a>.</li>
+</ul>
+<h2>2.7. Политики безопасности</h2>
+<ul>
+<li>Файлы <code>org.altlinux.alterator.manager.policy</code> и <code>org.altlinux.alterator-manager.service</code> описывают правила полкита и systemd-юнит для демона.<br />Источник: <a href="../alterator-manager/org.altlinux.alterator.manager.policy">alterator-manager/org.altlinux.alterator.manager.policy</a>.</li>
+<li>Action ID для методов интерфейсов берутся из backend-файлов; если значение не задано, менеджер формирует идентификатор из имени интерфейса.<br />Источник: <a href="../alterator-manager/docs/README-ru.md">alterator-manager/docs/README-ru.md</a>.</li>
+</ul>
+<p>После освоения архитектуры менеджера можно проектировать собственные модули, следуя требованиям к интерфейсу и структуре данных.</p>
+</body>
+</html>
