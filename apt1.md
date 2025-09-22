@@ -19,7 +19,7 @@
 ## ApplyAsync
 
 - Назначение: вызывает helper /usr/lib/alterator-backend-packages/apt-wrapper apply … для установки и удаления пакетов с учётом списка исключений и приоритетов.
-- Параметры: принимает строки exclude_pkgnames и pkgnames; возвращает response. Пакеты на удаление помечаются суффиксом - в pkgnames.
+- Параметры: принимает строки exclude_pkgnames и pkgnames; возвращает response. Пакеты на удаление помечаются суффиксом - в pkgnames. Строка exclude_pkgnames содержит пробельно разделённый перечень пакетов, которые не требуется учитывать в pkgpriorities; helper дополняет его именами из pkgnames с суффиксом - перед созданием файла приоритетов.
 - Ожидаемое поведение (пример): helper формирует список исключений и временный файл pkgpriorities, выводит сообщение «Preparing the transaction…», затем запускает apt-get install -y -q для переданных пакетов; stdout/stderr передаются сигналами apt1_install_stdout_signal/apt1_install_stderr_signal, а по успешному завершению response равен 0.
 
 ## ReinstallAsync
@@ -56,7 +56,7 @@
 
 - Назначение: эмулирует установку/удаление пакетов с помощью helper apt-wrapper check-apply, который запускает apt-get install --just-print с созданным pkgpriorities.
 - Параметры: принимает строку pkgnames; возвращает stdout_strings, stderr_strings, response.
-- Ожидаемое поведение (пример): результатом является JSON вида {"install_packages":[...],"remove_packages":[...],"extra_remove_packages":[...]} в stdout_strings, сформированный по выводу apt-get; ошибки симуляции попадают в stderr_strings, response = 0 при чистом прогоне.
+- Ожидаемое поведение (пример): результатом является JSON вида {"install_packages":[...],"remove_packages":[...],"extra_remove_packages":[...]} в stdout_strings, сформированный по выводу apt-get; ошибки симуляции попадают в stderr_strings, response = 0 при чистом прогоне. Поле extra_remove_packages заполняется списком пакетов, удаление которых apt-get предупреждает выполнить сверх явного списка pkgnames (фрагмент между предупреждением «This should NOT be done…» и итоговой строкой о количестве пакетов).
 
 ## CheckReinstall
 
