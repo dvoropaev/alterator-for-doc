@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Глава 6. Пользовательские интерфейсы и утилиты</title>
+</head>
+<body>
+  <nav><a href="index.html">На главную</a> · <a href="chapter05-service-lifecycle.html">Предыдущая глава</a></nav>
+  <h1>Глава 6. Пользовательские интерфейсы и утилиты</h1>
+  <p>Alterator предоставляет графический и консольный доступ к сервисам, а также служебные инструменты для работы с Entry-файлами и пакетами.</p>
+  <h2>Alterator Manager Services (GUI)</h2>
+  <p>Вики <a href="../alterator-manager-servises.wiki">alterator-manager-servises.wiki</a> описывает интерфейс:</p>
+  <ul>
+    <li>Левая панель — список сервисов. Правая — сведения о выбранном сервисе, статус и кнопки управления.</li>
+    <li>Вкладка «Параметры» отображает поля <code>[parameters]</code> сущности service, «Ресурсы» — секцию <code>[resources]</code>.</li>
+    <li>Кнопки «Развернуть/Отменить», «Запустить/Остановить», «Настроить» вызывают методы service1 (Deploy/Undeploy/Start/Stop/Configure).</li>
+    <li>При развертывании запускается диалог конфигурации и окно логов, выводимое через сигналы backend.</li>
+  </ul>
+  <p>GUI ориентирован на администраторов: проверяет конфликты ресурсов, показывает лог операций и поддерживает установку тестовых сервисов.</p>
+  <h2>Alteratorctl (CLI)</h2>
+  <p>Консольная утилита <a href="../alteratorctl">alteratorctl</a> регистрирует модули (manager, packages, components, editions, diag, systeminfo) и подключается к D-Bus менеджера (<a href="../alteratorctl/main.c">main.c</a>). Каждая команда реализована отдельным модулем:</p>
+  <ul>
+    <li><code>alteratorctl manager ...</code> — управление backend-объектами через интерфейс manager.</li>
+    <li><code>alteratorctl packages ...</code> — взаимодействие с backend пакетов (apt) (<a href="../alterator-backend-packages/apt/apt.backend">apt.backend</a>).</li>
+    <li><code>alteratorctl components ...</code>, <code>alteratorctl editions ...</code> — работа с Entry-файлами компонентов и изданий.</li>
+    <li><code>alteratorctl diag ...</code> — запуск диагностик (<code>diag1</code>).</li>
+  </ul>
+  <p>Утилита использует gettext и поддерживает локализацию (<a href="../alteratorctl/main.c">main.c</a>). Модули получают доступ к D-Bus через общие функции из <a href="../alteratorctl/alteratorctlgdbussource.c">alteratorctlgdbussource.c</a> (при необходимости изучить код).</p>
+  <h2>Alterator Entry CLI</h2>
+  <p>Скрипт <a href="../alterator-entry/scripts/alterator-entry">alterator-entry</a> предоставляет команды:</p>
+  <ul>
+    <li><code>alterator-entry get файл путь</code> — получить значение поля, включая списки (использует функцию <code>get_field()</code> из <a href="../alterator-entry/alterator_entry/alterator_entry.py">alterator_entry.py</a>).</li>
+    <li><code>alterator-entry validate файл...</code> — проверить соответствие JSON Schema (<a href="../alterator-entry/alterator_entry/alterator_entry.py">validate()</a>).</li>
+  </ul>
+  <p>Скрипт возвращает коды 0/1 в зависимости от результата, что удобно для интеграции в CI/CD.</p>
+  <h2>editions2packages</h2>
+  <p>Утилита <a href="../alterator-entry/scripts/editions2packages">editions2packages</a> вытягивает пакеты из изданий и компонентов. Она читает <code>.edition</code> файлы, фильтрует секции, архитектуры, десктопы и языки, используя <code>PackagesFilterOptions</code> из <a href="../alterator-entry/alterator_entry/alterator_entry.py">alterator_entry.py</a>. Результат выводится как список имён пакетов, пригодный для генерации образов.</p>
+  <h2>Политики и безопасность</h2>
+  <p>Инструмент <code>am-dev-tool</code> из пакета alterator-manager-tools генерирует polkit-политики и валидирует существующие (<a href="../alterator-manager/docs/README-ru.md">раздел «am-dev-tool»</a>). Команды:</p>
+  <pre><code>am-dev-tool -g /usr/share/alterator/backends/&lt;имя&gt;.backend -o policy.file
+am-dev-tool -t /usr/share/alterator/backends/&lt;имя&gt;.backend</code></pre>
+  <p>Генерация полезна при добавлении новых backend-файлов, чтобы сразу настроить правила доступа.</p>
+  <h2>Интерфейс service1</h2>
+  <p>Документация <a href="../alterator-interface-service/doc/README.md">alterator-interface-service/doc/README.md</a> описывает сигнатуры методов и сигналов интерфейса <code>org.altlinux.alterator.service1</code>. Они служат контрактом между клиентами и backend. Сигналы <code>service_stdout_signal</code>/<code>service_stderr_signal</code> выдаются helper-утилитами, что позволяет отображать прогресс в GUI/CLI.</p>
+  <h2>Рекомендации по использованию инструментов</h2>
+  <ul>
+    <li>Перед загрузкой сервиса в GUI проверьте <code>.service</code> и <code>.backend</code> через <code>alterator-entry validate</code> и <code>am-dev-tool -t</code>.</li>
+    <li>Используйте <code>alteratorctl</code> для автоматизированных сценариев (развёртывание в CI, smoke-тесты).</li>
+    <li>Для подготовки образов формируйте список пакетов через <code>editions2packages</code> с нужными фильтрами (архитектура, язык).</li>
+  </ul>
+  <p>Освоив интерфейсы и утилиты, можно переходить к процессу разработки и тестирования новых компонентов.</p>
+</body>
+</html>

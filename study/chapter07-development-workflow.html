@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Глава 7. Практика разработки и тестирования</title>
+</head>
+<body>
+  <nav><a href="index.html">На главную</a> · <a href="chapter06-interface-and-tools.html">Предыдущая глава</a></nav>
+  <h1>Глава 7. Практика разработки и тестирования</h1>
+  <p>Для добавления нового сервиса или компонента в Alterator требуется последовательный процесс: проектирование Entry-файла, создание backend-интерфейса, написание helper-скрипта, настройка политик и тестирование. Этот раздел описывает рекомендуемые шаги и инструменты проверки.</p>
+  <h2>Подготовка описания</h2>
+  <ol>
+    <li>Изучить спецификацию Alterator Entry (<a href="../alterator-entry/doc/README.md">README</a>) и существующие примеры (<a href="../alterator-test-services/test_service1/test_service1.service">test_service1.service</a>, <a href="../alterator-service-chrony/service-chrony.service">service-chrony.service</a>).</li>
+    <li>Определить параметры, контексты и ресурсы. Для составных объектов подготовить секции <code>[types]</code> с шаблонами.</li>
+    <li>Создать JSON Schema для валидации входных данных helper (см. <a href="../alterator-test-services/schema-generator">schema-generator</a> как пример).</li>
+  </ol>
+  <h2>Разработка backend-файла</h2>
+  <ol>
+    <li>Базироваться на шаблоне <a href="../alterator-test-services/test-service.backend.template">test-service.backend.template</a> и адаптировать команды <code>execute</code>.</li>
+    <li>Указать сигналы stdout/stderr для методов с длительными операциями.</li>
+    <li>Задать <code>timeout</code>, <code>thread_limit</code>, <code>environment</code> при необходимости.</li>
+    <li>Проверить backend командой <code>am-dev-tool -t</code> и убедиться, что имена методов соответствуют XML-интерфейсу (<a href="../alterator-manager/docs/README-ru.md">раздел «Валидация интерфейсов»</a>).</li>
+  </ol>
+  <h2>Helper и скрипты обслуживания</h2>
+  <p>Helper должен обрабатывать все режимы, используемые backend:</p>
+  <ul>
+    <li>Вход — JSON со значениями параметров (см. обработку stdin в <a href="../alterator-test-services/test-services-helper">test-services-helper</a>).</li>
+    <li>Валидация — через <code>jsonschema</code> или собственные проверки (см. функции <code>validate_json</code>, <code>parse_json</code> в helper тестовых сервисов).</li>
+    <li>Логи — печать человекочитаемых шагов и ошибок в stdout/stderr для отображения в GUI/CLI.</li>
+    <li>Коды возврата — 0 для успеха, отдельные значения для частных случаев (например, 127/128 для статуса в тестовом helper).</li>
+  </ul>
+  <p>Для сложных сервисов helper может вызывать системные утилиты (systemctl, tar, конфигураторы). Пример комплексного скрипта — <a href="../alterator-service-chrony/service-chrony/service-chrony">service-chrony</a>.</p>
+  <h2>Политики и безопасность</h2>
+  <ul>
+    <li>Сгенерировать polkit-политику утилитой <code>am-dev-tool -g</code> и адаптировать описание прав (<a href="../alterator-manager/docs/README-ru.md">README</a>).</li>
+    <li>Проверить, что action_id методов согласованы с политикой (<code>action_id</code> в backend).</li>
+    <li>Настроить SELinux/аппармор при необходимости (зависит от окружения; в рамках курса см. системную документацию).</li>
+  </ul>
+  <h2>Тестовые сервисы</h2>
+  <p>Репозиторий <a href="../alterator-test-services">alterator-test-services</a> предоставляет образцы и инфраструктуру:</p>
+  <ul>
+    <li>Директории <code>test_service1..4</code> демонстрируют разные типы параметров, массивов, групп и диагностик.</li>
+    <li>Скрипт <code>test-services-helper</code> показывает шаблон обработки режимов и проверки схем.</li>
+    <li>Шаблоны backend и diag помогают быстро создать новые сервисы.</li>
+  </ul>
+  <p>Рекомендуется развернуть тестовые сервисы на стенде (<code>apt-get install alterator-test-services</code>, см. <a href="../alterator-manager-servises.wiki">wiki</a>) и проверить взаимодействие GUI/CLI.</p>
+  <h2>Отладка и диагностика</h2>
+  <ul>
+    <li>Включить debug-режим менеджера (<code>alterator-manager --debug</code>) для подробных логов (<a href="../alterator-manager/main.c">main.c</a>).</li>
+    <li>Использовать <code>gdbus introspect</code> и <code>gdbus call</code> для проверки доступности методов.</li>
+    <li>Отслеживать события в <code>journalctl -u alterator-manager</code> (systemd запускает службу по unit-файлу <a href="../alterator-manager/alterator-manager.service">alterator-manager.service</a>).</li>
+    <li>Проверять переменные окружения методом <code>GetEnvValue</code> интерфейса manager (<a href="../alterator-manager/alterator_manager_default_interfaces.c">alterator_manager_default_interfaces.c</a>).</li>
+  </ul>
+  <h2>Автоматизация проверок</h2>
+  <ul>
+    <li>Добавить <code>alterator-entry validate</code> и <code>am-dev-tool -t</code> в CI, чтобы отклонять некорректные описания.</li>
+    <li>Для helper-скриптов подготовить unit-тесты или сценарии с фиктивными конфигурациями (см. директорию <a href="../alterator-test-services/test_service1/tests">tests</a> для примеров).</li>
+    <li>Использовать <code>alteratorctl</code> в автоматизированных тестах для имитации действий пользователя.</li>
+  </ul>
+  <p>После прохождения тестов и ревью Entry-файлы, backend и helper устанавливаются в соответствующие каталоги, и сервис готов к эксплуатации.</p>
+</body>
+</html>
