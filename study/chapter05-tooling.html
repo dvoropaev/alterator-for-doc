@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<title>Глава 5. Инструменты и поставка</title>
+</head>
+<body>
+<h1>Глава 5. Инструменты и поставка</h1>
+<p>В экосистему Alterator входят консольные утилиты, вспомогательные скрипты и backend-пакеты, которые обеспечивают управление компонентами и интеграцию с системой пакетирования.</p>
+<h2>5.1. alteratorctl</h2>
+<ul>
+<li>Утилита <code>alteratorctl</code> предоставляет команды <code>diagnostic</code>, <code>packages</code>, <code>components</code>; синтаксис описан в файле <code>alteratorctl.usage</code>.<br />Источник: <a href="../alteratorctl/alteratorctl.usage">alteratorctl/alteratorctl.usage</a>.</li>
+<li>Модуль packages подключается к интерфейсам <code>org.altlinux.alterator.apt1</code>, <code>rpm1</code>, <code>repo1</code> и реализует подкоманды info/install/list/update/remove, управляя асинхронными сигналами и тайм-аутами.<br />Источник: <a href="../alteratorctl/alteratorctlpackagesmodule.c">alteratorctl/alteratorctlpackagesmodule.c</a>.</li>
+<li>Код модуля использует JSON-GLib и TOML для обработки ответов, а также ловит сигналы stdout/stderr от backend-методов (например, <code>apt1_install_stdout_signal</code>).<br />Источник: <a href="../alteratorctl/alteratorctlpackagesmodule.c">alteratorctl/alteratorctlpackagesmodule.c</a>.</li>
+<li>Приложение реализовано на GObject и регистрирует модули для работы с диагностикой, компонентами, изданиями и удалёнными сервисами.<br />Источник: <a href="../alteratorctl/alteratorctlmoduleinterface.c">alteratorctl/alteratorctlmoduleinterface.c</a>.</li>
+</ul>
+<h2>5.2. Пакет alterator-backend-packages</h2>
+<ul>
+<li>Backend <code>apt.backend</code> описывает интерфейс <code>apt1</code> с методами Info, UpdateAsync, ApplyAsync, Search и др.; команды выполняются через <code>apt-wrapper</code> и <code>apt-get</code>.<br />Источник: <a href="../alterator-backend-packages/apt/apt.backend">alterator-backend-packages/apt/apt.backend</a>.</li>
+<li>Скрипт <code>apt-wrapper</code> управляет транзакциями: создаёт файл pkgpriorities, выполняет check-apply, install, dist-upgrade и обеспечивает очистку временных файлов.<br />Источник: <a href="../alterator-backend-packages/apt/apt-wrapper">alterator-backend-packages/apt/apt-wrapper</a>.</li>
+<li>Backend <code>rpm.backend</code> и скрипт <code>rpm-wrapper</code> предоставляют операции просмотра пакетов RPM и их свойств.<br />Источник: <a href="../alterator-backend-packages/rpm/rpm.backend">alterator-backend-packages/rpm/rpm.backend</a>, <a href="../alterator-backend-packages/rpm/rpm-wrapper">alterator-backend-packages/rpm/rpm-wrapper</a>.</li>
+<li>Backend <code>repo.backend</code> описывает управление репозиториями (List/Add/Remove) через собственный объект и политику полкита.<br />Источник: <a href="../alterator-backend-packages/repo/repo.backend">alterator-backend-packages/repo/repo.backend</a>.</li>
+<li>Каждый backend сопровождается файлом <code>.object</code>, XML-интроспекцией и polkit-политикой (например, <code>org.altlinux.alterator.apt1.xml</code> и <code>.policy</code>), обеспечивая регистрацию интерфейсов и контроль доступа.<br />Источник: <a href="../alterator-backend-packages/apt/org.altlinux.alterator.apt1.xml">alterator-backend-packages/apt/org.altlinux.alterator.apt1.xml</a>.</li>
+</ul>
+<h2>5.3. Инструменты разработчика</h2>
+<ul>
+<li><code>alterator_manager_dev_tool</code> генерирует шаблоны polkit-политик на основе backend-файлов и выполняет их валидацию; параметры командной строки включают <code>--gen-policy-template</code>, <code>--validate</code>, <code>--output</code>.<br />Источник: <a href="../alterator-manager/alterator_manager_dev_tool.c">alterator-manager/alterator_manager_dev_tool.c</a>.</li>
+<li>Скрипт <code>schema-generator</code> для тестовых сервисов строит JSON Schema по описанию сервиса, используя утилиту taplo и jq для анализа параметров и генерации ограничений.<br />Источник: <a href="../alterator-test-services/schema-generator">alterator-test-services/schema-generator</a>.</li>
+<li>Функции <code>extract_packages_from_component()</code> и <code>extract_packages_from_edition()</code> в Python-модуле <code>alterator_entry</code> помогают формировать наборы пакетов для дистрибутивов по архитектуре, окружению рабочего стола и языку.<br />Источник: <a href="../alterator-entry/alterator_entry/alterator_entry.py">alterator-entry/alterator_entry/alterator_entry.py</a>.</li>
+</ul>
+<h2>5.4. Интеграция и локализация</h2>
+<ul>
+<li>Все пакеты включают каталоги <code>po/</code> для переводов, systemd unit-файлы и спецификации RPM (<code>.spec</code>), что позволяет собирать пакеты для ALT Linux.<br />Источник: <a href="../alterator-manager/alterator-manager.spec">alterator-manager/alterator-manager.spec</a>.</li>
+<li>Код модулей использует GLib/GIO и json-glib, а вспомогательные скрипты опираются на taplo, jq и jsonschema; эти зависимости необходимо установить в окружении.<br />Источники: <a href="../alteratorctl/alteratorctlpackagesmodule.c">alteratorctl/alteratorctlpackagesmodule.c</a>, <a href="../alterator-test-services/schema-generator">alterator-test-services/schema-generator</a>, <a href="../alterator-test-services/test-services-helper">alterator-test-services/test-services-helper</a>.</li>
+<li>Для CLI рекомендуется подключать автодополнения из каталога <code>alteratorctl/completions</code>, чтобы ускорить работу с командами.<br />Источник: <a href="../alteratorctl/completions">alteratorctl/completions</a>.</li>
+</ul>
+<p>Инструменты позволяют автоматизировать валидацию, сборку и управление пакетами, формируя полный цикл разработки решений Alterator.</p>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<title>Глава 1. Архитектура платформы</title>
+</head>
+<body>
+<h1>Глава 1. Архитектура платформы</h1>
+<p>Alterator — программная платформа для описания и управления административными сущностями через шину D-Bus и формат Alterator Entry. Базовые компоненты взаимодействуют между собой через стандартные интерфейсы и единый формат описаний.</p>
+<h2>1.1. Ключевые роли</h2>
+<ul>
+<li>Alterator Manager — системная служба, которая читает backend-файлы, регистрирует объекты на шине D-Bus, и делегирует вызовы модулям.<br />Источники: <a href="../alterator-manager/docs/README-ru.md">alterator-manager/docs/README-ru.md</a>, <a href="../alterator-manager/main.c">alterator-manager/main.c</a>.</li>
+<li>Alterator Entry — формат TOML-подобных файлов, описывающих сущности (application, backend, service и др.) и используемых для визуализации и автоматизации.<br />Источник: <a href="../alterator-entry/doc/README.md">alterator-entry/doc/README.md</a>.</li>
+<li>Alterator Interface Service — D-Bus интерфейс сервиса, определяющий стандартные методы Deploy/Start/Stop и сигналы для логов.<br />Источник: <a href="../alterator-interface-service/doc/README.md">alterator-interface-service/doc/README.md</a>.</li>
+<li>Служебные пакеты (alterator-service-*, alterator-test-services, alterator-backend-packages) демонстрируют практику описания сервисов, тестовых стендов и управляющих операций.<br />Источники: <a href="../alterator-service-chrony/service-chrony.service">alterator-service-chrony/service-chrony.service</a>, <a href="../alterator-test-services/test_service1/test_service1.service">alterator-test-services/test_service1/test_service1.service</a>, <a href="../alterator-backend-packages/apt/apt.backend">alterator-backend-packages/apt/apt.backend</a>.</li>
+</ul>
+<h2>1.2. Общая схема взаимодействия</h2>
+<ol>
+<li>Backend-файлы считываются менеджером и сопоставляются с реализацией модулей (executor, python, специализированные движки).<br />Источник: <a href="../alterator-manager/docs/README-ru.md">alterator-manager/docs/README-ru.md</a>.</li>
+<li>Менеджер регистрирует объекты и интерфейсы D-Bus, используя метаданные backend-файлов и информацию о модулях.<br />Источник: <a href="../alterator-manager/alterator_manager_backends.c">alterator-manager/alterator_manager_backends.c</a>.</li>
+<li>Сервисы описываются в Alterator Entry (сущность service). Параметры, ресурсы и диагностические инструменты передаются клиенту (GUI, CLI) и backend-реализации.<br />Источники: <a href="../alterator-entry/schemas/service.schema.json">alterator-entry/schemas/service.schema.json</a>, <a href="../alterator-service-chrony/service-chrony.service">alterator-service-chrony/service-chrony.service</a>.</li>
+<li>При выполнении операций (Deploy, Start, Configure и т.д.) менеджер вызывает методы backend-модуля, который запускает сценарии или системные утилиты. Потоки stdout/stderr передаются сигналами.<br />Источники: <a href="../alterator-interface-service/doc/README.md">alterator-interface-service/doc/README.md</a>, <a href="../alterator-backend-packages/apt/apt.backend">alterator-backend-packages/apt/apt.backend</a>.</li>
+</ol>
+<h2>1.3. Принципы проектирования</h2>
+<ul>
+<li>Томл-совместимость: все сущности наследуют синтаксис TOML и могут быть проверены json-schema файлами.<br />Источник: <a href="../alterator-entry/doc/README.md">alterator-entry/doc/README.md</a>.</li>
+<li>Независимость модулей: каждый backend-модуль описывает методы, окружение и ограничения потоков; менеджер хранит метаданные в хеш-таблицах.<br />Источник: <a href="../alterator-manager/alterator_manager_backends.c">alterator-manager/alterator_manager_backends.c</a>.</li>
+<li>Стандартизированные интерфейсы: сервисы, диагностические инструменты и компоненты используют согласованные методы и сигналы, что позволяет собирать гибридные решения.<br />Источники: <a href="../interface-service.wiki">interface-service.wiki</a>, <a href="../alterator-manager-servises.wiki">alterator-manager-servises.wiki</a>.</li>
+<li>Расширяемость на уровне пакетов: сервисы и backend-файлы устанавливаются в /usr/share, но пользовательские дополнения поддерживаются в /etc для локальной настройки.<br />Источник: <a href="../alterator-entry/doc/README.md">alterator-entry/doc/README.md</a>.</li>
+</ul>
+<h2>1.4. Минимальный жизненный цикл объекта</h2>
+<ol>
+<li>Разработчик описывает сущность в файле Alterator Entry нужного типа и размещает его в предписанном каталоге.<br />Источник: <a href="../alterator-entry/doc/README.md">alterator-entry/doc/README.md</a>.</li>
+<li>Backend-файл конфигурирует интерфейс D-Bus и указывает модуль, который реализует методы.<br />Источник: <a href="../alterator-manager/docs/README-ru.md">alterator-manager/docs/README-ru.md</a>.</li>
+<li>Менеджер при старте парсит файлы, формирует структуру backends_data и публикует интерфейсы.<br />Источник: <a href="../alterator-manager/alterator_manager_backends.c">alterator-manager/alterator_manager_backends.c</a>.</li>
+<li>Клиент (GUI, alteratorctl) вызывает методы; менеджер управляет окружением и политиками безопасности (polkit).<br />Источники: <a href="../alterator-manager/main.c">alterator-manager/main.c</a>, <a href="../alterator-manager/alterator_manager_sender_environment.c">alterator-manager/alterator_manager_sender_environment.c</a>.</li>
+<li>Возвратные значения и сигналы обрабатываются клиентом, обновляя состояние интерфейса управления.<br />Источник: <a href="../alterator-interface-service/doc/README.md">alterator-interface-service/doc/README.md</a>.</li>
+</ol>
+<p>Дальнейшие главы раскрывают детали каждого слоя, схемы валидации и варианты развёртывания.</p>
+</body>
+</html>
