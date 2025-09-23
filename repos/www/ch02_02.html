@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>2.2 Описание сущности Service</title>
+</head>
+<body>
+  <header>
+    <h1>2.2 Описание сущности Service</h1>
+  </header>
+  <section>
+    <p>Сущность Service описывает развёртываемый сервис: имя, отображаемые названия, комментарий, опциональную иконку и флаг <code>enable_force_deploy</code>, разрешающий повторное развёртывание с пропуском предпроверок.<sup><a href="../alterator-entry/doc/README.md">1</a></sup></p>
+    <p>В разделе <code>parameters</code> хранится словарь параметров, разделённых по контекстам <code>deploy</code>, <code>configure</code>, <code>backup</code>, <code>restore</code>, <code>diag</code>, <code>status</code>. Допустимые типы: <code>string</code>, <code>boolean</code>, <code>integer</code>, <code>enum</code>, <code>array</code>, <code>object</code>. Для составных параметров задаются прототипы или дочерние свойства.<sup><a href="../alterator-entry/doc/README.md">1</a></sup></p>
+    <p>Раздел <code>resources</code> фиксирует файлы, каталоги, systemd юниты и сетевые порты, которые использует сервис. Дополнительно можно объявить диагностические инструменты в <code>diag_tools</code> с указанием шины и пути.</p>
+  </section>
+  <section>
+    <h2>Служебные поля</h2>
+    <ul>
+      <li><code>deployed</code>, <code>started</code> — отражают состояние сервиса во время вызова <code>Status()</code>.<sup><a href="../alterator-entry/doc/README.md">1</a></sup></li>
+      <li><code>force_deploy</code> — доступен в контексте <code>deploy</code>, если включён глобальный флаг.<sup><a href="../alterator-entry/doc/README.md">1</a></sup></li>
+    </ul>
+  </section>
+  <section>
+    <h2>Практические рекомендации</h2>
+    <ul>
+      <li>Старайтесь выносить скрытые константы в параметры с <code>constant = true</code>, чтобы helper получал предопределённые значения.</li>
+      <li>Для массивов задавайте <code>array_min</code>/<code>array_max</code> и регулярные выражения, чтобы раннее валидировать ввод.<sup><a href="../alterator-entry/doc/README.md">1</a></sup></li>
+      <li>Используйте привязку ресурсов к параметрам через ключ <code>parameter</code>, чтобы интерфейс показывал переопределённые значения.<sup><a href="../alterator-entry/doc/README.md">1</a></sup></li>
+    </ul>
+  </section>
+  <footer>
+    <h2>Источники</h2>
+    <ol>
+      <li><a href="../alterator-entry/doc/README.md">alterator-entry/doc/README.md</a></li>
+    </ol>
+  </footer>
+</body>
+</html>

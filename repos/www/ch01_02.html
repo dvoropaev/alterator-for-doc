@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>1.2 D-Bus топология и интерфейсы</title>
+</head>
+<body>
+  <header>
+    <h1>1.2 D-Bus топология и интерфейсы</h1>
+  </header>
+  <section>
+    <p>Alterator-manager обрабатывает backend-файлы последовательно: системные каталоги просматриваются в фиксированном порядке, затем подключаются пользовательские. Для режима <code>--user</code> применяются отдельные пути. Каждый backend-файл описывает один объект и один интерфейс; дубликаты игнорируются.<sup><a href="../alterator-manager/docs/README-ru.md">1</a></sup></p>
+    <p>Backend хранит корневую таблицу с обязательными полями: <code>type = "Backend"</code>, название модуля-обработчика, имя узла и имя интерфейса. Короткое имя интерфейса автоматически дополняется префиксом <code>org.altlinux.alterator</code>, что обеспечивает единообразное пространство имён на шине.<sup><a href="../alterator-manager/docs/README-ru.md">1</a></sup></p>
+    <p>Методы интерфейса описываются в разделе <code>[methods.*]</code>. Для модуля executor указывается команда, параметры, ограничения по потокам и дополнительные настройки ввода-вывода. Каждый метод маппится на команду оболочки, в которую подставляются аргументы из D-Bus вызова.<sup><a href="../alterator-manager/docs/README-ru.md">1</a></sup><sup><a href="../alterator-entry/doc/README.md">2</a></sup></p>
+  </section>
+  <section>
+    <h2>Основные элементы топологии</h2>
+    <ul>
+      <li><strong>Узлы</strong> — объектные пути формируются из значения <code>name</code>, дополненного префиксом <code>/org/altlinux/alterator/</code>.<sup><a href="../alterator-entry/doc/README.md">2</a></sup></li>
+      <li><strong>Интерфейсы</strong> — задаются полным или коротким именем; допускаются буквы, цифры и символ подчёркивания.<sup><a href="../alterator-manager/docs/README-ru.md">1</a></sup></li>
+      <li><strong>Модули</strong> — указываются в ключе <code>module</code>. На текущий момент используется executor, который запускает внешние команды.<sup><a href="../alterator-entry/doc/README.md">2</a></sup></li>
+      <li><strong>Ограничения</strong> — параметры <code>thread_limit</code>, <code>stdout_*_limit</code>, <code>timeout</code> задают контроль параллелизма и ресурсов для каждого метода.<sup><a href="../alterator-entry/doc/README.md">2</a></sup></li>
+    </ul>
+  </section>
+  <footer>
+    <h2>Источники</h2>
+    <ol>
+      <li><a href="../alterator-manager/docs/README-ru.md">alterator-manager/docs/README-ru.md</a></li>
+      <li><a href="../alterator-entry/doc/README.md">alterator-entry/doc/README.md</a></li>
+    </ol>
+  </footer>
+</body>
+</html>

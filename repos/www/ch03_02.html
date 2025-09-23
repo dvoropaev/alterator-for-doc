@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>3.2 Внутренние структуры данных</title>
+</head>
+<body>
+  <header>
+    <h1>3.2 Внутренние структуры данных</h1>
+  </header>
+  <section>
+    <p>Alterator-manager хранит загруженные интерфейсы в хеш-таблице <code>backends_data</code>. Ключ — имя узла, значение — набор интерфейсов. Каждый интерфейс представлен структурой <code>InterfaceObjectInfo</code>, содержащей имя модуля, action id, описание интерфейса, таблицу методов, vtable и лимит потоков.<sup><a href="../alterator-manager/docs/README-ru.md">1</a></sup></p>
+    <p>Методы представлены структурами <code>MethodObjectInfo</code> с двумя вложенными таблицами: <code>method_data</code> (значения из backend-файла) и <code>environment</code> (переменные окружения). Такой подход позволяет хранить данные модуля executor и дополнительные настройки для других модулей.<sup><a href="../alterator-manager/docs/README-ru.md">1</a></sup></p>
+  </section>
+  <section>
+    <h2>Диаграмма отношений</h2>
+    <p>Структура данных организована вложенно: <code>backends_data → interface → method → method_data/environment</code>. Это обеспечивает быстрый доступ к информации о методе при обработке D-Bus вызова и позволяет модулям расширять собственные параметры без изменения ядра.<sup><a href="../alterator-manager/docs/README-ru.md">1</a></sup></p>
+  </section>
+  <footer>
+    <h2>Источники</h2>
+    <ol>
+      <li><a href="../alterator-manager/docs/README-ru.md">alterator-manager/docs/README-ru.md</a></li>
+    </ol>
+  </footer>
+</body>
+</html>

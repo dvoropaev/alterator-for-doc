@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>3.3 Политики безопасности, валидация и окружение</title>
+</head>
+<body>
+  <header>
+    <h1>3.3 Политики безопасности, валидация и окружение</h1>
+  </header>
+  <section>
+    <p>Alterator-manager валидирует backend-файлы по introspection-шаблонам из <code>/usr/share/dbus-1/interfaces</code>. Проверка завершается ошибкой, если в определении отсутствуют методы из шаблона или несовпадают описания.<sup><a href="../alterator-manager/docs/README-ru.md">1</a></sup></p>
+    <p>Переменные окружения хранятся в таблице <code>sender_environment_data</code>, где ключ — уникальное D-Bus имя клиента. Для каждого отправителя поддерживается отдельный набор переменных, которые подмешиваются к окружению процессов, запускаемых модулями (например, executor).<sup><a href="../alterator-manager/docs/README-ru.md">1</a></sup></p>
+    <p>Периодическая очистка удаляет записи для клиентов, покинувших шину. Это предотвращает утечки устаревших данных и сохраняет корректность выполняемых действий.<sup><a href="../alterator-manager/docs/README-ru.md">1</a></sup></p>
+  </section>
+  <section>
+    <h2>Инструменты разработчика</h2>
+    <p>Утилита <code>am-dev-tool</code> из пакета alterator-manager-tools служит для проверки и отладки backend-описаний, используя те же структуры и механизмы, что и основной демон.<sup><a href="../alterator-manager/docs/README-ru.md">1</a></sup></p>
+  </section>
+  <footer>
+    <h2>Источники</h2>
+    <ol>
+      <li><a href="../alterator-manager/docs/README-ru.md">alterator-manager/docs/README-ru.md</a></li>
+    </ol>
+  </footer>
+</body>
+</html>

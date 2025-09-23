@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>3.1 Загрузка backend-файлов и конфигураций</title>
+</head>
+<body>
+  <header>
+    <h1>3.1 Загрузка backend-файлов и конфигураций</h1>
+  </header>
+  <section>
+    <p>Alterator-manager читает backend-файлы из набора директорий в фиксированном порядке. Системный режим охватывает каталоги <code>/usr/share/alterator/backends/</code>, <code>/usr/share/alterator/backends/system/</code>, <code>/etc/alterator/backends/</code>, <code>/etc/alterator/backends/system/</code>. Пользовательский режим (<code>--user</code>) использует <code>/usr/share/alterator/backends/user/</code> и <code>/etc/alterator/backends/user/</code>.<sup><a href="../alterator-manager/docs/README-ru.md">1</a></sup></p>
+    <p>Каждый backend-файл соответствует одному интерфейсу. Если встречаются повторяющиеся определения, то последующие экземпляры игнорируются. Формат файлов — TOML; основной раздел включает поля <code>type</code>, <code>module</code>, <code>name</code>, <code>interface</code>, <code>thread_limit</code>, <code>action_id</code>.<sup><a href="../alterator-manager/docs/README-ru.md">1</a></sup></p>
+  </section>
+  <section>
+    <h2>Практика сопровождения</h2>
+    <ul>
+      <li>Храните системные версии в <code>/usr/share</code>, а локальные правки в <code>/etc</code>, чтобы обновления не перезаписывали пользовательские настройки.<sup><a href="../alterator-manager/docs/README-ru.md">1</a></sup></li>
+      <li>Следите за уникальностью ключей <code>name</code> и <code>interface</code>, чтобы избежать конфликта при загрузке.</li>
+      <li>Используйте полное имя интерфейса при необходимости точного контроля над пространством имён; короткий вариант дополнится префиксом автоматически.<sup><a href="../alterator-manager/docs/README-ru.md">1</a></sup></li>
+    </ul>
+  </section>
+  <footer>
+    <h2>Источники</h2>
+    <ol>
+      <li><a href="../alterator-manager/docs/README-ru.md">alterator-manager/docs/README-ru.md</a></li>
+    </ol>
+  </footer>
+</body>
+</html>

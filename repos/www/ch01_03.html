@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>1.3 Жизненный цикл управления сервисом</title>
+</head>
+<body>
+  <header>
+    <h1>1.3 Жизненный цикл управления сервисом</h1>
+  </header>
+  <section>
+    <p>Интерфейс org.altlinux.alterator.service1 предоставляет полный набор методов для жизненного цикла сервиса: получение описания, развёртывание, конфигурация, запуск, остановка, резервное копирование, восстановление и снятие развёртывания.<sup><a href="../alterator-interface-service/doc/README.md">1</a></sup></p>
+    <p>Пользовательский модуль alterator-manager-services отображает состояние сервиса (не развёрнут, развёрнут, запущен) и даёт доступ к действиям через кнопки «Развернуть», «Запустить», «Настроить» и вкладки «Параметры» и «Ресурсы».<sup><a href="../alterator-manager-servises.wiki">2</a></sup></p>
+  </section>
+  <section>
+    <h2>Порядок взаимодействия</h2>
+    <ol>
+      <li>Получить описание сервиса через метод <code>Info()</code> для загрузки структуры параметров в интерфейсе.<sup><a href="../alterator-interface-service/doc/README.md">1</a></sup></li>
+      <li>Выполнить развёртывание методом <code>Deploy()</code>; интерфейс отобразит диалог настройки и соберёт параметры.<sup><a href="../alterator-interface-service/doc/README.md">1</a></sup><sup><a href="../alterator-manager-servises.wiki">2</a></sup></li>
+      <li>После развёртывания вызвать <code>Start()</code> для запуска системных юнитов или <code>Configure()</code> для изменения параметров.<sup><a href="../alterator-interface-service/doc/README.md">1</a></sup></li>
+      <li>При необходимости выполнить <code>Backup()</code> и <code>Restore()</code> для резервирования и восстановления конфигурации.<sup><a href="../alterator-interface-service/doc/README.md">1</a></sup></li>
+      <li>Использовать <code>Status()</code> для контроля состояния; коды 0, 127, 128 различают этапы жизненного цикла.<sup><a href="../alterator-interface-service/doc/README.md">1</a></sup><sup><a href="../alterator-manager-servises.wiki">2</a></sup></li>
+      <li>Завершить работу методом <code>Stop()</code> и <code>Undeploy()</code>, когда сервис необходимо отключить.<sup><a href="../alterator-interface-service/doc/README.md">1</a></sup></li>
+    </ol>
+  </section>
+  <footer>
+    <h2>Источники</h2>
+    <ol>
+      <li><a href="../alterator-interface-service/doc/README.md">alterator-interface-service/doc/README.md</a></li>
+      <li><a href="../alterator-manager-servises.wiki">alterator-manager-servises.wiki</a></li>
+    </ol>
+  </footer>
+</body>
+</html>

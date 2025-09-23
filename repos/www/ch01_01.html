@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>1.1 Компоненты платформы и роли</title>
+</head>
+<body>
+  <header>
+    <h1>1.1 Компоненты платформы и роли</h1>
+  </header>
+  <section>
+    <p>Alterator Entry определяет формат описаний сущностей Alterator и служит договором между компонентами платформы. Формат построен как подмножество TOML и применяется ко всем файлам, которые описывают объекты, приложения, сервисы и другие типы данных Alterator.<sup><a href="../alterator-entry/doc/README.md">1</a></sup></p>
+    <p>Демон alterator-manager считывает backend-файлы из системных и пользовательских каталогов, создаёт D-Bus интерфейсы на их основе и передаёт выполнение модулям. Каждый backend-файл соответствует одному интерфейсу и хранит схему вызовов в формате TOML.<sup><a href="../alterator-manager/docs/README-ru.md">2</a></sup></p>
+    <p>Интерфейс org.altlinux.alterator.service1 объединяет операции над сервисами (развёртывание, запуск, резервирование), а графический модуль alterator-manager-services предоставляет панель управления: список сервисов, вкладки «Параметры» и «Ресурсы», а также кнопки действий.<sup><a href="../alterator-interface-service/doc/README.md">3</a></sup><sup><a href="../alterator-manager-servises.wiki">4</a></sup></p>
+  </section>
+  <section>
+    <h2>Ключевые роли</h2>
+    <ul>
+      <li><strong>alterator-entry</strong> — спецификация и набор примеров описаний сущностей, обеспечивающих единый формат для всех потребителей D-Bus.<sup><a href="../alterator-entry/doc/README.md">1</a></sup></li>
+      <li><strong>alterator-manager</strong> — управляющий демон, загружающий backend-определения, выделяющий интерфейсы и маршрутизирующий вызовы к модулям.<sup><a href="../alterator-manager/docs/README-ru.md">2</a></sup></li>
+      <li><strong>alterator-interface-service</strong> — D-Bus интерфейс сервисного уровня, предоставляющий единообразные методы работы с сервисами.<sup><a href="../alterator-interface-service/doc/README.md">3</a></sup></li>
+      <li><strong>alterator-manager-services</strong> — пользовательский модуль, который визуализирует сервисы и вызывает операции через alterator-manager.<sup><a href="../alterator-manager-servises.wiki">4</a></sup></li>
+    </ul>
+  </section>
+  <footer>
+    <h2>Источники</h2>
+    <ol>
+      <li><a href="../alterator-entry/doc/README.md">alterator-entry/doc/README.md</a></li>
+      <li><a href="../alterator-manager/docs/README-ru.md">alterator-manager/docs/README-ru.md</a></li>
+      <li><a href="../alterator-interface-service/doc/README.md">alterator-interface-service/doc/README.md</a></li>
+      <li><a href="../alterator-manager-servises.wiki">alterator-manager-servises.wiki</a></li>
+    </ol>
+  </footer>
+</body>
+</html>

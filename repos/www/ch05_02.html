@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>5.2 Параметры и ресурсы примера test_service1</title>
+</head>
+<body>
+  <header>
+    <h1>5.2 Параметры и ресурсы примера test_service1</h1>
+  </header>
+  <section>
+    <p>Файл <code>test_service1.service</code> демонстрирует использование всех типов параметров. Он включает локализованные названия, комментарии и флаг <code>enable_force_deploy</code>, а также объявление диагностического инструмента.<sup><a href="../alterator-test-services/test_service1/test_service1.service">1</a></sup></p>
+    <p>Параметры охватывают строки, числа, булевы значения, перечисления, массивы и составные объекты. Для каждого параметра указан контекст, обязательность и значение по умолчанию. Пример <code>string_array_example</code> использует регулярное выражение и ограничения на размер массива, а <code>composite_param</code> показывает структуру с дочерними свойствами и собственными значениями.<sup><a href="../alterator-test-services/test_service1/test_service1.service">1</a></sup></p>
+  </section>
+  <section>
+    <h2>Рекомендации по адаптации</h2>
+    <ul>
+      <li>Повторяйте шаблон контекстов, чтобы helper мог отличить параметры для <code>deploy</code>, <code>configure</code> и <code>status</code>.</li>
+      <li>Используйте <code>required</code> для обязательных полей в конкретных действиях и <code>constant = true</code> для скрытых технических значений.<sup><a href="../alterator-test-services/test_service1/test_service1.service">1</a></sup></li>
+      <li>Для составных параметров обеспечьте локализацию дочерних полей и укажите границы числовых значений (пример <code>param2</code> с <code>min</code>/<code>max</code>).</li>
+    </ul>
+  </section>
+  <footer>
+    <h2>Источники</h2>
+    <ol>
+      <li><a href="../alterator-test-services/test_service1/test_service1.service">test_service1.service</a></li>
+    </ol>
+  </footer>
+</body>
+</html>

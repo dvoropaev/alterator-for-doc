@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>2.1 Базовый формат и правила</title>
+</head>
+<body>
+  <header>
+    <h1>2.1 Базовый формат и правила</h1>
+  </header>
+  <section>
+    <p>Alterator Entry — подмножество TOML, предназначенное для описания сущностей Alterator. Файлы именуются по типу и получают расширения <code>.application</code>, <code>.backend</code>, <code>.service</code> и другие, соответствующие значению ключа <code>Type</code>.<sup><a href="../alterator-entry/doc/README.md">1</a></sup></p>
+    <p>Каталоги размещения зависят от происхождения сущности: системные поставляются из <code>/usr/share/alterator/&lt;директория&gt;</code>, пользовательские и переопределения — из <code>/etc/alterator/&lt;директория&gt;</code>. Для backend предусмотрены режимы <code>system</code> и <code>user</code> с отдельными подкаталогами.<sup><a href="../alterator-entry/doc/README.md">1</a></sup></p>
+  </section>
+  <section>
+    <h2>Структура файла</h2>
+    <ul>
+      <li><strong>Кодировка</strong> — UTF-8; строки воспринимаются регистрозависимыми.<sup><a href="../alterator-entry/doc/README.md">1</a></sup></li>
+      <li><strong>Комментарии</strong> — строки, начинающиеся с <code>#</code>, сохраняются при чтении и записи.<sup><a href="../alterator-entry/doc/README.md">1</a></sup></li>
+      <li><strong>Группы</strong> — объявляются как <code>[groupname]</code>; все пары ключ-значение до следующего заголовка относятся к группе.<sup><a href="../alterator-entry/doc/README.md">1</a></sup></li>
+      <li><strong>Записи</strong> — формат <code>Key = Value</code>; ключи регистрозависимы и используют символы <code>A-Za-z0-9-</code>.<sup><a href="../alterator-entry/doc/README.md">1</a></sup></li>
+      <li><strong>Типы значений</strong> — поддерживаются <code>string</code>, <code>localestring</code>, <code>iconstring</code>, <code>stringlist</code>, <code>command</code>, <code>boolean</code>, <code>numeric</code>; для массивов используется разделитель <code>;</code>.<sup><a href="../alterator-entry/doc/README.md">1</a></sup></li>
+      <li><strong>Локализация</strong> — значения с постфиксом локали выбираются по правилам сопоставления <code>LC_MESSAGES</code>.<sup><a href="../alterator-entry/doc/README.md">1</a></sup></li>
+    </ul>
+  </section>
+  <section>
+    <h2>Рекомендации по расширению</h2>
+    <p>Дополнительные ключи следует оформлять с префиксом <code>X-PRODUCT</code> или выносить в отдельные группы, чтобы избежать конфликтов пространств имён.<sup><a href="../alterator-entry/doc/README.md">1</a></sup></p>
+  </section>
+  <footer>
+    <h2>Источники</h2>
+    <ol>
+      <li><a href="../alterator-entry/doc/README.md">alterator-entry/doc/README.md</a></li>
+    </ol>
+  </footer>
+</body>
+</html>

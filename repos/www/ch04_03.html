@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>4.3 Helper-скрипты и обмен параметрами</title>
+</head>
+<body>
+  <header>
+    <h1>4.3 Helper-скрипты и обмен параметрами</h1>
+  </header>
+  <section>
+    <p>Helper — исполняемый файл, который вызывает backend через команду <code>execute</code>. Скрипт размещается в <code>/usr/bin</code> и принимает действие и имя сервиса как аргументы командной строки. Параметры передаются в формате JSON через stdin.<sup><a href="../alterator-manager-servises.wiki">1</a></sup></p>
+    <p>Helper обязан реализовать набор команд: <code>deploy</code>, <code>configure</code>, <code>start</code>, <code>stop</code>, <code>status</code>, <code>backup</code>, <code>restore</code>, <code>undeploy</code>. Он возвращает 0 при успехе и ненулевой код при ошибке; stdout используется для логов, а в случае <code>Status()</code> — для машинного вывода.<sup><a href="../alterator-manager-servises.wiki">1</a></sup></p>
+  </section>
+  <section>
+    <h2>Обработка параметров</h2>
+    <ul>
+      <li>Составные параметры (<code>object</code> и <code>array</code>) разворачиваются в JSON по схеме, определённой в описании сервиса.<sup><a href="../alterator-manager-servises.wiki">1</a></sup></li>
+      <li>Сигналы <code>stdout</code>/<code>stderr</code>, заданные в backend, отображаются в интерфейсе и помогают диагностировать выполнение.<sup><a href="../alterator-manager-servises.wiki">1</a></sup></li>
+    </ul>
+  </section>
+  <footer>
+    <h2>Источники</h2>
+    <ol>
+      <li><a href="../alterator-manager-servises.wiki">alterator-manager-servises.wiki</a></li>
+    </ol>
+  </footer>
+</body>
+</html>
