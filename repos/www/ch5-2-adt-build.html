@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>5.2. Сборка ADT на ALT Linux</title>
+</head>
+<body>
+  <h1>5.2. Сборка ADT на ALT Linux</h1>
+  <p>Для сборки ADT на дистрибутивах ALT Linux необходимо установить зависимости Qt5, CMake и Boost.<a href="../adt/INSTALL.md">Источник</a></p>
+  <p>Порядок действий:</p>
+  <ol>
+    <li>Установить зависимости командой:<pre>apt-get install cmake gcc-c++ qt5-base-devel qt5-tools-devel qt5-base-common boost-devel</pre><a href="../adt/INSTALL.md">Источник</a></li>
+    <li>Подготовить каталог сборки и запустить CMake:<pre>mkdir -p build
+cmake -B build .</pre><a href="../adt/INSTALL.md">Источник</a></li>
+    <li>Выполнить сборку:<pre>cd build && make -j `nproc`</pre><a href="../adt/INSTALL.md">Источник</a></li>
+  </ol>
+  <p>Результирующие бинарные файлы можно разместить в каталоге, из которого их подхватывает инфраструктура Alterator, либо упаковать в RPM-пакет.</p>
+</body>
+</html>

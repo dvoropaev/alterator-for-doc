@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>2.3. Типы значений и локализация</title>
+</head>
+<body>
+  <h1>2.3. Типы значений и локализация</h1>
+  <p>Спецификация поддерживает типы <code>string</code>, <code>localestring</code>, <code>iconstring</code>, <code>stringlist</code>, <code>command</code>, <code>boolean</code>, <code>numeric</code> и определяет правила их применения.<a href="../alterator-entry/doc/README.md">Источник</a></p>
+  <ul>
+    <li><code>string</code> — ASCII-строка без управляющих символов; подходит для идентификаторов.<a href="../alterator-entry/doc/README.md">Источник</a></li>
+    <li><code>localestring</code> — текст, отображаемый пользователю; обязательно кодирование UTF-8.<a href="../alterator-entry/doc/README.md">Источник</a></li>
+    <li><code>iconstring</code> — имя иконки или путь к файлу, совместимый со спецификацией тем значков Freedesktop.<a href="../alterator-entry/doc/README.md">Источник</a></li>
+    <li><code>stringlist</code> — список строк, разделённых пробелами; используется для перечислений.<a href="../alterator-entry/doc/README.md">Источник</a></li>
+    <li><code>command</code> — команда shell, выполняемая модулем (например executor).<a href="../alterator-entry/doc/README.md">Источник</a></li>
+  </ul>
+  <p>Локализация значений выполняется через ключи вида <code>display_name.ru =</code> и <code>display_name.en =</code> внутри соответствующих групп. Необходимо обеспечивать полный набор языковых меток для интерфейсов.<a href="../alterator-entry/doc/README.md">Источник</a></p>
+</body>
+</html>

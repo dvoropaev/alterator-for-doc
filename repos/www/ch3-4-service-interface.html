@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>3.4. Интерфейс управления сервисами</title>
+</head>
+<body>
+  <h1>3.4. Интерфейс управления сервисами</h1>
+  <p>Интерфейс <code>org.altlinux.alterator.service1</code> реализован пакетом alterator-interface-service и предназначен для управления жизненным циклом сервисов через D-Bus.<a href="../alterator-interface-service/doc/README.md">Источник</a></p>
+  <p>Методы интерфейса:</p>
+  <ul>
+    <li><code>Info()</code> — возвращает Alterator Entry сущности service в виде массива байтов stdout и код возврата.<a href="../alterator-interface-service/doc/README.md">Источник</a></li>
+    <li><code>Deploy(stdin)</code>, <code>Configure(stdin)</code>, <code>Undeploy(stdin)</code>, <code>Backup(stdin)</code>, <code>Restore(stdin)</code> — принимают параметры в виде строки, передаваемой в стандартный ввод процесса.<a href="../alterator-interface-service/doc/README.md">Источник</a></li>
+    <li><code>Start()</code> и <code>Stop()</code> — управляют systemd юнитами, связанными с сервисом, возвращая код возврата.<a href="../alterator-interface-service/doc/README.md">Источник</a></li>
+    <li><code>Status()</code> — выдаёт массив байтов со статусом сервиса и код возврата.<a href="../alterator-interface-service/doc/README.md">Источник</a></li>
+  </ul>
+  <p>Сигналы:</p>
+  <ul>
+    <li><code>service_stdout_signal</code> — передаёт строки стандартного вывода.<a href="../alterator-interface-service/doc/README.md">Источник</a></li>
+    <li><code>service_stderr_signal</code> — передаёт строки стандартного потока ошибок.<a href="../alterator-interface-service/doc/README.md">Источник</a></li>
+  </ul>
+  <p>Все параметры управления подаются в stdin запускаемого процесса, что упрощает интеграцию с shell-скриптами сервисных пакетов.</p>
+</body>
+</html>

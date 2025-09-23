@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>3.3. Модуль executor</title>
+</head>
+<body>
+  <h1>3.3. Модуль executor</h1>
+  <p>Модуль executor предназначен для выполнения внешних команд, описанных в backend-файлах, и передачи результатов через D-Bus. Модуль зарегистрирован под именем <code>executor</code> и экспортирует интерфейс <code>org.altlinux.alterator.executor</code>.<a href="../alterator-module-executor/executor.h">Источник</a></p>
+  <p>Ключевые параметры методов:</p>
+  <ul>
+    <li><code>execute</code> — обязательная команда shell.<a href="../alterator-module-executor/executor.h">Источник</a></li>
+    <li><code>stdout_signal_name</code> и <code>stderr_signal_name</code> — имена сигналов для асинхронной передачи строк.<a href="../alterator-module-executor/executor.h">Источник</a></li>
+    <li><code>stdout_strings_limit</code>, <code>stdout_byte_limit</code>, <code>stderr_strings_limit</code> — ограничения буферов вывода.<a href="../alterator-module-executor/executor.h">Источник</a></li>
+    <li><code>stdin_string</code> — флаг передачи последнего аргумента в стандартный ввод процесса.<a href="../alterator-module-executor/executor.h">Источник</a></li>
+    <li><code>timeout</code> — ограничение по времени выполнения.<a href="../alterator-module-executor/executor.h">Источник</a></li>
+  </ul>
+  <p>Структура <code>MethodInfo</code> хранит команду, параметры сигналов, набор переменных окружения и ограничения по потокам и времени.<a href="../alterator-module-executor/executor.h">Источник</a></p>
+  <p>Во время вызова создаётся объект <code>ThreadFuncParam</code>, содержащий ссылки на D-Bus вызов, соединение, параметры вывода и счётчики. Он обеспечивает передачу stdout/stderr как строки, байтовые массивы или JSON, в зависимости от настроек метода.<a href="../alterator-module-executor/executor.h">Источник</a></p>
+  <p>Модуль поддерживает ограничения параллельного выполнения через поля <code>thread_limit</code> и <code>thread_counter</code> как на уровне интерфейса, так и метода.<a href="../alterator-module-executor/executor.h">Источник</a></p>
+</body>
+</html>

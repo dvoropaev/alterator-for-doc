@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>2.4. Типы сущностей и примеры</title>
+</head>
+<body>
+  <h1>2.4. Типы сущностей и примеры</h1>
+  <p>Alterator Entry описывает разные сущности платформы; тип указывается в группе <code>[Type]</code> и влияет на обработку и расположение файла.<a href="../alterator-entry/doc/README.md">Источник</a></p>
+  <ul>
+    <li><strong>Application</strong> — прикладной интерфейс, отображающийся в панелях управления. Файл размещается в каталоге <code>applications</code> и содержит атрибуты отображения.<a href="../alterator-entry/doc/README.md">Источник</a></li>
+    <li><strong>Backend</strong> — описание D-Bus интерфейса и соответствующего модуля. Ключи <code>module</code>, <code>name</code>, <code>interface</code>, <code>thread_limit</code> и <code>action_id</code> определяют поведение.<a href="../alterator-manager/docs/README-ru.md">Источник</a></li>
+    <li><strong>Category</strong> — классификатор приложений и сервисов для группировки в интерфейсе.<a href="../alterator-entry/doc/README.md">Источник</a></li>
+    <li><strong>Diag/Diagnostictool</strong> — инструмент диагностики; допускает расширение <code>.diag</code> для краткой записи.<a href="../alterator-entry/doc/README.md">Источник</a></li>
+    <li><strong>Object</strong> — описание составных объектов с возможностью замещения и указания зависимостей.<a href="../alterator-entry/doc/README.md">Источник</a></li>
+    <li><strong>Component</strong> и <strong>Service</strong> — сущности для управления развертыванием и конфигурацией сервисов; взаимодействуют с методами интерфейса service1.<a href="../alterator-entry/doc/README.md">Источник</a><a href="../alterator-interface-service/doc/README.md">Источник</a></li>
+  </ul>
+  <p>Для backend-файлов рекомендуется использовать полные имена интерфейсов вида <code>org.altlinux.alterator.&lt;name&gt;</code> или краткие имена, которые будут дополнены префиксом автоматически.<a href="../alterator-manager/docs/README-ru.md">Источник</a></p>
+</body>
+</html>

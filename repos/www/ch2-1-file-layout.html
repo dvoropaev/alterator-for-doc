@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>2.1. Структура каталогов и именование</title>
+</head>
+<body>
+  <h1>2.1. Структура каталогов и именование</h1>
+  <p>Файлы Alterator Entry именуются по шаблону <code>&lt;Name&gt;.&lt;Type&gt;</code>, где <code>&lt;Type&gt;</code> соответствует значению ключа <code>Type</code> в содержимом. Для типа <code>diagnostictool</code> допустимо сокращение <code>.diag</code>.<a href="../alterator-entry/doc/README.md">Источник</a></p>
+  <p>Каталоги хранения разделены по режиму применения:</p>
+  <ul>
+    <li><code>/usr/share/alterator/&lt;категория&gt;/</code> — системные сущности, устанавливаемые пакетами.<a href="../alterator-entry/doc/README.md">Источник</a></li>
+    <li><code>/etc/alterator/&lt;категория&gt;/</code> — конфигурации и расширения, созданные администраторами.<a href="../alterator-entry/doc/README.md">Источник</a></li>
+    <li><code>backends/user/</code> — пользовательские backend-файлы, применяемые в режиме <code>--user</code>.<a href="../alterator-entry/doc/README.md">Источник</a></li>
+  </ul>
+  <p>Наиболее употребимые каталоги:</p>
+  <table border="1">
+    <thead>
+      <tr><th>Тип сущности</th><th>Каталог</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Application</td><td>applications</td></tr>
+      <tr><td>Backend</td><td>backends</td></tr>
+      <tr><td>Category</td><td>categories</td></tr>
+      <tr><td>Diag</td><td>diags</td></tr>
+      <tr><td>Object</td><td>objects</td></tr>
+      <tr><td>Service</td><td>services</td></tr>
+      <tr><td>Component</td><td>components</td></tr>
+    </tbody>
+  </table>
+  <p>Соблюдение структуры гарантирует корректную загрузку описаний и минимизирует риск конфликтов при обновлениях.</p>
+</body>
+</html>

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>3.1. Служба alterator-manager</title>
+</head>
+<body>
+  <h1>3.1. Служба alterator-manager</h1>
+  <p>alterator-manager — основная служба, запускаемая как systemd unit, которая сканирует каталоги backend-файлов, загружает описания и регистрирует объекты D-Bus.<a href="../alterator-manager/docs/README-ru.md">Источник</a></p>
+  <p>Ключевые задачи службы:</p>
+  <ul>
+    <li>Чтение backend-файлов из каталогов <code>/usr/share/alterator/backends/</code>, <code>/usr/share/alterator/backends/system/</code>, <code>/etc/alterator/backends/</code> и <code>/etc/alterator/backends/system/</code> с приоритетом по порядку загрузки.<a href="../alterator-manager/docs/README-ru.md">Источник</a></li>
+    <li>Поддержка пользовательского режима, при котором анализируются каталоги <code>/usr/share/alterator/backends/user/</code> и <code>/etc/alterator/backends/user/</code>.<a href="../alterator-manager/docs/README-ru.md">Источник</a></li>
+    <li>Игнорирование дубликатов интерфейсов на одном объекте для предотвращения конфликтов описаний.<a href="../alterator-manager/docs/README-ru.md">Источник</a></li>
+    <li>Запуск модулей обработки и предоставление интерфейсов по дереву объектов D-Bus.</li>
+  </ul>
+  <p>Служба взаимодействует с polkit через <code>action_id</code> и применяет ограничения <code>thread_limit</code>, заданные в backend-файлах, для контроля параллельного выполнения.<a href="../alterator-manager/docs/README-ru.md">Источник</a></p>
+</body>
+</html>

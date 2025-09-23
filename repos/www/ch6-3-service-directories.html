@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>6.3. Каталоги сервисных пакетов</title>
+</head>
+<body>
+  <h1>6.3. Каталоги сервисных пакетов</h1>
+  <p>Сервисные решения расположены в подкаталогах <code>repos/alterator-service-*</code> и содержат скрипты, backend-файлы и документацию по управлению конкретными службами.</p>
+  <ul>
+    <li><code>alterator-service-vsftpd</code> — управление FTP-сервером VSFTPD, включает описание возможностей, CLI-опций и примеры JSON-конфигураций.<a href="../alterator-service-vsftpd/README.md">Источник</a></li>
+    <li><code>alterator-service-samba-share</code> — управление Samba-шарами, описание операций, кодов возврата и структуры <code>.service</code> файла.<a href="../alterator-service-samba-share/README.md">Источник</a></li>
+  </ul>
+  <p>Каждый каталог следует общему шаблону: документация, скрипты в <code>/usr/bin</code>, backend-файлы и unit-файлы systemd, адаптированные под интерфейс service1.<a href="../alterator-service-vsftpd/README.md">Источник</a><a href="../alterator-service-samba-share/README.md">Источник</a></p>
+</body>
+</html>

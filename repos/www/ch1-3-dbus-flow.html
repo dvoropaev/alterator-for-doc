@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>1.3. Потоки взаимодействия и роли</title>
+</head>
+<body>
+  <h1>1.3. Потоки взаимодействия и роли</h1>
+  <p>Взаимодействие компонентов строится вокруг служебной шины D-Bus. Alterator-manager считывает backend-файлы, создаёт набор объектов и привязывает к ним интерфейсы, предоставленные модулями.<a href="../alterator-manager/docs/README-ru.md">Источник</a></p>
+  <p>Общая цепочка работы:</p>
+  <ol>
+    <li>Backend-файлы описывают интерфейсы, указывают модуль обработки, имя узла и идентификатор действия для polkit.<a href="../alterator-manager/docs/README-ru.md">Источник</a></li>
+    <li>alterator-manager валидирует описание по XML-шаблонам интроспекции из `/usr/share/dbus-1/interfaces` и регистрирует методы и сигналы.<a href="../alterator-manager/docs/README-ru.md">Источник</a></li>
+    <li>Модули, такие как executor, принимают запросы, подготавливают окружение и запускают процессы согласно описанию метода.<a href="../alterator-module-executor/executor.h">Источник</a></li>
+    <li>Внешние интерфейсы, например alterator-interface-service, вызывают методы Deploy или Status и получают stdout/stdin через определённые параметры и сигналы.<a href="../alterator-interface-service/doc/README.md">Источник</a></li>
+  </ol>
+  <p>Такой поток позволяет обеспечить стандартизованное управление сервисами, передачу входных данных через stdin и получение ответов в виде байтовых массивов или строковых массивов.</p>
+</body>
+</html>

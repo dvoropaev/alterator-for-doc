@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>3.2. Обработка backend-файлов и структура данных</title>
+</head>
+<body>
+  <h1>3.2. Обработка backend-файлов и структура данных</h1>
+  <p>Backend-файл описывает один интерфейс объекта. Служба читает файлы последовательно, формируя карту <code>backends_data</code>, где ключом выступает имя узла в дереве D-Bus.<a href="../alterator-manager/docs/README-ru.md">Источник</a></p>
+  <p>Ключевые поля корневой таблицы:</p>
+  <ul>
+    <li><code>type</code> — тип сущности, для backend всегда <code>Backend</code>.<a href="../alterator-manager/docs/README-ru.md">Источник</a></li>
+    <li><code>module</code> — имя модуля, который обрабатывает методы.<a href="../alterator-manager/docs/README-ru.md">Источник</a></li>
+    <li><code>name</code> — имя узла в дереве объектов.<a href="../alterator-manager/docs/README-ru.md">Источник</a></li>
+    <li><code>interface</code> — имя D-Bus интерфейса; при указании краткого имени префикс <code>org.altlinux.alterator.</code> добавляется автоматически.<a href="../alterator-manager/docs/README-ru.md">Источник</a></li>
+    <li><code>thread_limit</code> и <code>action_id</code> — параметры контроля параллелизма и интеграции с polkit.<a href="../alterator-manager/docs/README-ru.md">Источник</a></li>
+  </ul>
+  <p>Структура данных alterator-manager:</p>
+  <ul>
+    <li><code>backends_data</code> — отображение узлов в набор интерфейсов.</li>
+    <li><code>InterfaceObjectInfo</code> — хранит имя модуля, интроспекцию, таблицу методов, vtable, ограничения потоков и action_id.<a href="../alterator-manager/docs/README-ru.md">Источник</a></li>
+    <li><code>MethodObjectInfo</code> — содержит данные метода из backend-файла и сведения об окружении.<a href="../alterator-manager/docs/README-ru.md">Источник</a></li>
+  </ul>
+  <p>Секция <code>[methods.&lt;имя&gt;]</code> описывает каждый метод: допустимы латинские буквы, цифры и подчёркивания, а содержимое зависит от используемого модуля.<a href="../alterator-manager/docs/README-ru.md">Источник</a></p>
+  <p>Валидация интерфейсов выполняется по файлам интроспекции из <code>/usr/share/dbus-1/interfaces</code>. Несоответствие методам шаблона считается ошибкой.<a href="../alterator-manager/docs/README-ru.md">Источник</a></p>
+</body>
+</html>

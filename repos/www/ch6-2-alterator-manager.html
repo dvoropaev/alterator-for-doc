@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>6.2. Каталог alterator-manager</title>
+</head>
+<body>
+  <h1>6.2. Каталог alterator-manager</h1>
+  <p>Каталог <code>repos/alterator-manager</code> содержит реализацию системной службы alterator-manager, исходные файлы C и документацию по формату backend.<a href="../alterator-manager/docs/README-ru.md">Источник</a></p>
+  <p>Важные элементы:</p>
+  <ul>
+    <li><code>docs/README-ru.md</code> — описание формата backend-файлов, структуры данных и процесса валидации.<a href="../alterator-manager/docs/README-ru.md">Источник</a></li>
+    <li><code>alterator_manager_*.c</code> — исходные файлы, реализующие работу с D-Bus и polkit.<a href="../alterator-manager">Источник</a></li>
+    <li><code>org.altlinux.alterator-manager.service</code> — unit-файл systemd для запуска службы.<a href="../alterator-manager/org.altlinux.alterator-manager.service">Источник</a></li>
+  </ul>
+  <p>При сопровождении службы следует опираться на документацию из каталога <code>docs/</code> для поддержания совместимости backend-описаний.</p>
+</body>
+</html>

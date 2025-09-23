@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>1.2. Компоненты верхнего уровня</title>
+</head>
+<body>
+  <h1>1.2. Компоненты верхнего уровня</h1>
+  <p>Основные элементы платформы распределены по специализированным пакетам и репозиториям. Каждый компонент реализует свою часть жизненного цикла обслуживания.</p>
+  <ul>
+    <li><strong>alterator-manager</strong> — системная служба, читающая backend-файлы, формирующая дерево D-Bus объектов и загружающая модули обработки.<a href="../alterator-manager/docs/README-ru.md">Источник</a></li>
+    <li><strong>alterator-interface-service</strong> — интерфейс управления сервисами, предоставляющий методы Deploy, Configure, Start, Stop, Backup, Restore и Status с передачей данных через stdin/stdout.<a href="../alterator-interface-service/doc/README.md">Источник</a></li>
+    <li><strong>alterator-entry</strong> — библиотека и набор схем, обеспечивающий спецификацию файлов Alterator Entry и их проверку.<a href="../alterator-entry/doc/README.md">Источник</a></li>
+    <li><strong>Сервисные пакеты</strong> — специализированные инструменты, реализующие управление конкретными сервисами, например VSFTPD и Samba share, с поддержкой всех стадий обслуживания.<a href="../alterator-service-vsftpd/README.md">Источник</a><a href="../alterator-service-samba-share/README.md">Источник</a></li>
+    <li><strong>Диагностические инструменты</strong> — прикладные программы, такие как ADT, предназначенные для проверки состояния системы и интегрированные в экосистему Alterator.<a href="../adt/README.md">Источник</a></li>
+  </ul>
+  <p>Понимание назначения каждого пакета позволяет правильно организовать D-Bus взаимодействия и построить собственные расширения.</p>
+</body>
+</html>
