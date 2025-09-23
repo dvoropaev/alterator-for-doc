@@ -1,0 +1,8 @@
+type = "Application"
+name = "alterator-object-run"
+exec = "/usr/lib/alterator-module-legacy/alterator-object-run %o"
+interface = "org.altlinux.alterator.legacy"
+display_name.en = "Alterator application runner by object path"
+display_name.ru = "Запуск приложений альтератор по имени объекта"
+comment.en = "Application running alterator objects via D-Bus with XServer DISPLAY and AUTHORITY environment"
+comment.ru = "Приложение запускающее объекты альтератора через D-Bus в окружении DISPLAY and AUTHORITY для XServer"

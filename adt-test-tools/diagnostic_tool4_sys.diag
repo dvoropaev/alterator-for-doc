@@ -1,0 +1,163 @@
+name = "diagnostic_tool4"
+type = "Diag"
+category = "adtCategory"
+icon = "system-run"
+report_suffix = "zip"
+display_name.en = "defautl diagnostic tool 4 sys"
+display_name.ru = "диагностический инструмент 4 sys"
+comment.en = "default description diag tool 4 sys"
+comment.ru = "описание диагностического инструмента 4 sys"
+
+[parameters.common]
+display_name.en = "common_sys"
+display_name.ru = "common_int sys"
+comment.en = "This is mode comment for common in diagnostic_tool4"
+comment.ru = "Это комментарий для common диагностического инструмента 4"
+type = "int"
+value = 100
+
+[parameters.mode]
+display_name.en = "mode"
+display_name.ru = "режим"
+comment.en = "This is mode comment for diagnostic tool 4"
+comment.ru = "Это комментарий для диагностического инструмента 4"
+type = "enum"
+enum_values = { type = "string", values = ["first", "second value", "third"], default = "first" }
+
+[parameters.param1]
+display_name.en = "param1"
+display_name.ru = "параметр1"
+comment.en = "This is mode comment for param1 in diagnostic_tool4"
+comment.ru = "Это комментарий для параметра 1 диагностического инструмента 4"
+type = "int"
+value = 100
+
+[parameters.param2]
+display_name.en = "param2"
+display_name.ru = "параметр2"
+comment.en = "This is mode comment for param2 in diagnostic_tool4"
+comment.ru = "Это комментарий для параметра 2 диагностического инструмента 4"
+type = "int"
+value = 10
+
+[parameters.param3]
+display_name.en = "param3"
+display_name.ru = "параметр3"
+comment.en = "This is mode comment for param3 in diagnostic_tool4"
+comment.ru = "Это комментарий для параметра 3 диагностического инструмента 4"
+type = "int"
+value = 10
+
+[parameters.param4]
+display_name.en = "param4"
+display_name.ru = "параметр4"
+comment.en = "This is mode comment for param4 in diagnostic_tool4"
+comment.ru = "Это комментарий для параметра 4 диагностического инструмента 4"
+type = "int"
+value = 10
+
+[parameters.param5]
+display_name.en = "param5"
+display_name.ru = "параметр5"
+comment.en = "This is mode comment for param5 in diagnostic_tool4_sys"
+comment.ru = "Это комментарий для параметра 5 диагностического инструмента 4_sys"
+type = "string"
+value = "this is value"
+
+[parameters.param6]
+display_name.en = "param6"
+display_name.ru = "параметр6"
+comment.en = "This is mode comment for param6 in diagnostic_tool4_sys"
+comment.ru = "Это комментарий для параметра 6 диагностического инструмента 4_sys"
+type = "string"
+value = "some string"
+
+[parameters.param7]
+display_name.en = "param7"
+display_name.ru = "параметр7"
+comment.en = "This is mode comment for param7 in diagnostic_tool4_sys"
+comment.ru = "Это комментарий для параметра 7 диагностического инструмента 4_sys"
+type = "string"
+value = "mom was washing the frame"
+
+[parameters.param8]
+display_name.en = "param8"
+display_name.ru = "параметр8"
+comment.en = "This is mode comment for param8 in diagnostic_tool4_sys"
+comment.ru = "Это комментарий для параметра 8 диагностического инструмента 4_sys"
+type = "string"
+value = "another value"
+
+[parameters.param9]
+display_name.en = "param9"
+display_name.ru = "параметр9"
+comment.en = "This is comment for param9 (enum int) with default mandatory"
+comment.ru = "Это комментарий для параметра9 типа enum int со значением по умолчанию"
+type = "enum"
+enum_values = { type = "int", values = [1, 2, 3], default = 1 }
+
+[parameters.param10]
+display_name.en = "param10"
+display_name.ru = "параметр10"
+comment.en = "This is comment for param10 (enum int) without default"
+comment.ru = "Это комментарий для параметра типа enum int со без значения по умолчанию"
+type = "enum"
+enum_values = { type = "int", values = [1, 2, 3] }
+
+[parameters.param11]
+display_name.en = "param11"
+display_name.ru = "параметр11"
+comment.en = "This is comment for param11 (enum int) with default"
+comment.ru = "Это комментарий для параметра11 типа enum int со значением по умолчанию"
+type = "enum"
+enum_values = { type = "int", values = [1, 2, 3], default = 3}
+
+[parameters.param12]
+display_name.en = "param12"
+display_name.ru = "параметр12"
+comment.en = "This is comment for param12 (enum int) without default"
+comment.ru = "Это комментарий для параметра12 типа enum int без значения по умолчанию"
+type = "enum"
+enum_values = { type = "int", values = [1, 2, 3] }
+
+[parameters.param13]
+display_name.en = "param13"
+display_name.ru = "параметр13"
+comment.en = "This is comment for param13 (enum int) with default"
+comment.ru = "Это комментарий параметра13 типа enum int co значением по умолчанию"
+type = "enum"
+enum_values = { type = "int", values = [1, 2, 3], default = 1 }
+
+[parameters.param14]
+display_name.en = "param14"
+display_name.ru = "параметр14"
+comment.en = "This is comment param14 (enum int) with wrong default"
+comment.ru = "Это комментарий для параметра14 типа enum int c ошибочным значением по умолчанию"
+type = "enum"
+enum_values = { type = "int", values = [1, 2, 3], default = 10 }
+
+[parameters.param15]
+display_name.en = "param15"
+display_name.ru = "параметр15"
+comment.en = "This is comment for mandatory param15 WRONG TYPE(enum int) with default"
+comment.ru = "Это комментарий для параметра15 с ошибкой типа enum int co значением по умолчанию"
+type = "enum"
+enum_values = { type = "int", values = [1, 2], default = 1 }
+
+[tests.test1]
+display_name.en = "default name of test 1 of diagnostic tool 4 sys"
+display_name.ru = "тест 1 диагностического инструмента 4 sys"
+comment.en = "default description of test 1 in diagnostic tool 4 sys"
+comment.ru = "описание теста 1 диагностического инструмента 4 sys"
+
+[tests.test2]
+display_name.en = "default name of test 2 of diagnostic tool 4 sys"
+display_name.ru = "тест 2 диагностического инструмента 4 sys"
+comment.en = "default description of test 2 in diagnostic tool 4 sys"
+comment.ru = "описание теста 2 диагностического инструмента 4 sys"
+
+[tests.test3]
+display_name.en = "default name of test 3 of diagnostic tool 4 sys"
+display_name.ru = "тест 3 диагностического инструмента 4 sys"
+comment.en = "default description of test 3 in diagnostic tool 4 sys"
+comment.ru = "описание теста 3 диагностического инструмента 4 sys"

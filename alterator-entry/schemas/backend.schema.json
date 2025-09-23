@@ -1,0 +1,116 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Alterator Backend",
+    "type": "object",
+    "$comment": "TODO(chernigin): figure out actually required properties",
+    "propertyNames": {
+        "enum": [
+            "type",
+            "name",
+            "module",
+            "interface",
+            "action_id",
+            "thread_limit",
+            "methods"
+        ]
+    },
+    "required": [
+        "type",
+        "name",
+        "module",
+        "interface",
+        "methods"
+    ],
+    "properties": {
+        "type": {
+            "type": "string",
+            "const": "Backend"
+        },
+        "name": {
+            "type": "string"
+        },
+        "module": {
+            "type": "string"
+        },
+        "interface": {
+            "$comment": "TODO(chernigin): add examples",
+            "type": "string"
+        },
+        "action_id": {
+            "type": "string"
+        },
+        "thread_limit": {
+            "type": "integer",
+            "$comment": "TODO(chernigin): figure out if thread_limit could be 0",
+            "minimum": 1
+        },
+        "methods": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "object",
+                "propertyNames": {
+                    "enum": [
+                        "execute",
+                        "timeout",
+                        "thread_limit",
+                        "stdout_strings",
+                        "stderr_strings",
+                        "stdout_bytes",
+                        "stdout_byte_limit",
+                        "stdout_strings_limit",
+                        "stderr_strings_limit",
+                        "stdout_signal_name",
+                        "stderr_signal_name",
+                        "action_id"
+                    ]
+                },
+                "properties": {
+                    "execute": {
+                        "type": "string"
+                    },
+                    "timeout": {
+                        "type": "number",
+                        "units": "seconds",
+                        "$comment": "NOTE(chernigin): 0 means wait infinitely",
+                        "minimum": 0
+                    },
+                    "thread_limit": {
+                        "type": "number",
+                        "$comment": "TODO(chernigin): figure out if thread_limit could be 0",
+                        "minimum": 1
+                    },
+                    "stdout_strings": {
+                        "type": "boolean"
+                    },
+                    "stdout_bytes": {
+                        "type": "boolean"
+                    },
+                    "stderr_strings": {
+                        "type": "boolean"
+                    },
+                    "stdout_byte_limit": {
+                        "type": "number",
+                        "minimum": 0
+                    },
+                    "stdout_strings_limit": {
+                        "type": "number",
+                        "minimum": 0
+                    },
+                    "stderr_strings_limit": {
+                        "type": "number",
+                        "minimum": 0
+                    },
+                    "stdout_signal_name": {
+                        "type": "string"
+                    },
+                    "stderr_signal_name": {
+                        "type": "string"
+                    },
+                    "action_id": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}

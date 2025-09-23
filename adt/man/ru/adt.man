@@ -1,0 +1,79 @@
+'\" 
+.TH "ALT_DIAGNOSTIC_TOOL" "1" "Aprile 2024" "ALT\-DIAGNOSTIC\-TOOL @VERSION@" "Manual ALT_DIAGNOSTIC_TOOL"
+.SH NAME
+.B ADT (Alt Diagnostic Tool)
+.SH SYNOPSYS
+.B adt
+[\fI\,options\/\fR] [\fI\,tool\/\fR]
+.br
+.B adt
+-r [\fI\,tool\/\fR] -t [\fI\,test\/\fR]
+.br
+.B adt
+-R [\fI\,tool\/\fR] -f [\fI\,file\/\fR]
+
+
+.SH DESCRIPTION
+.B ALT Diagnostic tool
+Приложение для диагностики операционной системы с графическим и терминальным интерфейсом.
+
+.PP
+.B ALT Diagnostic tool
+предоставляет следующие возможности:
+ \- Проводить диагностику системы посредством набора подготовленных утилит;
+ \- Выводить на экран результаты диагностики;
+ \- Сохранять файл журнала с результатами диагностики;
+ \- Выполнять операции, требующие привилегий, от учетной записи непривилигированного пользователя.
+
+
+.SH OPTIONS
+.TP
+.B \-h, \-\-help
+Показать справку.
+.TP
+.B \-\-help\-all
+Показать справку, включая специальные опции Qt
+.TP
+.B \-v, \-\-version  
+Показать информацию о версии
+.TP
+.B \-l, \-\-list
+Список доступных инструментов
+.TP
+.B \-o, \-\-object <tool>
+Список тестов указанного инструмента
+.TP
+.B \-r, \-\-run <tool>
+Запуск тестов указанного инструмента. Если тест не указан, все тесты будут запущены.
+.TP
+.B \-t, \-\-test <test> 
+Имя теста для запуска
+.TP
+.B \-R, \-\-Report <tool>
+Получить отчет инструмента. Инструмент должен быть указан.
+.TP
+.B \-f, \-\-file <file>
+В какой файл сохранить отчет.
+.TP
+.B \-g, \-\-graph
+Если указана данная опция, то будет использоваться графический интерфейс, в противном случае - командная строка
+
+
+.SH USAGE
+Перед работой необходимо установить набор необходимых диагностических инструментов 
+ # apt-get update
+ # apt-get install <имя требуемого диагностического инструмента>
+
+После установки диагностических инструментов требуется запустить \fB\,alterator\-manager\/\fR:
+ # systemctl start alterator\-manager.service
+ # systemctl enable alterator\-manager.service
+
+Или перезапустить, если \fB\,alterator\-manager\/\fR был уже запущен:
+ # systemctl restart alterator\-manager.service
+
+
+.SH AUTHOR
+.SH REPORTING BUGS
+Отправить замечания на http://bugzilla.altlinux.org/
+.SH COPYRIGHT
+.br

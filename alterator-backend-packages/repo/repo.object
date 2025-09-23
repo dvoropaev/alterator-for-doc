@@ -1,0 +1,6 @@
+type            = "Object"
+name            = "amp-repo"
+display_name.en = "Repo"
+comment.en      = "Alterator interface for apt-repo"
+comment.ru      = "Интерфейс Альтератора для apt-repo"
+category        = "componentsCategory"

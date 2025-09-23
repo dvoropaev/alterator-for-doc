@@ -1,0 +1,9 @@
+type = "Backend"
+module = "executor"
+name = "componentsApp"
+interface = "application1"
+
+[methods.Info]
+execute = "cat /usr/share/alterator/applications/components-app.application"
+stdout_bytes = true
+action_id = "Info"

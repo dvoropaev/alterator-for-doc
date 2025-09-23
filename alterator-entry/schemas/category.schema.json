@@ -1,0 +1,62 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Alterator Category",
+    "type": "object",
+    "propertyNames": {
+        "enum": [
+            "type",
+            "name",
+            "draft",
+            "display_name",
+            "short_display_name",
+            "comment",
+            "category",
+            "icon"
+        ]
+    },
+    "required": [
+        "type",
+        "name"
+    ],
+    "properties": {
+        "type": {
+            "type": "string",
+            "const": "Category"
+        },
+        "name": {
+            "type": "string"
+        },
+        "draft": {
+            "type": "boolean"
+        },
+        "display_name": {
+            "$ref": "#/definitions/field_with_locale"
+        },
+        "short_display_name": {
+            "$ref": "#/definitions/field_with_locale"
+        },
+        "comment": {
+            "$ref": "#/definitions/field_with_locale"
+        },
+        "category": {
+            "type": "string"
+        },
+        "icon": {
+            "type": "string"
+        }
+    },
+    "definitions": {
+        "field_with_locale": {
+            "type": "object",
+            "propertyNames": {
+                "pattern": "^[a-z]{2}(_[A-Z]{2})?$"
+            },
+            "additionalProperties": {
+                "type": "string"
+            },
+            "required": [
+                "en"
+            ]
+        }
+    }
+}

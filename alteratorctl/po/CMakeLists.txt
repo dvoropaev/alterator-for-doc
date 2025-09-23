@@ -1,0 +1,24 @@
+set(LANG_DIR "/alteratorctl/lang/ru/LC_MESSAGES")
+
+set(PO_FILES ${CMAKE_CURRENT_SOURCE_DIR}/alteratorctl.po)
+set(MO_FILES ${CMAKE_CURRENT_SOURCE_DIR}/alteratorctl.mo)
+set(MSGFMT_EXECUTABLE "/usr/bin/msgfmt")
+set(MO_FLAGS
+    ${PO_FILES}
+    -o
+    ${MO_FILES})
+
+add_custom_target(
+    generated_files
+    ALL
+    COMMAND ${MSGFMT_EXECUTABLE} ${MO_FLAGS}
+    DEPENDS ${PO_FILES}
+    COMMENT "Running ${MSGFMT_EXECUTABLE} ${MO_FLAGS}"
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    VERBATIM
+)
+
+install(FILES ${MO_FILES}
+        DESTINATION "${CMAKE_INSTALL_FULL_DATAROOTDIR}/${LANG_DIR}"
+        PERMISSIONS OWNER_READ GROUP_READ WORLD_READ)
+

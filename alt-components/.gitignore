@@ -1,0 +1,11 @@
+.*
+!.gitignore
+!.gear
+!.forgejo
+
+build/
+CMakeLists.txt.user*
+
+*.tr.qrc
+*.qm
+*~

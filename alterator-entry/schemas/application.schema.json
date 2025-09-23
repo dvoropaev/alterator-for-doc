@@ -1,0 +1,66 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Alterator Application",
+    "type": "object",
+    "propertyNames": {
+        "enum": [
+            "type",
+            "name",
+            "exec",
+            "interface",
+            "display_name",
+            "comment",
+            "category",
+            "icon"
+        ]
+    },
+    "required": [
+        "type",
+        "name",
+        "exec",
+        "interface"
+    ],
+    "properties": {
+        "type": {
+            "type": "string",
+            "const": "Application"
+        },
+        "name": {
+            "type": "string"
+        },
+        "exec": {
+            "type": "string",
+            "$comment": "TODO(chernigin): add examples"
+        },
+        "interface": {
+            "type": "string",
+            "$comment": "TODO(chernigin): add examples"
+        },
+        "display_name": {
+            "$ref": "#/definitions/field_with_locale"
+        },
+        "comment": {
+            "$ref": "#/definitions/field_with_locale"
+        },
+        "category": {
+            "type": "string"
+        },
+        "icon": {
+            "type": "string"
+        }
+    },
+    "definitions": {
+        "field_with_locale": {
+            "type": "object",
+            "propertyNames": {
+                "pattern": "^[a-z]{2}(_[A-Z]{2})?$"
+            },
+            "additionalProperties": {
+                "type": "string"
+            },
+            "required": [
+                "en"
+            ]
+        }
+    }
+}

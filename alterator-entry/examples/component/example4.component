@@ -1,0 +1,9 @@
+type = "Component"
+name = "kernel-example"
+display_name.en = "Kernel example component"
+arches = ["x86_64", "aarch64"]
+draft = true
+
+[packages]
+kernel-image = { arch = ["x86_64", "aarch64"], kernel_module = true }
+kernel-module-drm = { arch = ["x86_64", "aarch64"], kernel_module = true }

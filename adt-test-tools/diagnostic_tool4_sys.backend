@@ -1,0 +1,74 @@
+name = "diagnostic_tool4"
+type = "Backend"
+module = "executor"
+interface = "diag1"
+
+[methods.Info]
+execute = "cat /usr/share/alterator/diagnostic_tool4/diagnostic_tool4_sys.diag"
+stdout_bytes = true
+thread_limit = 3
+action_id = "Info"
+
+[methods.Run]
+execute = "/usr/lib/adt-test-tools/adt-test-tool {param}"
+stdout_signal_name = "diag1_stdout_signal"
+stderr_signal_name = "diag1_stderr_signal"
+action_id = "Run"
+
+[methods.List]
+execute = "/usr/lib/adt-test-tools/adt-test-tool -l"
+stdout_strings = true
+action_id = "List"
+
+[methods.Report]
+execute = "/usr/lib/adt-test-tools/adt-test-tool -r"
+stdout_bytes = true
+action_id = "Report"
+
+[methods.Run.environment.common]
+default = "????"
+
+[methods.Run.environment.param1]
+default = "!!"
+
+[methods.Run.environment.param2]
+default = "111"
+
+[methods.Run.environment.param3]
+default = "!!"
+
+[methods.Run.environment.param4]
+default = "!!"
+
+[methods.Run.environment.param5]
+default = "!!"
+
+[methods.Run.environment.param6]
+default = "!!"
+
+[methods.Run.environment.param7]
+default = "!!"
+
+[methods.Run.environment.param8]
+default = "!!"
+
+[methods.Run.environment.param9]
+default = "!!"
+
+[methods.Run.environment.param10]
+default = "!!"
+
+[methods.Run.environment.param11]
+default = "!!"
+
+[methods.Run.environment.param12]
+default = "!!"
+
+[methods.Run.environment.param13]
+default = "!!"
+
+[methods.Run.environment.param14]
+default = "!!"
+
+[methods.Run.environment.param15]
+default = "!!"

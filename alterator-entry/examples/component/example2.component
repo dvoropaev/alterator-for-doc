@@ -1,0 +1,16 @@
+type = "Component"
+name = "rust_dev_tools"
+category = "example_comp_cat2"
+tags = ["development"]
+display_name.en = "Rust development tools"
+display_name.ru = "Инструменты разработки Rust"
+short_display_name.en = "Rust"
+short_display_name.ru = "Rust"
+comment.en = "This component is meant just for testing and provides everything you need to develop basic Rust applications"
+comment.ru = "Это тестовый компонент, который предоставляет всё, что нужно для разработки на Rust"
+arches = ["x86_64", "aarch64"]
+
+[packages]
+rust = {}
+rust-cargo = {}
+rust-analyzer = {}

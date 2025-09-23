@@ -1,0 +1,71 @@
+#!/bin/bash -e
+
+prog="Diagnostic Tool"
+version="0.0.1"
+runcmd=run
+
+show_usage() {
+    echo "Test diagnostic tool"
+    echo ""
+    echo "Usage: $PROG [options] [<check/test-function-name>]"
+    echo ""
+    echo "<check/test-function-name> must be a function name from the list of tests"
+    echo ""
+    echo "Options:"
+    echo "  -h, --help         This message"
+    echo "  -V, --version      Display version number"
+    echo "  -l, --list         List of tests"
+    echo "  -r, --report       Send report"
+    echo ""
+    return
+}
+
+print_version() {
+    echo "$prog" ": " "$version"
+    exit 0;
+}
+
+report() {
+    current_date=$(date +"%Y-%m-%d_%H:%M")
+    filename="/tmp/report_$current_date.txt"
+    archive_name="/tmp/report_$current_date.zip"
+    cat >"${filename}" <<EOF
+Begin report:
+Body of report:
+End of report:
+EOF
+    zip -mqj "${archive_name}" "$filename"
+    cat "${archive_name}"
+    rm -rf "${archive_name}"
+}
+
+if [ "$#" -eq 2 ]
+then
+  source /usr/lib/test-services/$1/tests
+
+  case "$2" in
+    -h | --help) show_usage
+    ;;
+    -l | --list) listcmd=1
+    ;;
+    -v | --version) print_version
+    ;;
+    -r | --report) report
+    ;;
+    test1) test1
+    ;;
+    test2) test2
+    ;;
+    test3) test3 || exit 1
+    ;;
+    *) echo "Unrecognized option: $1" ; show_usage ; exit 1
+    ;;
+  esac
+else
+    show_usage
+    exit 1
+fi
+#
+if ! test -z $listcmd; then
+    list
+fi

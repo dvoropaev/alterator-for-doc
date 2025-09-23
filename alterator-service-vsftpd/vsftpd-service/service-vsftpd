@@ -1,0 +1,505 @@
+#!/usr/bin/env bash
+# shellcheck disable=SC2034
+# shellcheck disable=SC1091
+# shellcheck disable=SC2086
+# shellcheck disable=SC2317
+# shellcheck disable=SC3037
+# shellcheck disable=SC2012
+
+set -euo pipefail
+
+. shell-getopt
+. shell-ini-config
+
+show_usage() {
+    cat <<EOF
+Usage: $PROG_NAME [OPTIONS]
+
+Tool for managing Samba Active Directory Domain Controller.
+
+Options:
+  -h, --help          Show this help message and exit.
+  -v, --version       Show program's version number and exit.
+  -u, --undeploy      Undeploy the service and roll back to the settings
+                      that were in place before the deployment
+  -d, --deploy        Deploy the service while preserving previous settings
+  -b, --backup        Backup Vsftpd data.
+  -r, --restore       Restore Vsftpd data from backup.
+                      (Requires JSON input with restore parameters).
+  -s, --status        Show the current status of the Vsftpd deployment.
+  --start             Start the Vsftpd service.
+  --stop              Stop the Vsftpd service.
+  --configure         Configure the Vsftpd service.
+                      (Requires JSON input with configuration parameters).
+
+Input for provision, join, demote, restore, and configure modes is expected
+as a JSON object via standard input.
+
+EOF
+    exit 0
+}
+
+show_version() {
+    echo "$PROG_NAME version $VERSION"
+    exit 0
+}
+
+PROG_NAME="${0##*/}"
+VERSION="0.1"
+MODE="provision"
+GLOBAL_EXIT=0
+input_json=
+entryfile=/usr/share/alterator/service/service-vsftpd.service
+
+OPTIONS_LIST="help,
+              version,
+              undeploy,
+              deploy,
+              restore,
+              backup,
+              status,
+              start,
+              stop,
+              configure"
+
+OPTIONS_SHORT_LIST="h,v,u,d,b,r,s"
+
+TEMP=$(getopt -n "$PROG_NAME" -o "$OPTIONS_SHORT_LIST" -l "$OPTIONS_LIST" -- "$@")
+eval set -- "$TEMP"
+
+while :; do
+    case "$1" in
+        -h|--help)
+            show_usage
+            ;;
+        -v|--version)
+            show_version
+            ;;
+        -u|--undeploy)
+            MODE="undeploy"
+            ;;
+        -d|--deploy)
+            MODE="deploy"
+            ;;
+        -r|--restore)
+            MODE="restore"
+            ;;
+        -b|--backup)
+            MODE="backup"
+            ;;
+        -s|--status)
+            MODE="status"
+            ;;
+        --start)
+            MODE="start"
+            ;;
+        --stop)
+            MODE="stop"
+            ;;
+        -c|--configure)
+            MODE="configure"
+            ;;
+        --) shift; break
+            ;;
+        *) fatal "Unrecognized option: $1"
+            ;;
+    esac
+    shift
+done
+
+
+get_json_value() {
+    local json="$1"
+    local key="$2"
+    local path="${3:-.}"
+    echo "$json" | jq -r --arg k "$key" "$path.[\$k]" 2>/dev/null
+}
+
+backup_config() {
+    local config_file="$1"
+    local suffix="$2"
+    local backup_dir="/etc/vsftpd/backups"
+    local timestamp=$(date +%Y%m%d%H%M%S)
+    
+    mkdir -p "$backup_dir"
+    
+    if [ ! -f "$config_file" ]; then
+        echo "Warning: Config file $config_file does not exist, creating empty one."
+        touch "$config_file"
+        chmod 600 "$config_file"
+    fi
+    
+     if [ -s "$config_file" ]; then
+        cp "$config_file" "${backup_dir}/${config_file##*/}.${timestamp}.${suffix}"
+        echo "Backup created: ${backup_dir}/${config_file##*/}.${timestamp}.${suffix}"
+    else
+        echo "Warning: Config file $config_file is empty. Backup skipped."
+        return 2  
+    fi
+}
+
+read_stdin()
+{
+    local input_json=
+    local retval=0
+
+    while read -r line; do
+        input_json+="$line"
+    done
+
+    echo "$input_json"
+    return $retval
+}
+
+upper() {
+    echo -n "$1" | tr '[:lower:]' '[:upper:]'
+}
+
+call_deploy() {
+    local retval=0
+    local args=()
+    local keys
+    local value=
+    local deployment_config_file="/usr/share/alterator-service-vsftpd/deployment-config.json"
+    input_json="$(read_stdin)"
+
+    if [ -f "$deployment_config_file" ]; then
+       echo "The service has already been deployed"
+       return 1
+    fi
+        
+    keys=$(echo "$input_json" | jq -r 'keys[]')
+
+    for key in $keys; do
+        case "$key" in
+            anonymous_enable)
+                value=$(get_json_value "$input_json" "$key" ".")
+                [ "$value" = "true" ] && args+=(anonymous_enable=YES) || args+=(anonymous_enable=NO)
+                ;;
+            local_enable)
+                value=$(get_json_value "$input_json" "$key" ".")
+                [ "$value" = "true" ] && args+=(local_enable=YES) || args+=(local_enable=NO)
+                ;;
+            write_enable)
+                value=$(get_json_value "$input_json" "$key" ".")
+                [ "$value" = "true" ] && args+=(write_enable=YES) || args+=(write_enable=NO)
+                ;;
+            listen_port)
+                value=$(get_json_value "$input_json" "$key" ".")
+                [ -n "$value" ] && args+=(listen_port="$value")
+                ;;
+            pasv_min_port)
+                value=$(get_json_value "$input_json" "$key" ".")
+                [ -n "$value" ] && args+=(pasv_min_port="$value")
+                ;;
+            pasv_max_port)
+                value=$(get_json_value "$input_json" "$key" ".")
+                [ -n "$value" ] && args+=(pasv_max_port="$value")
+                ;;
+            backup_name)
+                value=$(get_json_value "$input_json" "$key" ".")
+                [ -n "$value" ] && args+=(backup_name="$value")
+                ;;
+            *)
+                false
+                ;;
+        esac
+    done
+
+    backup_config /etc/vsftpd/conf "original"
+   
+    for setting in "${args[@]}"; do
+      key="${setting%=*}"
+      value="${setting#*=}"
+      if grep -q "^$key=" /etc/vsftpd/conf; then
+        sed -i "s/^$key=.*/$key=$value/" /etc/vsftpd/conf
+      else
+        echo "$key=$value" >> /etc/vsftpd/conf
+      fi
+    done
+    
+    if [ $retval -eq 0 ]; then
+        echo "VSFTPD successfully configured."
+    else
+        echo "ERROR: Failed to configure VSFTPD."
+    fi
+
+       mkdir -p "/usr/share/alterator-service-vsftpd"
+
+   {
+   echo '{'
+   for setting in "${args[@]}"; do
+     key="${setting%=*}"
+     value="${setting#*=}"
+     echo "\"$key\": \"$value\","
+   done
+   echo '"status": "active"'
+   echo '}'
+   } > "$deployment_config_file"
+
+    return $retval
+}
+
+call_undeploy() {
+    local retval=0
+    local deployment_config_file="/usr/share/alterator-service-vsftpd/deployment-config.json"
+    local backup_dir="/etc/vsftpd/backups"
+    local last_original_backup=""
+    
+    mapfile -t backups < <(ls -rt "$backup_dir"/conf.* 2>/dev/null)
+
+    for backup in "${backups[@]}"; do
+        if [[ "$backup" == *.original ]]; then
+            last_original_backup="$backup"
+        fi
+    done
+   
+    previous_backup="$last_original_backup"
+    
+    echo "${previous_backup}"
+
+    call_stop || {
+        echo "WARNING: Failed to disable vsftpd service" >&2
+        retval=1
+    }
+
+    cp -f "$previous_backup" /etc/vsftpd/conf || {
+        echo "ERROR: Failed to restore from backup" >&2
+        retval=1
+    }
+    
+    rm -f "$deployment_config_file" 2>/dev/null
+    rm -rf "/usr/share/alterator-service-vsftpd" 2>/dev/null
+
+    if [ $retval -eq 0 ]; then
+        echo "SUCCESS: VSFTPD has been rolled back to previous state"
+    else
+        echo "WARNING: Undeploy completed with some non-critical errors" >&2
+    fi
+
+    return $retval
+}
+
+call_backup() {
+    local retval=0
+    local backup_dir="/var/backups/vsftpd"
+    local timestamp=$(date +%Y%m%d%H%M%S)
+
+    
+    mkdir -p "$backup_dir"
+    tar -czf "${backup_dir}/vsftpd_backup_${timestamp}.tar.gz" \
+        /etc/vsftpd || retval=1
+ 
+    if [ $retval -eq 0 ]; then
+        echo "Backup created: ${backup_dir}/vsftpd_backup_${timestamp}.tar.gz"
+    else
+        echo "ERROR: Failed to create backup"
+    fi
+    
+    return $retval
+}
+
+call_restore() {
+    local backup_dir="/var/backups/vsftpd"
+    local backup_file=""
+    local retval=0
+    input_json="$(read_stdin)"
+
+    if [ ! -d "$backup_dir" ]; then
+        echo "ERROR: Backup directory $backup_dir does not exist" >&2
+        return 1
+    fi
+
+    # Пытаемся получить имя файла из JSON
+    if [ -n "$input_json" ]; then
+        backup_file=$(echo "$input_json" | jq -r '.backup_name // empty' 2>/dev/null)
+    fi
+
+    # Если backup_file не задан, ищем самый свежий бэкап
+    if [ -z "$backup_file" ]; then
+        echo "No backup_name specified, searching for latest backup..." >&2
+        backup_file=$(find "$backup_dir" -name "vsftpd_backup_*.tar.gz" -type f -printf "%T@ %p\n" | sort -n | tail -1 | cut -d' ' -f2-)
+        if [ -z "$backup_file" ]; then
+            echo "ERROR: No backup files found in $backup_dir" >&2
+            return 1
+        fi
+    else
+        # Проверяем существует ли указанный файл бэкапа
+        if [ ! -f "$backup_file" ]; then
+            echo "ERROR: Specified backup file $backup_file does not exist" >&2
+            return 1
+        fi
+    fi
+
+    echo "Trying to restore from: $backup_file" >&2
+
+    # Остальная часть функции без изменений
+    local temp_dir=$(mktemp -d)
+    
+    if ! gzip -cd "$backup_file" > "$temp_dir/backup.tar" 2>/dev/null; then
+        echo "ERROR: Failed to decompress backup file (gzip error)" >&2
+        
+        gzip -cd "$backup_file" > "$temp_dir/backup.tar" 2>/dev/null || true
+        
+        if [ ! -s "$temp_dir/backup.tar" ]; then
+            echo "CRITICAL: Complete backup corruption" >&2
+            rm -rf "$temp_dir"
+            return 1
+        fi
+    fi
+
+    tar -xf "$temp_dir/backup.tar" -C "$temp_dir" etc/vsftpd/ 2>/dev/null
+
+    if [ ! -f "$temp_dir/etc/vsftpd/conf" ]; then
+        echo "ERROR: Failed to restore conf from backup" >&2
+        rm -rf "$temp_dir"
+        return 1
+    fi
+
+    systemctl stop vsftpd 2>/dev/null || true
+
+    cp -a "$temp_dir/etc/vsftpd/." /etc/vsftpd/
+    
+    if ! systemctl start vsftpd; then
+        echo "ERROR: Failed to start vsftpd with restored configuration" >&2
+        retval=1
+    fi
+
+    rm -rf "$temp_dir"
+    
+    if [ $retval -eq 0 ]; then
+        echo "SUCCESS: Configuration restored from backup"
+    else
+        echo "WARNING: Restored with errors from backup" >&2
+    fi
+    
+    return $retval
+}
+
+call_status() {
+    local deployment_config_file="/usr/share/alterator-service-vsftpd/deployment-config.json"
+    local config_file="/etc/vsftpd/vsftpd.conf"
+    
+    if [ ! -f "$deployment_config_file" ] || [ ! -f "$config_file" ]; then
+        exit 1
+    fi
+    
+    status_output="$(cat "$deployment_config_file")"
+    echo "$status_output"
+    
+    if systemctl is-active --quiet vsftpd.service; then
+        exit 128
+    else
+        exit 127
+    fi
+}
+
+call_start() {
+    local retval=0
+    systemctl enable --now vsftpd.service || retval=1
+    return $retval
+}
+
+call_stop() {
+    local retval=0
+    systemctl disable --now vsftpd.service || retval=1
+    return $retval
+}
+
+call_configure() {
+    local retval=0
+    local args=()
+    local keys
+    local value=
+    input_json="$(read_stdin)"
+
+    keys=$(echo "$input_json" | jq -r 'keys[]')
+
+    for key in $keys; do
+        case "$key" in
+            anonymous_enable)
+                value=$(get_json_value "$input_json" "$key" ".")
+                [ "$value" = "true" ] && args+=(anonymous_enable=YES) || args+=(anonymous_enable=NO)
+                ;;
+            local_enable)
+                value=$(get_json_value "$input_json" "$key" ".")
+                [ "$value" = "true" ] && args+=(local_enable=YES) || args+=(local_enable=NO)
+                ;;
+            write_enable)
+                value=$(get_json_value "$input_json" "$key" ".")
+                [ "$value" = "true" ] && args+=(write_enable=YES) || args+=(write_enable=NO)
+                ;;
+            listen_port)
+                value=$(get_json_value "$input_json" "$key" ".")
+                [ -n "$value" ] && args+=(listen_port="$value")
+                ;;
+            pasv_min_port)
+                value=$(get_json_value "$input_json" "$key" ".")
+                [ -n "$value" ] && args+=(pasv_min_port="$value")
+                ;;
+            pasv_max_port)
+                value=$(get_json_value "$input_json" "$key" ".")
+                [ -n "$value" ] && args+=(pasv_max_port="$value")
+                ;;
+            backup_name)
+                value=$(get_json_value "$input_json" "$key" ".")
+                [ -n "$value" ] && args+=(backup_name="$value")
+                ;;
+            *)
+                false
+                ;;
+        esac
+    done
+    
+     backup_config /etc/vsftpd/vsftpd.conf "pre_configure"
+
+    for setting in "${args[@]}"; do
+    key="${setting%=*}"
+    value="${setting#*=}"
+
+    if grep -q "^$key=" /etc/vsftpd/vsftpd.conf; then
+        sed -i "s/^$key=.*/$key=$value/" /etc/vsftpd/vsftpd.conf
+    else
+        echo "$key=$value" >> /etc/vsftpd/vsftpd.conf
+    fi
+    done
+    echo "$retval"
+
+    systemctl restart vsftpd || {
+        echo "ERROR: Failed to restart vsftpd. Restoring backup..."
+        cp "/etc/vsftpd/backups/$(ls -t /etc/vsftpd/backups | head -1)" /etc/vsftpd/vsftpd.conf
+        systemctl restart vsftpd
+        retval=1
+    }
+    
+    return $retval
+}
+
+case "$MODE" in
+    deploy)
+        call_deploy || GLOBAL_EXIT=1
+        ;;
+    status)
+        call_status 
+        ;;
+    backup)
+        call_backup || GLOBAL_EXIT=1
+        ;;
+    restore)
+        call_restore || GLOBAL_EXIT=1
+        ;;
+    start)
+        call_start || GLOBAL_EXIT=1
+        ;;
+    stop)
+        call_stop || GLOBAL_EXIT=1
+        ;;
+    configure)
+        call_configure || GLOBAL_EXIT=1
+        ;;
+    undeploy)
+        call_undeploy || GLOBAL_EXIT=1
+        ;;
+esac
+
+exit $GLOBAL_EXIT

@@ -1,0 +1,79 @@
+'\"
+.TH "ALT_DIAGNOSTIC_TOOL" "1" "Aprile 2024" "ALT\-DIAGNOSTIC\-TOOL @VERSION@" "Manual ALT_DIAGNOSTIC_TOOL"
+.SH NAME
+.B ADT (Alt Diagnostic Tool)
+.SH COMMAND TRAIN
+.Badt
+[\fI\,options\/\fR] [\fI\,tool\/\fR]
+.br
+.Badt
+-r [\fI\,tool\/\fR] -t [\fI\,test\/\fR]
+.br
+.Badt
+-R [\fI\,tool\/\fR] -f [\fI\,file\/\fR]
+
+
+.SH DESCRIPTION
+.B ALT Diagnostic tool
+  ALT Diagnostic Tool (ADT) - application for diagnosing an operating system with a graphical and terminal interface
+
+.PP
+.B ALT Diagnostic tool
+Provided features:
+  \- Diagnose the system using a set of prepared utilities;
+  \- Display diagnostic results on the screen;
+  \- Save a log file with diagnostic results;
+  \- Perform operations that require privileges from an unprivileged user account;
+
+
+.SH OPTIONS
+.TP
+.B \-h, \-\-help
+Show help.
+.TP
+.B \-\-help\-all
+Show help, including special Qt options
+.TP
+.B\-v,\-\-version
+Show version information
+.TP
+.B \-l, \-\-list
+List of available tools
+.TP
+.B \-o, \-\-object <tool>
+List of tests for the specified tool
+.TP
+.B \-r, \-\-run <tool>
+Run tests of the specified tool. If no test is specified, all tests will be run.
+.TP
+.B \-t, \-\-test <test>
+Test name to run
+.TP
+.B \-R, \-\-Report <tool>
+Get the tool report. The tool must be specified.
+.TP
+.B \-f, \-\-file <file>
+In which file to save the report.
+.TP
+.B\-g,\-\-graph
+If this option is specified, the graphical interface will be used, otherwise the command line will be used.
+
+
+.SH BEFORE USE
+Before work, you must install a set of necessary diagnostic tools
+  # apt-get update
+  # apt-get install <name of required diagnostic tool>
+
+After installing the diagnostic tools, you need to run \fB\,alterator\-manager\/\fR:
+  # systemctl start alterator\-manager.service
+  # systemctl enable alterator\-manager.service
+
+Or restart if \fB\,alterator\-manager\/\fR was already running:
+  # systemctl restart alterator\-manager.service
+
+
+.SH AUTHOR
+.SH BUG REPORTS
+Submit comments to http://bugzilla.altlinux.org/
+.SH COPYRIGHT
+.br

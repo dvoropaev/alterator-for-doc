@@ -1,0 +1,291 @@
+== Введение ==
+Alterator-manager-services - модуль [[Инфраструктурные решения/Проекты/Alterator на D-Bus | Альтератора ]] для управления системными службами.
+=== Краткое описание возможностей ===
+* Развертывание системных служб
+* Конфигурация системных служб
+* Запуск и остановка системных служб
+=== Назначение ===
+Модуль предназначен для:
+* Системных администраторов
+* Опытных пользователей
+
+== Подготовка к работе ==
+
+=== Установка необходимых пакетов ===
+<pre>
+apt-get update
+apt-get install alterator-manager
+apt-get alterator-entry
+apt-get alt-services
+apt-get alterator-interface-service
+</pre>
+Возможно потребуется обновление системы:
+<pre>
+apt-get dist-upgrade
+</pre>
+
+=== Пример установки сервисов ===
+На текущий момент доступен только тестовый пакет с сервисами. Эти сервисы не несут полезной нагрузки и предназначены только для демонстрации функционала alterator-application-services
+<pre>
+apt-get install alterator-test-services
+</pre>
+
+== Описание интерфейса и операций ==
+Интерфейс разбит на две секции. В левой перечислены все доступные сервисы. На правой выводится информация о выбранном сервисе, его статус. А также, в зависимости от статуса сервиса,  доступен набор кнопок управления сервисом:
+
+* Развернуть / Отменить развертывание
+* Запустить / Остановить
+* Настроить
+
+[[Файл:ALTERATOR-MANAGER-SERVICES.png|безрамки|446x446пкс]][[Файл:Развернутый сервис.png|безрамки|497x497пкс]]
+
+На правой панели есть две вкладки:
+
+* Параметры - используются для настройки сервиса.
+* Ресурсы - тут перечислены файлы, каталоги, порты, и службы systemd, которые используются данным сервисом. В alt-services присутствуют механизмы, выявляющие конфликты между сервисами за эти ресурсы.
+
+При нажатии на кнопку "развернуть" появляются окно, через которое можно сконфигурировать сервис
+
+[[Файл:Конфигурация сервиса.png|безрамки]]
+
+После конфигурации и нажатия на кнопку '''ок''' появится окно с логами развертывания сервиса
+
+[[Файл:Логи разворачивания.png|безрамки]]
+
+Для запуска сервиса остается нажать кнопку '''запустить'''.
+
+== Создание сервисов ==
+В качестве примера есть [https://gitlab.basealt.space/alt/alterator-test-services репозиторий с тестовыми сервисами]
+
+Для создания сервиса нужно как минимум 3 файла:
+
+* '''<имя сервиса>.service''' - файл описывает основную информацию о сервисе, а также параметры и составные типы этих параметров.
+* '''<имя сервиса>.backend''' - описывает интерфейс сервиса на шине d-bus и его методы для взаимодействия с ним
+* '''<имя сервиса>-helper''' - исполняемый файл, реализующий логику развертывания, настройки, и запуска сервисов. В отличие от '''service''' и '''backend''' может быть один на несколько сервисов. В таком случае он должен принимать в качестве параметра командной строки имя сервиса, для которого запускается.
+
+=== Файл .service ===
+Файл составляется в соответствии со [https://gitlab.basealt.space/alt/alterator-entry/-/tree/alekseevam/service_improvements/doc#%D1%81%D1%83%D1%89%D0%BD%D0%BE%D1%81%D1%82%D1%8C-%D1%82%D0%B8%D0%BF%D0%B0-service спецификацией] 
+* Расположение: <code>/usr/share/alterator/services/&lt;имя&gt;.service</code> (или в <code>/etc/alterator/services/</code> если создается пользователем).  
+
+==== Структура ====
+<pre>
+# Глобальные поля
+type                = "Service"
+name                = "имя_сервиса"
+display_name.en     = "Имя на английском"
+display_name.ru     = "Имя на русском"
+comment.en          = "Описание на английском"
+comment.ru         = "Описание на русском"
+enable_force_deploy = true
+
+# Параметры
+[parameters.&lt;param_name&gt;]
+display_name.en = "Отображаемое имя"
+comment.en      = "Описание параметра"
+type            = "string"        # string|integer|boolean|enum|array|object
+context         = ["deploy","configure","status"]
+default         = "значение"      # или default = 42 для integer
+required        = ["deploy"]      # в каких действиях обязательно
+
+# Составные типы (для object)
+[types.&lt;type_name&gt;]
+display_name.en = "Имя типа"
+[types.&lt;type_name&gt;.properties.&lt;prop1&gt;]
+type     = "string"
+required = true
+
+# Ресурсы
+[resources.&lt;res_name&gt;]
+display_name.en = "Имя ресурса"
+type            = "file"          # file|directory|systemd_unit|port
+path.value      = "/etc/.../foo"
+</pre>
+
+==== Как описывать параметры и ресурсы ====
+* Каждый параметр в секции <code>parameters</code> задаётся подписью <code>[parameters.&lt;имя&gt;]</code>.  
+* Обязательные ключи внутри:
+  * <code>type</code> — тип параметра.  
+  * <code>context</code> — список действий (см. ниже), в которых этот параметр имеет смысл.  
+* Дополнительные опции:
+  * <code>default</code>, <code>required</code>, <code>hidden</code>, <code>values</code> (enum), <code>array_type/array_min/array_max</code> (array), <code>prototype</code> (object).  
+* Ресурсы описываются в <code>resources</code> аналогично: имя ресурса, <code>type</code> и вложенные поля <code>path.value</code>, <code>unit_name.value</code>, <code>inet_service.value</code>, а для портов — <code>tcp</code>/<code>udp</code>.
+
+=== Файл .backend ===
+Файл составляется в соответствии со [https://gitlab.basealt.space/alt/alterator-entry/-/tree/alekseevam/service_improvements/doc#%D1%81%D1%83%D1%89%D0%BD%D0%BE%D1%81%D1%82%D1%8C-%D1%82%D0%B8%D0%BF%D0%B0-backend спецификацией]
+
+Определяет D-Bus интерфейс и методы для управления сервисом.  
+* Расположение: <code>/usr/share/alterator/backends/(system|user)/&lt;имя&gt;.backend</code>.  
+
+==== Описываемые методы ====
+* Info
+<pre>
+Info () -> (Array of [Byte] stdout_bytes, Int32 response)
+</pre>
+Предназначен для предоставления информации об инструменте диагностики, представленном данным объектом, в формате Alterator Entry - сущность service. Результатом выполнения метода является пара массива байтов stdout_bytes, который содержит Alterator Entry, и response - код взврата.
+* Deploy
+<pre>
+Deploy (String stdin) -> (Int32 response)
+</pre>
+предназначен для развертывания сервиса. Возвращает  response - код возврата.
+* Start
+<pre>
+Start () -> (Int32 response)
+</pre>
+Предназначен для запуска сервиса. Возвращает response - код возврата.
+* Stop
+<pre>
+Stop () -> (Int32 response)
+</pre>
+Предназначен для остановки сервиса. Возвращает response - код возврата.
+* Configure
+<pre>
+Configure (String stdin) -> (Int32 response)
+</pre>
+Предназначен для настройки уже развёрнутого сервиса. Возвращает response - код возврата.
+* Undeploy
+<pre>
+Undeploy (String stdin) -> (Int32 response)
+</pre>
+Предназначен для отключения сервиса. Возвращает  код возврата.
+* Backup
+<pre>
+Backup (String stdin) -> (Int32 response)
+</pre>
+Предназначен для создания резервной копии сервиса. 
+Отдаёт response - код возврата.
+* Restore
+<pre>
+Restore (String stdin) -> (Int32 response)
+</pre>
+Предназначен для восстановления резервной копии сервиса.Возвращает response - код возврата.
+* Status
+<pre>
+Status () -> (Array of stdout_strings, Int32 response)
+</pre>
+Предназначен для получения статуса сервиса. Результатом выполнения метода является пара массива строк stdout_strings, который содержит информацию о текущем состоянии сервиса, развёрнут/не развёрнут, как был развёрнут, и response - код возврата, имеющий следующие значения:
+* 0 - сервис не задеплоен
+* 127 - сервис задеплоен
+* 128 - задеплоен и запущен
+* любой другой код - ошибка
+
+==== Структура ====
+<pre>
+[Alterator Entry]
+Type        = "Backend"
+Module      = "executor"
+Interface   = "имя_интерфейса"   # полное org.altlinux.alterator.X или короткое X
+name        = "имя_сервиса"
+thread_limit= 10
+
+[methods.Info]
+execute          = "cat /usr/share/alterator/services/имя.service"
+action_id        = "Info"
+stdout_bytes     = enabled
+
+[methods.Deploy]
+execute           = "helper-имя --deploy"
+action_id         = "Deploy"
+stdin_string      = enabled
+stdout_signal_name= "svc_stdout"
+stderr_signal_name= "svc_stderr"
+timeout           = 600
+</pre>
+
+==== Описание метода ====
+* Группа: <code>[methods.<имя_метода>]</code>.  
+* <code>execute</code> — команда, которую нужно выполнять.  
+* <code>stdin_string</code> | <code>stdout_strings</code> | <code>stdout_bytes</code> — что передавать/принимать.  
+* <code>stdout_signal_name</code>, <code>stderr_signal_name</code> — имена сигналов D-Bus.  
+* <code>action_id</code> — совпадает с именем метода.  
+* <code>timeout</code>, <code>thread_limit</code> — опционально.
+
+=== Контекст ===
+Каждый параметр в <code>.service</code> указывает <code>context</code> — список действий (или методов .backend), в которых он будет передан helper’у:
+* '''deploy''' — развертывание  
+* '''configure''' — настройка  
+* '''start/stop''' — управление состоянием  
+* '''backup/restore''' — резервирование  
+* '''status''' — получение состояния  
+Параметры с другими контекстами игнорируются при вызове соответствующего метода.
+
+=== Составной параметр ===
+* Объявляется как <code>type = "object"</code> (или <code>array_type = "object"</code> для массива).  
+* Указывает <code>prototype = "&lt;type_name&gt;"</code> — блок под <code>[types.&lt;type_name&gt;]</code>, где в <code>.properties</code> описаны вложенные поля.  
+* При deploy/configure helper получит JSON с полностью развёрнутыми значениями по prototype.
+
+=== Файл helper ===
+Исполняемый файл в <code>/usr/bin/имя-helper</code>  
+* Вызывается из .backend через <code>execute</code>.  
+* На stdin получает JSON с параметрами, актуальными для данного метода.
+Пример JSON:
+<pre>
+{"composite_array":[{"param1":"test string","param2":12,"param3":"value2"},{"param1":"test string","param2":12,"param3":"value2"}],"composite_param":{"param1":"test string","param2":12,"param3":"value2"},"int_example2":42,"string_array_example":["altlinux.org","kernel.org","www.foo.bar"],"string_example2":"test string"}
+</pre>
+
+* Возвращает:
+  в stdout — лог или JSON-ответ (для Status).  
+  код возврата — 0 при успехе, != 0 при ошибке.  
+* Обрабатывает команды:
+  deploy, undeploy, configure, start, stop, backup, restore, status.  
+
+Пример исполняемого файла:
+<pre>
+#!/usr/bin/env bash
+# /usr/bin/test-service-helper
+set -euo pipefail
+
+# Читаем действие и сервис
+ACTION="${1:-status}"
+SERVICE="${2:-test_service}"
+
+# Считываем всё JSON из stdin
+read -r PARAMS_JSON
+
+# --- Заготовки функций ---
+deploy() {
+  # пример: сохранить конфиг и отметить как развернутый
+  echo "$PARAMS_JSON" > /etc/test-services/"$SERVICE".conf
+  echo "deployed"
+}
+
+configure() {
+  echo "$PARAMS_JSON" > /etc/test-services/"$SERVICE".conf
+  echo "configured"
+}
+
+start() {
+  systemctl start "$SERVICE".service
+}
+
+stop() {
+  systemctl stop "$SERVICE".service
+}
+
+status() {
+  cat /etc/test-services/"$SERVICE".conf 2>/dev/null || echo "{}"
+  systemctl is-active --quiet "$SERVICE".service
+  echo "status code: $?"
+}
+
+backup() {
+  tar czf /var/backups/"$SERVICE"-$(date +%F).tar.gz /etc/test-services/"$SERVICE".conf
+}
+
+restore() {
+  tar xzf "$(ls -1t /var/backups/"$SERVICE"-*.tar.gz | head -1)" -C /
+}
+
+# --- Вызов нужного действия ---
+case "$ACTION" in
+  deploy)    deploy    ;;
+  configure) configure ;;
+  start)     start     ;;
+  stop)      stop      ;;
+  status)    status    ;;
+  backup)    backup    ;;
+  restore)   restore   ;;
+  *)         echo "Unknown action: $ACTION" >&2; exit 1 ;;
+esac
+
+exit 0
+</pre>

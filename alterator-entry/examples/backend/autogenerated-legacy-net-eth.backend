@@ -1,0 +1,15 @@
+type = "Backend"
+module = "executor"
+name = "net_eth"
+interface = "org.altlinux.alterator.legacy"
+action_id = "org.altlinux.alterator.legacy"
+
+[methods.Info]
+execute = "cat /usr/share/alterator/applications/net-eth.desktop"
+stdout_bytes = true
+action_id = "Info"
+
+[methods.Run]
+execute = "/usr/sbin/alterator-standalone net-eth"
+timeout = 0
+action_id = "Run"
