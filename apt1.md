@@ -58,6 +58,14 @@
 - Параметры: принимает строку pkgnames; возвращает stdout_strings, stderr_strings, response.
 - Ожидаемое поведение (пример): результатом является JSON вида {"install_packages":[...],"remove_packages":[...],"extra_remove_packages":[...]} в stdout_strings, сформированный по выводу apt-get; ошибки симуляции попадают в stderr_strings, response = 0 при чистом прогоне. Поле extra_remove_packages заполняется списком пакетов, удаление которых apt-get предупреждает выполнить сверх явного списка pkgnames (фрагмент между предупреждением «This should NOT be done…» и итоговой строкой о количестве пакетов).
 
+Принцип заполнения extra_remove_packages:
+
+- helper обрезает текст предупреждения и завершающего резюме, оставляя блок с перечислением пакетов для дополнительного удаления;
+- каждая строка блока очищается от скобок и лишних пробелов, после чего превращается в отдельный элемент JSON;
+- итоговый массив фиксирует имена пакетов, для которых apt-get требует принудительное удаление как зависимостей, не указанных явно.
+
+Источник: [alterator-backend-packages/apt/apt-wrapper](https://github.com/alterator/alterator-backend-packages/blob/master/apt/apt-wrapper).
+
 ## CheckReinstall
 
 - Назначение: прогоняет apt-get reinstall -s -q для оценки переустановки пакетов через helper apt-wrapper check-reinstall.
