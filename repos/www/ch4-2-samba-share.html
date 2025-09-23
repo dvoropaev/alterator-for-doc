@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>4.2. Управление Samba Share</title>
+</head>
+<body>
+  <h1>4.2. Управление Samba Share</h1>
+  <p>Скрипт alterator-service-samba-share предназначен для управления общими папками Samba: создание, удаление, настройка, запуск и мониторинг служб.<a href="../alterator-service-samba-share/README.md">Источник</a></p>
+  <p>Функциональные блоки:</p>
+  <ul>
+    <li>Блокировка выполнения через файл <code>/var/lock/samba-shares.lock</code> для предотвращения параллельных изменений.<a href="../alterator-service-samba-share/README.md">Источник</a></li>
+    <li>Чтение входных данных в формате JSON из stdin или аргумента командной строки с обязательными полями для операций <code>create</code> и <code>delete</code>.<a href="../alterator-service-samba-share/README.md">Источник</a></li>
+    <li>Работа с конфигурацией <code>/etc/samba/smb.conf</code>: добавление и удаление блоков, установка прав каталога и проверка через <code>testparm -s</code>.<a href="../alterator-service-samba-share/README.md">Источник</a></li>
+    <li>Управление системными службами <code>smb.service</code> и <code>nmb.service</code> с использованием <code>systemctl</code>.<a href="../alterator-service-samba-share/README.md">Источник</a></li>
+    <li>Возврат кодов состояния (128, 127, 0, 1, 3) для интеграции с мониторингом и автоматизацией.<a href="../alterator-service-samba-share/README.md">Источник</a></li>
+  </ul>
+  <p>Сервис описывается файлом <code>.service</code>, в котором задаются параметры <code>share_name</code>, <code>share_path</code>, <code>access_user</code>, <code>access_type</code>, а также ресурсы <code>smb_conf</code>, <code>smb_service</code> и <code>nmb_service</code>.<a href="../alterator-service-samba-share/README.md">Источник</a></p>
+  <p>Статус выводится в формате JSON, включающем список шар и состояние служб, что упрощает интеграцию с интерфейсами Alterator.<a href="../alterator-service-samba-share/README.md">Источник</a></p>
+</body>
+</html>

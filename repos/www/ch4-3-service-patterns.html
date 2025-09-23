@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>4.3. Шаблон создания сервисного пакета</title>
+</head>
+<body>
+  <h1>4.3. Шаблон создания сервисного пакета</h1>
+  <p>Сервисные пакеты строятся вокруг интерфейса <code>org.altlinux.alterator.service1</code> и backend-описаний типа <code>Service</code>. Подготовка включает несколько шагов.<a href="../alterator-interface-service/doc/README.md">Источник</a><a href="../alterator-entry/doc/README.md">Источник</a></p>
+  <ol>
+    <li>Определить командный скрипт или бинарный файл, который реализует операции Deploy, Configure, Backup, Restore, Start, Stop, Undeploy и Status, используя stdin для передачи JSON или иных параметров.<a href="../alterator-interface-service/doc/README.md">Источник</a><a href="../alterator-service-vsftpd/README.md">Источник</a></li>
+    <li>Настроить управление системными службами через <code>systemctl</code>, задав коды возврата, позволяющие различать состояния развертывания.<a href="../alterator-service-samba-share/README.md">Источник</a></li>
+    <li>Создать файл <code>.service</code> Alterator Entry с описанием параметров, локализацией, ресурсами и массивами данных, доступными в режиме Status.<a href="../alterator-service-samba-share/README.md">Источник</a><a href="../alterator-entry/doc/README.md">Источник</a></li>
+    <li>Подготовить backend-файл, указывающий модуль (например executor) и описывающий методы, чтобы связать скрипт с интерфейсом D-Bus.<a href="../alterator-manager/docs/README-ru.md">Источник</a><a href="../alterator-module-executor/executor.h">Источник</a></li>
+    <li>Проверить корректность с помощью alterator-manager: валидировать по файлам интроспекции и убедиться, что сигналы stdout/stderr передаются корректно.<a href="../alterator-manager/docs/README-ru.md">Источник</a><a href="../alterator-interface-service/doc/README.md">Источник</a></li>
+  </ol>
+  <p>Следуя шаблону, можно быстро адаптировать инфраструктуру Alterator для новых сервисов без изменения управляющих компонентов.</p>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>4.1. Управление VSFTPD</title>
+</head>
+<body>
+  <h1>4.1. Управление VSFTPD</h1>
+  <p>Пакет alterator-service-vsftpd предоставляет комплексное управление FTP-сервером VSFTPD, включая развёртывание, конфигурацию, резервное копирование и мониторинг.<a href="../alterator-service-vsftpd/README.md">Источник</a></p>
+  <p>Основные возможности:</p>
+  <ul>
+    <li>Развёртывание и первичная настройка сервиса с подачей параметров через stdin.<a href="../alterator-service-vsftpd/README.md">Источник</a></li>
+    <li>Отмена развёртывания и возврат системы в исходное состояние.<a href="../alterator-service-vsftpd/README.md">Источник</a></li>
+    <li>Динамическая конфигурация параметров, включая управление анонимным доступом и портами.<a href="../alterator-service-vsftpd/README.md">Источник</a></li>
+    <li>Создание и восстановление резервных копий конфигурации.<a href="../alterator-service-vsftpd/README.md">Источник</a></li>
+    <li>Запуск, остановка и проверка статуса VSFTPD через CLI-опции.<a href="../alterator-service-vsftpd/README.md">Источник</a></li>
+  </ul>
+  <p>Пример ввода JSON для развёртывания:</p>
+  <pre>{
+  "anonymous_enable": "true",
+  "local_enable": "true",
+  "write_enable": "false",
+  "listen_port": "2121",
+  "pasv_min_port": "45500",
+  "pasv_max_port": "45510"
+}</pre>
+  <p>Инструмент использует интерфейс alterator-interface-service: параметры передаются в stdin, а результат и коды возврата интегрируются с методами Deploy, Configure, Backup и Restore.<a href="../alterator-service-vsftpd/README.md">Источник</a><a href="../alterator-interface-service/doc/README.md">Источник</a></p>
+</body>
+</html>
