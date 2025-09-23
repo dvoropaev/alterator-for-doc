@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>4.2 Пользовательский интерфейс alterator-manager-services</title>
+</head>
+<body>
+  <header>
+    <h1>4.2 Пользовательский интерфейс alterator-manager-services</h1>
+  </header>
+  <section>
+    <p>Модуль alterator-manager-services отображает список сервисов в левой панели и информацию о выбранном элементе в правой части окна. Набор кнопок зависит от состояния: «Развернуть»/«Отменить развёртывание», «Запустить»/«Остановить», «Настроить».<sup><a href="../alterator-manager-servises.wiki">1</a></sup></p>
+    <p>Правая панель содержит вкладки «Параметры» и «Ресурсы». Первая используется для настройки входных данных, вторая показывает файлы, каталоги, порты и systemd-юниты, которыми управляет сервис.<sup><a href="../alterator-manager-servises.wiki">1</a></sup></p>
+  </section>
+  <section>
+    <h2>Работа с диалогами</h2>
+    <ul>
+      <li>При запуске развёртывания открывается диалог конфигурации, который формируется на основе сущности Service и позволяет редактировать параметры по контексту <code>deploy</code>.<sup><a href="../alterator-manager-servises.wiki">1</a></sup></li>
+      <li>После подтверждения отображается окно логов выполнения, где транслируются stdout/stderr helper-а через сигналы интерфейса.<sup><a href="../alterator-manager-servises.wiki">1</a></sup></li>
+    </ul>
+  </section>
+  <footer>
+    <h2>Источники</h2>
+    <ol>
+      <li><a href="../alterator-manager-servises.wiki">alterator-manager-servises.wiki</a></li>
+    </ol>
+  </footer>
+</body>
+</html>

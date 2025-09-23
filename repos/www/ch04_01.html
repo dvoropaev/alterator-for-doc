@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>4.1 Методы и сигналы org.altlinux.alterator.service1</title>
+</head>
+<body>
+  <header>
+    <h1>4.1 Методы и сигналы org.altlinux.alterator.service1</h1>
+  </header>
+  <section>
+    <p>Интерфейс org.altlinux.alterator.service1 описывает единые методы управления сервисами. Все параметры передаются строкой в stdin вызываемого процесса, что позволяет helper-скриптам читать один JSON-блок.<sup><a href="../alterator-interface-service/doc/README.md">1</a></sup></p>
+  </section>
+  <section>
+    <h2>Методы</h2>
+    <ul>
+      <li><code>Info()</code> — возвращает Alterator Entry сущности Service и код ответа.<sup><a href="../alterator-interface-service/doc/README.md">1</a></sup></li>
+      <li><code>Deploy(stdin)</code> — разворачивает сервис, используя переданную конфигурацию.<sup><a href="../alterator-interface-service/doc/README.md">1</a></sup></li>
+      <li><code>Configure(stdin)</code> — применяет изменения к развёрнутому сервису.<sup><a href="../alterator-interface-service/doc/README.md">1</a></sup></li>
+      <li><code>Start()</code> / <code>Stop()</code> — управляют systemd-юнитами, связанными с сервисом.<sup><a href="../alterator-interface-service/doc/README.md">1</a></sup></li>
+      <li><code>Backup(stdin)</code> / <code>Restore(stdin)</code> — выполняют резервное копирование и восстановление.<sup><a href="../alterator-interface-service/doc/README.md">1</a></sup></li>
+      <li><code>Undeploy(stdin)</code> — удаляет развёртывание и чистит ресурсы.<sup><a href="../alterator-interface-service/doc/README.md">1</a></sup></li>
+      <li><code>Status()</code> — возвращает массив строк со статусом и код возврата.<sup><a href="../alterator-interface-service/doc/README.md">1</a></sup></li>
+    </ul>
+  </section>
+  <section>
+    <h2>Сигналы</h2>
+    <ul>
+      <li><code>service_stdout_signal</code> — передаёт строки stdout выполняемого helper-а.<sup><a href="../alterator-interface-service/doc/README.md">1</a></sup></li>
+      <li><code>service_stderr_signal</code> — транслирует строки stderr.<sup><a href="../alterator-interface-service/doc/README.md">1</a></sup></li>
+    </ul>
+  </section>
+  <footer>
+    <h2>Источники</h2>
+    <ol>
+      <li><a href="../alterator-interface-service/doc/README.md">alterator-interface-service/doc/README.md</a></li>
+    </ol>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>5.3 Диагностика и тестовые данные</title>
+</head>
+<body>
+  <header>
+    <h1>5.3 Диагностика и тестовые данные</h1>
+  </header>
+  <section>
+    <p>Диагностический файл <code>test_service1.diag</code> задаёт набор параметров и тестов для проверки сервиса. Он содержит локализованные описания, набор enum-параметров, списки значений и три теста с собственными комментариями.<sup><a href="../alterator-test-services/test_service1/test_service1.diag">1</a></sup></p>
+    <p>Формат диаграм соответствует спецификации Diag: каждый параметр оформлен в разделе <code>[parameters.&lt;имя&gt;]</code>, тесты описываются через <code>[tests.&lt;имя&gt;]</code>. Это позволяет helper-скриптам или отдельным утилитам выполнять проверки до и после развёртывания.<sup><a href="../alterator-entry/doc/alterator-diag.txt">2</a></sup></p>
+  </section>
+  <section>
+    <h2>Практическая проверка</h2>
+    <ul>
+      <li>Для enum-параметров используйте поле <code>enum_values</code> с указанием списка и значения по умолчанию.<sup><a href="../alterator-test-services/test_service1/test_service1.diag">1</a></sup></li>
+      <li>Списки серверов и скрытые параметры демонстрируют, как передавать дополнительные данные для тестов без отображения в UI.<sup><a href="../alterator-test-services/test_service1/test_service1.diag">1</a></sup></li>
+      <li>Диагностический helper (<code>diag-helper</code>) поставляется в пакете и может быть расширен под требования конкретного сервиса.<sup><a href="../alterator-test-services">3</a></sup></li>
+    </ul>
+  </section>
+  <footer>
+    <h2>Источники</h2>
+    <ol>
+      <li><a href="../alterator-test-services/test_service1/test_service1.diag">test_service1.diag</a></li>
+      <li><a href="../alterator-entry/doc/alterator-diag.txt">alterator-entry/doc/alterator-diag.txt</a></li>
+      <li><a href="../alterator-test-services">alterator-test-services (список файлов)</a></li>
+    </ol>
+  </footer>
+</body>
+</html>

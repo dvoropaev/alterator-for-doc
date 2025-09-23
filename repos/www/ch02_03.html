@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>2.3 Описание сущности Backend и вспомогательных типов</title>
+</head>
+<body>
+  <header>
+    <h1>2.3 Описание сущности Backend и вспомогательных типов</h1>
+  </header>
+  <section>
+    <p>Backend описывает D-Bus интерфейс, который реализует модуль executor. Файл содержит обязательные ключи <code>module</code>, <code>interface</code>, <code>name</code> и таблицу методов. Значение <code>interface</code> допускает короткое имя без точки — в этом случае добавляется префикс <code>org.altlinux.alterator</code>.<sup><a href="../alterator-entry/doc/README.md">1</a></sup></p>
+    <p>Каждый метод объявляется в подтаблице <code>[methods.&lt;имя&gt;]</code>, где определяются команда запуска, использование stdin/stdout, сигналы, ограничения на объём вывода и таймаут. Параметр <code>thread_limit</code> позволяет ограничить число параллельных вызовов.<sup><a href="../alterator-entry/doc/README.md">1</a></sup></p>
+  </section>
+  <section>
+    <h2>Диагностические инструменты</h2>
+    <p>Сущности типа Diag описывают тесты, которые выполняются через backend. Они поддерживают локализованные имена, список тестов и атрибуты <code>assignment</code>, <code>report_suffix</code>. Сами тесты перечисляются в словаре <code>tests</code> и оформляются как набор параметров с отображаемыми именами и требованиями.<sup><a href="../alterator-entry/doc/README.md">1</a></sup><sup><a href="../alterator-entry/doc/alterator-diag.txt">2</a></sup></p>
+  </section>
+  <section>
+    <h2>Компоненты и редакции</h2>
+    <p>Дополнительные типы Alterator Entry — Component и Edition — фиксируют списки пакетов, поддерживаемые архитектуры и секции отображения. Они применяются в инструментах управления комплектами поставки и наследуют общие правила именования и локализации.<sup><a href="../alterator-entry/doc/README.md">1</a></sup></p>
+  </section>
+  <footer>
+    <h2>Источники</h2>
+    <ol>
+      <li><a href="../alterator-entry/doc/README.md">alterator-entry/doc/README.md</a></li>
+      <li><a href="../alterator-entry/doc/alterator-diag.txt">alterator-entry/doc/alterator-diag.txt</a></li>
+    </ol>
+  </footer>
+</body>
+</html>
