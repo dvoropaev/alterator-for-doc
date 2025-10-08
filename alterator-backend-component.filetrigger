@@ -1,0 +1,5 @@
+#!/bin/sh -euf
+
+if grep -qs '^/usr/share/alterator/components'; then
+	/usr/lib/alterator/backends/component.d/generate-components-backends
+fi

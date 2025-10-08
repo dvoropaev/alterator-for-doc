@@ -1,0 +1,14 @@
+type      = "Backend"
+module    = "executor"
+name      = "global"
+interface = "batch_components1"
+
+[methods.Info]
+execute             = "/usr/lib/alterator/backends/component info --all"
+stdout_string_array = true
+action_id           = "Info"
+
+[methods.Status]
+execute      = "/usr/lib/alterator/backends/component status --all"
+stdout_bytes = true
+action_id    = "Status"

@@ -1,0 +1,392 @@
+#!/usr/bin/python3
+#
+# Copyright (C) 2025 Michael Chernigin <chernigin@altlinux.org>
+# Copyright (C) 2025 Kirill Sharov <sheriffkorov@altlinux.org>
+# Copyright (C) 2025 Pavel Khromov <hromovpi@altlinux.org>
+#
+# This file is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+#
+
+import alterator_entry as ae
+import argparse
+import sys
+from dataclasses import dataclass
+from typing import List, Optional
+import subprocess
+import platform
+import tomlkit
+import os
+import re
+import tempfile
+from pathlib import Path
+
+SYSTEMINFO_BIN = "/usr/lib/alterator/backends/systeminfo"
+COMPONENTS_DIR = Path("/usr/share/alterator/components")
+CATEGORIES_DIR = Path("/usr/share/alterator/components/categories")
+
+
+@dataclass
+class FilterOptions:
+    kflavour: str
+    arch: str
+    desktops: Optional[list[str]]
+    language: str
+
+
+def is_ok_arch(
+    given_arch: str, pkg_arch: List[str], pkg_exclude_arch: List[str]
+) -> bool:
+    is_in_arch = pkg_arch is None or given_arch in pkg_arch
+    is_in_exclude_arch = pkg_exclude_arch is not None and given_arch in pkg_exclude_arch
+    return is_in_arch and not is_in_exclude_arch
+
+
+def is_ok_desktop(
+    given_desktops: Optional[list[str]], pkg_desktops: Optional[list[str]]
+) -> bool:
+    def have_common(l1, l2):
+        return bool(set(l1).intersection(set(l2)))
+
+    return (
+        given_desktops is None
+        or pkg_desktops is None
+        or have_common(pkg_desktops, given_desktops)
+    )
+
+
+def is_ok_language(given_language: str, pkg_language: Optional[str]) -> bool:
+    return pkg_language is None or given_language == pkg_language
+
+
+def extract_packages_from_component(
+    packages: dict, given_options: FilterOptions
+) -> list[str]:
+    needed_packages = []
+
+    for package_name in packages:
+        pkg_options = packages[package_name]
+
+        # TODO(mchernigin): if package is meta unroll its packages
+        # TODO(mchernigin): take into account `ignore_image`
+
+        if (
+            is_ok_arch(
+                given_options.arch,
+                pkg_options.get("arch"),
+                pkg_options.get("exclude_arch"),
+            )
+            and is_ok_desktop(given_options.desktops, pkg_options.get("desktop"))
+            and is_ok_language(given_options.language, pkg_options.get("language"))
+        ):
+            if pkg_options.get("kernel_module"):
+                package_name += f"-{given_options.kflavour}"
+            needed_packages.append(package_name)
+
+    return needed_packages
+
+
+def get_localized_file(base_path: Path) -> Optional[Path]:
+    locale = os.getenv("LC_ALL", "en_US").split(".")[0]
+    variants = [
+        f"description.{locale}.html",
+        f"description.{locale.split('_')[0]}.html",
+        "description.html",
+    ]
+
+    for variant in variants:
+        path = base_path / variant
+        if path.exists():
+            return path
+
+
+def systeminfo(command: str) -> str:
+    return (
+        subprocess.run([SYSTEMINFO_BIN, command], capture_output=True)
+        .stdout.decode()
+        .strip()
+    )
+
+
+def get_kflavour_from_system() -> str:
+    kernel = systeminfo("kernel")
+    flavour = re.sub(r"[^-]*-(.*)-[^-]*", r"\1", kernel)
+    return flavour
+
+
+def get_arch_from_system() -> str:
+    return systeminfo("arch")
+
+
+def get_language_from_system() -> str:
+    return systeminfo("locale").split("_")[0]
+
+
+def get_desktops_from_system() -> list[str]:
+    return systeminfo("list-desktop-environments").split("\n")
+
+
+def info_all(dir: Path, ext: str):
+    result = str()
+    fd, result_path = tempfile.mkstemp()
+
+    with open(result_path, "w") as result:
+        for subdir in os.listdir(dir):
+            subdir = dir / subdir
+            for filename in os.listdir(subdir):
+                if filename.endswith(f".{ext}"):
+                    with open(subdir / filename, "r") as file:
+                        result.write(file.read())
+                        result.write("\0")
+
+    with open(result_path, "r") as result:
+        result = result.read()
+
+    # Remove info separator in the final of result
+    result = result[:-1]
+
+    os.close(fd)
+    os.unlink(result_path)
+    return result
+
+
+def transform_package_name(name, properties, kflavour):
+    result = name
+    if "kernel_module" in properties:
+        result = name + "-" + kflavour
+    return result
+
+
+def list_command(args: argparse.Namespace) -> None:
+    (dir, ext) = (
+        (CATEGORIES_DIR, "category") if args.category else (COMPONENTS_DIR, "component")
+    )
+    for subdir in os.listdir(dir):
+        for file in os.listdir(dir / subdir):
+            if file.endswith(f".{ext}"):
+                print(ae.get_field(dir / subdir / file, "name"))
+
+
+def info_command(args: argparse.Namespace) -> None:
+    (dir, ext) = (
+        (CATEGORIES_DIR, "category") if args.category else (COMPONENTS_DIR, "component")
+    )
+    if args.all:
+        print(info_all(dir, ext))
+    else:
+        with open(dir / f"{args.name}/{args.name}.{ext}", "r") as f:
+            if args.path:
+                print(f.name)
+            else:
+                print(f.read())
+
+
+def description_command(args: argparse.Namespace) -> None:
+    path = get_localized_file(
+        Path(CATEGORIES_DIR if args.category else COMPONENTS_DIR / args.name)
+    )
+
+    if path is None:
+        sys.exit("Erorr: description not found")
+
+    if args.path:
+        print(path)
+    else:
+        print(path.read_text(), end="")
+
+
+def packages_command(args: argparse.Namespace) -> None:
+    with open(COMPONENTS_DIR / f"{args.name}/{args.name}.component", "rb") as f:
+        data = tomlkit.load(f)
+
+    if data["type"] == "Component":
+        pkgs = extract_packages_from_component(
+            data["packages"].value,
+            FilterOptions(
+                kflavour=args.kflavour,
+                arch=args.arch,
+                desktops=args.desktop,
+                language=args.language,
+            ),
+        )
+    else:
+        raise NotImplementedError(f"Unexpected type: {data['type']}")
+
+    if sys.stdout.isatty():
+        sys.stdout.write("\n".join(pkgs) + "\n")
+    else:
+        sys.stdout.write(" ".join(pkgs))
+
+
+def status_command(args: argparse.Namespace) -> None:
+    arch = get_arch_from_system()
+    language = get_language_from_system()
+    desktops = get_desktops_from_system()
+    kflavour = get_kflavour_from_system()
+
+    if args.all:
+        batch_info_text = info_all(COMPONENTS_DIR, "component")
+        batch_info_text = list(filter(None, batch_info_text.split("\0")))
+
+        packages = list()
+        filtered_packages = list()
+        for i in range(0, len(batch_info_text)):
+            data = tomlkit.parse(batch_info_text[i])
+            package_data = data["packages"]
+
+            for pkg_name, pkg_data in package_data.items():
+                if not isinstance(package_data, dict):
+                    filtered_packages.append(
+                        transform_package_name(pkg_name, pkg_data, kflavour)
+                    )
+                pkg_archs = pkg_data.get("arch")
+
+                if pkg_archs is not None:
+                    if arch not in pkg_archs:
+                        filtered_packages.append(
+                            transform_package_name(pkg_name, pkg_data, kflavour)
+                        )
+
+                pkg_lang = pkg_data.get("language")
+                if pkg_lang is not None and pkg_lang != language:
+                    filtered_packages.append(
+                        transform_package_name(pkg_name, pkg_data, kflavour)
+                    )
+
+                pkg_desktops = pkg_data.get("desktops")
+                if pkg_desktops is not None:
+                    if not any(d in desktops for d in pkg_desktops):
+                        filtered_packages.append(
+                            transform_package_name(pkg_name, pkg_data, kflavour)
+                        )
+
+                packages.append(transform_package_name(pkg_name, pkg_data, kflavour))
+
+        rpm_run = subprocess.run(
+            ["rpm", "-q", *packages],
+            capture_output=True,
+        )
+
+        # Get 2'nd column
+        rpm_result = rpm_run.stderr.decode()
+        rpm_result = rpm_result.split("\n")
+        rpm_result = list(map(str.split, rpm_result))
+        rpm_result = [row for row in rpm_result if row]
+        rpm_result = list(zip(*rpm_result))
+        rpm_result = rpm_result + filtered_packages
+        print(str.join("\n", list(rpm_result[1])))
+
+    else:
+        with open(COMPONENTS_DIR / f"{args.name}/{args.name}.component", "rb") as f:
+            component_data = tomlkit.load(f)
+
+        options = FilterOptions(
+            kflavour=get_kflavour_from_system(),
+            arch=get_arch_from_system(),
+            language=get_language_from_system(),
+            desktops=get_desktops_from_system(),
+        )
+
+        packages = extract_packages_from_component(
+            component_data["packages"].value, options
+        )
+
+        if not packages:
+            exit(1)
+
+        run = subprocess.run(
+            ["rpm", "-q", "--whatprovides", *packages, "--queryformat", "%{NAME}\n"],
+            capture_output=True,
+        )
+        print(run.stdout.decode(), end="")
+        if run.returncode != 0:
+            exit(1)
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    subparsers = parser.add_subparsers(title="subcommands", required=True)
+
+    list_parser = subparsers.add_parser("list", help="get component list")
+    list_parser.add_argument(
+        "--category", action="store_true", help="search category instead component"
+    )
+    list_parser.set_defaults(function=list_command)
+
+    info_parser = subparsers.add_parser("info", help="get component info")
+    info_group = info_parser.add_mutually_exclusive_group(required=True)
+    info_group.add_argument("name", nargs="?", help="component name")
+    info_group.add_argument("--all", action="store_true", help="all components")
+    info_parser.add_argument(
+        "--category", action="store_true", help="search category instead component"
+    )
+    info_parser.add_argument("--path", action="store_true")
+    info_parser.set_defaults(function=info_command)
+
+    description_parser = subparsers.add_parser(
+        "description", help="get component description"
+    )
+    description_parser.add_argument("name")
+    description_parser.add_argument(
+        "--category", action="store_true", help="search category instead component"
+    )
+    description_parser.add_argument("--path", action="store_true")
+    description_parser.set_defaults(function=description_command)
+
+    packages_parser = subparsers.add_parser(
+        "packages", help="Packages included to component"
+    )
+    packages_parser.set_defaults(function=packages_command)
+    packages_parser.add_argument(
+        "--arch",
+        metavar="ARCH",
+        help="Architecture to extract packages for",
+        default=platform.machine(),
+    )
+    packages_parser.add_argument(
+        "--desktop",
+        metavar="DESKTOP",
+        help="Desktop environment to extract packages for",
+        required=True,
+    )
+    packages_parser.add_argument(
+        "--language",
+        metavar="LANG",
+        help="Language to extract packages for",
+        required=True,
+    )
+    packages_parser.add_argument(
+        "--kflavour",
+        metavar="KFLAVOUR",
+        help="Kernel to extract packages for",
+        required=True,
+    )
+    packages_parser.add_argument("name", help="component name")
+
+    status_parser = subparsers.add_parser(
+        "status", help="get component installation status with installed packages"
+    )
+    status_group = status_parser.add_mutually_exclusive_group(required=True)
+    status_group.add_argument("name", nargs="?", help="component name")
+    status_group.add_argument(
+        "--all", action="store_true", help="all components (but uninstalled packages!)"
+    )
+    status_parser.set_defaults(function=status_command)
+
+    args = parser.parse_args()
+    args.function(args)
+
+
+if __name__ == "__main__":
+    main()
