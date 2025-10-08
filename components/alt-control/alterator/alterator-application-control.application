@@ -1,0 +1,8 @@
+type            = "Application"
+interface       = "org.altlinux.alterator.control1"
+name            = "alterator-application-control"
+display_name.en = "System restrictions"
+display_name.ru = "Системные ограничения"
+comment.en      = "Alterator interface for system restrictions management"
+comment.ru      = "Интерфейс Альтератора для управления системными ограничениями"
+exec            = "alt-control"
