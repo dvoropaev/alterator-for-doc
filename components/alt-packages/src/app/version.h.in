@@ -1,0 +1,13 @@
+#ifndef VERSION_H
+#define VERSION_H
+
+const int VERSION_MAJOR = ${VERSION_MAJOR};
+const int VERSION_MINOR = ${VERSION_MINOR};
+const int VERSION_PATCH = ${VERSION_PATCH};
+
+inline QString getVersion()
+{
+    return QString("%1.%2.%3").arg(VERSION_MAJOR).arg(VERSION_MINOR).arg(VERSION_PATCH);
+}
+
+#endif //VERSION_H

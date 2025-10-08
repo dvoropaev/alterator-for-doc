@@ -1,0 +1,9 @@
+type      = "Backend"
+module    = "executor"
+name      = "rpm"
+interface = "application1"
+
+[methods.Info]
+execute      = "cat /usr/share/alterator/applications/amp-rpm.application"
+stdout_bytes = true
+action_id    = "Info"

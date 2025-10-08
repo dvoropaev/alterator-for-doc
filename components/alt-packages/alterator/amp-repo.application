@@ -1,0 +1,7 @@
+type            = "Application"
+interface       = "org.altlinux.alterator.repo1"
+name            = "amp-repo"
+display_name.en = "Repo"
+comment.en      = "Alterator interface for apt-repo"
+comment.ru      = "Интерфейс Альтератора для apt-repo"
+exec            = "alt-packages -o /org/altlinux/alterator/repo"
