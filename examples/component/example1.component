@@ -1,0 +1,22 @@
+type = "Component"
+name = "fortune_cow_rainbow"
+category = "example_comp_cat1"
+tags = ["entertainment"]
+
+[display_name]
+en = "Fun component"
+ru = "Очень весёлый конвейер"
+
+[comment]
+en = "This component is meant just for testing and provides everything you need to run fortune | cowsay | lolcat"
+ru = "Это тестовый компонент, который предоставляет всё, что нужно для запуска fortune | cowsay | lolcat"
+
+[packages]
+fortune = {}
+fortunes-ALT = {}
+fortunes-ALT-lists = {}
+fortunes-ALT-bugzilla = {}
+fortunes-ALT-irc = {}
+fortunes-LOR = {}
+cowsay = {}
+lolcat = {}

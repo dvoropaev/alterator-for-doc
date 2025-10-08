@@ -1,0 +1,54 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Alterator Object",
+    "type": "object",
+    "propertyNames": {
+        "enum": [
+            "type",
+            "name",
+            "category",
+            "display_name",
+            "comment",
+            "override"
+        ]
+    },
+    "required": [
+        "type",
+        "name"
+    ],
+    "properties": {
+        "type": {
+            "type": "string",
+            "const": "Object"
+        },
+        "name": {
+            "type": "string"
+        },
+        "category": {
+            "type": "string"
+        },
+        "display_name": {
+            "$ref": "#/definitions/field_with_locale"
+        },
+        "comment": {
+            "$ref": "#/definitions/field_with_locale"
+        },
+        "override": {
+            "type": "string"
+        }
+    },
+    "definitions": {
+        "field_with_locale": {
+            "type": "object",
+            "propertyNames": {
+                "pattern": "^[a-z]{2}(_[A-Z]{2})?$"
+            },
+            "additionalProperties": {
+                "type": "string"
+            },
+            "required": [
+                "en"
+            ]
+        }
+    }
+}

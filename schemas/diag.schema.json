@@ -1,0 +1,66 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Alterator Diagnostic Tool",
+    "type": "object",
+    "required": [
+        "type",
+        "name",
+        "tests"
+    ],
+    "properties": {
+        "type": {
+            "type": "string",
+            "const": "Diag"
+        },
+        "name": {
+            "type": "string"
+        },
+        "report_suffix": {
+            "type": "string",
+            "$comment": "TODO(chernigin): add examples"
+        },
+        "display_name": {
+            "$ref": "#/definitions/field_with_locale"
+        },
+        "comment": {
+            "$ref": "#/definitions/field_with_locale"
+        },
+        "icon": {
+            "type": "string"
+        },
+        "tests": {
+            "title": "Particular test",
+            "type": "object",
+            "additionalProperties": {
+                "propertyNames": {
+                    "enum": [
+                        "display_name",
+                        "comment"
+                    ]
+                },
+                "properties": {
+                    "display_name": {
+                        "$ref": "#/definitions/field_with_locale"
+                    },
+                    "comment": {
+                        "$ref": "#/definitions/field_with_locale"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "field_with_locale": {
+            "type": "object",
+            "propertyNames": {
+                "pattern": "^[a-z]{2}(_[A-Z]{2})?$"
+            },
+            "additionalProperties": {
+                "type": "string"
+            },
+            "required": [
+                "en"
+            ]
+        }
+    }
+}

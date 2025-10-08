@@ -1,0 +1,40 @@
+type = "Component"
+name = "security_emulation_tools"
+category = "example_comp_cat3"
+tags = ["security"]
+icon = "icon_minimal"
+display_name.en = "Security and Emulation Tools"
+display_name.ru = "Инструменты безопасности и эмуляции"
+
+[packages]
+opensc = {}
+dosbox = {}
+pcsc-tools = {}
+pcsc-lite = {}
+pcsc-lite-acsccid = {}
+pcsc-lite-asedriveiiie-usb = {}
+pcsc-lite-ccid = {}
+pcsc-lite-rutokens = {}
+pam_pkcs11 = {}
+openssl = {}
+openssl-engines = {}
+openssl-engine_pkcs11 = {}
+gnutls-utils = {}
+libp11 = {}
+libp11-kit = {}
+
+kernel-modules-vitualbox = { arch = ["x86_64"], kernel_module = true }
+
+LibreOffice-kde5 = { desktop = ["KDE5"], image_ignore = true }
+LibreOffice-gtk3 = { desktop = ["MATE", "GNOME"] }
+chromium = { arch = ["aarch64"] }
+firefox-esr = { exclude_arch = ["aarch64"] }
+firefox-esr-ru = { exclude_arch = ["aarch64"], language = "ru" }
+wine = { arch = ["i586"] }
+i586-wine = { arch = ["x86_64"] }
+"wine-mono-8.0.0" = { arch = ["x86_64", "i586"] }
+java-17-openjdk = { exclude_arch = ["e2k", "e2kv4", "e2kv5", "e2kv6"] }
+rtc = { arch = ["e2k", "e2kv4", "e2kv5", "e2kv6"] }
+
+[packages."java-1.8.0-openjdk"]
+arch = ["e2k", "e2kv4", "e2kv5", "e2kv6"]

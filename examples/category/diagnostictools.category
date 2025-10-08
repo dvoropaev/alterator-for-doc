@@ -1,0 +1,14 @@
+type = "Category"
+name = "diagnostictools"
+icon = "groups/webui"
+
+[display_name]
+en = "Diagnostic Tools"
+ru = "Диагностические инструменты"
+
+[comment]
+en = "Diagnostic Tool Set"
+ru = "Набор диагностических инсрументов"
+uk = "Налаштування вбудованого веб-серверу"
+pt_BR = "Configurações de Servidor Web Embutido"
+es = "Configuraciones de Servidor Web incrustado"
