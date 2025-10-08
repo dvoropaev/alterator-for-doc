@@ -1,0 +1,13 @@
+[Desktop Entry]
+Name=Alterator Explorer
+Name[ru]=Альтератор браузер
+GenericName[ru]=Альтератор браузер
+X-GNOME-FullName=Alterator Explorer
+Comment=Explorer of Alterator applications operating via D-Bus
+Comment[ru]=Браузер приложений Альтератора работающих через D-Bus
+Exec=alterator-explorer
+Terminal=false
+Type=Application
+Categories=System;Configuration;
+Icon=alterator
+

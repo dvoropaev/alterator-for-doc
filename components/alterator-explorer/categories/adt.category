@@ -1,0 +1,6 @@
+name = "adtCategory"
+type = "Category"
+display_name.en = "Diagnostics tools"
+display_name.ru = "Инструменты диагностики"
+comment.en = "ADT diagnostic tools"
+icon = "adt"

@@ -1,0 +1,7 @@
+name = "componentsCategory"
+type = "Category"
+display_name.en = "Components and applications"
+display_name.ru = "Компоненты и приложения"
+comment.en = "Apps and components management"
+comment.ru = "Управление приложениями и компонентами"
+icon = 'groups/pkg'
