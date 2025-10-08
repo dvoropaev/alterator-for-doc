@@ -1,0 +1,8 @@
+type = "Application"
+interface = "org.altlinux.alterator.components1"
+name = "componentsApp"
+display_name.en = "Components Manager"
+display_name.ru = "Управление компонентами"
+comment.en = "Alterator application for component instalation and removal"
+comment.ru = "Приложение Альтератора для установки и удаления компонент"
+exec = "alt-components"

@@ -1,0 +1,7 @@
+type = "Object"
+name = "componentsApp"
+display_name.en = "Components Manager"
+display_name.ru = "Управление компонентами"
+comment.en = "Alterator interface for component instalation and removal"
+comment.ru = "Интерфейс Альтератора для установки и удаления компонент"
+category = "componentsCategory"
