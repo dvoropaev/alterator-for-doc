@@ -1,0 +1,5 @@
+build
+*.qm
+.*
+*.qrc
+*.user
