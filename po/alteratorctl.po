@@ -1,0 +1,5410 @@
+# Russian translations for alteratorctl package
+# Русские переводы для пакета alteratorctl.
+# Copyright (C) 2024 Pavel Khromov
+# This file is distributed under the same license as the alteratorctl package.
+# Pavel Khromov <hromovpi@altlinux.org>, 2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-09-19 19:11+0400\n"
+"PO-Revision-Date: 2025-07-25 16:11+0300\n"
+"Last-Translator: Pavel Khromov <hromovpi@altlinux.org>\n"
+"Language-Team: Russian <gnu@d07.ru>\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: Poedit 3.6\n"
+
+#: alteratorctlapp.c:148
+#, c-format
+msgid "Error registering local authentication agent: %s (%s, %d)\n"
+msgstr "Ошибка регистрации локального агента аутентификации: %s (%s, %d)\n"
+
+#: alteratorctlapp.c:157
+#, c-format
+msgid "Error creating textual authentication agent: %s (%s, %d)\n"
+msgstr "Ошибка регистрации агента текстовой аутентификации: %s (%s, %d)\n"
+
+#: alteratorctlapp.c:207
+msgid "Not enough arguments.\n"
+msgstr "Недостаточно аргументов.\n"
+
+#: alteratorctlapp.c:234
+msgid "Can't parse aruments\n"
+msgstr "Невозможно обработать аргументы\n"
+
+#: alteratorctlapp.c:330
+#, c-format
+msgid "Module %s isn't found.\n"
+msgstr "Модуль %s не найден.\n"
+
+#: alteratorctlapp.c:363 alteratorctlremotemodule.c:749
+#: alteratorctlsysteminfomodule.c:3187 alteratorctlcomponentsmodule.c:1891
+#: alteratorctldiagmodule.c:651 alteratorctleditionsmodule.c:1531
+#: alteratorctlmanagermodule.c:782 alteratorctlpackagesmodule.c:3220
+#: alteratorctlpackagesmodule.c:3237 alteratorctlpackagesmodule.c:3252
+#: alteratorctlpackagesmodule.c:3277
+msgid "Usage:\n"
+msgstr "Использование:\n"
+
+#: alteratorctlapp.c:364
+msgid "  alteratorctl [OPTIONS] \n"
+msgstr "  alteratorctl [ОПЦИИ] \n"
+
+#: alteratorctlapp.c:365
+msgid "  alteratorctl <MODULE> [COMMAND] [OPTIONS]\n"
+msgstr "  alteratorctl <МОДУЛЬ> [КОМАНДА] [ОПЦИИ]\n"
+
+#: alteratorctlapp.c:366
+msgid ""
+"  alteratorctl <MODULE> <SUBMODULE> [COMMAND] [OPTIONS]\n"
+"\n"
+msgstr ""
+"  alteratorctl <МОДУЛЬ> <ПОДМОДУЛЬ> [КОМАНДА] [ОПЦИИ]\n"
+"\n"
+
+#: alteratorctlapp.c:367 alteratorctlremotemodule.c:756
+#: alteratorctlsysteminfomodule.c:3207 alteratorctldiagmodule.c:662
+#: alteratorctleditionsmodule.c:1542 alteratorctlmanagermodule.c:795
+#: alteratorctlpackagesmodule.c:3226 alteratorctlpackagesmodule.c:3246
+#: alteratorctlpackagesmodule.c:3263 alteratorctlpackagesmodule.c:3284
+msgid "Options:\n"
+msgstr "Опции:\n"
+
+#: alteratorctlapp.c:368
+msgid "  -h, --help                  Show usage help\n"
+msgstr "  -h, --help                  Вывести справку\n"
+
+#: alteratorctlapp.c:369
+msgid "  -v, --verbose               Be verbose\n"
+msgstr "  -v, --verbose               Режим подробного вывода информации\n"
+
+#: alteratorctlapp.c:370
+msgid "  --version                   Get alteratorctl version\n"
+msgstr "  --version                   Получить версию alteratorctl\n"
+
+#: alteratorctlapp.c:371
+msgid ""
+"  -m, --modules               Lists registered client modules\n"
+"\n"
+msgstr ""
+"  -m, --modules               Отобразить зарегистрированные модули\n"
+"\n"
+
+#: alteratorctlapp.c:372
+msgid ""
+"For more information on a specific module and its subcommands, use:\n"
+"  alteratorctl <MODULE> (-h | --help)\n"
+"\n"
+msgstr ""
+"Для получения дополнительной информации по конкретному модулю и его "
+"подкомандам\n"
+"используйте:\n"
+"  alteratorctl <МОДУЛЬ> (-h | --help)\n"
+"\n"
+
+#: alteratorctlapp.c:384
+msgid "Internal error, app is NULL.\n"
+msgstr "Внутренняя ошибка, не удалось инициализировать приложение.\n"
+
+#: alteratorctlgdbussource.c:167
+msgid "Can't create alterator entry info parser in AlteratorGDbusource.\n"
+msgstr "Невозможно создать module info parser в AlteratorGDbusource.\n"
+
+#: alteratorctlgdbussource.c:242
+#, c-format
+msgid "DBus error: %s\n"
+msgstr "Ошибка DBus: %s\n"
+
+#: alteratorctlgdbussource.c:554
+msgid "Interface is null in alterator_gdbus_source_get_object_ifaces.\n"
+msgstr "Интерфейс равен null в alterator_gdbus_source_get_object_ifaces.\n"
+
+#: alteratorctlgdbussource.c:591
+msgid "Interface is null in alterator_gdbus_source_get_iface_objects.\n"
+msgstr "Интерфейс равен null в alterator_gdbus_source_get_iface_objects.\n"
+
+#: alteratorctlgdbussource.c:632
+msgid "Wrong path or name of object.\n"
+msgstr "Неправильное имя объекта или его путь.\n"
+
+#: alteratorctlgdbussource.c:638
+msgid "Wrong interface of object.\n"
+msgstr "Неправильный интерфейс объекта.\n"
+
+#: alteratorctlgdbussource.c:655
+msgid "Wrong object method.\n"
+msgstr "Неправильный метод объекта.\n"
+
+#: alteratorctlgdbussource.c:790
+msgid ""
+"Internal error in alterator_gdbus_source_set_env_value - "
+"AlteratorGDBusSource *source is NULL.\n"
+msgstr ""
+"Ошибка DBus в alterator_gdbus_source_set_env_value AlteratorGDBusSource "
+"*module равен NULL.\n"
+
+#: alteratorctlgdbussource.c:799
+msgid ""
+"Internal error in alterator_gdbus_source_set_env_value - environment "
+"variable name is NULL.\n"
+msgstr ""
+"Ошибка DBus в alterator_gdbus_source_set_env_value AlteratorGDBusSource "
+"*module равен NULL.\n"
+
+#: alteratorctlgdbussource.c:806
+msgid ""
+"Internal error in alterator_gdbus_source_set_env_value - environment "
+"variable value is NULL.\n"
+msgstr ""
+"Ошибка DBus в alterator_gdbus_source_set_env_value AlteratorGDBusSource "
+"*module равен NULL.\n"
+
+#: alteratorctlgdbussource.c:819
+msgid "Can't allocate dbus_ctx_t in alterator_gdbus_source_set_env_value\n"
+msgstr ""
+"Невозможно выделить dbus_ctx_t в alterator_gdbus_source_set_env_value\n"
+
+#: alteratorctlgdbussource.c:846
+msgid ""
+"Internal error in alterator_gdbus_source_get_env_value - "
+"AlteratorGDBusSource *source is NULL.\n"
+msgstr ""
+"Ошибка DBus в alterator_gdbus_source_get_env_value AlteratorGDBusSource "
+"*module равен NULL.\n"
+
+#: alteratorctlgdbussource.c:853
+msgid ""
+"Internal error in alterator_gdbus_source_get_env_value - "
+"AlteratorGDBusSource **result is NULL.\n"
+msgstr ""
+"Ошибка DBus в alterator_gdbus_source_get_env_value AlteratorGDBusSource "
+"*module равен NULL.\n"
+
+#: alteratorctlgdbussource.c:861
+msgid ""
+"Internal error in alterator_gdbus_source_get_env_value - environment "
+"variable name is NULL.\n"
+msgstr ""
+"Ошибка DBus в alterator_gdbus_source_get_env_value AlteratorGDBusSource "
+"*module равен NULL.\n"
+
+#: alteratorctlgdbussource.c:874
+msgid "Can't allocate dbus_ctx_t in alterator_gdbus_source_get_env_value\n"
+msgstr ""
+"Невозможно выделить dbus_ctx_t в alterator_gdbus_source_get_env_value\n"
+
+#: alteratorctlgdbussource.c:982
+msgid ""
+"Internal error in alterator_gdbus_source_getobjets_priv - "
+"AlteratorCtlEditionsModule *module is NULL\n"
+msgstr ""
+"Внутренняя ошибка в alterator_gdbus_source_getobjets_priv - "
+"AlteratorCtlEditionsModule *module равен NULL\n"
+
+#: alteratorctlgdbussource.c:999 alteratorctlgdbussource.c:1015
+msgid "Can't allocate dbus_ctx_t in alterator_gdbus_source_getobjets_priv\n"
+msgstr ""
+"Невозможно выделить dbus_ctx_t в alterator_gdbus_source_getobjets_priv\n"
+
+#: alteratorctlgdbussource.c:1028
+#, c-format
+msgid ""
+"DBus error in alterator_gdbus_source_getobjets_priv while calling "
+"GetObjects() at the object %s: failed to produce a result.\n"
+msgstr ""
+"Ошибка DBus в alterator_gdbus_source_getobjets_priv при вызове GetObjects() "
+"на объекте %s: невозможно получить результат.\n"
+
+#: alteratorctlgdbussource.c:1036
+msgid ""
+"D-Bus error in alterator_gdbus_source_getobjets_priv while calling "
+"GetObjects(): failed to produce a result.\n"
+msgstr ""
+"Ошибка D-Bus в alterator_gdbus_source_getobjets_priv при вызове GetObjects() "
+"невозможно получить результат.\n"
+
+#: alteratorctlgdbussource.c:1080
+msgid ""
+"Internal error in alterator_gdbus_source_getifaces_priv - "
+"AlteratorGDBusSource *module is NULL.\n"
+msgstr ""
+"Ошибка DBus в alterator_gdbus_source_getifaces_priv AlteratorGDBusSource "
+"*module равен NULL.\n"
+
+#: alteratorctlgdbussource.c:1096
+#, c-format
+msgid "Object path: %s isn't valid.\n"
+msgstr "Невалидный путь к объекту: %s.\n"
+
+#: alteratorctlgdbussource.c:1102 alteratorctlgdbussource.c:1118
+msgid "Can't allocate dbus_ctx_t in alterator_gdbus_source_getifaces_priv\n"
+msgstr ""
+"Невозможно выделить dbus_ctx_t в alterator_gdbus_source_getifaces_priv\n"
+
+#: alteratorctlgdbussource.c:1132
+#, c-format
+msgid ""
+"D-Bus error in alterator_gdbus_source_getifaces_priv while calling "
+"GetObjects() at the object %s: failed to produce a result.\n"
+msgstr ""
+"Ошибка D-Bus в alterator_gdbus_source_getifaces_priv при вызове GetObjects() "
+"на объекте %s: невозможно получить результат.\n"
+
+#: alteratorctlgdbussource.c:1140
+msgid ""
+"D-Bus error in alterator_gdbus_source_getifaces_priv while calling "
+"GetObjects(): failed to produce a result.\n"
+msgstr ""
+"Ошибка D-Bus в alterator_gdbus_source_getifaces_priv при вызове "
+"GetObjects(): невозможно получить результат.\n"
+
+#: alteratorctlgdbussource.c:1168
+msgid ""
+"Internal error in alterator_gdbus_source_getsignals_priv - "
+"AlteratorGDBusSource *module is NULL.\n"
+msgstr ""
+"Внутренняя ошибка в alterator_gdbus_source_getsignals_priv - "
+"AlteratorGDBusSource *module равен NULL.\n"
+
+#: alteratorctlgdbussource.c:1177
+msgid "Wrong arguments in alterator_gdbus_source_getsignals_priv.\n"
+msgstr "Неправильные аргументы в alterator_gdbus_source_getsignals_priv.\n"
+
+#: alteratorctlgdbussource.c:1183
+#, c-format
+msgid "Wrong path: %s in alterator_gdbus_source_getsignals_priv.\n"
+msgstr "Некорректный путь: %s в alterator_gdbus_source_getsignals_priv.\n"
+
+#: alteratorctlgdbussource.c:1195
+msgid "Can't initialize dbus_ctx in alterator_gdbus_source_getsignals_priv.\n"
+msgstr ""
+"Невозможно инициализировать dbus_ctx в "
+"alterator_gdbus_source_getsignals_priv.\n"
+
+#: alteratorctlgdbussource.c:1207
+#, c-format
+msgid ""
+"D-Bus error in manager module while calling GetSignals() at the object and "
+"interface %s %s and method %s: failed to produce a result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата manager GetSignals() на объекте, "
+"интерфейсе и методе %s %s %s: Невозможно получить результат.\n"
+
+#: alteratorctlgdbussource.c:1235
+msgid ""
+"Internal error in alterator_gdbus_source_get_services_names - "
+"AlteratorGDBusSource *module is NULL.\n"
+msgstr ""
+"Ошибка DBus в alterator_gdbus_source_get_services_names AlteratorGDBusSource "
+"*module равен NULL.\n"
+
+#: alteratorctlgdbussource.c:1250
+msgid ""
+"Can't initialize dbus_ctx in alterator_gdbus_source_get_services_names\n"
+msgstr ""
+"Невозможно инициализировать dbus_ctx в "
+"alterator_gdbus_source_get_services_names\n"
+
+#: alteratorctlgdbussource.c:1261
+#, c-format
+msgid ""
+"D-Bus error in while calling ListNames() at service, the object, interface "
+"%s %s %s and method %s: failed to produce a result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата ListNames() на сервисе, объекте, "
+"интерфейсе %s %s %s и методе %s: Невозможно получить результат.\n"
+
+#: alteratorctlgdbussource.c:1305
+msgid ""
+"Internal error in alterator_gdbus_source_get_introspection - "
+"AlteratorGDBusSource *module is NULL.\n"
+msgstr ""
+"Внутренняя ошибка в alterator_gdbus_source_get_introspection - "
+"AlteratorGDBusSource *module равен NULL.\n"
+
+#: alteratorctlgdbussource.c:1320
+msgid "Can't initialize dbus_ctx in alterator_gdbus_source_get_introspection\n"
+msgstr ""
+"Невозможно инициализировать dbus_ctx в "
+"alterator_gdbus_source_get_introspection.\n"
+
+#: alteratorctlgdbussource.c:1331
+#, c-format
+msgid ""
+"D-Bus error in while calling Introspect() at service, the object, interface "
+"%s %s %s and method %s: failed to produce a result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата Introspect() на сервисе, объекте, "
+"интерфейсе %s %s %s и методе %s: Невозможно получить результат.\n"
+
+#: alteratorctlgdbussource.c:1358
+msgid ""
+"Internal error in alterator_gdbus_source_get_name_by_path - "
+"AlteratorGDBusSource *module is NULL.\n"
+msgstr ""
+"Внутренняя ошибка в alterator_gdbus_source_get_name_by_path - "
+"AlteratorGDBusSource *module равен NULL.\n"
+
+#: alteratorctlgdbussource.c:1366 alteratorctlgdbussource.c:1390
+#: alteratorctlmoduleinfoparser.c:200 alteratorctlmoduleinfoparser.c:231
+#: alteratorctlmoduleinfoparser.c:251 alteratorctlmoduleinfoparser.c:289
+#: alteratorctlmoduleinfoparser.c:349
+msgid "Module info parser object wasn't created.\n"
+msgstr "Объект парсера информации о модулях не был создан.\n"
+
+#: alteratorctlgdbussource.c:1382
+msgid ""
+"Internal error in alterator_gdbus_source_get_path_by_name - "
+"AlteratorGDBusSource *module is NULL.\n"
+msgstr ""
+"Ошибка DBus в alterator_gdbus_source_get_path_by_name AlteratorGDBusSource "
+"*module равен NULL.\n"
+
+#: alteratorctlremotemodule.c:137
+msgid "Internal error in get_remote_module: unvaliable id of remote module.\n"
+msgstr ""
+"Внутренняя ошибка в get_remote_module: недействительный id модуля remote.\n"
+
+#: alteratorctlremotemodule.c:201
+msgid ""
+"Internal error in remote module while parsing arguments: *iface is NULL.\n"
+msgstr ""
+"Внутренняя ошибка модуля remote при обработке аргументов: *iface равен "
+"NULL.\n"
+
+#: alteratorctlremotemodule.c:213
+msgid "Wrong arguments in remote module.\n"
+msgstr "Неправильные аргументы в модуле remote\n"
+
+#: alteratorctlremotemodule.c:221
+msgid "Wrong remote module command.\n"
+msgstr "Неправильная команда модуля remote.\n"
+
+#: alteratorctlremotemodule.c:233
+msgid "Wrong arguments to connect module command.\n"
+msgstr "Неправильные аргументы для команды connect.\n"
+
+#: alteratorctlremotemodule.c:244
+msgid "Wrong arguments to disconnect module command.\n"
+msgstr "Неправильные аргументы для команды disconnect.\n"
+
+#: alteratorctlremotemodule.c:255 alteratorctlcomponentsmodule.c:1759
+#: alteratorctleditionsmodule.c:1303
+msgid "Wrong arguments to list module command.\n"
+msgstr "Неправильные аргументы для команды list.\n"
+
+#: alteratorctlremotemodule.c:262
+msgid "Unknown module remote command.\n"
+msgstr "Неизвестная команда в модуле remote.\n"
+
+#: alteratorctlremotemodule.c:280
+msgid ""
+"Internal data error in remote module with args: AlteratorCtlRemoteModule "
+"*module is NULL.\n"
+msgstr ""
+"Внутренняя ошибка в модуле remote c аргументами: AlteratorCtlRemoteModule "
+"*module равен NULL.\n"
+
+#: alteratorctlremotemodule.c:310
+msgid "Internal error in remote module run: *module or *context is NULL.\n"
+msgstr "Внутренняя ошибка в модуле remote: *module или *context равен NULL.\n"
+
+#: alteratorctlremotemodule.c:334
+msgid "Try to run unknown remote subcommand.\n"
+msgstr "Попытка запуска неизвестной команды модуля remote.\n"
+
+#: alteratorctlremotemodule.c:354
+msgid ""
+"Internal error in remote module - AlteratorCtlRemoteModule *module is NULL "
+"in \"remote connect\".\n"
+msgstr ""
+"Внутренняя ошибка в модуле remote - AlteratorCtlRemoteModule *module равен "
+"NULL при исполнении команды \"remote connect\".\n"
+
+#: alteratorctlremotemodule.c:362
+msgid "Not enough parameters for remote connect subcommand.\n"
+msgstr "Недостаточно параметров для команды remote connect.\n"
+
+#: alteratorctlremotemodule.c:390
+msgid "Can't allocate dbus_ctx_t in remote_module_connect_subcommand\n"
+msgstr ""
+"Невозможно выделить dbus_ctx_t в подкоманде "
+"remote_module_connect_subcommand\n"
+
+#: alteratorctlremotemodule.c:405
+msgid ""
+"D-Bus error in remote module while calling Connect(): failed to produce a "
+"result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата remote Connect(): невозможно получить "
+"результат.\n"
+
+#: alteratorctlremotemodule.c:436
+msgid ""
+"Internal error in remote module - AlteratorCtlRemoteModule *module is NULL "
+"in \"remote disconnect\".\n"
+msgstr ""
+"Внутренняя ошибка в модуле systeminfo - AlteratorCtlRemoteModule *module "
+"равен NULL при исполнении команды \"remote disconnect\".\n"
+
+#: alteratorctlremotemodule.c:444
+msgid "Not enough parameters for remote disconnect subcommand.\n"
+msgstr "Недостаточно параметров для подкоманды remote disconnect.\n"
+
+#: alteratorctlremotemodule.c:461
+msgid "Can't allocate dbus_ctx_t in remote_module_disconnect_subcommand\n"
+msgstr ""
+"Невозможно выделить dbus_ctx_t в подкоманде "
+"remote_module_disconnect_subcommand\n"
+
+#: alteratorctlremotemodule.c:476
+msgid ""
+"D-Bus error in remote module while calling Disconnect(): failed to produce a "
+"result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата remote Disconnect(): невозможно "
+"получить результат.\n"
+
+#: alteratorctlremotemodule.c:497
+msgid ""
+"Internal error in remote module - AlteratorCtlRemoteModule *module is NULL "
+"in \"remote list\".\n"
+msgstr ""
+"Внутренняя ошибка в модуле editions - AlteratorCtlRemoteModule *module равен "
+"NULL при исполнении команды \"remote list\".\n"
+
+#: alteratorctlremotemodule.c:514
+msgid "Can't allocate dbus_ctx_t in remote_module_list_subcommand\n"
+msgstr ""
+"Невозможно выделить dbus_ctx_t в подкоманде remote_module_list_subcommand\n"
+
+#: alteratorctlremotemodule.c:528
+msgid ""
+"D-Bus error in remote module while calling GetConnections(): failed to "
+"produce a result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата remote GetConnections(): невозможно "
+"получить результат.\n"
+
+#: alteratorctlremotemodule.c:544
+msgid "Internal error in remote module when handle results: *module is NULL.\n"
+msgstr ""
+"Внутренняя ошибка модуля manager при обработке результатов: *module равен "
+"NULL.\n"
+
+#: alteratorctlremotemodule.c:553
+msgid "Internal error in remote module when handle results: *ctx is NULL.\n"
+msgstr ""
+"Внутренняя ошибка модуля remote при обработке результатов: *ctx равен NULL.\n"
+
+#: alteratorctlremotemodule.c:575 alteratorctlcomponentsmodule.c:1483
+#: alteratorctleditionsmodule.c:829
+msgid "Can't handle result of unknown command.\n"
+msgstr "Невозможно получить результат неизвестной команды.\n"
+
+#: alteratorctlremotemodule.c:592
+msgid ""
+"D-Bus error in remote connect handle result: failed to produce a result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата remote connect: невозможно получить "
+"результат.\n"
+
+#: alteratorctlremotemodule.c:598
+msgid "Wrong answer type in remote connect\n"
+msgstr ""
+"Неизвестный возвращаемый тип данных после исполнения подкоманды remote "
+"connect\n"
+
+#: alteratorctlremotemodule.c:608
+msgid "Failed to create a connection\n"
+msgstr "Не удалось создать соединение\n"
+
+#: alteratorctlremotemodule.c:611
+#, c-format
+msgid "Remote object path: %s\n"
+msgstr "Путь к объекту удалённой машины: %s\n"
+
+#: alteratorctlremotemodule.c:630
+msgid ""
+"D-Bus error in remote disconnect handle result: failed to produce a result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата remote disconnect: невозможно получить "
+"результат.\n"
+
+#: alteratorctlremotemodule.c:636
+msgid "Wrong answer type in remote disconnect.\n"
+msgstr ""
+"Неизвестный возвращаемый тип данных после исполнения команды remote "
+"disconnect.\n"
+
+#: alteratorctlremotemodule.c:645
+msgid "Failed to disconnect\n"
+msgstr "Не удалось разорвать соединение\n"
+
+#: alteratorctlremotemodule.c:663
+msgid "D-Bus error in remote list handle result: failed to produce a result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата remote list: невозможно получить "
+"результат.\n"
+
+#: alteratorctlremotemodule.c:669
+msgid "Wrong answer type in remote list.\n"
+msgstr ""
+"Неизвестный возвращаемый тип данных после исполнения команды remote list.\n"
+
+#: alteratorctlremotemodule.c:702
+msgid ""
+"Unvalid connection address: an '@' delimiter between name and IP is "
+"required.\n"
+msgstr ""
+"Недопустимый адрес подключения: ожидается разделитель '@' между именем "
+"пользователя и IP.\n"
+
+#: alteratorctlremotemodule.c:709
+msgid ""
+"Unvalid connection address: can't split connection address to username and "
+"IP.\n"
+msgstr ""
+"Недопустимый адрес подключения: невозможно разобрать адрес на имя "
+"пользователя и IP.\n"
+
+#: alteratorctlremotemodule.c:715
+msgid "Unvalid connection address: username is empty.\n"
+msgstr "Недопустимый адрес подключения: пустое имя пользователя.\n"
+
+#: alteratorctlremotemodule.c:728
+msgid "Unvalid connection address: unvalid IP.\n"
+msgstr "Недопустимый адрес подключения: некорректный IP.\n"
+
+#: alteratorctlremotemodule.c:750
+msgid ""
+"  alteratorctl remote <COMMAND> [arguments] [OPTIONS]\n"
+"\n"
+msgstr ""
+"  alteratorctl remote <КОМАНДА> [аргументы] [ОПЦИИ]\n"
+"\n"
+
+#: alteratorctlremotemodule.c:751 alteratorctlsysteminfomodule.c:3191
+#: alteratorctlcomponentsmodule.c:1894 alteratorctldiagmodule.c:656
+#: alteratorctleditionsmodule.c:1535 alteratorctlmanagermodule.c:784
+#: alteratorctlpackagesmodule.c:3239 alteratorctlpackagesmodule.c:3254
+#: alteratorctlpackagesmodule.c:3279
+msgid "Commands:\n"
+msgstr "Команды:\n"
+
+#: alteratorctlremotemodule.c:752
+msgid ""
+"  connect <remote address> <connection name> <agent bus name> <pty> Connect "
+"to a\n"
+"                              remote machine via ssh\n"
+msgstr ""
+"  connect <адрес подключения> <имя подключения> <путь password agent'а>\n"
+"                              <псевдотерминал> Подключиться к удалённой "
+"машине\n"
+"                              по ssh\n"
+
+#: alteratorctlremotemodule.c:754
+msgid "  disconnect <connection name> Disconnect from the remote machine\n"
+msgstr "  disconnect <имя подключения> Отключиться от удалённой машины\n"
+
+#: alteratorctlremotemodule.c:755
+msgid ""
+"  list                        Get the list of names of installed ssh "
+"connections\n"
+"\n"
+msgstr ""
+"  list                        Получить список открытых ssh-соединений\n"
+
+#: alteratorctlremotemodule.c:757
+msgid ""
+"  -h, --help                  Show module remote usage\n"
+"\n"
+msgstr ""
+"  -h, --help                  Вызов справки модуля components\n"
+"\n"
+
+#: alteratorctlremotemodule.c:775 alteratorctlremotemodule.c:781
+#: alteratorctlcomponentsmodule.c:4205 alteratorctlcomponentsmodule.c:5682
+#: alteratorctlcomponentsmodule.c:5688 alteratorctldiagmodule.c:2078
+#: alteratorctleditionsmodule.c:1569 alteratorctleditionsmodule.c:1575
+#: alteratorctlpackagesmodule.c:3681 alteratorctlpackagesmodule.c:3687
+#, c-format
+msgid "The object %s doesn't exist.\n"
+msgstr "Объект %s не существует.\n"
+
+#: alteratorctlremotemodule.c:792 alteratorctlcomponentsmodule.c:4642
+#: alteratorctlcomponentsmodule.c:5699 alteratorctleditionsmodule.c:1586
+#: alteratorctlmanagermodule.c:599 alteratorctlpackagesmodule.c:3698
+#, c-format
+msgid "Error when checking if an object: %s has an interface %s.\n"
+msgstr "Ошибка при проверке наличия у объекта %s интерфейса %s.\n"
+
+#: alteratorctlremotemodule.c:798 alteratorctlcomponentsmodule.c:4650
+#: alteratorctlcomponentsmodule.c:5705 alteratorctleditionsmodule.c:1592
+#: alteratorctlmanagermodule.c:605 alteratorctlpackagesmodule.c:3704
+#, c-format
+msgid "Object %s has no interface %s.\n"
+msgstr "У объекта %s отсутствует интерфейс %s.\n"
+
+#: alteratorctlremotemodule.c:819
+msgid ""
+"Can't validate password agent: wrong password agent service, path or iface.\n"
+msgstr ""
+"Невозможно проверить password agent: неправильное имя сервиса, путь объекта "
+"или имя интерфейса на dbus.\n"
+
+#: alteratorctlremotemodule.c:826
+msgid "Can't get services names in D-Bus system bus\n"
+msgstr "Невозможно получить имена сервисов на системной шине D-Bus\n"
+
+#: alteratorctlremotemodule.c:833
+#, c-format
+msgid "%s service not found.\n"
+msgstr "Сервис %s не найден.\n"
+
+#: alteratorctlremotemodule.c:840
+#, c-format
+msgid "Can't get introspection of password agent by path: %s in service: %s\n"
+msgstr ""
+"Невозможно получить результат интроспекции password agent'а по пути: %s на "
+"сервисе: %s\n"
+
+#: alteratorctlremotemodule.c:848
+#, c-format
+msgid "Password agent with iface %s doesn't exists.\n"
+msgstr "Password agent с интерфейсом %s не существует.\n"
+
+#: alteratorctlsysteminfomodule.c:216
+msgid ""
+"Internal error in get_systeminfo_module: unvaliable id of systeminfo "
+"module.\n"
+msgstr ""
+"Ошибка при исполнении get_systeminfo_module: недействительный id модуля "
+"systeminfo.\n"
+
+#: alteratorctlsysteminfomodule.c:278
+msgid ""
+"Internal error in systeminfo module while parsing arguments: *iface is "
+"NULL.\n"
+msgstr ""
+"Внутренняя ошибка модуля systeminfo при обработке аргументов: *iface равен "
+"NULL.\n"
+
+#: alteratorctlsysteminfomodule.c:290
+msgid "Wrong arguments in systeminfo module\n"
+msgstr "Неправильные аргументы в модуле systeminfo\n"
+
+#: alteratorctlsysteminfomodule.c:360
+msgid "Unknown module systeminfo command.\n"
+msgstr "Неизвестная команда в модуле systeminfo.\n"
+
+#: alteratorctlsysteminfomodule.c:380
+msgid ""
+"Internal data error in systeminfo module with args: "
+"AlteratorCtlSystemInfoModule *module is NULL.\n"
+msgstr ""
+"Внутренняя ошибка в модуле systeminfo при его запуске - "
+"AlteratorCtlSystemInfoModule *module равен NULL.\n"
+
+#: alteratorctlsysteminfomodule.c:410
+msgid "Internal error in systeminfo module run: *module or *context is NULL.\n"
+msgstr ""
+"Внутренняя ошибка в модуле systeminfo при исполнении systeminfo_module_run - "
+"*module или *context равен NULL.\n"
+
+#: alteratorctlsysteminfomodule.c:489
+msgid "Try to run unknown systeminfo subcommand.\n"
+msgstr "Попытка запуска модуля systeminfo с неизвестными командами.\n"
+
+#: alteratorctlsysteminfomodule.c:507
+msgid ""
+"Internal error in systeminfo module - AlteratorCtlSystemInfoModule *module "
+"is NULL in \"systeminfo license\".\n"
+msgstr ""
+"Внутренняя ошибка в модуле systeminfo - AlteratorCtlSystemInfoModule *module "
+"равен NULL при исполнении команды \"systeminfo license\".\n"
+
+#: alteratorctlsysteminfomodule.c:526
+msgid "Can't allocate dbus_ctx_t in systeminfo_module_get_license_subcommand\n"
+msgstr ""
+"Невозможно выделить dbus_ctx_t в подкоманде "
+"systeminfo_module_get_license_subcommand\n"
+
+#: alteratorctlsysteminfomodule.c:538 alteratorctlsysteminfomodule.c:682
+#: alteratorctlsysteminfomodule.c:753 alteratorctlsysteminfomodule.c:824
+#: alteratorctlsysteminfomodule.c:894 alteratorctlsysteminfomodule.c:964
+#: alteratorctlsysteminfomodule.c:1033 alteratorctlsysteminfomodule.c:1103
+#: alteratorctlsysteminfomodule.c:1173 alteratorctlsysteminfomodule.c:1243
+#: alteratorctlsysteminfomodule.c:1313 alteratorctlsysteminfomodule.c:1382
+#: alteratorctlsysteminfomodule.c:1452 alteratorctlsysteminfomodule.c:1522
+#, c-format
+msgid "Object %s and/or interface %s doesn't exists.\n"
+msgstr "Объект %s и/или интерфейс %s отсутствует.\n"
+
+#: alteratorctlsysteminfomodule.c:556
+msgid ""
+"D-Bus error in systeminfo module while calling GetLicense(): failed to "
+"produce a result\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата systeminfo GetLicense(): невозможно "
+"получить результат.\n"
+
+#: alteratorctlsysteminfomodule.c:630
+msgid ""
+"Failed to save the result of describing all the information about the "
+"system.\n"
+msgstr "Не удалось сохранить информацию о системе.\n"
+
+#: alteratorctlsysteminfomodule.c:657
+msgid ""
+"Internal error in systeminfo module - AlteratorCtlSystemInfoModule *module "
+"is NULL in \"systeminfo device\".\n"
+msgstr ""
+"Внутренняя ошибка в модуле systeminfo - AlteratorCtlSystemInfoModule *module "
+"равен NULL при исполнении команды \"systeminfo device\".\n"
+
+#: alteratorctlsysteminfomodule.c:670
+msgid "Can't allocate dbus_ctx_t in systeminfo_module_get_device_subcommand\n"
+msgstr ""
+"Невозможно выделить dbus_ctx_t в подкоманде "
+"systeminfo_module_get_device_subcommand\n"
+
+#: alteratorctlsysteminfomodule.c:705
+msgid ""
+"D-Bus error in systeminfo module while calling GetDeviceName(): failed to "
+"produce a result.\n"
+msgstr ""
+"Ошибка D-Bus в модуле systeminfo при вызове GetDeviceName(): невозможно "
+"получить результат.\n"
+
+#: alteratorctlsysteminfomodule.c:728
+msgid ""
+"Internal error in systeminfo module - AlteratorCtlSystemInfoModule *module "
+"is NULL in \"systeminfo name\".\n"
+msgstr ""
+"Внутренняя ошибка в модуле systeminfo - AlteratorCtlSystemInfoModule *module "
+"равен NULL при исполнении команды \"systeminfo name\".\n"
+
+#: alteratorctlsysteminfomodule.c:741
+msgid ""
+"Can't allocate dbus_ctx_t in "
+"systeminfo_module_get_operation_system_name_subcommand\n"
+msgstr ""
+"Невозможно выделить dbus_ctx_t в подкоманде "
+"systeminfo_module_get_operation_system_name_subcommand\n"
+
+#: alteratorctlsysteminfomodule.c:776
+msgid ""
+"D-Bus error in systeminfo module while calling GetOperationSystemName(): "
+"failed to produce a result.\n"
+msgstr ""
+"Ошибка D-Bus в модуле systeminfo при вызове GetOperationSystemName(): "
+"невозможно получить результат.\n"
+
+#: alteratorctlsysteminfomodule.c:799
+msgid ""
+"Internal error in systeminfo module - AlteratorCtlSystemInfoModule *module "
+"is NULL in \"systeminfo arch\".\n"
+msgstr ""
+"Внутренняя ошибка в модуле systeminfo - AlteratorCtlSystemInfoModule *module "
+"равен NULL при исполнении команды \"systeminfo arch\".\n"
+
+#: alteratorctlsysteminfomodule.c:812
+msgid "Can't allocate dbus_ctx_t in systeminfo_module_get_arch_subcommand\n"
+msgstr ""
+"Невозможно выделить dbus_ctx_t в подкоманде "
+"systeminfo_module_get_arch_subcommand\n"
+
+#: alteratorctlsysteminfomodule.c:847
+msgid ""
+"D-Bus error in systeminfo module while calling Arch(): failed to produce a "
+"result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата systeminfo Arch(): невозможно получить "
+"результат.\n"
+
+#: alteratorctlsysteminfomodule.c:869
+msgid ""
+"Internal error in systeminfo module - AlteratorCtlSystemInfoModule *module "
+"is NULL in \"systeminfo branch\".\n"
+msgstr ""
+"Внутренняя ошибка в модуле systeminfo - AlteratorCtlSystemInfoModule *module "
+"равен NULL при исполнении команды \"systeminfo branch\".\n"
+
+#: alteratorctlsysteminfomodule.c:882
+msgid "Can't allocate dbus_ctx_t in systeminfo_module_get_branch_subcommand\n"
+msgstr ""
+"Невозможно выделить dbus_ctx_t в подкоманде "
+"systeminfo_module_get_branch_subcommand\n"
+
+#: alteratorctlsysteminfomodule.c:917
+msgid ""
+"D-Bus error in systeminfo module while calling GetBranch(): failed to "
+"produce a result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата systeminfo GetBranch(): невозможно "
+"получить результат.\n"
+
+#: alteratorctlsysteminfomodule.c:939
+msgid ""
+"Internal error in systeminfo module - AlteratorCtlSystemInfoModule *module "
+"is NULL in \"systeminfo kernel\".\n"
+msgstr ""
+"Внутренняя ошибка в модуле systeminfo - AlteratorCtlSystemInfoModule *module "
+"равен NULL при исполнении команды \"systeminfo kernel\".\n"
+
+#: alteratorctlsysteminfomodule.c:952
+msgid "Can't allocate dbus_ctx_t in systeminfo_module_get_kernel_subcommand\n"
+msgstr ""
+"Невозможно выделить dbus_ctx_t в подкоманде "
+"systeminfo_module_get_kernel_subcommand\n"
+
+#: alteratorctlsysteminfomodule.c:987
+msgid ""
+"D-Bus error in systeminfo module while calling GetKernel(): failed to "
+"produce a result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата systeminfo GetKernel(): невозможно "
+"получить результат.\n"
+
+#: alteratorctlsysteminfomodule.c:1009
+msgid ""
+"Internal error in systeminfo module - AlteratorCtlSystemInfoModule *module "
+"is NULL in \"systeminfo cpu\".\n"
+msgstr ""
+"Внутренняя ошибка в модуле systeminfo - AlteratorCtlSystemInfoModule *module "
+"равен NULL при исполнении команды \"systeminfo cpu\".\n"
+
+#: alteratorctlsysteminfomodule.c:1021
+msgid "Can't allocate dbus_ctx_t in systeminfo_module_get_cpu_subcommand\n"
+msgstr ""
+"Невозможно выделить dbus_ctx_t в подкоманде "
+"systeminfo_module_get_cpu_subcommand\n"
+
+#: alteratorctlsysteminfomodule.c:1056
+msgid ""
+"D-Bus error in systeminfo module while calling GetCPU(): failed to produce a "
+"result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата systeminfo GetCPU(): невозможно "
+"получить результат.\n"
+
+#: alteratorctlsysteminfomodule.c:1078
+msgid ""
+"Internal error in systeminfo module - AlteratorCtlSystemInfoModule *module "
+"is NULL in \"systeminfo gpu\".\n"
+msgstr ""
+"Внутренняя ошибка в модуле systeminfo - AlteratorCtlSystemInfoModule *module "
+"равен NULL при исполнении команды \"systeminfo gpu\".\n"
+
+#: alteratorctlsysteminfomodule.c:1091
+msgid "Can't allocate dbus_ctx_t in systeminfo_module_get_gpu_subcommand\n"
+msgstr ""
+"Невозможно выделить dbus_ctx_t в подкоманде "
+"systeminfo_module_get_gpu_subcommand\n"
+
+#: alteratorctlsysteminfomodule.c:1126
+msgid ""
+"D-Bus error in systeminfo module while calling GetGPU(): failed to produce a "
+"result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата systeminfo GetGPU(): невозможно "
+"получить результат.\n"
+
+#: alteratorctlsysteminfomodule.c:1148
+msgid ""
+"Internal error in systeminfo module - AlteratorCtlSystemInfoModule *module "
+"is NULL in \"systeminfo memory\".\n"
+msgstr ""
+"Внутренняя ошибка в модуле systeminfo - AlteratorCtlSystemInfoModule *module "
+"равен NULL при исполнении команды \"systeminfo memory\".\n"
+
+#: alteratorctlsysteminfomodule.c:1161
+msgid "Can't allocate dbus_ctx_t in systeminfo_module_get_memory_subcommand\n"
+msgstr ""
+"Невозможно выделить dbus_ctx_t в подкоманде "
+"systeminfo_module_get_memory_subcommand\n"
+
+#: alteratorctlsysteminfomodule.c:1196
+msgid ""
+"D-Bus error in systeminfo module while calling GetMemory(): failed to "
+"produce a result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата systeminfo GetMemory(): невозможно "
+"получить результат.\n"
+
+#: alteratorctlsysteminfomodule.c:1218
+msgid ""
+"Internal error in systeminfo module - AlteratorCtlSystemInfoModule *module "
+"is NULL in \"systeminfo drive\".\n"
+msgstr ""
+"Внутренняя ошибка в модуле systeminfo - AlteratorCtlSystemInfoModule *module "
+"равен NULL при исполнении команды \"systeminfo drive\".\n"
+
+#: alteratorctlsysteminfomodule.c:1231
+msgid "Can't allocate dbus_ctx_t in systeminfo_module_get_drive_subcommand\n"
+msgstr ""
+"Невозможно выделить dbus_ctx_t в подкоманде "
+"systeminfo_module_get_drive_subcommand\n"
+
+#: alteratorctlsysteminfomodule.c:1266
+msgid ""
+"D-Bus error in systeminfo module while calling GetDrive(): failed to produce "
+"a result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата systeminfo GetDrive(): невозможно "
+"получить результат.\n"
+
+#: alteratorctlsysteminfomodule.c:1288
+msgid ""
+"Internal error in systeminfo module - AlteratorCtlSystemInfoModule *module "
+"is NULL in \"systeminfo monitor\".\n"
+msgstr ""
+"Внутренняя ошибка в модуле systeminfo - AlteratorCtlSystemInfoModule *module "
+"равен NULL при исполнении команды \"systeminfo monitor\".\n"
+
+#: alteratorctlsysteminfomodule.c:1301
+msgid "Can't allocate dbus_ctx_t in systeminfo_module_get_monitor_subcommand\n"
+msgstr ""
+"Невозможно выделить dbus_ctx_t в подкоманде "
+"systeminfo_module_get_monitor_subcommand\n"
+
+#: alteratorctlsysteminfomodule.c:1336
+msgid ""
+"D-Bus error in systeminfo module while calling GetMonitor(): failed to "
+"produce a result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата systeminfo GetMonitor(): невозможно "
+"получить результат.\n"
+
+#: alteratorctlsysteminfomodule.c:1358
+msgid ""
+"Internal error in systeminfo module - AlteratorCtlSystemInfoModule *module "
+"is NULL in \"systeminfo motherboard\".\n"
+msgstr ""
+"Внутренняя ошибка в модуле systeminfo - AlteratorCtlSystemInfoModule *module "
+"равен NULL при исполнении команды \"systeminfo motherboard\".\n"
+
+#: alteratorctlsysteminfomodule.c:1370
+msgid ""
+"Can't allocate dbus_ctx_t in systeminfo_module_get_motherboard_subcommand\n"
+msgstr ""
+"Невозможно выделить dbus_ctx_t в подкоманде "
+"systeminfo_module_get_motherboard_subcommand\n"
+
+#: alteratorctlsysteminfomodule.c:1405
+msgid ""
+"D-Bus error in systeminfo module while calling GetMotherboard(): failed to "
+"produce a result.\n"
+msgstr ""
+"Ошибка D-Bus в модуле systeminfo при вызове GetMotherboard(): невозможно "
+"получить результат.\n"
+
+#: alteratorctlsysteminfomodule.c:1427
+msgid ""
+"Internal error in systeminfo module - AlteratorCtlSystemInfoModule *module "
+"is NULL in \"systeminfo locales\".\n"
+msgstr ""
+"Внутренняя ошибка в модуле systeminfo - AlteratorCtlSystemInfoModule *module "
+"равен NULL при исполнении команды \"systeminfo locales\".\n"
+
+#: alteratorctlsysteminfomodule.c:1440
+msgid "Can't allocate dbus_ctx_t in systeminfo_module_get_locales_subcommand\n"
+msgstr ""
+"Невозможно выделить dbus_ctx_t в подкоманде "
+"systeminfo_module_get_locales_subcommand\n"
+
+#: alteratorctlsysteminfomodule.c:1475
+msgid ""
+"D-Bus error in systeminfo module while calling GetLocales(): failed to "
+"produce a result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата systeminfo GetLocales(): невозможно "
+"получить результат.\n"
+
+#: alteratorctlsysteminfomodule.c:1497
+msgid ""
+"Internal error in systeminfo module - AlteratorCtlSystemInfoModule *module "
+"is NULL in \"systeminfo desktops\".\n"
+msgstr ""
+"Внутренняя ошибка в модуле systeminfo - AlteratorCtlSystemInfoModule *module "
+"равен NULL при исполнении команды \"systeminfo desktops\".\n"
+
+#: alteratorctlsysteminfomodule.c:1510
+msgid ""
+"Can't allocate dbus_ctx_t in systeminfo_module_get_desktops_subcommand\n"
+msgstr ""
+"Невозможно выделить dbus_ctx_t в подкоманде "
+"systeminfo_module_get_desktops_subcommand\n"
+
+#: alteratorctlsysteminfomodule.c:1545
+msgid ""
+"D-Bus error in systeminfo module while calling ListDesktopEnvironments(): "
+"failed to produce a result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата systeminfo ListDesktopEnvironments(): "
+"невозможно получить результат.\n"
+
+#: alteratorctlsysteminfomodule.c:1564
+msgid ""
+"Internal error in systeminfo module when handle result: module is NULL.\n"
+msgstr ""
+"Внутренняя ошибка обработки результата в модуле systeminfo: модуль равен "
+"NULL.\n"
+
+#: alteratorctlsysteminfomodule.c:1573
+msgid ""
+"Internal error in systeminfo module when handle results: *ctx is NULL.\n"
+msgstr ""
+"Внутренняя ошибка обработки результата в модуле systeminfo: *ctx равен "
+"NULL.\n"
+
+#: alteratorctlsysteminfomodule.c:1650
+msgid "Can't handle result of unknown systeminfo subcommand.\n"
+msgstr ""
+"Невозможно получить результат неизвестной команды в модуле systeminfo.\n"
+
+#: alteratorctlsysteminfomodule.c:1667
+msgid ""
+"D-Bus error in systeminfo license handle result: failed to produce a "
+"result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата systeminfo device: невозможно получить "
+"результат.\n"
+
+#: alteratorctlsysteminfomodule.c:1673
+msgid "Wrong answer type in systeminfo license.\n"
+msgstr ""
+"Неизвестный возвращаемый тип данных после исполнения команды systeminfo "
+"license.\n"
+
+#: alteratorctlsysteminfomodule.c:1684
+#, c-format
+msgid "Error while handling systeminfo license result. Exit code: %i.\n"
+msgstr ""
+"Ошибка при получении результата команды systeminfo license. Код возврата: "
+"%i.\n"
+
+#: alteratorctlsysteminfomodule.c:1785
+msgid ""
+"D-Bus error in systeminfo hostname handle result: failed to produce a "
+"result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата systeminfo hostname: невозможно "
+"получить результат.\n"
+
+#: alteratorctlsysteminfomodule.c:1792
+msgid "Wrong answer type in systeminfo hostname.\n"
+msgstr ""
+"Неизвестный возвращаемый тип данных после исполнения команды systeminfo "
+"hostname.\n"
+
+#: alteratorctlsysteminfomodule.c:1800
+msgid "Can't save hostname to description\n"
+msgstr "Невозможно отобразить имя хоста в методе description.\n"
+
+#: alteratorctlsysteminfomodule.c:1807
+msgid "Failed to get host name.\n"
+msgstr "Не удалось получить имя хоста.\n"
+
+#: alteratorctlsysteminfomodule.c:1827 alteratorctlsysteminfomodule.c:1851
+msgid "Empty systeminfo hostname result.\n"
+msgstr "systeminfo hostname вернул пустое значение.\n"
+
+#: alteratorctlsysteminfomodule.c:1841
+#, c-format
+msgid "Error while handling systeminfo hostname result. Exit code: %i.\n"
+msgstr ""
+"Ошибка при получении результата команды systeminfo hostname. Код возврата: "
+"%i.\n"
+
+#: alteratorctlsysteminfomodule.c:1891
+msgid ""
+"D-Bus error in systeminfo name handle result: failed to produce a result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата systeminfo name: невозможно получить "
+"результат.\n"
+
+#: alteratorctlsysteminfomodule.c:1898
+msgid "Wrong answer type in systeminfo name.\n"
+msgstr ""
+"Неизвестный возвращаемый тип данных после исполнения команды systeminfo "
+"name.\n"
+
+#: alteratorctlsysteminfomodule.c:1906
+msgid "Can't save OS name to description\n"
+msgstr "Невозможно выбрать отобразить название ОС в методе description.\n"
+
+#: alteratorctlsysteminfomodule.c:1913
+msgid "Failed to get OS name.\n"
+msgstr "Не удалось получить имя ОС.\n"
+
+#: alteratorctlsysteminfomodule.c:1933 alteratorctlsysteminfomodule.c:1957
+msgid "Empty systeminfo name result.\n"
+msgstr "systeminfo name вернул пустое значение.\n"
+
+#: alteratorctlsysteminfomodule.c:1947
+#, c-format
+msgid "Error while handling systeminfo name result. Exit code: %i.\n"
+msgstr ""
+"Ошибка при получении результата команды systeminfo name. Код возврата: %i.\n"
+
+#: alteratorctlsysteminfomodule.c:1997
+msgid ""
+"D-Bus error in systeminfo arch handle result: failed to produce a result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата systeminfo arch: невозможно получить "
+"результат.\n"
+
+#: alteratorctlsysteminfomodule.c:2005
+msgid "Wrong answer type in systeminfo arch.\n"
+msgstr ""
+"Неизвестный возвращаемый тип данных после исполнения команды systeminfo "
+"arch.\n"
+
+#: alteratorctlsysteminfomodule.c:2013
+msgid "Can't save arch to description\n"
+msgstr "Невозможно отобразить архитектуру системы в методе description.\n"
+
+#: alteratorctlsysteminfomodule.c:2020
+msgid "Failed to get arch.\n"
+msgstr "Не удалось получить архитектуру системы.\n"
+
+#: alteratorctlsysteminfomodule.c:2040 alteratorctlsysteminfomodule.c:2064
+msgid "Empty systeminfo arch result.\n"
+msgstr "systeminfo arch вернул пустое значение.\n"
+
+#: alteratorctlsysteminfomodule.c:2054
+#, c-format
+msgid "Error while handling systeminfo arch result. Exit code: %i.\n"
+msgstr ""
+"Ошибка при получении результата команды systeminfo arch. Код возврата: %i.\n"
+
+#: alteratorctlsysteminfomodule.c:2104
+msgid ""
+"D-Bus error in systeminfo branch handle result: failed to produce a result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата systeminfo branch: невозможно получить "
+"результат.\n"
+
+#: alteratorctlsysteminfomodule.c:2111
+msgid "Wrong answer type in systeminfo branch.\n"
+msgstr ""
+"Неизвестный возвращаемый тип данных после исполнения команды systeminfo "
+"branch.\n"
+
+#: alteratorctlsysteminfomodule.c:2119
+msgid "Can't save branch to description\n"
+msgstr "Невозможно отобразить название ветки текущего репозитория.\n"
+
+#: alteratorctlsysteminfomodule.c:2126
+msgid "Failed to get branch name.\n"
+msgstr "Не удалось получить название ветки текущего репозитория.\n"
+
+#: alteratorctlsysteminfomodule.c:2146 alteratorctlsysteminfomodule.c:2170
+msgid "Empty systeminfo branch result.\n"
+msgstr "systeminfo branch вернул пустое значение.\n"
+
+#: alteratorctlsysteminfomodule.c:2160
+#, c-format
+msgid "Error while handling systeminfo branch result. Exit code: %i.\n"
+msgstr ""
+"Ошибка при получении результата команды systeminfo branch. Код возврата: "
+"%i.\n"
+
+#: alteratorctlsysteminfomodule.c:2210
+msgid ""
+"D-Bus error in systeminfo kernel handle result: failed to produce a result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата systeminfo kernel: невозможно получить "
+"результат.\n"
+
+#: alteratorctlsysteminfomodule.c:2217
+msgid "Wrong answer type in systeminfo kernel.\n"
+msgstr ""
+"Неизвестный возвращаемый тип данных после исполнения команды systeminfo "
+"kernel.\n"
+
+#: alteratorctlsysteminfomodule.c:2225
+msgid "Can't save kernel name to description\n"
+msgstr "Не удалось отобразить имя ядра в методе description.\n"
+
+#: alteratorctlsysteminfomodule.c:2232
+msgid "Failed to get kernel.\n"
+msgstr "Невозможно получить версию ядра.\n"
+
+#: alteratorctlsysteminfomodule.c:2252 alteratorctlsysteminfomodule.c:2276
+msgid "Empty systeminfo kernel result.\n"
+msgstr "systeminfo kernel вернул пустое значение.\n"
+
+#: alteratorctlsysteminfomodule.c:2266
+#, c-format
+msgid "Error while handling systeminfo kernel result. Exit code: %i.\n"
+msgstr ""
+"Ошибка при получении результата команды systeminfo kernel. Код возврата: "
+"%i.\n"
+
+#: alteratorctlsysteminfomodule.c:2317
+msgid ""
+"D-Bus error in systeminfo cpu handle result: failed to produce a result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата systeminfo cpu: невозможно получить "
+"результат.\n"
+
+#: alteratorctlsysteminfomodule.c:2324
+msgid "Wrong answer type in systeminfo cpu.\n"
+msgstr ""
+"Неизвестный возвращаемый тип данных после исполнения подкоманды systeminfo "
+"cpu.\n"
+
+#: alteratorctlsysteminfomodule.c:2332
+msgid "Can't save CPU to description\n"
+msgstr "Невозможно отобразить CPU в методе description\n"
+
+#: alteratorctlsysteminfomodule.c:2339
+msgid "Failed to get cpu.\n"
+msgstr "Не удалось получить информацию о CPU.\n"
+
+#: alteratorctlsysteminfomodule.c:2350 alteratorctlsysteminfomodule.c:2370
+#: alteratorctlsysteminfomodule.c:2408
+msgid "Empty systeminfo cpu result.\n"
+msgstr "systeminfo cpu вернул пустое значение.\n"
+
+#: alteratorctlsysteminfomodule.c:2362
+#, c-format
+msgid "Error while handling systeminfo cpu result. Exit code: %i.\n"
+msgstr ""
+"Ошибка при получении результата команды systeminfo cpu. Код возврата: %i.\n"
+
+#: alteratorctlsysteminfomodule.c:2379
+msgid "Unvalid amount of CPU data.\n"
+msgstr "Некорректный объём данных о ЦПУ.\n"
+
+#: alteratorctlsysteminfomodule.c:2450
+msgid ""
+"D-Bus error in systeminfo gpu handle result: failed to produce a result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата systeminfo gpu: невозможно получить "
+"результат.\n"
+
+#: alteratorctlsysteminfomodule.c:2457
+msgid "Wrong answer type in systeminfo gpu.\n"
+msgstr ""
+"Неизвестный возвращаемый тип данных после исполнения команды systeminfo "
+"gpu.\n"
+
+#: alteratorctlsysteminfomodule.c:2465
+msgid "Can't save GPU to description\n"
+msgstr "Невозможно отобразить GPU в методе description\n"
+
+#: alteratorctlsysteminfomodule.c:2472
+msgid "Failed to get gpu.\n"
+msgstr "Не удалось получить информацию о GPU.\n"
+
+#: alteratorctlsysteminfomodule.c:2492 alteratorctlsysteminfomodule.c:2516
+msgid "Empty systeminfo gpu result.\n"
+msgstr "systeminfo gpu вернул пустое значение.\n"
+
+#: alteratorctlsysteminfomodule.c:2506
+#, c-format
+msgid "Error while handling systeminfo gpu result. Exit code: %i.\n"
+msgstr ""
+"Ошибка при получении результата команды systeminfo gpu. Код возврата: %i.\n"
+
+#: alteratorctlsysteminfomodule.c:2556
+msgid ""
+"D-Bus error in systeminfo memory handle result: failed to produce a result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата systeminfo memory: невозможно получить "
+"результат.\n"
+
+#: alteratorctlsysteminfomodule.c:2563
+msgid "Wrong answer type in systeminfo memory.\n"
+msgstr ""
+"Неизвестный возвращаемый тип данных после исполнения подкоманды systeminfo "
+"memory.\n"
+
+#: alteratorctlsysteminfomodule.c:2571
+msgid "Can't save RAM volume to description\n"
+msgstr "Невозможно отобразить размер ОЗУ в методе description.\n"
+
+#: alteratorctlsysteminfomodule.c:2578
+msgid "Failed to get memory.\n"
+msgstr "Не удалось получить объем ОЗУ.\n"
+
+#: alteratorctlsysteminfomodule.c:2598 alteratorctlsysteminfomodule.c:2622
+msgid "Empty systeminfo memory result.\n"
+msgstr "systeminfo memory вернул пустое значение.\n"
+
+#: alteratorctlsysteminfomodule.c:2612
+#, c-format
+msgid "Error while handling systeminfo memory result. Exit code: %i.\n"
+msgstr ""
+"Ошибка при получении результата команды systeminfo memory. Код возврата: "
+"%i.\n"
+
+#: alteratorctlsysteminfomodule.c:2662
+msgid ""
+"D-Bus error in systeminfo drive handle result: failed to produce a result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата systeminfo drive: невозможно получить "
+"результат.\n"
+
+#: alteratorctlsysteminfomodule.c:2669
+msgid "Wrong answer type in systeminfo drive.\n"
+msgstr ""
+"Неизвестный возвращаемый тип данных после исполнения подкоманды systeminfo "
+"drive.\n"
+
+#: alteratorctlsysteminfomodule.c:2677
+msgid "Can't save total memory volume to description\n"
+msgstr ""
+"Невозможно отобразить объеём всей памяти устройства в методе description\n"
+
+#: alteratorctlsysteminfomodule.c:2685
+msgid "Failed to get drive volume.\n"
+msgstr "Не удалось получить объём всей памяти.\n"
+
+#: alteratorctlsysteminfomodule.c:2705 alteratorctlsysteminfomodule.c:2729
+msgid "Empty systeminfo drive result.\n"
+msgstr "systeminfo drive вернул пустое значение.\n"
+
+#: alteratorctlsysteminfomodule.c:2719
+#, c-format
+msgid "Error while handling systeminfo drive result. Exit code: %i.\n"
+msgstr ""
+"Ошибка при получении результата команды systeminfo drive. Код возврата: %i.\n"
+
+#: alteratorctlsysteminfomodule.c:2769
+msgid ""
+"D-Bus error in systeminfo monitor handle result: failed to produce a "
+"result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата systeminfo monitor: невозможно "
+"получить результат.\n"
+
+#: alteratorctlsysteminfomodule.c:2776
+msgid "Wrong answer type in systeminfo monitor.\n"
+msgstr ""
+"Неизвестный возвращаемый тип данных после исполнения подкоманды systeminfo "
+"monitor.\n"
+
+#: alteratorctlsysteminfomodule.c:2784
+msgid "Can't save monitor to description\n"
+msgstr "Невозможно отобразить монитор в методе description.\n"
+
+#: alteratorctlsysteminfomodule.c:2792
+msgid "Failed to get monitor.\n"
+msgstr "Не удалось получить информацию о мониторе.\n"
+
+#: alteratorctlsysteminfomodule.c:2811 alteratorctlsysteminfomodule.c:2835
+msgid "Empty systeminfo monitor result.\n"
+msgstr "systeminfo monitor вернул пустое значение.\n"
+
+#: alteratorctlsysteminfomodule.c:2825
+#, c-format
+msgid "Error while handling systeminfo monitor result. Exit code: %i.\n"
+msgstr ""
+"Ошибка при получении результата команды systeminfo monitor. Код возврата: "
+"%i.\n"
+
+#: alteratorctlsysteminfomodule.c:2876
+msgid ""
+"D-Bus error in systeminfo motherboard handle result: failed to produce a "
+"result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата systeminfo motherboard: невозможно "
+"получить результат.\n"
+
+#: alteratorctlsysteminfomodule.c:2883
+msgid "Wrong answer type in systeminfo motherboard.\n"
+msgstr ""
+"Неизвестный возвращаемый тип данных после исполнения команды systeminfo "
+"motherboard.\n"
+
+#: alteratorctlsysteminfomodule.c:2891
+msgid "Can't save motherboard to description\n"
+msgstr "Невозможно отобразить материнскую плату в методе description\n"
+
+#: alteratorctlsysteminfomodule.c:2899
+msgid "Failed to get motherboard.\n"
+msgstr "Не удалось получить информацию о материнской плате.\n"
+
+#: alteratorctlsysteminfomodule.c:2918 alteratorctlsysteminfomodule.c:2942
+msgid "Empty systeminfo motherboard result.\n"
+msgstr "systeminfo motherboard вернул пустое значение.\n"
+
+#: alteratorctlsysteminfomodule.c:2932
+#, c-format
+msgid "Error while handling systeminfo motherboard result. Exit code: %i.\n"
+msgstr ""
+"Ошибка DBus во время работы метода systeminfo motherboard в %i: код возврата "
+"равен NULL.\n"
+
+#: alteratorctlsysteminfomodule.c:2982
+msgid ""
+"D-Bus error in systeminfo locales handle result: failed to produce a "
+"result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата systeminfo locales: невозможно "
+"получить результат.\n"
+
+#: alteratorctlsysteminfomodule.c:2989
+msgid "Wrong answer type in systeminfo locales.\n"
+msgstr ""
+"Неизвестный возвращаемый тип данных после исполнения команды systeminfo "
+"locales.\n"
+
+#: alteratorctlsysteminfomodule.c:2997
+msgid "Can't save locales to description\n"
+msgstr "Невозможно отобразить список локалей в методе description.\n"
+
+#: alteratorctlsysteminfomodule.c:3005
+msgid "Failed to get locales.\n"
+msgstr "Не удалось получить текущyю локализацию.\n"
+
+#: alteratorctlsysteminfomodule.c:3025 alteratorctlsysteminfomodule.c:3049
+msgid "Empty systeminfo locales result.\n"
+msgstr "systeminfo locales вернул пустое значение.\n"
+
+#: alteratorctlsysteminfomodule.c:3039
+#, c-format
+msgid "Error while handling systeminfo locales result. Exit code: %i.\n"
+msgstr ""
+"Ошибка при получении результата команды systeminfo locales. Код возврата: "
+"%i.\n"
+
+#: alteratorctlsysteminfomodule.c:3089
+msgid ""
+"D-Bus error in systeminfo desktops handle result: failed to produce a "
+"result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата systeminfo desktops: невозможно "
+"получить результат.\n"
+
+#: alteratorctlsysteminfomodule.c:3096
+msgid "Wrong answer type in systeminfo desktops.\n"
+msgstr ""
+"Неизвестный возвращаемый тип данных после исполнения подкоманды systeminfo "
+"desktops.\n"
+
+#: alteratorctlsysteminfomodule.c:3104
+msgid "Can't save desktop environments to description\n"
+msgstr ""
+"Невозможно отобразить переменные графических окружений в методе "
+"description.\n"
+
+#: alteratorctlsysteminfomodule.c:3114
+msgid "Failed to get desktops.\n"
+msgstr "Не удалось получить информацию о графическом окружении.\n"
+
+#: alteratorctlsysteminfomodule.c:3134
+msgid "Empty systeminfo desktops result.\n"
+msgstr "systeminfo desktops вернул пустое значение.\n"
+
+#: alteratorctlsysteminfomodule.c:3148
+#, c-format
+msgid "Error while handling systeminfo desktops result. Exit code: %i.\n"
+msgstr ""
+"Ошибка при получении результата команды systeminfo desktops. Код возврата: "
+"%i.\n"
+
+#: alteratorctlsysteminfomodule.c:3158
+msgid "Empty systeminfo desktop environments result.\n"
+msgstr "systeminfo desktops вернул пустое значение.\n"
+
+#: alteratorctlsysteminfomodule.c:3188
+msgid "  alteratorctl systeminfo [COMMAND] [OPTIONS]\n"
+msgstr "  alteratorctl systeminfo [КОМАНДА] [ОПЦИИ]\n"
+
+#: alteratorctlsysteminfomodule.c:3189
+msgid ""
+"  alteratorctl systeminfo     Get information about the system (exclude os\n"
+"                              license agreement)\n"
+"\n"
+msgstr ""
+"  alteratorctl systeminfo     Получить информацию о системе (исключая\n"
+"                              лицензионной соглашение ОС)\n"
+"\n"
+
+#: alteratorctlsysteminfomodule.c:3192
+msgid "  arch                        Get operation system arch\n"
+msgstr "  arch                        Получить архитектуру ОС\n"
+
+#: alteratorctlsysteminfomodule.c:3193
+msgid "  branch                      Get operation system branch\n"
+msgstr "  branch                      Получить название ветки ОС\n"
+
+#: alteratorctlsysteminfomodule.c:3194
+msgid "  cpu                         Get information about CPU\n"
+msgstr "  cpu                         Получить информацию о ЦПУ\n"
+
+#: alteratorctlsysteminfomodule.c:3195
+msgid ""
+"  description                 Get information about the system (exclude os\n"
+"                              license agreement) (default command)\n"
+msgstr ""
+"  description                 Получить информацию о системе (исключая\n"
+"                              лицензионной соглашение ОС) (команда по "
+"умолчанию)\n"
+
+#: alteratorctlsysteminfomodule.c:3197
+msgid "  desktops                    Get desktop environments\n"
+msgstr ""
+"  desktops                    Получить список установленных графических\n"
+"                              окружений\n"
+
+#: alteratorctlsysteminfomodule.c:3198
+msgid "  drive                       Get information about drive volume\n"
+msgstr "  drive                       Получить объём всей памяти\n"
+
+#: alteratorctlsysteminfomodule.c:3199
+msgid "  gpu                         Get information about GPU\n"
+msgstr ""
+"  gpu                         Вывести информацию о графическом процессоре\n"
+
+#: alteratorctlsysteminfomodule.c:3200
+msgid "  hostname                    Get host name\n"
+msgstr "  hostname                    Получить имя хоста\n"
+
+#: alteratorctlsysteminfomodule.c:3201
+msgid "  kernel                      Get operation system kernel\n"
+msgstr ""
+"  kernel                      Получить название ядра операционной системы\n"
+
+#: alteratorctlsysteminfomodule.c:3202
+msgid "  locales                     Get list of user(s) locales\n"
+msgstr "  locales                     Получить локализацию пользователя(ей)\n"
+
+#: alteratorctlsysteminfomodule.c:3203
+msgid "  memory                      Get information about RAM memory volume\n"
+msgstr "  memory                      Получить объём ОЗУ\n"
+
+#: alteratorctlsysteminfomodule.c:3204
+msgid "  monitor                     Get information about monitor\n"
+msgstr "  monitor                     Получить информацию о мониторе\n"
+
+#: alteratorctlsysteminfomodule.c:3205
+msgid "  motherboard                 Get information about motherboard\n"
+msgstr ""
+"  motherboard                 Получить информацию о материнской плате\n"
+
+#: alteratorctlsysteminfomodule.c:3206
+msgid ""
+"  name                        Get operation system name\n"
+"\n"
+msgstr ""
+"  name                        Получить название ОС\n"
+"\n"
+
+#: alteratorctlsysteminfomodule.c:3208
+msgid ""
+"  -h, --help                  Show module systeminfo usage\n"
+"\n"
+msgstr ""
+"  -h, --help                  Вызов справки модуля systeminfo\n"
+"\n"
+
+
+
+#: alteratorctlcommon.c:40
+msgid "D-Bus context init error: unvaliable service name.\n"
+msgstr "Ошибка инициализации контекста D-Bus: недействительное имя сервиса.\n"
+
+#: alteratorctlcommon.c:46
+msgid "D-Bus context init error: unvaliable path to object.\n"
+msgstr ""
+"Ошибка инициализации контекста D-Bus: недействительный путь к объекту.\n"
+
+#: alteratorctlcommon.c:52
+msgid "D-Bus context init error: unvaliable interface name.\n"
+msgstr ""
+"Ошибка инициализации контекста D-Bus: недействительное имя интерфейса.\n"
+
+#: alteratorctlcommon.c:58
+msgid "D-Bus context init error: unvaliable method name.\n"
+msgstr "Ошибка инициализации контекста D-Bus: недействительное имя метода.\n"
+
+#: alteratorctlcommon.c:76
+msgid "Unvalid D-Bus connection timeout value.\n"
+msgstr "Невалидный таймаут D-Bus соединения.\n"
+
+#: alteratorctlcommon.c:132
+msgid "Error of creating alteratorctl_ctx_t to manager module.\n"
+msgstr ""
+"Ошибка создания общего контекста alteratorctl_ctx_t в модуле manager.\n"
+
+#: alteratorctlcommon.c:151
+msgid "Error of creating alteratorctl_ctx_t to packages module.\n"
+msgstr ""
+"Ошибка создания общего контекста alteratorctl_ctx_t в модуле packages.\n"
+
+#: alteratorctlcommon.c:169
+msgid "Error of creating alteratorctl_ctx_t to editions module.\n"
+msgstr ""
+"Ошибка создания общего контекста alteratorctl_ctx_t в модуле editions.\n"
+
+#: alteratorctlcommon.c:187
+msgid "Error of creating alteratorctl_ctx_t to components module.\n"
+msgstr ""
+"Ошибка создания общего контекста alteratorctl_ctx_t в модуле components.\n"
+
+#: alteratorctlcommon.c:207
+msgid "Error of creating alteratorctl_ctx_t to diag module.\n"
+msgstr "Ошибка создания общего контекста alteratorctl_ctx_t в модуле diag.\n"
+
+#: alteratorctlcommon.c:222
+msgid "Error of creating alteratorctl_ctx_t to systeminfo module.\n"
+msgstr ""
+"Ошибка создания общего контекста alteratorctl_ctx_t в модуле systeminfo.\n"
+
+#: alteratorctlcommon.c:243
+msgid "Error of creating alteratorctl_ctx_t to remote module.\n"
+msgstr "Ошибка создания общего контекста alteratorctl_ctx_t в модуле remote.\n"
+
+#: alteratorctlcommon.c:298
+#, c-format
+msgid ""
+"In dup2 to redirect the thread from id %u to \"%s\" failed. Return code: -1\n"
+msgstr ""
+"Перенаправление потока с идентификатором %u в \"%s\" провалилась. Код "
+"возврата: -1\n"
+
+#: alteratorctlcommon.c:305
+#, c-format
+msgid ""
+"In dup2 to redirect the thread from id %u to file descriptor %u. Return "
+"code: -1\n"
+msgstr ""
+"Перенаправление потока с идентификатором %u в другой поток с идентификатором "
+"%u. Код возврата: -1\n"
+
+#: alteratorctlcommon.c:327
+msgid "Can't make STDOUT descriptor backup\n"
+msgstr "Невозможно создать резервную копию дескриптора STDOUT\n"
+
+#: alteratorctlcommon.c:333
+msgid "Can't make STDERR descriptor backup\n"
+msgstr "Невозможно создать резервную копию дескриптора STDERR\n"
+
+#: alteratorctlcommon.c:339
+#, c-format
+msgid "Error while open \"/dev/null\" file descriptor: %s\n"
+msgstr "Ошибка при открытии \"/dev/null\" дескриптора файла: %s\n"
+
+#: alteratorctlcommon.c:442
+msgid "Failed to parse html text.\n"
+msgstr "Не удалось обработать html текст.\n"
+
+#: alteratorctlcommon.c:614
+#, c-format
+msgid "Unable to format output into columns: %s\n"
+msgstr "Невозможно разбить текст на колонки: %s\n"
+
+#: alteratorctlcomponentsmodule.c:413
+msgid ""
+"Internal error in get_components_module: unvaliable id of components "
+"module.\n"
+msgstr ""
+"Ошибка при исполнении get_components_module: недействительный id модуля "
+"components.\n"
+
+#: alteratorctlcomponentsmodule.c:479 alteratorctleditionsmodule.c:678
+msgid ""
+"Internal data error in editions module with args: AlteratorCtlEditionsModule "
+"*module is NULL.\n"
+msgstr ""
+"Внутренняя ошибка в модуле editions при исполнении "
+"editions_module_run_with_args - AlteratorCtlEditionsModule *module равен "
+"NULL.\n"
+
+#: alteratorctlcomponentsmodule.c:509
+msgid "Internal error in components module run: *module is NULL.\n"
+msgstr ""
+"Внутренняя ошибка при исполнении components_module_run - *module равен "
+"NULL.\n"
+
+#: alteratorctlcomponentsmodule.c:518
+msgid "Internal error in components module run: *context is NULL.\n"
+msgstr ""
+"Внутренняя ошибка при исполнении components_module_run - *context равен "
+"NULL.\n"
+
+#: alteratorctlcomponentsmodule.c:576
+msgid "Try to run unknown components module command.\n"
+msgstr "Попытка запуска модуля components с неизвестной командой.\n"
+
+#: alteratorctlcomponentsmodule.c:617
+msgid ""
+"The call to the components list method failed. The module doesn't exist.\n"
+msgstr "Вызов метода components list завершился неудачей. Пустой модуль.\n"
+
+#: alteratorctlcomponentsmodule.c:623
+msgid ""
+"The call to the components list method failed. The context doesn't exist.\n"
+msgstr "Вызов метода components list завершился неудачей. Пустой контекст.\n"
+
+#: alteratorctlcomponentsmodule.c:645
+msgid ""
+"Printing list of components with categories failed. Can't parse categories "
+"data.\n"
+msgstr ""
+"Не удалось вывести дерево компонентов и категорий. Обработка данных "
+"категорий закончилась неудачей.\n"
+
+#: alteratorctlcomponentsmodule.c:723
+msgid ""
+"Printing list of components with categories failed. Can't parse components "
+"data.\n"
+msgstr ""
+"Не удалось вывести дерево компонентов и категорий. Обработка данных "
+"компонентов закончилась неудачей.\n"
+
+#: alteratorctlcomponentsmodule.c:762
+msgid "Can,t print components list. Failed to get some component name.\n"
+msgstr ""
+"Не удалось вывести список компонентов из-за ошибки получения имени "
+"неизвестной компоненты.\n"
+
+#: alteratorctlcomponentsmodule.c:815
+#, c-format
+msgid "Section %s does not exist.\n"
+msgstr "Раздел %s не существует.\n"
+
+#: alteratorctlcomponentsmodule.c:951 alteratorctlcomponentsmodule.c:3992
+msgid "Internal error in components module: parameter1 is NULL.\n"
+msgstr "Внутренняя ошибка в модуле components - parameter1 равен NULL.\n"
+
+#: alteratorctlcomponentsmodule.c:967
+#, c-format
+msgid "Error while getting info of %s component on alterator entry format.\n"
+msgstr ""
+"Ошибка при получении информации о компоненте %s в формате Alterator Entry.\n"
+
+#: alteratorctlcomponentsmodule.c:994
+msgid "Internal error in components module: component name or path is empty.\n"
+msgstr ""
+"Внутренняя ошибка в модуле components: имя компонента или путь пусты.\n"
+
+#: alteratorctlcomponentsmodule.c:1011 alteratorctlcomponentsmodule.c:1072
+#, c-format
+msgid "Component : %s not installed.\n"
+msgstr "Компонент %s не установлен.\n"
+
+#: alteratorctlcomponentsmodule.c:1023
+#, c-format
+msgid "Component: %s is already installed.\n"
+msgstr "Компонент %s уже установлен.\n"
+
+#: alteratorctlcomponentsmodule.c:1055
+msgid "Internal error in components module: component path or name is empty.\n"
+msgstr ""
+"Внутренняя ошибка в модуле components: имя компонента или путь пусты.\n"
+
+#: alteratorctlcomponentsmodule.c:1084
+#, c-format
+msgid "Component: %s isn't installed.\n"
+msgstr "Компонент %s не установлен.\n"
+
+#: alteratorctlcomponentsmodule.c:1117
+#, c-format
+msgid "Can't get %s component description: path or name is empty.\n"
+msgstr "Невозможно получить описание компонента %s: имя или путь не заданы.\n"
+
+#: alteratorctlcomponentsmodule.c:1131
+msgid "Can't allocate dbus_ctx_t in components_module_description_subcommand\n"
+msgstr ""
+"Невозможно выделить dbus_ctx_t в подкоманде "
+"components_module_description_subcommand\n"
+
+#: alteratorctlcomponentsmodule.c:1145
+#, c-format
+msgid "Can't get description of non-existent %s component: %s.\n"
+msgstr "Невозможно получить описание несуществующего компонента %s: %s.\n"
+
+#: alteratorctlcomponentsmodule.c:1153
+#, c-format
+msgid "Getting of component %s description failed: %s.\n"
+msgstr "Невозможно получить описание компонента %s: %s.\n"
+
+#: alteratorctlcomponentsmodule.c:1196
+msgid "Internal error in components module: path or name is empty.\n"
+msgstr "Внутренняя ошибка в модуле components: имя или путь пусты.\n"
+
+#: alteratorctlcomponentsmodule.c:1214
+#, c-format
+msgid "Can't get component %s data. Component info parsing failed.\n"
+msgstr ""
+"Невозможно получить данные компонента %s. Обработка данных компонента "
+"закончилась неудачно.\n"
+
+#: alteratorctlcomponentsmodule.c:1222
+#, c-format
+msgid "Can't get component %s data. Getting packages list failed.\n"
+msgstr ""
+"Невозможно получить данные компонента %s. Не удалось получить список пакетов "
+"компонента.\n"
+
+#: alteratorctlcomponentsmodule.c:1281
+#, c-format
+msgid "Can't get component %s status.\n"
+msgstr "Невозможно получить статус компонента %s.\n"
+
+#: alteratorctlcomponentsmodule.c:1298
+#, c-format
+msgid "Can't get component %s parent category. Component category is empty.\n"
+msgstr ""
+"Невозможно получить данные компонента %s. У компонента не указана "
+"категория.\n"
+
+#: alteratorctlcomponentsmodule.c:1306
+#, c-format
+msgid "Component: %s\n"
+msgstr "Компонент: %s\n"
+
+#: alteratorctlcomponentsmodule.c:1307
+#, c-format
+msgid "Category: %s\n"
+msgstr "Категория: %s\n"
+
+#: alteratorctlcomponentsmodule.c:1308
+#, c-format
+msgid "Status: %s\n"
+msgstr "Статус: %s\n"
+
+#: alteratorctlcomponentsmodule.c:1308
+msgid "installed"
+msgstr "установлен"
+
+#: alteratorctlcomponentsmodule.c:1308
+msgid "uninstalled"
+msgstr "не установлен"
+
+#: alteratorctlcomponentsmodule.c:1310 alteratorctlcomponentsmodule.c:4882
+#, c-format
+msgid ""
+"Component %s has no applicable packages: all were\n"
+"filtered out due to mismatch with the required\n"
+"architecture, localization, or desktop environments\n"
+"specified in the component's alterator entry.\n"
+msgstr ""
+"Компонент %s не содержит актуальных пакетов — все они отфильтрованы из‑за\n"
+"несовпадения c текущей архитектурой, локализацией или графическими\n"
+"окружениями, указанными в alterator entry компонента.\n"
+
+#: alteratorctlcomponentsmodule.c:1316
+msgid "List of component packages:\n"
+msgstr "Список пакетов, входящих в компонент:\n"
+
+#: alteratorctlcomponentsmodule.c:1384 alteratorctlcomponentsmodule.c:1396
+msgid "Can't search unspecified component.\n"
+msgstr "Невозможно найти неуказанную компоненту.\n"
+
+#: alteratorctlcomponentsmodule.c:1418
+msgid "Search results:\n"
+msgstr "Результаты поиска:\n"
+
+#: alteratorctlcomponentsmodule.c:1449
+msgid ""
+"Internal error in components module when handle results: *module or *context "
+"is NULL.\n"
+msgstr ""
+"Внутренняя ошибка при обработке результата модуля components - *module или "
+"*context равны NULL.\n"
+
+#: alteratorctlcomponentsmodule.c:1565
+#, c-format
+msgid "Module components options parsing failed: %s\n"
+msgstr "Обработка опций модуля components завершилась неудачей: %s\n"
+
+#: alteratorctlcomponentsmodule.c:1592
+msgid ""
+"It is not possible to use options --installed and --not-installed together.\n"
+msgstr "Нельзя использовать опции --installed и --not-installed вместе.\n"
+
+#: alteratorctlcomponentsmodule.c:1598
+msgid ""
+"It is not possible to use option --ignore-sections and --sections arguments "
+"together.\n"
+msgstr ""
+"Нельзя использовать опцию --ignore-sections вместе с параметрами --"
+"sections.\n"
+
+#: alteratorctlcomponentsmodule.c:1609 alteratorctldiagmodule.c:1952
+#: alteratorctleditionsmodule.c:1203
+msgid ""
+"It is not possible to use options --name-only and --path-only together.\n"
+msgstr "Нельзя использовать опции --name-only и --path-only вместе.\n"
+
+#: alteratorctlcomponentsmodule.c:1614 alteratorctldiagmodule.c:1957
+#: alteratorctleditionsmodule.c:1208
+msgid ""
+"It is not possible to use options --name-only and --display-name-only "
+"together.\n"
+msgstr "Нельзя использовать опции --name-only и --display-name-only вместе.\n"
+
+#: alteratorctlcomponentsmodule.c:1619 alteratorctldiagmodule.c:1962
+#: alteratorctleditionsmodule.c:1213
+msgid ""
+"It is not possible to use options --display-name-only and --path-only "
+"together.\n"
+msgstr "Нельзя использовать опции --display-name-only и --path-only вместе.\n"
+
+#: alteratorctlcomponentsmodule.c:1625 alteratorctldiagmodule.c:1968
+#: alteratorctleditionsmodule.c:1219
+msgid ""
+"It is not possible to use options --name-only and --path-only and --display-"
+"name-only together.\n"
+msgstr ""
+"Нельзя использовать опции --name-only, --path-only вместе и -display-name-"
+"only вместе.\n"
+
+#: alteratorctlcomponentsmodule.c:1630 alteratorctldiagmodule.c:1973
+#: alteratorctleditionsmodule.c:1224
+msgid ""
+"It is not possible to use options --display-name-only and --no-display-name "
+"together.\n"
+msgstr ""
+"Нельзя использовать опции --display-name-only и --no-display-name вместе.\n"
+
+#: alteratorctlcomponentsmodule.c:1635 alteratorctldiagmodule.c:1978
+#: alteratorctleditionsmodule.c:1229
+msgid ""
+"It is not possible to use options --verbose and --display-name-only "
+"together.\n"
+msgstr "Нельзя использовать опции --verbose и --display-name-only вместе.\n"
+
+#: alteratorctlcomponentsmodule.c:1640 alteratorctldiagmodule.c:1983
+#: alteratorctleditionsmodule.c:1234
+msgid "It is not possible to use options --verbose and --name-only together.\n"
+msgstr "Нельзя использовать опции --verbose и --name-only вместе.\n"
+
+#: alteratorctlcomponentsmodule.c:1645 alteratorctldiagmodule.c:1988
+#: alteratorctleditionsmodule.c:1239
+msgid "It is not possible to use options --verbose and --path-only together.\n"
+msgstr "Нельзя использовать опции --verbose и --path-only вместе.\n"
+
+#: alteratorctlcomponentsmodule.c:1650 alteratorctldiagmodule.c:1993
+#: alteratorctleditionsmodule.c:1244
+msgid "It is not possible to use options --no-name and --name-only together.\n"
+msgstr "Нельзя использовать опции --no-name и --name-only вместе.\n"
+
+#: alteratorctlcomponentsmodule.c:1655 alteratorctldiagmodule.c:1998
+#: alteratorctleditionsmodule.c:1249
+msgid ""
+"It is not possible to use options --no-name and --no-display-name together.\n"
+msgstr "Нельзя использовать опции --no-name и --no-display-name вместе.\n"
+
+#: alteratorctlcomponentsmodule.c:1660 alteratorctldiagmodule.c:2003
+#: alteratorctleditionsmodule.c:1254
+msgid "It is not possible to use options --verbose and --no-name together.\n"
+msgstr "Нельзя использовать опции --verbose и --no-name вместе.\n"
+
+#: alteratorctlcomponentsmodule.c:1665
+msgid ""
+"It is not possible to use options --preudo-graphic-tree and --simple-tree "
+"together.\n"
+msgstr ""
+"Нельзя использовать опции --preudo-graphic-tree и --simple-tree вместе.\n"
+
+#: alteratorctlcomponentsmodule.c:1670
+msgid ""
+"It is not possible to use options --preudo-graphic-tree and --list "
+"together.\n"
+msgstr "Нельзя использовать опции --preudo-graphic-tree и --list вместе.\n"
+
+#: alteratorctlcomponentsmodule.c:1675
+msgid "It is not possible to use options --simple-tree and --list together.\n"
+msgstr "Нельзя использовать опции --simple-tree и --list вместе.\n"
+
+#: alteratorctlcomponentsmodule.c:1680 alteratorctlcomponentsmodule.c:1685
+#: alteratorctlcomponentsmodule.c:1690
+msgid ""
+"The --enable-display-name option can only be used with the --list option.\n"
+msgstr ""
+"Опция --enable-display-name работает только в связке с опцией --list.\n"
+
+#: alteratorctlcomponentsmodule.c:1695
+msgid ""
+"It is not possible to use options --enable-display-name and --no-display-"
+"name together.\n"
+msgstr ""
+"Нельзя использовать опции --enable-display-name и --no-display-name вместе.\n"
+
+#: alteratorctlcomponentsmodule.c:1700
+#, c-format
+msgid ""
+"It is not possible to use options --enable-display-name and %s together.\n"
+msgstr "Нельзя использовать опции --enable-display-name и %s вместе.\n"
+
+#: alteratorctlcomponentsmodule.c:1724
+msgid ""
+"Internal error in components module while parsing arguments: *iface is "
+"NULL.\n"
+msgstr ""
+"Внутренняя ошибка модуля components при обработке аргументов: *iface равен "
+"NULL.\n"
+
+#: alteratorctlcomponentsmodule.c:1739
+msgid "Wrong arguments in components module.\n"
+msgstr "Неправильные аргументы в модуле components.\n"
+
+#: alteratorctlcomponentsmodule.c:1753 alteratorctlcomponentsmodule.c:1772
+#: alteratorctlcomponentsmodule.c:1790 alteratorctlcomponentsmodule.c:1808
+#: alteratorctlcomponentsmodule.c:1826 alteratorctlcomponentsmodule.c:1844
+#: alteratorctlcomponentsmodule.c:1862
+msgid "Can't initialize context.\n"
+msgstr "Невозможно инициализировать контекст.\n"
+
+#: alteratorctlcomponentsmodule.c:1778 alteratorctleditionsmodule.c:1342
+msgid "Wrong arguments to info module command.\n"
+msgstr "Неправильные аргументы для команды info.\n"
+
+#: alteratorctlcomponentsmodule.c:1796
+msgid "Wrong arguments to install module command.\n"
+msgstr "Неправильные аргументы команды install module.\n"
+
+#: alteratorctlcomponentsmodule.c:1814
+msgid "Wrong arguments to remove module command.\n"
+msgstr "Неправильные аргументы для команды remove.\n"
+
+#: alteratorctlcomponentsmodule.c:1832 alteratorctleditionsmodule.c:1316
+msgid "Wrong arguments to description module command.\n"
+msgstr "Неправильные аргументы для отображения описания команд модуля.\n"
+
+#: alteratorctlcomponentsmodule.c:1850
+msgid "Wrong arguments to search module command.\n"
+msgstr "Неправильные аргументы для команды search.\n"
+
+#: alteratorctlcomponentsmodule.c:1868
+msgid "Wrong arguments to status module command.\n"
+msgstr "Неправильные аргументы для команды status.\n"
+
+#: alteratorctlcomponentsmodule.c:1879
+msgid "Wrong components module command.\n"
+msgstr "Неправильная команда в модуле components.\n"
+
+#: alteratorctlcomponentsmodule.c:1892
+msgid ""
+"  alteratorctl components [COMMAND [arguments]] [OPTIONS] [PARAMETERS "
+"<args...>]\n"
+msgstr ""
+"  alteratorctl components [КОМАНДА [аргументы]] [ОПЦИИ] [ПАРАМЕТРЫ\n"
+"                              <аргументы...>]\n"
+
+#: alteratorctlcomponentsmodule.c:1893
+msgid ""
+"  alteratorctl components     List all components in a preudo-graphic tree "
+"view\n"
+"\n"
+msgstr ""
+"  alteratorctl components     Вывод всех компонентов в виде дерева с\n"
+"                              псевдографикой\n"
+"\n"
+
+#: alteratorctlcomponentsmodule.c:1895
+msgid "  description <component>     Prints component description\n"
+msgstr "  description <компонент>     Вывести описание компонента\n"
+
+#: alteratorctlcomponentsmodule.c:1896
+msgid ""
+"  list [OPTIONS] [PARAMETERS <args...>]\n"
+"                              List all components (default command)\n"
+msgstr ""
+"  list [ОПЦИИ] [ПАРАМЕТРЫ <аргументы..>]\n"
+"                              Вывод всех компонентов с категориями (команда "
+"по\n"
+"                              умолчанию)\n"
+
+#: alteratorctlcomponentsmodule.c:1898
+msgid "  info <component>            Print component info\n"
+msgstr "  info <компонент>            Вывести информацию о компоненте\n"
+
+#: alteratorctlcomponentsmodule.c:1899
+msgid "  install <component>         Install component\n"
+msgstr "  install <компонент>         Установить компонент\n"
+
+#: alteratorctlcomponentsmodule.c:1900
+msgid "  remove <component>          Remove component\n"
+msgstr "  remove <компонент>          Удалить компонент\n"
+
+#: alteratorctlcomponentsmodule.c:1901
+msgid ""
+"  status <component>          View the installation status of component\n"
+msgstr "  status <компонент>          Посмотреть статус установки компонента\n"
+
+#: alteratorctlcomponentsmodule.c:1902
+msgid ""
+"  search <component>          Search component by name or path\n"
+"\n"
+msgstr ""
+"  search <компонент>          Найти компоненту по имени или пути на D-Bus\n"
+"\n"
+
+#: alteratorctlcomponentsmodule.c:1903
+msgid "Parameters:\n"
+msgstr "Параметры:\n"
+
+#: alteratorctlcomponentsmodule.c:1904
+msgid ""
+"  -c, --category <category>   Display the list of components of the "
+"selected\n"
+"                              category\n"
+msgstr ""
+"  -c, --category <категория>  Вывести список компонентов выбранной "
+"категории\n"
+
+#: alteratorctlcomponentsmodule.c:1906
+msgid ""
+"  -s, --sections <section1> [section2 ...]\n"
+"                              Display components and categories list from "
+"chosen\n"
+"                              sections\n"
+"\n"
+msgstr ""
+"  -s, --sections <section1> [section2 ...]\n"
+"                              Отобразить только выбранные разделы\n"
+"\n"
+
+#: alteratorctlcomponentsmodule.c:1909
+msgid "Options for formatting output:\n"
+msgstr "Опции для форматирования вывода:\n"
+
+#: alteratorctlcomponentsmodule.c:1910
+msgid ""
+"  -v, --verbose               Add components paths to components list "
+"output\n"
+msgstr ""
+"  -v, --verbose               Добавить вывод путей к компонентам на DBus\n"
+
+#: alteratorctlcomponentsmodule.c:1911
+msgid ""
+"  -d, --display-name-only     Show only components and categories display "
+"names\n"
+msgstr ""
+"  -d, --display-name-only     Показать только отображаемые имена компонентов "
+"и\n"
+"                              категорий\n"
+
+#: alteratorctlcomponentsmodule.c:1912
+msgid ""
+"  -D, --no-display-name       Show components and categories without "
+"display\n"
+"                              names\n"
+msgstr ""
+"  -D, --no-display-name       Скрыть отображаемые имена компонентов и "
+"категорий\n"
+
+#: alteratorctlcomponentsmodule.c:1914
+msgid ""
+"  -e, --enable-display-name   Show components and categories\n"
+"                              display names in list view\n"
+msgstr ""
+"  -e, --enable-display-name   Показать отображаемые имена компонентов и\n"
+"                              категорий при выводе в виде списка\n"
+
+#: alteratorctlcomponentsmodule.c:1916
+msgid ""
+"  -p, --path-only             Show only components objects paths on D-Bus\n"
+msgstr ""
+"  -p, --path-only             Отобразить только пути к объектам компонентов "
+"на\n"
+"                              D-Bus\n"
+
+#: alteratorctlcomponentsmodule.c:1917
+msgid "  -n, --name-only             Show only components objects names\n"
+msgstr ""
+"  -n, --name-only             Отобразить только имена объектов компонентов\n"
+
+#: alteratorctlcomponentsmodule.c:1918
+msgid ""
+"  -N, --no-name               Hide component and category names\n"
+"\n"
+msgstr ""
+"  -N, --no-name               Скрыть отображение имен компонентов и "
+"категорий\n"
+"\n"
+
+#: alteratorctlcomponentsmodule.c:1919
+msgid "Options for formatting the component list output:\n"
+msgstr "Опции для форматирования вывода списка компонентов:\n"
+
+#: alteratorctlcomponentsmodule.c:1920
+msgid ""
+"  --draft                     Add draft components and categories to the\n"
+"                              output\n"
+msgstr ""
+"  --draft                     Добавить отображение черновых компонентов\n"
+
+#: alteratorctlcomponentsmodule.c:1922
+msgid ""
+"  -g, --graphic-tree          Print components with categories in a\n"
+"                              preudo-graphic tree view (default option)\n"
+msgstr ""
+"  -g, --graphic-tree          Вывести компоненты с категориями в виде "
+"дерева\n"
+"                              с псевдографикой (выводится по умолчанию)\n"
+
+#: alteratorctlcomponentsmodule.c:1924
+msgid ""
+"  -t, --simple-tree           Print components with categories in a simple "
+"tree\n"
+"                              view without display names\n"
+msgstr ""
+"  -t, --simple-tree           Вывести компоненты с категориями в виде "
+"простого\n"
+"                              дерева\n"
+
+#: alteratorctlcomponentsmodule.c:1926
+msgid ""
+"  -l, --list                  Print components with categories in a list "
+"view\n"
+"                              To printing display name, use the\n"
+"                              --show-display-name option (valid for --list\n"
+"                              option only)\n"
+msgstr ""
+"  -l, --list                  Вывести компоненты с категориями в виде "
+"списка.\n"
+"                              Для вывода отображаемых имён используйте "
+"опцию\n"
+"                              --show-display-name (её можно использовать "
+"лишь в\n"
+"                              данном представлении вывода)\n"
+
+#: alteratorctlcomponentsmodule.c:1930
+msgid "  -i, --installed             Show only installed components\n"
+msgstr ""
+"  -i, --installed             Отобразить только установленные компоненты\n"
+
+#: alteratorctlcomponentsmodule.c:1931
+msgid "  -u, --not-installed         Show only not installed components\n"
+msgstr ""
+"  -u, --not-installed         Отобразить только неустановленные компоненты\n"
+
+#: alteratorctlcomponentsmodule.c:1932
+msgid ""
+"  -I, --ignore-sections       Print all components regardless of edition\n"
+"                              sections\n"
+msgstr ""
+"  -I, --ignore-sections       Вывести все компоненты игнорируя секции "
+"текущей\n"
+"                              редакции\n"
+
+#: alteratorctlcomponentsmodule.c:1934
+msgid ""
+"  -L, --ignore-legend         Hide the description of the component output\n"
+"                              conventions\n"
+msgstr ""
+"  -L, --ignore-legend         Скрыть описание условных обозначений при "
+"выводе\n"
+"                              компонентов\n"
+
+#: alteratorctlcomponentsmodule.c:1936
+msgid ""
+"  -H, --hide-installation-markers\n"
+"                              Hide installation status markers of components "
+"and\n"
+"                              categories\n"
+"\n"
+msgstr ""
+"  -H, --hide-installation-markers\n"
+"                              Скрыть маркеры со статусом установки\n"
+"                              компонента/категории\n"
+"\n"
+
+#: alteratorctlcomponentsmodule.c:1939
+msgid "Options for installing and removing components:\n"
+msgstr "Опции для установки и удаления компонентов:\n"
+
+#: alteratorctlcomponentsmodule.c:1940
+msgid ""
+"  --force-yes                 Disable confirmation before removing and\n"
+"                              installing a component. Caution, this action "
+"may\n"
+"                              result in immediate removal of system-"
+"critical\n"
+"                              packages. Use this option only if you fully\n"
+"                              understand the consequences!\n"
+"\n"
+msgstr ""
+"  --force-yes                 Автоматическое подтверждение удаления или\n"
+"                              установки компонента. Применяйте опцию с\n"
+"                              осторожностью. Данное действие может привести\n"
+"                              к немедленному удалению значимых для системы\n"
+"                              пакетов. Используйте опцию только при полном\n"
+"                              понимании последствий!\n"
+"\n"
+
+#: alteratorctlcomponentsmodule.c:1945
+msgid "Options for removing components:\n"
+msgstr "Опции для удаления компонентов:\n"
+
+#: alteratorctlcomponentsmodule.c:1946 alteratorctlpackagesmodule.c:3264
+msgid ""
+"  --allow-remove-manually     Allow removal of manually installed packages.\n"
+"                              Enabling this option may lead to the removal\n"
+"                              of packages required for proper system "
+"operation\n"
+msgstr ""
+"  --allow-remove-manually     Разрешить удаление установленных вручную "
+"пакетов.\n"
+"                              Использование этой опции может привести к\n"
+"                              случайному удалению пакетов, необходимых для\n"
+"                              работы системы\n"
+
+#: alteratorctlcomponentsmodule.c:1949
+msgid ""
+"  -b, --allow-remove-base     Allow removing of packages which contains in\n"
+"                              base components\n"
+"\n"
+msgstr ""
+"  -b, --allow-remove-base     Разрешить удаление пакетов, содержащихся в\n"
+"                              базовых компонентах\n"
+"\n"
+
+#: alteratorctlcomponentsmodule.c:1951
+msgid "Options for package base synchronization:\n"
+msgstr "Опции синхронизации с пакетной базой:\n"
+
+#: alteratorctlcomponentsmodule.c:1952
+msgid ""
+"  --no-update                 Don't update the package lists before "
+"installing\n"
+"                              or uninstalling a components\n"
+"\n"
+msgstr ""
+"  --no-update                 Не обновлять списки пакетов перед установкой "
+"или\n"
+"                              удалением компонентов\n"
+"\n"
+
+#: alteratorctlcomponentsmodule.c:1954
+msgid "Usage help:\n"
+msgstr "Справка:\n"
+
+#: alteratorctlcomponentsmodule.c:1955
+msgid ""
+"  -h, --help                  Show module components usage\n"
+"\n"
+msgstr ""
+"  -h, --help                  Вызов справки модуля components\n"
+"\n"
+
+#: alteratorctlcomponentsmodule.c:1956
+msgid ""
+"The term \"base components\" is applicable only if a product edition is\n"
+"installed. Base components are those assigned to the section of the same "
+"name\n"
+"in the current edition. By default, removing base components is prohibited, "
+"as\n"
+"is removing any component that includes packages from any base component. "
+"Use\n"
+"the --allow-remove-base option to allow such removals.\n"
+"\n"
+"\"Manually installed\" packages are those marked as manual by the apt "
+"system.\n"
+"This means the package was installed explicitly by the user. You can get a\n"
+"list of such packages by running the command apt-mark showmanual. This list\n"
+"contains many packages essential to system operation. Therefore, their\n"
+"removal is prohibited by default. To remove components including these\n"
+"packages, use the --allow-remove-manually option. Keep in mind that "
+"removing\n"
+"such components may disrupt your system. Use this option only if you fully\n"
+"understand the consequences!\n"
+"\n"
+msgstr ""
+"Термин \"базовые компоненты\" применим только в случае наличия "
+"установленной\n"
+"редакции. Под базовыми компонентами подразумеваются компоненты, относящиеся "
+"к\n"
+"одноимённому разделу текущей редакции. По умолчанию удаление базовых "
+"компонентов\n"
+"запрещено, равно как и удаление компонентов с пакетами, входящими в любой\n"
+"базовый компонент. Для удаления данных компонентов используйте опцию\n"
+"--allow-remove-base.\n"
+"\n"
+"\"Установленные вручную\" пакеты - это пакеты, помеченные системой apt как "
+"manual.\n"
+"Данная метка означает, что пакет был установлен вручную. Получить список "
+"данных\n"
+"пакетов можно, выполнив команду apt-mark showmanual. В данном списке "
+"содержится\n"
+"большое количестко важных для работы системы пакетов. В связи с этим их "
+"удаление\n"
+"по умолчанию запрещено. Для удаления компонентов с данными пакетами "
+"используйте\n"
+"опцию --allow-remove-manually. Помните, что удаление таких компонентов "
+"может\n"
+"нарушить работу системы. Используйте опцию только при полном понимании\n"
+"последствий!\n"
+"\n"
+
+#: alteratorctlcomponentsmodule.c:1993 alteratorctlcomponentsmodule.c:4728
+msgid "Internal error in components module: component_str_id is NULL.\n"
+msgstr "Внутренняя ошибка в модуле components - component_str_id равен NULL.\n"
+
+#: alteratorctlcomponentsmodule.c:2004
+#, c-format
+msgid ""
+"Error in component module: can't get alterator entry data of component %s.\n"
+msgstr ""
+"Ошибка в модуле components: невозможно получить данные alterator entry "
+"объекта %s.\n"
+
+#: alteratorctlcomponentsmodule.c:2047
+msgid ""
+"Can't handling the result od description method: component path or name is "
+"empty.\n"
+msgstr ""
+"Не удалось получить результат метода description: имя или путь компонента не "
+"заданы.\n"
+
+#: alteratorctlcomponentsmodule.c:2053
+#, c-format
+msgid "Component %s description is empty.\n"
+msgstr "Описание компонента %s отсутствует.\n"
+
+#: alteratorctlcomponentsmodule.c:2059
+msgid "Wrong answer type in components description.\n"
+msgstr "Неправильный тип данных описания компонента.\n"
+
+#: alteratorctlcomponentsmodule.c:2068
+#, c-format
+msgid "Handling of component %s description failed. Exit code uninitialized.\n"
+msgstr ""
+"Не удалось получить описание компонента %s. Нет данных о коде возврата.\n"
+
+#: alteratorctlcomponentsmodule.c:2128
+#, c-format
+msgid "Category %s not found.\n"
+msgstr "Категория %s не найдена.\n"
+
+#: alteratorctlcomponentsmodule.c:2134
+#, c-format
+msgid "Category %s not found: %s is a component, not a category.\n"
+msgstr "Категория %s не найдена: %s — это имя компонента.\n"
+
+#: alteratorctlcomponentsmodule.c:2158 alteratorctlcomponentsmodule.c:2718
+msgid "Notations:\n"
+msgstr "Обозначения:\n"
+
+#: alteratorctlcomponentsmodule.c:2159 alteratorctlcomponentsmodule.c:2719
+#, c-format
+msgid "  %s Installed\n"
+msgstr "  %s Установлен(а)\n"
+
+#: alteratorctlcomponentsmodule.c:2160 alteratorctlcomponentsmodule.c:2720
+#, c-format
+msgid "  %s Uninstalled\n"
+msgstr "  %s Не установлен(а)\n"
+
+#: alteratorctlcomponentsmodule.c:2162 alteratorctlcomponentsmodule.c:2721
+#, c-format
+msgid "  %s Partially installed\n"
+msgstr "  %s Частично установлен(а)\n"
+
+#: alteratorctlcomponentsmodule.c:2165 alteratorctlcomponentsmodule.c:2722
+#, c-format
+msgid ""
+"  %s Draft item (--draft) or unknown installation status\n"
+"\n"
+msgstr ""
+"  %s Черновой элемент (--draft) или неизвестный статус установки\n"
+"\n"
+
+#: alteratorctlcomponentsmodule.c:2246
+msgid "Can't get sections with components: editions module isn't registered.\n"
+msgstr ""
+"Невозможно получить секции с компонентами: модуль editions не существует.\n"
+
+#: alteratorctlcomponentsmodule.c:2366
+msgid "Can't get current arch: systeminfo module isn't registered.\n"
+msgstr ""
+"Невозможно получить текущую архитектуру системы: модуль systeminfo не "
+"зарегистрирован.\n"
+
+#: alteratorctlcomponentsmodule.c:2427
+msgid "Can't get current locales list: systeminfo module isn't registered.\n"
+msgstr ""
+"Невозможно получить локализацию(и) пользователя(ей): модуль systeminfo не "
+"зарегистрирован.\n"
+
+#: alteratorctlcomponentsmodule.c:2446 alteratorctlcomponentsmodule.c:2461
+msgid "Getting system languages failed: empty languages list.\n"
+msgstr "Информация о локалях отсутствует.\n"
+
+#: alteratorctlcomponentsmodule.c:2498
+msgid "Can't get desktop environments: systeminfo module isn't registered.\n"
+msgstr ""
+"Невозможно получить графическое окружение системы: модуль systeminfo не "
+"зарегистрирован.\n"
+
+#: alteratorctlcomponentsmodule.c:2558
+msgid "Failed to get current arch.\n"
+msgstr "Не удалось получить архитектуру системы.\n"
+
+#: alteratorctlcomponentsmodule.c:2701
+msgid "Can't get kernel kflavour.\n"
+msgstr "Невозможно получить имя ядра.\n"
+
+#: alteratorctlcomponentsmodule.c:2870 alteratorctlcomponentsmodule.c:2898
+#: alteratorctlcomponentsmodule.c:3029 alteratorctlcomponentsmodule.c:3049
+#: alteratorctlcomponentsmodule.c:3189 alteratorctlcomponentsmodule.c:3208
+msgid "Printing list of components with categories failed.\n"
+msgstr "Не удалось вывести дерево компонентов и категорий.\n"
+
+#: alteratorctlcomponentsmodule.c:3227
+msgid ""
+"Incorrect data was passed to update the installation status of components "
+"and categories.\n"
+msgstr ""
+"Были переданы неверные данные для обновления статуса установки компонентов и "
+"категорий.\n"
+
+#: alteratorctlcomponentsmodule.c:3242
+msgid ""
+"Incorrect data was transmitted to filter out components that not installed.\n"
+msgstr ""
+"Были переданы неверные данные для отсеивания неустановленных компонентов.\n"
+
+#: alteratorctlcomponentsmodule.c:3257 alteratorctlcomponentsmodule.c:3333
+#: alteratorctlcomponentsmodule.c:3352
+msgid ""
+"Incorrect data was transmitted to filter out components that installed.\n"
+msgstr ""
+"Были переданы неверные данные для отсеивания установленных компонентов.\n"
+
+#: alteratorctlcomponentsmodule.c:3447
+#, c-format
+msgid ""
+"Can't get alterator entry data for validation in module components: field "
+"\"%s\" is missing.\n"
+msgstr ""
+"Невозможно получить данные alterator entry в модуле components: отсутствует "
+"поле \"%s\".\n"
+
+#: alteratorctlcomponentsmodule.c:3459
+#, c-format
+msgid ""
+"Can't get alterator entry data for validation in module components: table "
+"\"%s\" is missing.\n"
+msgstr ""
+"Невозможно получить данные alterator entry в модуле components: отсутствует "
+"таблица \"%s\".\n"
+
+#: alteratorctlcomponentsmodule.c:3482
+#, c-format
+msgid ""
+"Can't get alterator entry data for validation component category info: field "
+"\"%s\" is missing.\n"
+msgstr ""
+"Невозможно получить данные alterator entry в модуле components: пропущено "
+"поле \"%s\".\n"
+
+#: alteratorctlcomponentsmodule.c:3503
+msgid "Can't get category info. Category name is empty.\n"
+msgstr "Не удалось получить информацию о категории. Пустое имя категории.\n"
+
+#: alteratorctlcomponentsmodule.c:3515
+msgid "Can't allocate dbus_ctx_t in components_module_get_category_info.\n"
+msgstr ""
+"Невозможно выделить dbus_ctx_t в components_module_get_category_info.\n"
+
+#: alteratorctlcomponentsmodule.c:3526
+#, c-format
+msgid "Failed call category info from non-existent object: %s.\n"
+msgstr ""
+"Невозможно получить информацию о категории из неизвестного объекта: %s.\n"
+
+#: alteratorctlcomponentsmodule.c:3532 alteratorctlcomponentsmodule.c:4047
+#, c-format
+msgid "Failed to get component category info: %s.\n"
+msgstr "Не удалось получить информацию о мониторе: %s.\n"
+
+#: alteratorctlcomponentsmodule.c:3577
+msgid "Can't allocate dbus_ctx_t in components_module_get_categories_info.\n"
+msgstr ""
+"Невозможно выделить dbus_ctx_t в components_module_get_categories_info.\n"
+
+#: alteratorctlcomponentsmodule.c:3587
+#, c-format
+msgid "Failed call get all categories info from non-existent object: %s.\n"
+msgstr ""
+"Невозможно получить информацию обо всех категориях из неизвестного объекта: "
+"%s.\n"
+
+#: alteratorctlcomponentsmodule.c:3593
+#, c-format
+msgid "Failed to get all categories info: %s.\n"
+msgstr "Не удалось получить информацию обо всех категориях:\n"
+
+#: alteratorctlcomponentsmodule.c:3640
+msgid "Can't allocate dbus_ctx_t in components_module_categories_list\n"
+msgstr "Невозможно выделить dbus_ctx_t в components_module_categories_list\n"
+
+#: alteratorctlcomponentsmodule.c:3650
+#, c-format
+msgid "Failed to get components categories list via non-existing object %s.\n"
+msgstr ""
+"Не удалось получить список категорий компонентов с помощью несуществующего "
+"объекта %s.\n"
+
+#: alteratorctlcomponentsmodule.c:3656
+#, c-format
+msgid "Failed to get components categories list: %s.\n"
+msgstr "Не удалось получить список категорий компонентов: %s\n"
+
+#: alteratorctlcomponentsmodule.c:3724
+msgid "Components list is empty.\n"
+msgstr "Список компонентов пуст.\n"
+
+#: alteratorctlcomponentsmodule.c:3745 alteratorctlcomponentsmodule.c:3789
+#, c-format
+msgid "Can't find parent category %s for category %s.\n"
+msgstr "Не удалось найти родительскую категорию %s категории %s.\n"
+
+#: alteratorctlcomponentsmodule.c:3750 alteratorctlcomponentsmodule.c:3794
+#, c-format
+msgid "Can't find parent category %s for component %s.\n"
+msgstr "Не найдена категория компонента %s.\n"
+
+#: alteratorctlcomponentsmodule.c:3846
+#, c-format
+msgid ""
+"Can't get display name of component %s. Parsing of component data failed.\n"
+msgstr ""
+"Невозможно получить отображаемое имя компонента %s. Обработка данных "
+"компонента закончилась неудачно.\n"
+
+#: alteratorctlcomponentsmodule.c:3855
+#, c-format
+msgid ""
+"Can't get display name of %s category. Getting of category alterator entry "
+"failed.\n"
+msgstr ""
+"Невозможно получить отображаемое имя категории %s. Не удалось получить "
+"информацию alterator entry о выбранной категории.\n"
+
+#: alteratorctlcomponentsmodule.c:3867
+#, c-format
+msgid ""
+"Can't get display name of %s category. Parsing of category data failed.\n"
+msgstr ""
+"Невозможно получить отображаемое имя категории %s. Обработка данных "
+"категории закончилась неудачно.\n"
+
+#: alteratorctlcomponentsmodule.c:3882
+#, c-format
+msgid ""
+"Can't get display name of component %s. Display name data by key %s is "
+"empty.\n"
+msgstr ""
+"Невозможно получить отображаемое имя компонента %s. Полученное отображаемое "
+"имя по ключу %s пустое.\n"
+
+#: alteratorctlcomponentsmodule.c:3914
+msgid "Finding section display name failed.\n"
+msgstr "не удалось найти отображаемое имя секции.\n"
+
+#: alteratorctlcomponentsmodule.c:4031
+msgid "Can't allocate dbus_ctx_t in components_module_get_components_info.\n"
+msgstr ""
+"Невозможно выделить dbus_ctx_t в подкоманде "
+"components_module_get_components_info.\n"
+
+#: alteratorctlcomponentsmodule.c:4041
+msgid "Getting of non-existing component info failed.\n"
+msgstr "Не удалось получить информацию о несуществующем компоненте.\n"
+
+#: alteratorctlcomponentsmodule.c:4094
+msgid "Cat'n get component status by empty uninstalled packages list.\n"
+msgstr ""
+"Невозможно получить статус компонента по пустому списку неустановленных "
+"пакетов.\n"
+
+#: alteratorctlcomponentsmodule.c:4100
+msgid "Can't get installed status of empty component.\n"
+msgstr "Невозможно получить статус установки пустого компонента.\n"
+
+#: alteratorctlcomponentsmodule.c:4106
+msgid "No variable defined to save the installation status of the component.\n"
+msgstr "Нет переменной для сохранения статуса установки.\n"
+
+#: alteratorctlcomponentsmodule.c:4118
+#, c-format
+msgid "Can't get packages list of component %s.\n"
+msgstr "Невозможно получить список пакетов компонента: %s.\n"
+
+#: alteratorctlcomponentsmodule.c:4214
+msgid ""
+"Can't allocate dbus_ctx_t in "
+"components_module_get_components_uninstalled_packages.\n"
+msgstr ""
+"Невозможно выделить dbus_ctx_t в подкоманде "
+"components_module_get_components_uninstalled_packages.\n"
+
+#: alteratorctlcomponentsmodule.c:4224
+#, c-format
+msgid "Getting of components batch status failed: %s.\n"
+msgstr "Невозможно обработать статус всех компонентов: %s.\n"
+
+#: alteratorctlcomponentsmodule.c:4274
+#, c-format
+msgid "Can't parse alterator entry in components module: %s\n"
+msgstr "Невозможно получить alterator entry модуля components: %s\n"
+
+#: alteratorctlcomponentsmodule.c:4281
+msgid "Can't get value packages names.\n"
+msgstr "Невозможно получить имена пакетов.\n"
+
+#: alteratorctlcomponentsmodule.c:4319 alteratorctlcomponentsmodule.c:4443
+#: alteratorctlcomponentsmodule.c:4501 alteratorctlcomponentsmodule.c:4967
+msgid "Packages module isn't registered.\n"
+msgstr "Модуль packages не зарегистрирован.\n"
+
+#: alteratorctlcomponentsmodule.c:4336
+msgid "Error exit code from rpm list method.\n"
+msgstr "Ошибка получения кода возврата метода list.\n"
+
+#: alteratorctlcomponentsmodule.c:4398
+msgid "Internal error in components module - remove installed packages.\n"
+msgstr ""
+"Внутренняя ошибка в модуле components - удаление установленных пакетов.\n"
+
+#: alteratorctlcomponentsmodule.c:4405
+msgid ""
+"Internal data error in components module with args: "
+"AlteratorCtlComponentsModule *module is NULL in \"components remove\".\n"
+msgstr ""
+"Внутренняя ошибка в модуле components c аргументами - "
+"AlteratorCtlComponentsModule *module равен NULL в \"components remove\".\n"
+
+#: alteratorctlcomponentsmodule.c:4458
+#, c-format
+msgid "Apt update failed with exit code: %i\n"
+msgstr "Apt update закончился неудачей: код возврата %i.\n"
+
+#: alteratorctlcomponentsmodule.c:4492
+msgid "Internal error in components module - install component packages.\n"
+msgstr ""
+"Внутренняя ошибка в модуле components - установка пакета в компонент.\n"
+
+#: alteratorctlcomponentsmodule.c:4509
+msgid "No packages to install.\n"
+msgstr "Пакет не установлен.\n"
+
+#: alteratorctlcomponentsmodule.c:4557
+#, c-format
+msgid "Error exit code from apt install method: %i.\n"
+msgstr "Ошибка выполнения подкоманды apt install. Код возврата %i.\n"
+
+#: alteratorctlcomponentsmodule.c:4600
+msgid ""
+"Internal error in components module - AlteratorCtlComponentsModule *module "
+"is NULL in \"components status\".\n"
+msgstr ""
+"Внутренняя ошибка в модуле components - AlteratorCtlEditionsModule *module "
+"равен NULL при исполнении команды \"components status\".\n"
+
+#: alteratorctlcomponentsmodule.c:4607
+msgid ""
+"Internal error in components module - path to component is NULL in "
+"\"components status\".\n"
+msgstr ""
+"Внутренняя ошибка в модуле components - путь к компоненту равен NULL при "
+"исполнении команды \"components status\".\n"
+
+#: alteratorctlcomponentsmodule.c:4613
+msgid ""
+"Internal error in components module - status is NULL in \"components status"
+"\".\n"
+msgstr ""
+"Внутренняя ошибка в модуле components - status равен NULL при исполнении "
+"команды \"components status\".\n"
+
+#: alteratorctlcomponentsmodule.c:4624
+msgid "Error when checking the presence of an object on D-Bus.\n"
+msgstr "Ошибка проверки наличия объекта на D-Bus.\n"
+
+#: alteratorctlcomponentsmodule.c:4630 alteratorctlmanagermodule.c:587
+#, c-format
+msgid "Object %s isn't found on D-Bus.\n"
+msgstr "Объект %s не найден в D-Bus.\n"
+
+#: alteratorctlcomponentsmodule.c:4662
+msgid "Can't allocate dbus_ctx_t in component_module_get_component_status.\n"
+msgstr ""
+"Невозможно выделить dbus_ctx_t в подкоманде "
+"component_module_get_component_status.\n"
+
+#: alteratorctlcomponentsmodule.c:4672
+#, c-format
+msgid ""
+"D-Bus error in components module while calling Status(): failed to produce a "
+"result in component: %s.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата components Status(): невозможно "
+"получить результат компонента: %s.\n"
+
+#: alteratorctlcomponentsmodule.c:4768
+#, c-format
+msgid ""
+"Can't remove %s component. The component contains packages on base "
+"components packages:\n"
+msgstr ""
+"Невозможно удалить компонент %s, так как он содержит в себе следующие "
+"пакеты, имеющиеся в базовых компонентах системы:\n"
+
+#: alteratorctlcomponentsmodule.c:4816
+msgid ""
+"Internal error in components getting installed packages: path or name is "
+"empty.\n"
+msgstr ""
+"Внутренняя ошибка при получении установленных пакетов: имя или путь пусты.\n"
+
+#: alteratorctlcomponentsmodule.c:4834
+#, c-format
+msgid ""
+"Can't get component %s installed packages. Component info parsing failed.\n"
+msgstr ""
+"Невозможно получить установленные пакеты компонента %s. Обработка информации "
+"о компоненте закончилась неудачно.\n"
+
+#: alteratorctlcomponentsmodule.c:4842
+#, c-format
+msgid ""
+"Can't get component %s installed packages. Getting packages list failed.\n"
+msgstr ""
+"Невозможно получить список установленных пакетов компонента %s. Получение "
+"списка закончилось неудачно.\n"
+
+#: alteratorctlcomponentsmodule.c:4897
+#, c-format
+msgid "Can't get component %s installed packages.\n"
+msgstr "Невозможно получить установленные пакеты компонента %s.\n"
+
+#: alteratorctlcomponentsmodule.c:4902
+#, c-format
+msgid "Component %s already installed.\n"
+msgstr "Компонент %s уже установлен.\n"
+
+#: alteratorctlcomponentsmodule.c:4904
+#, c-format
+msgid "Component %s not installed.\n"
+msgstr "Компонент %s не установлен.\n"
+
+#: alteratorctlcomponentsmodule.c:4957
+msgid ""
+"Internal error in components module - AlteratorCtlComponentsModule *module "
+"is NULL in \"components remove\".\n"
+msgstr ""
+"Внутренняя ошибка в модуле components - AlteratorCtlEditionsModule *module "
+"равен NULL при исполнении команды \"components remove\".\n"
+
+#: alteratorctlcomponentsmodule.c:4977
+msgid "No packages to remove.\n"
+msgstr "Нет пакетов для удаления .\n"
+
+#: alteratorctlcomponentsmodule.c:5029
+#, c-format
+msgid "Error exit code from apt remove method: %i.\n"
+msgstr "Ошибка выполнения подкоманды apt remove. Код возврата %i.\n"
+
+#: alteratorctlcomponentsmodule.c:5085
+msgid ""
+"Failed to calculate affected components for unknown action with unspecified "
+"component.\n"
+msgstr ""
+"Не удалось рассчитать затронутые компоненты для неизвестного действия с "
+"неизвестным компонентом.\n"
+
+#: alteratorctlcomponentsmodule.c:5089
+#, c-format
+msgid ""
+"Failed to calculate affected components for %s of unspecified component.\n"
+msgstr ""
+"Не удалось рассчитать затронутые компоненты при %s неизвестного компонента.\n"
+
+#: alteratorctlcomponentsmodule.c:5090 alteratorctlcomponentsmodule.c:5104
+#: alteratorctlcomponentsmodule.c:5113 alteratorctlcomponentsmodule.c:5122
+#: alteratorctlcomponentsmodule.c:5134 alteratorctlcomponentsmodule.c:5146
+#: alteratorctlcomponentsmodule.c:5207 alteratorctlcomponentsmodule.c:5313
+#: alteratorctlcomponentsmodule.c:5327 alteratorctlcomponentsmodule.c:5336
+#: alteratorctlcomponentsmodule.c:5352 alteratorctlcomponentsmodule.c:5364
+#: alteratorctlcomponentsmodule.c:5434 alteratorctlcomponentsmodule.c:5462
+msgid "remove"
+msgstr "удаления"
+
+#: alteratorctlcomponentsmodule.c:5090 alteratorctlcomponentsmodule.c:5104
+#: alteratorctlcomponentsmodule.c:5113 alteratorctlcomponentsmodule.c:5122
+#: alteratorctlcomponentsmodule.c:5134 alteratorctlcomponentsmodule.c:5146
+#: alteratorctlcomponentsmodule.c:5207 alteratorctlcomponentsmodule.c:5313
+#: alteratorctlcomponentsmodule.c:5327 alteratorctlcomponentsmodule.c:5336
+#: alteratorctlcomponentsmodule.c:5352 alteratorctlcomponentsmodule.c:5364
+#: alteratorctlcomponentsmodule.c:5434 alteratorctlcomponentsmodule.c:5462
+msgid "install"
+msgstr "установки"
+
+#: alteratorctlcomponentsmodule.c:5096
+#, c-format
+msgid ""
+"Failed to calculate affected components for unknown action with component "
+"%s.\n"
+msgstr ""
+"Не удалось рассчитать затронутые компоненты для неизвестного действия с "
+"компонентом %s.\n"
+
+#: alteratorctlcomponentsmodule.c:5103
+#, c-format
+msgid "Failed to calculate affected components for %s of component %s.\n"
+msgstr "Не удалось рассчитать затронутые компоненты для %s компонента %s.\n"
+
+#: alteratorctlcomponentsmodule.c:5111
+#, c-format
+msgid ""
+"Failed to calculate affected components for %s of component %s. Get empty "
+"packages list of %s component.\n"
+msgstr ""
+"Не удалось рассчитать затронутые компоненты при %s компонента %s. Нет "
+"информации о пакетах, входящих в компоненту %s.\n"
+
+#: alteratorctlcomponentsmodule.c:5121
+#, c-format
+msgid ""
+"Failed to calculate affected components for %s of component %s. Result "
+"variable is NULL.\n"
+msgstr ""
+"Не удалось рассчитать затронутые компоненты при %s компоненты %s. Не "
+"выделена память для сохранения результата.\n"
+
+#: alteratorctlcomponentsmodule.c:5132
+#, c-format
+msgid ""
+"Failed to calculate affected components for %s of component %s. Components "
+"alterator entry info is empty.\n"
+msgstr ""
+"Не удалось рассчитать затронутые компоненты для %s компонента %s. Информация "
+"о компонентах в виде alterator entry отсутствует.\n"
+
+#: alteratorctlcomponentsmodule.c:5144
+#, c-format
+msgid ""
+"Failed to calculate affected components for %s of component %s. Can't get "
+"uninstalled packages list.\n"
+msgstr ""
+"Не удалось рассчитать затронутые компоненты для %s компонента %s. Не удалось "
+"получить список неустановленных пакетов, относящихся к компонентам.\n"
+
+#: alteratorctlcomponentsmodule.c:5205
+#, c-format
+msgid ""
+"Failed to calculate affected components for %s of component %s. Can't get "
+"packages list of component %s.\n"
+msgstr ""
+"Не удалось рассчитать затронутые компоненты при %s компонента %s. Не удалось "
+"получить список пакетов компонента %s.\n"
+
+#: alteratorctlcomponentsmodule.c:5308
+msgid ""
+"Failed to print affected components for unknown action with unspecified "
+"component.\n"
+msgstr ""
+"Не удалось вывести затронутые компоненты для неизвестного действия с "
+"неизвестным компонентом.\n"
+
+#: alteratorctlcomponentsmodule.c:5312
+#, c-format
+msgid "Failed to print affected components for %s of unspecified component.\n"
+msgstr "Не удалось вывести затронутые компоненты при %s компонента %s.\n"
+
+#: alteratorctlcomponentsmodule.c:5319
+#, c-format
+msgid ""
+"Failed to print affected components for unknown action with component %s.\n"
+msgstr ""
+"Не удалось вывести затронутые компоненты для неизвестного действия с "
+"компонентом %s.\n"
+
+#: alteratorctlcomponentsmodule.c:5326
+#, c-format
+msgid "Failed to print affected components for %s of component %s.\n"
+msgstr "Не удалось распечатать затронутые компоненты при %s компонента %s.\n"
+
+#: alteratorctlcomponentsmodule.c:5334 alteratorctlcomponentsmodule.c:5362
+#, c-format
+msgid ""
+"Failed to print affected components for %s of component %s. Empty list of "
+"packages to install and to remove.\n"
+msgstr ""
+"Не удалось распечатать затронутые компоненты при %s компонента %s. Получен "
+"пустой список пакетов для удаления или установки компонента.\n"
+
+#: alteratorctlcomponentsmodule.c:5350
+#, c-format
+msgid ""
+"Failed to print affected components for %s of component %s. Error from "
+"getting of packages to install and to remove. Exit code: %i.\n"
+msgstr ""
+"Не удалось распечатать затронутые компоненты при %s компонента %s. Ошибка "
+"получения устанавливаемых и удаляемых пакетов. Код возврата: %i.\n"
+
+#: alteratorctlcomponentsmodule.c:5415
+msgid "Components to install:\n"
+msgstr "Следующие компоненты будут установлены:\n"
+
+#: alteratorctlcomponentsmodule.c:5417
+msgid "Components to remove:\n"
+msgstr "Следующие компоненты будут удалены:\n"
+
+#: alteratorctlcomponentsmodule.c:5433 alteratorctlcomponentsmodule.c:5461
+#, c-format
+msgid ""
+"Failed to print affected components for %s of component %s. Failed to make "
+"pretty output.\n"
+msgstr ""
+"Не удалось распечатать затронутые компоненты при %s компонента %s. Не "
+"удалось отформатировать вывод.\n"
+
+#: alteratorctlcomponentsmodule.c:5442
+msgid "The following components will also be installed:\n"
+msgstr "Также будут установлены следующие компоненты:\n"
+
+#: alteratorctlcomponentsmodule.c:5471
+msgid "The following components will also be removed:\n"
+msgstr "Также будут удалены следующие компоненты:\n"
+
+#: alteratorctlcomponentsmodule.c:5508
+msgid ""
+"Internal error in components module - AlteratorCtlComponentsModule *module "
+"is NULL in components_module_get_base_section_packages.\n"
+msgstr ""
+"Внутренняя ошибка в модуле components - AlteratorCtlComponentsModule *module "
+"равен NULL в components_module_get_base_section_packages.\n"
+
+#: alteratorctlcomponentsmodule.c:5536
+msgid ""
+"Failed to get base components packages. Failed to get base components list.\n"
+msgstr ""
+"Не удалось получить список пакетов, относящихся к базовым компонентам.\n"
+
+#: alteratorctlcomponentsmodule.c:5564 alteratorctlcomponentsmodule.c:5595
+msgid ""
+"Failed to get base components packages. Failed to get base component name.\n"
+msgstr ""
+"Не удалось получить список пакетов компонента. Не удалось получить имя "
+"базового компонента.\n"
+
+#: alteratorctlcomponentsmodule.c:5603
+#, c-format
+msgid ""
+"Can't get component %s packages. Getting base components packages list "
+"failed.\n"
+msgstr ""
+"Невозможно получить список пакетов компонента %s. Не удалось получить список "
+"базовых компонентов.\n"
+
+#: alteratorctldiagmodule.c:237
+msgid "Internal error in get_diag_module: unvaliable id of diag module.\n"
+msgstr ""
+"Внутренняя ошибка в get_diag_module: недействительный id модуля diag.\n"
+
+#: alteratorctldiagmodule.c:301 alteratorctldiagmodule.c:594
+#: alteratorctldiagmodule.c:603
+msgid "The launch of the diag module has failed. Module doesn't exist.\n"
+msgstr "Запуск модуля diag завершился неудачей. Модуль не существует.\n"
+
+#: alteratorctldiagmodule.c:348
+#, c-format
+msgid ""
+"Can't get display name of diag tool or test %s. Display name data by key %s "
+"is empty.\n"
+msgstr ""
+"Невозможно получить отображаемое имя диагностического инструмента или теста "
+"%s. Полученное отображаемое имя по ключу %s пустое.\n"
+
+#: alteratorctldiagmodule.c:388
+#, c-format
+msgid "Can't get alterator entry data for tool %s.\n"
+msgstr ""
+"Невозможно получить данные alteratir entry для диагностического инструмента "
+"%s.\n"
+
+#: alteratorctldiagmodule.c:396
+#, c-format
+msgid "Can't find tests table for tool %s.\n"
+msgstr "Невозможно таблицу с тестами диагностического инструмента %s.\n"
+
+#: alteratorctldiagmodule.c:405
+#, c-format
+msgid "Can't find test %s in tool %s.\n"
+msgstr "Невозможно найти тест %s у диагностического инструмента %s.\n"
+
+#: alteratorctldiagmodule.c:495
+msgid ""
+"Parsing of diag module arguments failed. Module interface isn't "
+"initialized.\n"
+msgstr ""
+"Ошибка при обработке аргументов модуля diag. Интерфейс модуля не "
+"инициализирован.\n"
+
+#: alteratorctldiagmodule.c:512
+msgid "Wrong arguments in diag module.\n"
+msgstr "Неправильные аргументы модуля diag.\n"
+
+#: alteratorctldiagmodule.c:524
+msgid "Wrong arguments to diag info command.\n"
+msgstr "Неправильные аргументы для команды diag info.\n"
+
+#: alteratorctldiagmodule.c:537
+msgid "Wrong arguments to diag list command.\n"
+msgstr "Неправильные аргументы для команды diag list.\n"
+
+#: alteratorctldiagmodule.c:548
+msgid "Wrong arguments to diag report command.\n"
+msgstr "Неправильные аргументы для команды diag report.\n"
+
+#: alteratorctldiagmodule.c:561
+msgid "Wrong arguments to diag run command.\n"
+msgstr "Неправильные аргументы для команды diag run.\n"
+
+#: alteratorctldiagmodule.c:576
+msgid "Wrong diag module command.\n"
+msgstr "Неправильная команда в модуле diag.\n"
+
+#: alteratorctldiagmodule.c:652
+msgid "  alteratorctl diag [COMMAND [args...]] [OPTIONS]\n"
+msgstr ""
+"  alteratorctl diag [КОМАНДА [аргументы...]] [ОПЦИИ]\n"
+"\n"
+
+#: alteratorctldiagmodule.c:653
+msgid "  alteratorctl diag [OPTIONS] List all diagnostic tools\n"
+msgstr ""
+"  alteratorctl diag [ОПЦИИ]   Вывести список всех диагностических "
+"инструментов\n"
+
+#: alteratorctldiagmodule.c:654
+msgid ""
+"  alteratorctl diag <path | name> [OPTIONS]\n"
+"                              List all test from specified diagnostic tool\n"
+"\n"
+msgstr ""
+"  alteratorctl diag <путь | имя> [ОПЦИИ]\n"
+"                              Вывести список всех тестов выбранного\n"
+"                              диагностического инструмента\n"
+"\n"
+
+#: alteratorctldiagmodule.c:657
+msgid "  info <path | name>          Print tool info\n"
+msgstr ""
+"  info <путь | имя>           Вывести информацию о выбранном "
+"диагностическом\n"
+"                              инструменте\n"
+
+#: alteratorctldiagmodule.c:658
+msgid ""
+"  list [path | name]          List all diagnostic tools or tool tests "
+"(default\n"
+"                              command)\n"
+msgstr ""
+"  list [путь | имя]           Вывести список диагностических инструментов\n"
+"                              или тестов выбранного инструмента (команда по\n"
+"                              умолчанию)\n"
+
+#: alteratorctldiagmodule.c:660
+msgid "  report <path | name> <file> Save report to the file with suffix\n"
+msgstr "  report <путь | имя> <файл>  Сохранить отчёт в файл с суффиксом\n"
+
+#: alteratorctldiagmodule.c:661
+msgid ""
+"  run <path | name> [test]    Run all tests or specified test\n"
+"\n"
+msgstr ""
+"  run <путь | имя> [тест]     Запустить определённый тест или все сразу\n"
+"\n"
+
+#: alteratorctldiagmodule.c:663
+msgid "  -a, --all                   Choise system and session buses\n"
+msgstr "  -a, --all                   Выбрать системную и сессионную шины\n"
+
+#: alteratorctldiagmodule.c:664
+msgid ""
+"  -v, --verbose               Add diagnostic tools paths to diag list "
+"output\n"
+"                              or for enable diag run verbose output\n"
+msgstr ""
+"  -v, --verbose               Добавить к выводу списка диагностических\n"
+"                              инструментов их пути на DBus\n"
+
+#: alteratorctldiagmodule.c:666
+msgid ""
+"  -d, --display-name-only     Show only diag tools and tests display names\n"
+msgstr ""
+"  -d, --display-name-only     Показать только отображаемые имена\n"
+"                              диагностического инструмента или теста\n"
+
+#: alteratorctldiagmodule.c:667
+msgid ""
+"  -D, --no-display-name       Show diag tools and tests without display "
+"names\n"
+msgstr ""
+"  -D, --no-display-name       Скрыть отображаемые имена диагностических\n"
+"                              инструментов или тестов\n"
+
+#: alteratorctldiagmodule.c:668
+msgid ""
+"  -p, --path-only             Show only diag tools and tests paths on D-Bus\n"
+msgstr ""
+"  -p, --path-only             Отобразить только пути объектов "
+"диагностических\n"
+"                              инструментов на D-Bus\n"
+
+#: alteratorctldiagmodule.c:669
+msgid "  -n, --name-only             Show only diag tools and tests names\n"
+msgstr ""
+"  -n, --name-only             Отобразить только имена объектов\n"
+"                              диагностических инструментов и тестов\n"
+
+#: alteratorctldiagmodule.c:670
+msgid "  -N, --no-name               Hide diag tools and tests names\n"
+msgstr ""
+"  -N, --no-name               Скрыть отображение имен диагностических\n"
+"                              инструментов и тестов\n"
+
+#: alteratorctldiagmodule.c:671
+msgid "  --session                   Choise session bus\n"
+msgstr "  --session                   Выбрать сессионную шину\n"
+
+#: alteratorctldiagmodule.c:672
+msgid "  --system                    Choise system bus\n"
+msgstr "  --system                    Выбрать системную шину\n"
+
+#: alteratorctldiagmodule.c:673
+msgid ""
+"  -h, --help                  Usage help\n"
+"\n"
+msgstr ""
+"  -h, --help                  Вывести справку\n"
+"\n"
+
+#: alteratorctldiagmodule.c:688
+msgid "<<< Info from system bus:\n"
+msgstr "<<< Информация из системной шины:\n"
+
+#: alteratorctldiagmodule.c:689
+msgid "<<< Info from session bus:\n"
+msgstr "<<< Информация из сессионной шины:\n"
+
+#: alteratorctldiagmodule.c:695
+msgid ""
+"The call to the diag info method failed. The diag module doesn't exist.\n"
+msgstr ""
+"Вызов метода diag info завершился неудачей. Модуль diag не существует.\n"
+
+#: alteratorctldiagmodule.c:701
+msgid "The call to the diag info method failed. Module data is empty.\n"
+msgstr "Вызов метода diag info завершился неудачей. Данные модуля пусты.\n"
+
+#: alteratorctldiagmodule.c:708
+msgid ""
+"The call to the diag info method failed. Tool name or path to it's object on "
+"D-Bus is empty.\n"
+msgstr ""
+"Вызов метода diag info завершился неудачей. Имя инструмента или путь до его "
+"объекта на D-Bus пусты.\n"
+
+#: alteratorctldiagmodule.c:725 alteratorctldiagmodule.c:837
+#: alteratorctldiagmodule.c:1014 alteratorctldiagmodule.c:1129
+#: alteratorctldiagmodule.c:1240
+#, c-format
+msgid "Can't find object %s on system bus or it has invalid interface.\n"
+msgstr ""
+"Невозможно найти объект %s на системной шине, либо он имеет невалидный "
+"интерфейс\n"
+
+#: alteratorctldiagmodule.c:731 alteratorctldiagmodule.c:843
+#: alteratorctldiagmodule.c:1020 alteratorctldiagmodule.c:1135
+#: alteratorctldiagmodule.c:1246
+#, c-format
+msgid ""
+"Can't find object %s on system or session bus or it has invalid interface.\n"
+msgstr ""
+"Невозможно найти объект %s на системной или сессионной шине, либо он имеет "
+"невалидный интерфейс\n"
+
+#: alteratorctldiagmodule.c:780
+#, c-format
+msgid "Can't get info of tool %s. The tool doesn't exist.\n"
+msgstr ""
+"Невозможно получить информацию об инструменте %s. Инструмент не существует.\n"
+
+#: alteratorctldiagmodule.c:813 alteratorctldiagmodule.c:920
+msgid "The call to the diag list method failed. The module doesn't exist.\n"
+msgstr "Вызов метода diag list завершился неудачей. Модуль не существует.\n"
+
+#: alteratorctldiagmodule.c:820
+msgid ""
+"The call to the diag list method failed. Tool name or path to it's object on "
+"D-Bus is empty.\n"
+msgstr ""
+"Вызов метода diag list завершился неудачей. Имя инструмента или путь до его "
+"объекта на D-Bus пусты.\n"
+
+#: alteratorctldiagmodule.c:855
+#, c-format
+msgid ""
+"The call to the diag list method failed. Can't get list of tools from object "
+"%s on system bus.\n"
+msgstr ""
+"Вызов метода diag list завершился неудачей. Невозможно получить список "
+"инструментов из объекта %s на системной шине.\n"
+
+#: alteratorctldiagmodule.c:867
+#, c-format
+msgid ""
+"The call to the diag list method failed. Can't get list of tools from object "
+"%s on session bus.\n"
+msgstr ""
+"Вызов метода diag list завершился неудачей. Невозможно получить список "
+"инструментов из объекта %s на системной шине.\n"
+
+#: alteratorctldiagmodule.c:926
+msgid "The call to the diag list method failed. The context doesn't exist.\n"
+msgstr "Вызов метода diag list завершился неудачей. Пустой контекст.\n"
+
+#: alteratorctldiagmodule.c:984
+msgid "The call to the diag report method failed. The module doesn't exist.\n"
+msgstr "Вызов метода diag report завершился неудачей. Модуль не существует.\n"
+
+#: alteratorctldiagmodule.c:990
+msgid "The call to the diag report method failed. Module data is empty.\n"
+msgstr "Вызов метода diag report завершился неудачей. Данные модуля пусты.\n"
+
+#: alteratorctldiagmodule.c:998
+msgid ""
+"The call to the diag report method failed. Tool name or path to it's object "
+"on D-Bus is empty.\n"
+msgstr ""
+"Вызов метода diag report завершился неудачей. Имя инструмента или путь до "
+"его объекта на D-Bus пусты.\n"
+
+#: alteratorctldiagmodule.c:1050
+#, c-format
+msgid "Can't create session bus report of %s tool in root mode.\n"
+msgstr "Невозможно создать отчёт инструмента %s от имени root.\n"
+
+#: alteratorctldiagmodule.c:1082 alteratorctldiagmodule.c:1199
+msgid "<<< Tests on the system bus\n"
+msgstr "<<< Тесты на системной шине:\n"
+
+#: alteratorctldiagmodule.c:1083 alteratorctldiagmodule.c:1200
+msgid "<<< Tests on the session bus\n"
+msgstr "<<< Тесты на сессионной шине:\n"
+
+#: alteratorctldiagmodule.c:1092 alteratorctldiagmodule.c:1209
+msgid "The call to the diag run method failed. The module doesn't exist.\n"
+msgstr "Вызов метода diag run завершился неудачей. Модуль не существует.\n"
+
+#: alteratorctldiagmodule.c:1098 alteratorctldiagmodule.c:1215
+msgid "The call to the diag run method failed. Module data is empty.\n"
+msgstr "Вызов метода diag run завершился неудачей. Данные модуля пусты.\n"
+
+#: alteratorctldiagmodule.c:1105 alteratorctldiagmodule.c:1222
+msgid ""
+"The call to the diag run method failed. Tool name or path to it's object on "
+"D-Bus is empty.\n"
+msgstr ""
+"Вызов метода diag run завершился неудачей. Имя инструмента или путь до его "
+"объекта на D-Bus пусты.\n"
+
+#: alteratorctldiagmodule.c:1111
+msgid "The call to the diag run method failed. Test name is empty.\n"
+msgstr "Вызов метода diag info завершился неудачей. Имя теста пустое.\n"
+
+#: alteratorctldiagmodule.c:1174
+#, c-format
+msgid "Object %s isn't exists on system bus or has invalid interface.\n"
+msgstr ""
+"Объект %s не существует на системной шине или имеет невалидный интерфейс\n"
+
+#: alteratorctldiagmodule.c:1176
+#, c-format
+msgid "Object %s isn't exists on session bus or has invalid interface.\n"
+msgstr ""
+"Объект %s не существует на сессионной шине или имеет невалидный интерфейс\n"
+
+#: alteratorctldiagmodule.c:1178 alteratorctldiagmodule.c:1290
+#, c-format
+msgid "Object %s isn't exists or has invalid interface.\n"
+msgstr "Объект %s не существует или имеет невалидный интерфейс.\n"
+
+#: alteratorctldiagmodule.c:1254
+#, c-format
+msgid "Can't run tests of %s tool in session bus in root mode.\n"
+msgstr ""
+"Невозможно запустить тест диагностического инструмента %s на сессионной шине "
+"из-под root.\n"
+
+#: alteratorctldiagmodule.c:1310
+msgid ""
+"Can't process the result in diag module. The diag module doesn't exist.\n"
+msgstr ""
+"Невозможно обработать результат в модуле diag. Модуль diag не существует.\n"
+
+#: alteratorctldiagmodule.c:1316
+msgid "Can't process the result in diag module. Module data is empty.\n"
+msgstr "Невозможно обработать результат в модуле diag. Данные модуля пусты.\n"
+
+#: alteratorctldiagmodule.c:1360
+msgid "Unknown subcommand to handle results in diag module.\n"
+msgstr "Неизвестная подкоманда в модуле diag.\n"
+
+#: alteratorctldiagmodule.c:1379
+msgid ""
+"Can't process the result of diag info method. The diag module doesn't "
+"exist.\n"
+msgstr ""
+"Невозможно обработать результат команды diag info. Модуль diag не "
+"существует.\n"
+
+#: alteratorctldiagmodule.c:1385
+msgid "Can't process the result of diag info method. Module data is empty.\n"
+msgstr ""
+"Невозможно обработать результат команды diag info. Данные модуля пусты.\n"
+
+#: alteratorctldiagmodule.c:1392
+msgid "The call to the diag info method failed. Tool path on D-Bus is empty.\n"
+msgstr ""
+"Вызов метода diag info завершился неудачей. Путь объекта инструмента на D-"
+"Bus пуст.\n"
+
+#: alteratorctldiagmodule.c:1398
+msgid "Empty result of the diag info method\n"
+msgstr "Пустой результат в метода diag info\n"
+
+#: alteratorctldiagmodule.c:1440
+msgid "Can't get tests list of empty diagnostic tool\n"
+msgstr ""
+"Невозможно получить список тестов пустого диагностическиго инструмента.\n"
+
+#: alteratorctldiagmodule.c:1459
+#, c-format
+msgid "Diag tool %s doesn't exist in session bus.\n"
+msgstr "Диагностический инструмент %s не найден на сессионной шине\n"
+
+#: alteratorctldiagmodule.c:1465 alteratorctldiagmodule.c:1625
+msgid ""
+"Can't process the result of diag list method. The diag module doesn't "
+"exist.\n"
+msgstr ""
+"Невозможно обработать результат команды diag list. Модуль diag не "
+"существует.\n"
+
+#: alteratorctldiagmodule.c:1503 alteratorctldiagmodule.c:1645
+msgid "Can't process the result of diag list method. Module data is empty.\n"
+msgstr ""
+"Невозможно обработать результат команды diag list. Данные модуля пусты.\n"
+
+#: alteratorctldiagmodule.c:1509
+msgid "Empty result of the diag list method.\n"
+msgstr "Пустой результат в метода diag list.\n"
+
+#: alteratorctldiagmodule.c:1531
+#, c-format
+msgid "Empty tests of diagnostic tool %s in system bus\n"
+msgstr "Нет тестов у диагностического инструмента %s на системной шине\n"
+
+#: alteratorctldiagmodule.c:1535
+msgid "<<< Tests on system bus:\n"
+msgstr "<<< Тесты на системной шине:\n"
+
+#: alteratorctldiagmodule.c:1562
+#, c-format
+msgid "Empty tests of diagnostic tool %s in session bus\n"
+msgstr "Нет тестов у диагностического инструмента %s на сeссионной шине\n"
+
+#: alteratorctldiagmodule.c:1566
+msgid "<<< Tests on session bus:\n"
+msgstr "<<< Тесты на сессионной шине:\n"
+
+#: alteratorctldiagmodule.c:1662
+msgid "<<< Tools on system bus:\n"
+msgstr "<<< Инструменты на системной шине:\n"
+
+#: alteratorctldiagmodule.c:1693
+msgid "<<< Tools on session bus:\n"
+msgstr "<<< Инструменты на сессионной шине:\n"
+
+#: alteratorctldiagmodule.c:1752
+msgid ""
+"Can't process the result of diag report method. The diag module doesn't "
+"exist.\n"
+msgstr ""
+"Невозможно обработать результат команды diag report. Модуль diag не "
+"существует.\n"
+
+#: alteratorctldiagmodule.c:1758
+msgid "Can't process the result of diag report method. Module data is empty.\n"
+msgstr ""
+"Невозможно обработать результат команды diag report. Данные модуля пусты.\n"
+
+#: alteratorctldiagmodule.c:1767
+msgid ""
+"Can't process the result of diag report method. Report filename is empty.\n"
+msgstr ""
+"Невозможно обработать результат команды diag report. Путь к файлу с отчётом "
+"пуст.\n"
+
+#: alteratorctldiagmodule.c:1775
+msgid "Empty result of the diag report method.\n"
+msgstr "Пустой результат в метода diag report.\n"
+
+#: alteratorctldiagmodule.c:1792
+#, c-format
+msgid "Can't save report from %s. Exit code: %i\n"
+msgstr "Невозможно сохранить report инструмента %s. Код возврата: %i\n"
+
+#: alteratorctldiagmodule.c:1799
+#, c-format
+msgid "Can't save report from %s. File extension is empty.\n"
+msgstr "Невозможно сохранить report инструмента %s. Пустое расширение файла.\n"
+
+#: alteratorctldiagmodule.c:1806
+#, c-format
+msgid "Can't save empty report from %s\n"
+msgstr "Невозможно сохранить report в файл: %s\n"
+
+#: alteratorctldiagmodule.c:1826
+#, c-format
+msgid "Can't open file to write a report: %s\n"
+msgstr "Невозможно записать report в файл: %s\n"
+
+#: alteratorctldiagmodule.c:1835
+#, c-format
+msgid "Error writing report to file: %s\n"
+msgstr "Ошибки при записи report'a в файл: %s\n"
+
+#: alteratorctldiagmodule.c:1841
+#, c-format
+msgid "Report %s created\n"
+msgstr "Report %s записан\n"
+
+#: alteratorctldiagmodule.c:1941
+#, c-format
+msgid "Module diag options parsing failed: %s\n"
+msgstr "Обработка опций модуля diag завершилась неудачей: %s\n"
+
+#: alteratorctldiagmodule.c:2047
+#, c-format
+msgid ""
+"Can't get alterator entry data for validation in module diag: field \"%s\" "
+"is missing.\n"
+msgstr ""
+"Невозможно получить данные alterator entry в модуле diag: пропущено поле \"%s"
+"\".\n"
+
+#: alteratorctldiagmodule.c:2058
+#, c-format
+msgid ""
+"Can't get alterator entry data for validation in module diag: table \"%s\" "
+"is missing.\n"
+msgstr ""
+"Невозможно получить данные alterator entry в модуле diag: пропущено поле \"%s"
+"\".\n"
+
+#: alteratorctldiagmodule.c:2222 alteratorctldiagmodule.c:2247
+#, c-format
+msgid "Can't get list of tests from object %s.\n"
+msgstr "Невозможно получить список тестов инструмента %s\n"
+
+#: alteratorctldiagmodule.c:2228
+#, c-format
+msgid "No tests were found in the tool %s\n"
+msgstr "В диагностическом инструменте %s тесты не были найдены\n"
+
+#: alteratorctldiagmodule.c:2253
+#, c-format
+msgid "No test named %s was found in the tool %s\n"
+msgstr "Тест %s не найден в диагностическом инструменте %s\n"
+
+#: alteratorctldiagmodule.c:2289
+msgid ""
+"Running test in diag tool failed. Can't allocate memory for stdout signal.\n"
+msgstr ""
+"Запуск теста диагностического инструмента закончился неудачей. Невозможно "
+"выделить память для stdout signal.\n"
+
+#: alteratorctldiagmodule.c:2296
+msgid ""
+"Running test in diag tool failed. Can't allocate memory for stderr signal.\n"
+msgstr ""
+"Запуск теста диагностического инструмента закончился неудачей. Невозможно "
+"выделить память для stderr signal.\n"
+
+#: alteratorctldiagmodule.c:2318
+msgid ""
+"Running test in diag tool failed. Can't allocate memory for D-Bus context.\n"
+msgstr ""
+"Запуск теста диагностического инструмента закончился неудачей. Невозможно "
+"выделить память для D-Bus context.\n"
+
+#: alteratorctldiagmodule.c:2331
+#, c-format
+msgid "Running test in diag tool failed. Failed to get terminal width: %s\n"
+msgstr ""
+"Запуск теста диагностического инструмента закончился неудачей. Не удалось "
+"получить ширину терминала: %s.\n"
+
+#: alteratorctldiagmodule.c:2351
+#, c-format
+msgid "The \"%s\" test is started"
+msgstr "Тест \"%s\" запущен"
+
+#: alteratorctldiagmodule.c:2369
+msgid "[PASS]"
+msgstr "[   ВЫПОЛНЕНО  ]"
+
+#: alteratorctldiagmodule.c:2369
+msgid "[FAIL]"
+msgstr "[   ПРОВАЛЕНО  ]"
+
+#: alteratorctldiagmodule.c:2369
+msgid "[WARN]"
+msgstr "[ПРЕДУПРЕЖДЕНИЕ]"
+
+#: alteratorctldiagmodule.c:2412
+#, c-format
+msgid ""
+"Error in diag report module: can't get alterator entry data of %s object.\n"
+msgstr ""
+"Ошибка в модуле diag: невозможно получить данные alterator entry объекта "
+"%s.\n"
+
+#: alteratorctldiagmodule.c:2425
+#, c-format
+msgid "Error in diag report: ReportSuffix from %s not found\n"
+msgstr "Ошибка при выполнении diag report: ReportSuffix из %s не найден\n"
+
+#: alteratorctldiagmodule.c:2431
+#, c-format
+msgid "Error in diag report: ReportSuffix from %s data type isn't a string\n"
+msgstr ""
+"Ошибка при выполнении diag report: тип данных ReportSuffix из %s не является "
+"строкой\n"
+
+#: alteratorctldiagmodule.c:2437
+#, c-format
+msgid "Error in diag report: ReportSuffix from %s hasn't been initialized\n"
+msgstr ""
+"Ошибка при выполнении diag report: ReportSuffix из %s не был "
+"инициализирован\n"
+
+#: alteratorctldiagmodule.c:2471
+msgid "Internal error of diag report: can't allocate D-Bus context.\n"
+msgstr ""
+"Внутренняя ошибка при выполнении diag report: невозможно выделить память для "
+"D-Bus context.\n"
+
+#: alteratorctleditionsmodule.c:178
+msgid ""
+"Internal error in get_editions_module: unvaliable id of editions module.\n"
+msgstr ""
+"Ошибка при исполнении get_editions_module: недействительный id модуля "
+"editions.\n"
+
+#: alteratorctleditionsmodule.c:266 alteratorctleditionsmodule.c:364
+#, c-format
+msgid "Fail to check existance of edition \"%s\"\n"
+msgstr "Не удалось проверить существование редакции \"%s\".\n"
+
+#: alteratorctleditionsmodule.c:268 alteratorctleditionsmodule.c:366
+msgid "Fail to check existance of unspecified edition.\n"
+msgstr "Нельзя проверить существование неуказанной редакции \"%s\".\n"
+
+#: alteratorctleditionsmodule.c:275 alteratorctleditionsmodule.c:373
+#, c-format
+msgid "Edition \"%s\" object not defined on D-Bus.\n"
+msgstr "Объекта редакции \"%s\" не существует на D-Bus.\n"
+
+#: alteratorctleditionsmodule.c:277 alteratorctleditionsmodule.c:375
+msgid "The current edition doesn't exist.\n"
+msgstr "Текущая редакция не устанолена.\n"
+
+#: alteratorctleditionsmodule.c:240
+msgid ""
+"The call to the editions description method failed. The module doesn't "
+"exist.\n"
+msgstr ""
+"Вызов метода editions description завершился неудачей. Модуль не "
+"существует.\n"
+
+#: alteratorctleditionsmodule.c:287
+msgid "Can't allocate dbus_ctx_t in editions_module_description_subcommand\n"
+msgstr ""
+"Невозможно выделить dbus_ctx_t в подкоманде "
+"editions_module_description_subcommand\n"
+
+#: alteratorctleditionsmodule.c:330
+msgid ""
+"The call to the editions license method failed. The module doesn't exist.\n"
+msgstr ""
+"Вызов метода editions license завершился неудачей. Модуль не существует.\n"
+
+#: alteratorctleditionsmodule.c:377
+msgid "Can't allocate dbus_ctx_t in editions_module_license_subcommand\n"
+msgstr ""
+"Невозможно выделить dbus_ctx_t в подкоманде "
+"editions_module_license_subcommand\n"
+
+#: alteratorctleditionsmodule.c:421
+msgid ""
+"Internal error in editions module - AlteratorCtlEditionsModule *module is "
+"NULL in \"editions list\".\n"
+msgstr ""
+"Внутренняя ошибка в модуле editions - AlteratorCtlEditionsModule *module "
+"равен NULL при исполнении команды \"editions list\".\n"
+
+#: alteratorctleditionsmodule.c:434
+msgid "Editions list is empty.\n"
+msgstr "Список редакций пуст.\n"
+
+#: alteratorctleditionsmodule.c:481
+msgid ""
+"The call to the editions info method failed. The module doesn't exist.\n"
+msgstr ""
+"Вызов метода editions info завершился неудачей. Модуль не существует.\n"
+
+#: alteratorctleditionsmodule.c:508
+msgid "Can't allocate dbus_ctx_t in editions_module_info_subcommand\n"
+msgstr ""
+"Невозможно выделить dbus_ctx_t в подкоманде editions_module_info_subcommand\n"
+
+#: alteratorctleditionsmodule.c:520 alteratorctleditionsmodule.c:653
+msgid "Current edition is not set.\n"
+msgstr "Текущая редакция не установлена.\n"
+
+#: alteratorctleditionsmodule.c:554
+msgid ""
+"Internal error in editions module - AlteratorCtlEditionsModule *module is "
+"NULL in \"editions set\".\n"
+msgstr ""
+"Внутренняя ошибка в модуле editions - AlteratorCtlEditionsModule *module "
+"равен NULL при исполнении команды \"editions set\".\n"
+
+#: alteratorctleditionsmodule.c:562
+msgid "Internal error in editions module: edition_str_id is NULL.\n"
+msgstr "Внутренняя ошибка в модуле editions: edition_str_id равен NULL.\n"
+
+#: alteratorctleditionsmodule.c:580
+msgid "Can't allocate dbus_ctx_t in editions_module_set_current_subcommand\n"
+msgstr ""
+"Невозможно выделить dbus_ctx_t в подкоманде "
+"editions_module_set_current_subcommand\n"
+
+#: alteratorctleditionsmodule.c:593
+msgid "Can't set a non-existent edition.\n"
+msgstr "Невозможно выбрать несуществующую редакцию.\n"
+
+#: alteratorctleditionsmodule.c:628 alteratorctleditionsmodule.c:1094
+msgid ""
+"Internal error in editions module - AlteratorCtlEditionsModule *module is "
+"NULL in \"editions get\".\n"
+msgstr ""
+"Внутренняя ошибка в модуле editions - AlteratorCtlEditionsModule *module "
+"равен NULL при исполнении команды \"editions get\".\n"
+
+#: alteratorctleditionsmodule.c:641 alteratorctleditionsmodule.c:1111
+msgid "Can't allocate dbus_ctx_t in editions_module_get_current_subcommand\n"
+msgstr ""
+"Невозможно выделить dbus_ctx_t в подкоманде "
+"editions_module_get_current_subcommand\n"
+
+#: alteratorctleditionsmodule.c:705
+msgid "Internal error in editions module run: *module is NULL.\n"
+msgstr ""
+"Внутренняя ошибка в модуле editions при исполнении editions_module_run - "
+"*module равен NULL.\n"
+
+#: alteratorctleditionsmodule.c:714
+msgid "Internal error in editions module run: *context is NULL.\n"
+msgstr ""
+"Внутренняя ошибка в модуле editions при исполнении editions_module_run - "
+"*context равен NULL.\n"
+
+#: alteratorctleditionsmodule.c:760
+msgid "Try to run unknown editions subcommand.\n"
+msgstr "Попытка запуска модуля editions с неизвестными командами.\n"
+
+#: alteratorctleditionsmodule.c:773
+msgid "Internal error in editions module when handle result: module is NULL.\n"
+msgstr ""
+"Внутренняя ошибка обработки результата в модуле editions: *module равен "
+"NULL.\n"
+
+#: alteratorctleditionsmodule.c:782
+msgid "Internal error in editions module when handle results: *ctx is NULL.\n"
+msgstr ""
+"Внутренняя ошибка обработки результата в модуле editions. *ctx равен NULL.\n"
+
+#: alteratorctleditionsmodule.c:847
+msgid "Edition description is empty.\n"
+msgstr "Описание редакции отсутствует.\n"
+
+#: alteratorctleditionsmodule.c:853
+msgid "Wrong answer type in edition description.\n"
+msgstr ""
+"Неправильный тип данных в модуле editions после вызова метода description.\n"
+
+#: alteratorctleditionsmodule.c:862
+msgid "Handling of edition description failed: no return code.\n"
+msgstr "Невозможно получить описание редакции: код возврата отсутствует.\n"
+
+#: alteratorctleditionsmodule.c:899
+msgid "Current edition license is empty.\n"
+msgstr "Лицензия текущей редакции пуста.\n"
+
+#: alteratorctleditionsmodule.c:905
+msgid "Wrong answer type in edition license.\n"
+msgstr ""
+"Неизвестный возвращаемый тип данных после исполнения подкоманды editions "
+"license.\n"
+
+#: alteratorctleditionsmodule.c:914
+msgid "Handling of edition license failed: empty exit code.\n"
+msgstr "Невозможно получить лицензию редакции: нет данных о коде возврата.\n"
+
+#: alteratorctleditionsmodule.c:959
+msgid "D-Bus error in components info.\n"
+msgstr "Ошибка D-Bus при исполнении команды components info.\n"
+
+#: alteratorctleditionsmodule.c:968
+msgid "Can't get editions info result: exit code is empty.\n"
+msgstr ""
+"Не получилось получить информацию о редакции: нет данных о коде возврата.\n"
+
+#: alteratorctleditionsmodule.c:997
+msgid ""
+"D-Bus error in editions set handle result: failed to produce a result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата editions set: невозможно получить "
+"результат.\n"
+
+#: alteratorctleditionsmodule.c:1003
+msgid "Wrong answer type in editions set.\n"
+msgstr ""
+"Неизвестный возвращаемый тип данных после исполнения подкоманды editions "
+"set.\n"
+
+#: alteratorctleditionsmodule.c:1012 alteratorctleditionsmodule.c:1056
+#, c-format
+msgid "Error while running Current() method in %s: exit_code is NULL.\n"
+msgstr ""
+"Ошибка DBus во время работы метода Current() в %s: код возврата равен NULL.\n"
+
+#: alteratorctleditionsmodule.c:1019
+#, c-format
+msgid "Editions set failed: exit code is %i.\n"
+msgstr "Editions set закончился неудачей: код возврата %i.\n"
+
+#: alteratorctleditionsmodule.c:1040
+msgid ""
+"D-Bus error in editions get handle result: failed to produce a result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата editions get: невозможно получить "
+"результат.\n"
+
+#: alteratorctleditionsmodule.c:1046 alteratorctleditionsmodule.c:1127
+msgid "Wrong answer type in editions get.\n"
+msgstr ""
+"Неизвестный возвращаемый тип данных после исполнения подкоманды editions "
+"get.\n"
+
+#: alteratorctleditionsmodule.c:1121
+msgid ""
+"D-Bus error in editions module while calling Current(): failed to produce a "
+"result.\n"
+msgstr ""
+"Ошибка D-Bus в модуле editions при вызове Current(): невозможно получить "
+"результат.\n"
+
+#: alteratorctleditionsmodule.c:1136
+msgid "Error while running Current() method in: exit_code is NULL.\n"
+msgstr ""
+"Ошибка DBus во время работы метода Current(): код возврата равен NULL.\n"
+
+#: alteratorctleditionsmodule.c:1195
+#, c-format
+msgid "Module editions options parsing failed: %s\n"
+msgstr "Обработка опций модуля editions завершилась неудачей: %s\n"
+
+#: alteratorctleditionsmodule.c:1275
+msgid ""
+"Internal error in editions module while parsing arguments: *iface is NULL.\n"
+msgstr ""
+"Внутренняя ошибка модуля editions при обработке аргументов: *iface равен "
+"NULL.\n"
+
+#: alteratorctleditionsmodule.c:1290
+msgid "Wrong arguments in editions module.\n"
+msgstr "Неправильные аргументы в модуле editions.\n"
+
+#: alteratorctleditionsmodule.c:1329
+msgid "Wrong arguments to license module command.\n"
+msgstr "Неправильные аргументы для команды editions license.\n"
+
+#: alteratorctleditionsmodule.c:1353
+msgid "Wrong arguments to set module command.\n"
+msgstr "Неправильные аргументы для команды editions set.\n"
+
+#: alteratorctleditionsmodule.c:1364
+msgid "Wrong arguments to get module command.\n"
+msgstr "Неправильные аргументы для команды edtitons get.\n"
+
+#: alteratorctleditionsmodule.c:1376
+msgid "Unknown module editions command.\n"
+msgstr "Неизвестная команда модуля editions.\n"
+
+#: alteratorctleditionsmodule.c:1448
+#, c-format
+msgid ""
+"Can't get display name of edition %s. Display name data by key %s is empty.\n"
+msgstr ""
+"Невозможно получить отображаемое имя редакции %s. Полученное отображаемое "
+"имя по ключу %s пустое.\n"
+
+#: alteratorctleditionsmodule.c:1532
+msgid "  alteratorctl editions [[COMMAND] [edition]] [OPTIONS]\n"
+msgstr "  alteratorctl editions [[КОМАНДА] [редакция]] [ОПЦИИ]\n"
+
+#: alteratorctleditionsmodule.c:1533
+msgid ""
+"  alteratorctl editions [OPTIONS]\n"
+"                              List editions\n"
+"\n"
+msgstr ""
+"  alteratorctl editions [ОПЦИИ]\n"
+"                              Вывод списка редакций\n"
+"\n"
+
+#: alteratorctleditionsmodule.c:1536
+msgid ""
+"  description [edition]       Get description of specified or current "
+"edition\n"
+msgstr ""
+"  description [редакция]      Получить описание выбранной или текущей "
+"редакции\n"
+
+#: alteratorctleditionsmodule.c:1537
+msgid "  get                         Get current edition name\n"
+msgstr "  get                         Получить имя текущей редакции\n"
+
+#: alteratorctleditionsmodule.c:1538
+msgid ""
+"  info [edition]              Get info about specified or current edition\n"
+msgstr ""
+"  info [редакция]             Вывести информацию о выбранной или текущей\n"
+"                              редакции\n"
+
+#: alteratorctleditionsmodule.c:1539
+msgid ""
+"  license [edition]           Get license of specified or current edition\n"
+msgstr ""
+"  license [редакция]          Вывести лицензию выбранной или текущей "
+"редакции\n"
+
+#: alteratorctleditionsmodule.c:1540
+msgid "  list                        List editions\n"
+msgstr "  list                        Вывести список редакций\n"
+
+#: alteratorctleditionsmodule.c:1541
+msgid ""
+"  set <edition>               Choose the specified edition\n"
+"\n"
+msgstr ""
+"  set <edition>               Выбрать указанную редакцию\n"
+"\n"
+
+#: alteratorctleditionsmodule.c:1543
+msgid ""
+"  -v, --verbose               Add editions paths to editions list output\n"
+msgstr ""
+"  -v, --verbose               Добавить к списку редакций пути к объектам на "
+"dbus\n"
+
+#: alteratorctleditionsmodule.c:1544
+msgid "  -d, --display-name-only     Show only editions display names\n"
+msgstr ""
+"  -d, --display-name-only     Показать только отображаемые имена редакций\n"
+
+#: alteratorctleditionsmodule.c:1545
+msgid "  -D, --no-display-name       Show editions without display names\n"
+msgstr "  -D, --no-display-name       Скрыть отображаемые имена редакций\n"
+
+#: alteratorctleditionsmodule.c:1546
+msgid ""
+"  -p, --path-only             Show only editions objects paths on D-Bus\n"
+msgstr ""
+"  -p, --path-only             Отобразить только пути объектов редакций на D-"
+"Bus\n"
+
+#: alteratorctleditionsmodule.c:1547
+msgid "  -n, --name-only             Show only editions objects names\n"
+msgstr ""
+"  -n, --name-only             Отобразить только имена объектов редакций\n"
+
+#: alteratorctleditionsmodule.c:1548
+msgid "  -N, --no-name               Hide editions names\n"
+msgstr "  -N, --no-name               Скрыть отображение имен редакций\n"
+
+#: alteratorctleditionsmodule.c:1549
+msgid ""
+"  -H, --hide-installation-markers\n"
+"                              Hide the installed edition marker\n"
+msgstr ""
+"  -H, --hide-installation-markers\n"
+"                              Скрыть маркер установленной редакции\n"
+
+#: alteratorctleditionsmodule.c:1551
+msgid ""
+"  -h, --help                  Show module editions usage\n"
+"\n"
+msgstr ""
+"  -h, --help                  Вызов справки модуля editions\n"
+"\n"
+
+#: alteratorctlmanagermodule.c:139
+msgid ""
+"Internal error in get_manager_module: unvaliable id of manager module.\n"
+msgstr ""
+"Внутренняя ошибка в get_manager_module: недействительный id модуля manager.\n"
+
+#: alteratorctlmanagermodule.c:209
+msgid "Internal error in manager module run: *module or *interface is NULL.\n"
+msgstr ""
+"Внутренняя ошибка в модуле manager при исполнении manager_module_run - "
+"*module или *interface равен NULL.\n"
+
+#: alteratorctlmanagermodule.c:218
+msgid "Internal error in manager module run: *context is NULL.\n"
+msgstr ""
+"Внутренняя ошибка модуля manager при исполнении главной логики: *context "
+"равен NULL.\n"
+
+#: alteratorctlmanagermodule.c:242
+msgid "Try to run unknown manager subcommand.\n"
+msgstr "Попытка запуска неизвестной подкоманды в модуле manager.\n"
+
+#: alteratorctlmanagermodule.c:261
+msgid ""
+"Internal error in manager module - manager *module is NULL in \"manager "
+"getobjects\".\n"
+msgstr ""
+"Внутренняя ошибка в модуле manager - manager *module равен NULL в \"manager "
+"getobjects\".\n"
+
+#: alteratorctlmanagermodule.c:356
+msgid "<<< Objects on system bus:"
+msgstr "<<< Объекты на системной шине:"
+
+#: alteratorctlmanagermodule.c:374
+msgid "<<< Objects on session bus:"
+msgstr "<<< Объекты на сессионной шине:"
+
+#: alteratorctlmanagermodule.c:412
+msgid ""
+"Internal error in manager module - AlteratorCtlManagerModule *module is NULL "
+"in \"manager getifaces\".\n"
+msgstr ""
+"Внутренняя ошибка в модуле manager - AlteratorCtlManagerModule *module равен "
+"NULL в \"manager getifaces\".\n"
+
+#: alteratorctlmanagermodule.c:498
+msgid "<<< Interfaces on system bus:"
+msgstr "<<< Интерфейсы на системной шине:"
+
+#: alteratorctlmanagermodule.c:516
+msgid "<<< Interfaces on session bus:"
+msgstr "<<< Интерфейсы на сессионной шине:"
+
+#: alteratorctlmanagermodule.c:392
+msgid "No objects found on system & session bus."
+msgstr "На системной и сессионной шине не найдено никаких объектов."
+
+#: alteratorctlmanagermodule.c:394
+msgid "No objects found on system bus."
+msgstr "На системной шине не найдено никаких объектов."
+
+#: alteratorctlmanagermodule.c:396
+msgid "No objects found on session bus."
+msgstr "На сессионной шине не найдено никаких объектов."
+
+#: alteratorctlmanagermodule.c:548
+msgid "No interfaces found on system & session bus."
+msgstr "На системной и сессионной шине не найдено никаких интерфейсов."
+
+#: alteratorctlmanagermodule.c:550
+msgid "No interfaces found on system bus."
+msgstr "На системной шине не найдено никаких интерфейсов."
+
+#: alteratorctlmanagermodule.c:552
+msgid "No interfaces found on session bus."
+msgstr "На сессионной шине не найдено никаких интерфейсов."
+
+#: alteratorctlmanagermodule.c:804
+msgid "No signals found on system bus."
+msgstr "На системной шине не найдено никаких сигналов."
+
+#: alteratorctlmanagermodule.c:806
+msgid "No signals found on session bus."
+msgstr "На сессионной шине не найдено никаких сигналов."
+
+#: alteratorctlmanagermodule.c:808
+msgid "No signals found."
+msgstr "Никаких сигналов не найдено."
+
+#: alteratorctlmanagermodule.c:556
+msgid ""
+"Internal error in manager module - AlteratorCtlManagerModule *module or "
+"context is NULL in \"manager getsignals\".\n"
+msgstr ""
+"Внутренняя ошибка в модуле manager - AlteratorCtlManagerModule *module или "
+"контекст равен NULL при исполнении команды \"manager getsignals\".\n"
+
+#: alteratorctlmanagermodule.c:566
+msgid "Wrong arguments in manager module method GetSignals().\n"
+msgstr "Неправильные аргументы в модуле manager в методе GetSignals().\n"
+
+#: alteratorctlmanagermodule.c:581
+#, c-format
+msgid "Error when checking the presence of an object %s on D-Bus.\n"
+msgstr "Ошибка проверки наличия объекта %s на D-Bus.\n"
+
+#: alteratorctlmanagermodule.c:643
+msgid ""
+"Internal data error in manager module with args: AlteratorCtlDiagModule "
+"*module is NULL.\n"
+msgstr ""
+"Внутренняя ошибка в модуле manager c аргументами: AlteratorCtlDiagModule "
+"*module равен NULL.\n"
+
+#: alteratorctlmanagermodule.c:670
+msgid ""
+"Internal error in manager module when handle results: *module or *context is "
+"NULL.\n"
+msgstr ""
+"Внутренняя ошибка модуля manager при обработке результатов: *module или "
+"*context равен NULL.\n"
+
+#: alteratorctlmanagermodule.c:709
+msgid ""
+"D-Bus error in manager getobjects handle result: failed to produce a "
+"result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата manager getobjects: невозможно "
+"получить результат.\n"
+
+#: alteratorctlmanagermodule.c:731
+msgid ""
+"D-Bus error in manager getifaces handle result: failed to produce a result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата manager getifaces: невозможно получить "
+"результат.\n"
+
+#: alteratorctlmanagermodule.c:754
+msgid ""
+"D-Bus error in manager getsignals handle result: failed to produce a "
+"result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата manager getsignals: невозможно "
+"получить результат.\n"
+
+#: alteratorctlmanagermodule.c:783
+msgid ""
+"  alteratorctl manager <COMMAND [arguments]> [OPTIONS]\n"
+"\n"
+msgstr ""
+"  alteratorctl manager <КОМАНДА [аргументы]> [ОПЦИИ]\n"
+"\n"
+
+#: alteratorctlmanagermodule.c:785
+msgid ""
+"  getifaces [path] [--session | --system]\n"
+"                              Gets interfaces of specified object on system\n"
+"                              or/and session bus\n"
+msgstr ""
+"  getifaces [путь] [--session | --system]\n"
+"                              Получить интерфейсы указанного объекта на\n"
+"                              системной и/или сессионной шине\n"
+
+#: alteratorctlmanagermodule.c:788
+msgid ""
+"  getobjects [interface] [--session | --system]\n"
+"                              Gets objects paths that implements specified\n"
+"                              interface on system or/and session bus\n"
+msgstr ""
+"  getobjects [интерфейс] [--session | --system]\n"
+"                              Получить пути объектов указанного интерфейса "
+"на\n"
+"                              системной и/или сессионной шине\n"
+
+#: alteratorctlmanagermodule.c:791
+msgid ""
+"  getsignals <path> <interface> <method name> <--session | --system>\n"
+"                              Gets signals names of specified method on\n"
+"                              implemented interface of specifiead object on\n"
+"                              specified bus\n"
+"\n"
+msgstr ""
+"  getsignals <путь> <интерфейс> <имя метода> <--session | --system>\n"
+"                              Получить сигналы указанного метода интерфейса\n"
+"                              указанного объекта на системной и/или "
+"сессионной\n"
+"                              шине\n"
+"\n"
+
+#: alteratorctlmanagermodule.c:796
+msgid "  --session                   D-Bus session bus type\n"
+msgstr "  --session                   Сессионная шина D-Bus\n"
+
+#: alteratorctlmanagermodule.c:797
+msgid "  --system                    D-Bus system bus type\n"
+msgstr "  --system                    Системная шина D-Bus\n"
+
+#: alteratorctlmanagermodule.c:798
+msgid ""
+"  -h, --help                  Show manager module usage\n"
+"\n"
+msgstr ""
+"  -h, --help                  Вызов справки подмодуля manager\n"
+"\n"
+
+#: alteratorctlmanagermodule.c:811
+msgid ""
+"Internal error in manager module while parsing arguments: *iface is NULL.\n"
+msgstr ""
+"Внутренняя ошибка модуля manager при обработке аргументов: *iface равен "
+"NULL.\n"
+
+#: alteratorctlmanagermodule.c:823
+msgid "Wrong arguments in manager module.\n"
+msgstr "Неправильные аргументы модуля manager.\n"
+
+#: alteratorctlmanagermodule.c:858
+msgid "Unknown manager module command.\n"
+msgstr "Неизвестная команда модуля manager.\n"
+
+#: alteratorctlmanagermodule.c:879
+msgid "To many arguments in getobjects manager module subcommand\n"
+msgstr "Слишком много аргументов для команды getobjects.\n"
+
+#: alteratorctlmanagermodule.c:892
+msgid "The bus type is specified repeatedly.\n"
+msgstr "Повторно указан тип шины.\n"
+
+#: alteratorctlmanagermodule.c:907
+msgid "Wrong bus type in getobjects manager module subcommand.\n"
+msgstr "Указан неправильный тип шины в вызове команды getobjects.\n"
+
+#: alteratorctlmanagermodule.c:915
+msgid "Can't initialize context in manager module getobjects subcommand.\n"
+msgstr ""
+"Невозможно инициализировать контекст при выполнении manager getobjects.\n"
+
+#: alteratorctlmanagermodule.c:931
+msgid "To many arguments in getifaces manager module subcommand.\n"
+msgstr "Слишком много аргументов для команды getifaces.\n"
+
+#: alteratorctlmanagermodule.c:953 alteratorctlmanagermodule.c:993
+msgid "Wrong bus type in getifaces manager module subcommand.\n"
+msgstr "Указан неправильный тип шины в вызове команды getifaces.\n"
+
+#: alteratorctlmanagermodule.c:961
+msgid "Can't initialize context in manager module getifaces subcommand.\n"
+msgstr ""
+"Невозможно инициализировать контекст при выполнении manager getifaces.\n"
+
+#: alteratorctlmanagermodule.c:976
+msgid "Wrong argument to manager module getsignals subcommand.\n"
+msgstr "Неправильные аргументы команды manager getsignals.\n"
+
+#: alteratorctlmanagermodule.c:999
+msgid "Can't find bus in arguments.\n"
+msgstr "Шина не указана в аргументах командной строки\n"
+
+#: alteratorctlmanagermodule.c:1006
+msgid "Can't initialize context in manager module getsignals subcommand.\n"
+msgstr ""
+"Невозможно инициализировать контекст при выполнении manager getsignals.\n"
+
+#: alteratorctlmoduleinfoparser.c:206
+msgid "Module info parser error. Can't get AlteratorCtlGDBusSource.\n"
+msgstr ""
+"Ошибка парсера информации о модулях. Невозможно получить "
+"AlteratorCtlGDBusSource.\n"
+
+#: alteratorctlmoduleinfoparser.c:212 alteratorctlmoduleinfoparser.c:263
+#: alteratorctlmoduleinfoparser.c:307
+msgid "Module info parser error. Module iface isn't initialized.\n"
+msgstr ""
+"Ошибка парсера информации о модулях. Интерфейс модуля не инициализирован.\n"
+
+#: alteratorctlmoduleinfoparser.c:257 alteratorctlmoduleinfoparser.c:295
+#: alteratorctlmoduleinfoparser.c:355
+msgid "Module info parser error. Can't get AlteratorGDBusSource.\n"
+msgstr ""
+"Ошибка парсера информации о модулях. Невозможно получить "
+"AlteratorCtlGDBusSource.\n"
+
+#: alteratorctlmoduleinfoparser.c:269
+msgid "Invalid addres of amount_of_objects in module info parser.\n"
+msgstr "Адрес переменной amount_of_objects не определён.\n"
+
+#: alteratorctlmoduleinfoparser.c:301
+msgid "Module info parser error. Module path isn't initialized.\n"
+msgstr "Ошибка парсера информации о модулях. Путь модуля не инициализирован.\n"
+
+#: alteratorctlmoduleinfoparser.c:314
+msgid "Can't parse alterator entry info. Can't get alterator entry text.\n"
+msgstr ""
+"Невозможно обработать информацию Alterator Entry. Невозможно получить текст "
+"alterator entry.\n"
+
+#: alteratorctlmoduleinfoparser.c:322
+#, c-format
+msgid "Can't parse alterator entry of %s, %s: %s\n"
+msgstr "Невозможно получить данные Alterator Entry %s, %s: %s\n"
+
+#: alteratorctlmoduleinfoparser.c:361
+msgid "Module info parser error. alterator entry text is empty.\n"
+msgstr "Ошибка парсера информации о модулях. Пустой текст alterator entry.\n"
+
+#: alteratorctlmoduleinfoparser.c:369
+msgid "Can't parse alterator entry.\n"
+msgstr "Невозможно обработать данные alterator entry.\n"
+
+#: alteratorctlmoduleinfoparser.c:464
+#, c-format
+msgid "Can't get list of objects paths by iface %s in module info parser.\n"
+msgstr ""
+"Ошибка. Невозможно получить список объектов по интерфейсу %s в парсере "
+"информации о модуле.\n"
+
+#: alteratorctlmoduleinfoparser.c:518
+msgid "Can't parse toml file: Uninitialized toml_table_t.\n"
+msgstr ""
+"Невозможно получить данные TOML-файла: toml_table_t не инициализирован.\n"
+
+#: alteratorctlmoduleinfoparser.c:524
+msgid "Can't parse toml file: GNode **result is NULL.\n"
+msgstr "Невозможно получить данные TOML-файла: GNode **result равен NULL.\n"
+
+#: alteratorctlmoduleinfoparser.c:636
+#, c-format
+msgid "It is impossible to determine the data type of the value by key %s.\n"
+msgstr "Невозможно определить тип данных значения, записанного по ключу %s.\n"
+
+#: alteratorctlmoduleinfoparser.c:761
+msgid "Module info parser error: Module info parser object wasn't created.\n"
+msgstr ""
+"Ошибка парсера информации о модулях: Объект парсера информации о модулях не "
+"был создан.\n"
+
+#: alteratorctlmoduleinfoparser.c:771
+msgid "Module info parser error: No alterator entries data.\n"
+msgstr "Ошибка парсера информации о модулях: Нет данных alterator entry.\n"
+
+#: alteratorctlmoduleinfoparser.c:797
+#, c-format
+msgid ""
+"Module info parser error: Object with path %s and iface %s has no name "
+"found.\n"
+msgstr "Ошибка парсера информации о модулях: %s %s .\n"
+
+#: alteratorctlpackagesmodule.c:327
+msgid ""
+"Internal error in get_packages_module: unvaliable id of packages module.\n"
+msgstr ""
+"Внутренняя ошибка в get_packages_module: недействительный id модуля "
+"packages.\n"
+
+#: alteratorctlpackagesmodule.c:375
+msgid "Error of creating commands HashTables in packages module\n"
+msgstr "Ошибка создания хеш-таблиц с идентификаторами команд модуля packages\n"
+
+#: alteratorctlpackagesmodule.c:424
+msgid "Internal error in packages module run: *module is NULL.\n"
+msgstr ""
+"Внутренняя ошибка модуля packages при исполнении главной логики: *module "
+"равен NULL.\n"
+
+#: alteratorctlpackagesmodule.c:434
+msgid "Internal error in packages module run: *context is NULL.\n"
+msgstr ""
+"Внутренняя ошибка модуля packages при исполнении главной логики: *context "
+"равен NULL.\n"
+
+#: alteratorctlpackagesmodule.c:458
+msgid "Try to run unknown packages subcommand.\n"
+msgstr "Попытка запуска модуля packages с неизвестными командами.\n"
+
+#: alteratorctlpackagesmodule.c:476 alteratorctlpackagesmodule.c:689
+#: alteratorctlpackagesmodule.c:1246
+msgid "No packages module.\n"
+msgstr "Модуль packages не существует.\n"
+
+#: alteratorctlpackagesmodule.c:485
+msgid "NULL context in rpm module.\n"
+msgstr "Данные подмодуля packages rpm пусты.\n"
+
+#: alteratorctlpackagesmodule.c:504
+msgid "Not enough parameters for packages rpm files subcommand.\n"
+msgstr "Недостаточно параметров для подкоманды packages rpm files.\n"
+
+#: alteratorctlpackagesmodule.c:515 alteratorctlpackagesmodule.c:561
+#: alteratorctlpackagesmodule.c:580 alteratorctlpackagesmodule.c:606
+#: alteratorctlpackagesmodule.c:633
+msgid "Can't allocate dbus_ctx_t in packages_module_rpm_subcommand\n"
+msgstr ""
+"Невозможно выделить dbus_ctx_t в подкоманде packages_module_rpm_subcommand\n"
+
+#: alteratorctlpackagesmodule.c:535
+msgid ""
+"Error while getting info of packages rpm submodule on alterator entry "
+"format: result is NULL.\n"
+msgstr ""
+"Ошибка при получении информации о packages rpm в формате alterator entry: "
+"результат равен NULL.\n"
+
+#: alteratorctlpackagesmodule.c:548
+msgid "Not enough parameters for packages rpm install subcommand.\n"
+msgstr "Недостаточно параметров для подкоманды packages rpm install.\n"
+
+#: alteratorctlpackagesmodule.c:593
+msgid "Not enough parameters for packages rpm packageinfo subcommand.\n"
+msgstr "Недостаточно параметров для подкоманды packages rpm packageinfo.\n"
+
+#: alteratorctlpackagesmodule.c:620
+msgid "Not enough parameters for packages rpm remove subcommand.\n"
+msgstr "Недостаточно параметров для подкоманды packages rpm remove.\n"
+
+#: alteratorctlpackagesmodule.c:698
+msgid "NULL context in apt module.\n"
+msgstr "Данные подмодуля packages apt пусты.\n"
+
+#: alteratorctlpackagesmodule.c:723
+msgid ""
+"Error while getting info of packages apt submodule on alterator entry "
+"format: result is NULL.\n"
+msgstr ""
+"Ошибка при получении информации о packages apt в формате alterator antry: "
+"результат равен NULL.\n"
+
+#: alteratorctlpackagesmodule.c:741 alteratorctlpackagesmodule.c:1027
+#: alteratorctlpackagesmodule.c:1090 alteratorctlpackagesmodule.c:1142
+#: alteratorctlpackagesmodule.c:1191
+msgid "Can't allocate dbus_ctx_t in packages_module_apt_subcommand\n"
+msgstr ""
+"Невозможно выделить dbus_ctx_t в подкоманде packages_module_apt_subcommand\n"
+
+#: alteratorctlpackagesmodule.c:761 alteratorctlpackagesmodule.c:799
+msgid "Not enough parameters for packages apt install subcommand.\n"
+msgstr "Недостаточно параметров для подкоманды packages apt install.\n"
+
+#: alteratorctlpackagesmodule.c:809
+msgid "Unvalid type of additional data for packages apt remove subcommand.\n"
+msgstr ""
+"Некорректный тип данных дополнительной информации для команды packages apt "
+"remove.\n"
+
+#: alteratorctlpackagesmodule.c:811
+msgid "Unvalid type of additional data for packages apt install subcommand.\n"
+msgstr ""
+"Некорректный тип данных дополнительной информации для команды packages apt "
+"install.\n"
+
+#: alteratorctlpackagesmodule.c:903
+#, c-format
+msgid "Calling of apt %s failed. Can't allocate memory for stdout signal.\n"
+msgstr ""
+"Вызов apt %s закончился неудачей. Невозможно выделить память для stdout "
+"signal.\n"
+
+#: alteratorctlpackagesmodule.c:915
+#, c-format
+msgid "Calling of apt %s failed. Can't allocate memory for stderr signal.\n"
+msgstr ""
+"Вызов apt %s закончился неудачей. Невозможно выделить память для stderr "
+"signal.\n"
+
+#: alteratorctlpackagesmodule.c:932
+msgid "Can't allcate dbus_ctx_t in packages_module_apt_subcommand\n"
+msgstr ""
+"Невозможно выделить dbus_ctx_t в подкоманде packages_module_apt_subcommand\n"
+
+#: alteratorctlpackagesmodule.c:992 alteratorctlpackagesmodule.c:1046
+msgid "Not enough parameters for packages apt reinstall subcommand.\n"
+msgstr "Недостаточно параметров для подкоманды packages apt reinstall.\n"
+
+#: alteratorctlpackagesmodule.c:1008
+msgid ""
+"Calling of apt reinstall async failed. Can't allocate memory for stdout "
+"signal.\n"
+msgstr ""
+"Вызов apt reinstall async закончился неудачей. Невозможно выделить память "
+"для stdout signal.\n"
+
+#: alteratorctlpackagesmodule.c:1015
+msgid ""
+"Calling of apt reinstall async failed. Can't allocate memory for stderr "
+"signal.\n"
+msgstr ""
+"Вызов apt reinstall async закончился неудачей. Невозможно выделить память "
+"для stderr signal.\n"
+
+#: alteratorctlpackagesmodule.c:1077 alteratorctlpackagesmodule.c:1096
+#: alteratorctlpackagesmodule.c:1291 alteratorctlpackagesmodule.c:1362
+msgid "Not enough parameters for packages apt search subcommand.\n"
+msgstr "Недостаточно параметров для подкоманды packages apt search.\n"
+
+#: alteratorctlpackagesmodule.c:1123
+msgid ""
+"Calling of apt update async failed. Can't allocate memory for stdout "
+"signal.\n"
+msgstr ""
+"Вызов apt update async закончился неудачей. Невозможно выделить память для "
+"stdout signal.\n"
+
+#: alteratorctlpackagesmodule.c:1130
+msgid ""
+"Calling of apt update async failed. Can't allocate memory for stderr "
+"signal.\n"
+msgstr ""
+"Вызов apt update async закончился неудачей. Невозможно выделить память для "
+"stderr signal.\n"
+
+#: alteratorctlpackagesmodule.c:1255
+msgid "NULL context in repo module.\n"
+msgstr "Данные подмодуля packages repo пусты.\n"
+
+#: alteratorctlpackagesmodule.c:1273
+msgid "Not enough parameters for packages repo add subcommand.\n"
+msgstr "Недостаточно параметров для подкоманды packages repo add.\n"
+
+#: alteratorctlpackagesmodule.c:1285 alteratorctlpackagesmodule.c:1330
+#: alteratorctlpackagesmodule.c:1356
+msgid "Can't allocate dbus_ctx_t in packages_module_repo_subcommand\n"
+msgstr ""
+"Невозможно выделить dbus_ctx_t в подкоманде packages_module_repo_subcommand\n"
+
+#: alteratorctlpackagesmodule.c:1312
+msgid ""
+"Error while getting info of packages repo submodule on alterator entry "
+"format: result is NULL.\n"
+msgstr ""
+"Ошибка при получении информации о packages repo в формате alterator entry: "
+"результат равен NULL.\n"
+
+#: alteratorctlpackagesmodule.c:1343
+msgid "Not enough parameters for packages repo remove subcommand.\n"
+msgstr "Недостаточно параметров для подкоманды packages repo remove.\n"
+
+#: alteratorctlpackagesmodule.c:1419
+msgid ""
+"\n"
+"Regardless of the forced termination of alteratorctl, apt-get called via D-"
+"Bus will continue to run.\n"
+msgstr ""
+"\n"
+"Несмотря на принудительное завершение работы alteratorctl, apt-get "
+"продолжает работу.\n"
+
+#: alteratorctlpackagesmodule.c:1425 alteratorctlpackagesmodule.c:3506
+msgid "Error of register SIGINT signal handler in packages apt submodule.\n"
+msgstr ""
+"Не удалось зарегистрировать обработчик сигнала SIGINT в подмодуле packages "
+"apt.\n"
+
+#: alteratorctlpackagesmodule.c:1440
+msgid "Internal error in manager module run: *module is NULL.\n"
+msgstr ""
+"Внутренняя ошибка модуля manager при исполнении главной логики: *module "
+"равен NULL.\n"
+
+#: alteratorctlpackagesmodule.c:1465
+msgid "Internal error in packages module when handle result: module is NULL.\n"
+msgstr ""
+"Внутренняя ошибка модуля packages при получении результата: *module равен "
+"NULL.\n"
+
+#: alteratorctlpackagesmodule.c:1475
+msgid "Internal error in packages module when handle results: *ctx is NULL.\n"
+msgstr ""
+"Внутренняя ошибка модуля packages при получении результата: *ctx равен "
+"NULL.\n"
+
+#: alteratorctlpackagesmodule.c:1556
+msgid ""
+"Can't validate packages submodule alterator entry. Submodule name is empty.\n"
+msgstr ""
+"Не удалось валидировать alterator entry подмодуля packages. Пустое имя "
+"подмодуля.\n"
+
+#: alteratorctlpackagesmodule.c:1564 alteratorctlpackagesmodule.c:1574
+#, c-format
+msgid ""
+"Can't get alterator entry data for validation in submodule packages %s: "
+"field \"%s\" is missing.\n"
+msgstr ""
+"Невозможно получить данные alterator entry в подмодуле packages %s: "
+"пропущено поле \"%s\".\n"
+
+#: alteratorctlpackagesmodule.c:1670
+msgid "Can't convert empty JSON array to hash table.\n"
+msgstr "Невозможно сконвертировать JSON массив в хэш-таблицу.\n"
+
+#: alteratorctlpackagesmodule.c:1685
+msgid "Can't copy keys of empty hash table to array.\n"
+msgstr "Невозможно скопировать пустые ключи хэш-таблицы в массив.\n"
+
+#: alteratorctlpackagesmodule.c:1709 alteratorctlpackagesmodule.c:1896
+msgid "Can't run check install in not existed alterator module.\n"
+msgstr ""
+"Невозможно запустить check install в несуществующем модуле alterator.\n"
+
+#: alteratorctlpackagesmodule.c:1715 alteratorctlpackagesmodule.c:1902
+msgid ""
+"It is not possible to check if an unspecified packages can be installed or "
+"removed in packages apt.\n"
+msgstr ""
+"Невозможно проверить возможность установки/удаления неуказанных пакетов в "
+"подмодуле packages apt.\n"
+
+#: alteratorctlpackagesmodule.c:1723
+msgid ""
+"Unable to check if packages can be installed or removed. There is nowhere to "
+"save the result.\n"
+msgstr ""
+"Невозможно проверить возможность установки/удаления неуказанных пакетов в "
+"подмодуле packages apt. Некуда сохранять результат.\n"
+
+#: alteratorctlpackagesmodule.c:1735
+msgid "Can't allcate dbus_ctx_t in get_check_apply_result.\n"
+msgstr "Невозможно выделить dbus_ctx_t в подкоманде get_check_apply_result\n"
+
+#: alteratorctlpackagesmodule.c:1755
+msgid "Wrong type of CheckApply result.\n"
+msgstr "Неизвестный возвращаемый тип данных в packages apt CheckApply.\n"
+
+#: alteratorctlpackagesmodule.c:1765
+msgid "CheckApply error: empty result.\n"
+msgstr "Ошибка CheckApply: пустой результат.\n"
+
+#: alteratorctlpackagesmodule.c:1800
+msgid "Failed to parse JSON result of CheckApply.\n"
+msgstr "Не удалось обработать результат CheckApply в формате JSON.\n"
+
+#: alteratorctlpackagesmodule.c:1910
+#, c-format
+msgid ""
+"Unable to get approval to review application packages %s for using in "
+"packages apt. Accepted flag is null.\n"
+msgstr ""
+"Невозможно получить подтверждение установки/удаления пакета %s. Флаг "
+"подтверждения равен NULL.\n"
+
+#: alteratorctlpackagesmodule.c:1924
+msgid "Can't check apply packages. Empty result.\n"
+msgstr "Ошибка CheckApply: пустой результат.\n"
+
+#: alteratorctlpackagesmodule.c:1985
+msgid "Packages to install:\n"
+msgstr "Следующие пакеты будут установлены:\n"
+
+#: alteratorctlpackagesmodule.c:1994 alteratorctlpackagesmodule.c:2200
+msgid "Packages to remove:\n"
+msgstr "Следующие пакеты будут удалены:\n"
+
+#: alteratorctlpackagesmodule.c:2002
+msgid ""
+"The ability to remove manually installed packages is disabled because it may "
+"accidentally remove system-critical packages:\n"
+msgstr ""
+"Возможность удаления установленных вручную пакетов отключена, так как в "
+"противном случае может произойти случайное удаление важных для работы "
+"системы пакетов:\n"
+
+#: alteratorctlpackagesmodule.c:2005
+msgid "Manually installed packages to remove:\n"
+msgstr "Следующие вручную установленные пакеты будут удалены:\n"
+
+#: alteratorctlpackagesmodule.c:2025
+msgid ""
+"WARNING: This action may remove packages that are important for the system "
+"to function.\n"
+"You must clearly understand the possible consequences!\n"
+"\n"
+msgstr ""
+"ВНИМАНИЕ: Данное действие может привести к случайному удалению важных для "
+"работы системы пакетов.\n"
+"Вы должны точно понимать возможные последствия!\n"
+"\n"
+
+#: alteratorctlpackagesmodule.c:2027
+msgid "To continue, enter the phrase \"Yes, do as I say!\".\n"
+msgstr "Введите фразу \"Yes, do as I say!\" чтобы продолжить.\n"
+
+#: alteratorctlpackagesmodule.c:2033 alteratorctlpackagesmodule.c:2206
+msgid "Do you want to continue? [y/N] "
+msgstr "Продолжить? [y/N] "
+
+#: alteratorctlpackagesmodule.c:2047 alteratorctlpackagesmodule.c:2091
+msgid "Aborted.\n"
+msgstr "Прервано.\n"
+
+#: alteratorctlpackagesmodule.c:2070
+#, c-format
+msgid ""
+"These packages are already installed:\n"
+"  %s\n"
+"\n"
+msgstr ""
+"Данные пакеты уже установлены:\n"
+"  %s\n"
+"\n"
+
+#: alteratorctlpackagesmodule.c:2078
+#, c-format
+msgid ""
+"These packages aren't installed and cannot be removed:\n"
+"  %s\n"
+"\n"
+msgstr ""
+"Данные пакеты не установлены и не могут быть удалены:\n"
+"  %s\n"
+"\n"
+
+#: alteratorctlpackagesmodule.c:2125
+msgid "Can't run check reinstall package in not existed alterator module.\n"
+msgstr ""
+"Невозможно запустить check reinstall package в несуществующем модуле "
+"alterator.\n"
+
+#: alteratorctlpackagesmodule.c:2131
+msgid ""
+"It is not possible to check if an unspecified package can be reinstalled.\n"
+msgstr "Невозможно проверить возможность переустановки неуказанного пакета.\n"
+
+#: alteratorctlpackagesmodule.c:2136
+#, c-format
+msgid "Can't get approving for reinstall package %s. Accepted flag is null.\n"
+msgstr ""
+"Невозможно получить подтверждение переустановки пакета %s. Флаг "
+"подтверждения равен NULL.\n"
+
+#: alteratorctlpackagesmodule.c:2146
+msgid ""
+"Can't allocate dbus_ctx_t in packages_module_apt_check_reinstall_package\n"
+msgstr ""
+"Невозможно выделить dbus_ctx_t в подкоманде "
+"packages_module_apt_check_reinstall_package\n"
+
+#: alteratorctlpackagesmodule.c:2159
+#, c-format
+msgid ""
+"It is impossible to get the list of packages to reinstall when reinstalling "
+"package %s.\n"
+msgstr ""
+"Невозможно получить список переустанавливаемых пакетов при переустановке "
+"пакета %s.\n"
+
+#: alteratorctlpackagesmodule.c:2166
+msgid "Wrong type of apt CheckReinstall result.\n"
+msgstr ""
+"Неизвестный возвращаемый тип данных после исполнения подкоманды apt "
+"CheckReinstall.\n"
+
+#: alteratorctlpackagesmodule.c:2188
+msgid "New packages to install:\n"
+msgstr "Следующие НОВЫЕ пакеты будут установлены:\n"
+
+#: alteratorctlpackagesmodule.c:2256
+msgid ""
+"D-Bus error in packages rpm files handle result: failed to produce a "
+"result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата rpm file: невозможно получить "
+"результат.\n"
+
+#: alteratorctlpackagesmodule.c:2262
+msgid "Wrong answer type in rpm files.\n"
+msgstr ""
+"Неизвестный возвращаемый тип данных после исполнения подкоманды rpm files.\n"
+
+#: alteratorctlpackagesmodule.c:2274
+msgid "Error while running rpm Files() method: parameter is NULL.\n"
+msgstr "Ошибка DBus во время работы метода rpm Files(): параметр равен NULL.\n"
+
+#: alteratorctlpackagesmodule.c:2280
+#, c-format
+msgid "Error while running rpm Files() method in %s: exit_code is NULL.\n"
+msgstr ""
+"Ошибка DBus во время работы метода rpm Files() в %s: код возврата равен "
+"NULL.\n"
+
+#: alteratorctlpackagesmodule.c:2338
+msgid ""
+"D-Bus error in packages rpm info handle result: failed to produce a result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата rpm info: невозможно получить "
+"результат.\n"
+
+#: alteratorctlpackagesmodule.c:2349
+#, c-format
+msgid ""
+"Error in packages rpm submodule: can't get alterator entry data of %s.\n"
+msgstr ""
+"Ошибка в подмодуле packages rpm: невозможно получить данные alterator entry "
+"%s.\n"
+
+#: alteratorctlpackagesmodule.c:2371
+msgid ""
+"D-Bus error in packages rpm install handle result: failed to produce a "
+"result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата rpm install: невозможно получить "
+"результат.\n"
+
+#: alteratorctlpackagesmodule.c:2377
+msgid "Wrong answer type in rpm install.\n"
+msgstr ""
+"Неизвестный возвращаемый тип данных после исполнения подкоманды rpm "
+"install.\n"
+
+#: alteratorctlpackagesmodule.c:2388
+msgid "Error while running rpm Install() method: parameter is NULL.\n"
+msgstr ""
+"Ошибка DBus во время работы метода Install(): код возврата равен NULL.\n"
+
+#: alteratorctlpackagesmodule.c:2394
+#, c-format
+msgid "Error while running rpm Install() method in %s: exit_code is NULL.\n"
+msgstr ""
+"Ошибка DBus во время работы метода Install() в %s: код возврата равен NULL.\n"
+
+#: alteratorctlpackagesmodule.c:2435
+msgid ""
+"D-Bus error in packages rpm list handle result: failed to produce a result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата rpm list: невозможно получить "
+"результат.\n"
+
+#: alteratorctlpackagesmodule.c:2441
+msgid "Wrong answer type in rpm list.\n"
+msgstr ""
+"Неизвестный возвращаемый тип данных после исполнения подкоманды rpm list.\n"
+
+#: alteratorctlpackagesmodule.c:2451
+msgid "Error while running rpm List() method: exit_code is NULL.\n"
+msgstr "Ошибка DBus во время работы метода List(): код возврата равен NULL.\n"
+
+#: alteratorctlpackagesmodule.c:2518
+msgid ""
+"D-Bus error in packages rpm packageinfo handle result: failed to produce a "
+"result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата rpm packageinfo: невозможно получить "
+"результат.\n"
+
+#: alteratorctlpackagesmodule.c:2524
+msgid "Wrong answer type in rpm packageinfo.\n"
+msgstr ""
+"Неизвестный возвращаемый тип данных после исполнения подкоманды rpm "
+"packageinfo.\n"
+
+#: alteratorctlpackagesmodule.c:2536
+msgid "Error while running rpm PackageInfo() method: parameter is NULL.\n"
+msgstr ""
+"Ошибка DBus во время работы метода rpm PackageInfo(): код возврата равен "
+"NULL.\n"
+
+#: alteratorctlpackagesmodule.c:2542
+#, c-format
+msgid ""
+"Error while running rpm PackageInfo() method in %s: exit_code is NULL.\n"
+msgstr ""
+"Ошибка DBus во время работы метода rpm PackageInfo() в %s: код возврата "
+"равен NULL.\n"
+
+#: alteratorctlpackagesmodule.c:2595
+msgid ""
+"D-Bus error in packages rpm remove handle result: failed to produce a "
+"result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата rpm remove: невозможно получить "
+"результат.\n"
+
+#: alteratorctlpackagesmodule.c:2601
+msgid "Wrong answer type in rpm remove.\n"
+msgstr ""
+"Неизвестный возвращаемый тип данных после исполнения подкоманды rpm remove.\n"
+
+#: alteratorctlpackagesmodule.c:2612 alteratorctlpackagesmodule.c:3179
+msgid "Error while running rpm Remove() method: parameter is NULL.\n"
+msgstr ""
+"Ошибка DBus во время работы метода rpm Remove(): код возврата равен NULL.\n"
+
+#: alteratorctlpackagesmodule.c:2618
+#, c-format
+msgid "Error while running rpm Remove() method in %s: exit_code is NULL.\n"
+msgstr ""
+"Ошибка DBus во время работы метода rpm Remove() в %s: код возврата равен "
+"NULL.\n"
+
+#: alteratorctlpackagesmodule.c:2689
+msgid ""
+"D-Bus error in packages apt info handle result: failed to produce a result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата apt info: невозможно получить "
+"результат.\n"
+
+#: alteratorctlpackagesmodule.c:2700
+#, c-format
+msgid ""
+"Error in packages apt submodule: can't get alterator entry data of %s.\n"
+msgstr ""
+"В модуле packages apt: невозможно получить данные alterator entry объекта "
+"%s.\n"
+
+#: alteratorctlpackagesmodule.c:2726
+msgid ""
+"D-Bus error in packages apt listall handle result: failed to produce a "
+"result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата apt listall: невозможно получить "
+"результат.\n"
+
+#: alteratorctlpackagesmodule.c:2732
+msgid "Wrong answer type in apt list all packages.\n"
+msgstr ""
+"Неизвестный возвращаемый тип данных после исполнения подкоманды listall.\n"
+
+#: alteratorctlpackagesmodule.c:2742
+msgid "Error while running apt ListAllPackages() method: exit_code is NULL.\n"
+msgstr ""
+"Ошибка DBus во время работы метода apt ListAllPackages(): код возврата равен "
+"NULL.\n"
+
+#: alteratorctlpackagesmodule.c:2819
+msgid ""
+"D-Bus error in packages apt search handle result: failed to produce a "
+"result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата apt search: невозможно получить "
+"результат.\n"
+
+#: alteratorctlpackagesmodule.c:2825
+msgid "Wrong answer type in apt list all search.\n"
+msgstr ""
+"Неизвестный возвращаемый тип данных после исполнения подкоманды apt "
+"listall.\n"
+
+#: alteratorctlpackagesmodule.c:2837
+msgid "Error while running rpm Search() method: parameter is NULL.\n"
+msgstr ""
+"Ошибка DBus во время работы метода apt Search(): код возврата равен NULL.\n"
+
+#: alteratorctlpackagesmodule.c:2843
+#, c-format
+msgid "Error while running apt Search() method in %s: exit_code is NULL.\n"
+msgstr ""
+"Ошибка DBus во время работы метода apt Search() в %s: код возврата равен "
+"NULL.\n"
+
+#: alteratorctlpackagesmodule.c:2912
+msgid ""
+"D-Bus error in packages apt last-update handle result: failed to produce a "
+"result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата apt last-update: невозможно получить "
+"результат.\n"
+
+#: alteratorctlpackagesmodule.c:2918
+msgid "Wrong answer type in apt last-update.\n"
+msgstr ""
+"Неизвестный возвращаемый тип данных после исполнения подкоманды apt last-"
+"update.\n"
+
+#: alteratorctlpackagesmodule.c:2927
+msgid "Error while running apt LastUpdate() method: exit_code is NULL.\n"
+msgstr ""
+"Ошибка DBus во время работы метода apt LastUpdate(): код возврата равен "
+"NULL.\n"
+
+#: alteratorctlpackagesmodule.c:2993
+msgid ""
+"D-Bus error in packages repo add handle result: failed to produce a result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата repo add: невозможно получить "
+"результат.\n"
+
+#: alteratorctlpackagesmodule.c:2999
+msgid "Wrong answer type in repo add.\n"
+msgstr ""
+"Неизвестный возвращаемый тип данных после исполнения подкоманды repo add.\n"
+
+#: alteratorctlpackagesmodule.c:3010
+msgid "Error while running rpm Add() method: parameter is NULL.\n"
+msgstr ""
+"Ошибка DBus во время работы метода repo Add(): код возврата равен NULL.\n"
+
+#: alteratorctlpackagesmodule.c:3016
+#, c-format
+msgid "Error while running repo Add() method in %s: exit_code is NULL.\n"
+msgstr ""
+"Ошибка DBus во время работы метода repo Add() в %s: код возврата равен "
+"NULL.\n"
+
+#: alteratorctlpackagesmodule.c:3054
+msgid ""
+"D-Bus error in packages repo info handle result: failed to produce a "
+"result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата repo info: невозможно получить "
+"результат.\n"
+
+#: alteratorctlpackagesmodule.c:3065
+#, c-format
+msgid ""
+"Error in packages repo submodule: can't get alterator entry data of %s.\n"
+msgstr ""
+"Ошибка в модуле packages repo: невозможно получить данные alterator entry "
+"объекта %s.\n"
+
+#: alteratorctlpackagesmodule.c:3088
+msgid ""
+"D-Bus error in packages repo list handle result: failed to produce a "
+"result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата repo list: невозможно получить "
+"результат.\n"
+
+#: alteratorctlpackagesmodule.c:3094
+msgid "Wrong answer type in repo list.\n"
+msgstr ""
+"Неизвестный возвращаемый тип данных после исполнения подкоманды repo list.\n"
+
+#: alteratorctlpackagesmodule.c:3104
+msgid "Error while running repo List() method: exit_code is NULL.\n"
+msgstr ""
+"Ошибка DBus во время работы метода repo List(): код возврата равен NULL.\n"
+
+#: alteratorctlpackagesmodule.c:3162
+msgid ""
+"D-Bus error in packages repo remove handle result: failed to produce a "
+"result.\n"
+msgstr ""
+"Ошибка D-Bus при обработке результата repo remove: невозможно получить "
+"результат.\n"
+
+#: alteratorctlpackagesmodule.c:3168
+msgid "Wrong answer type in repo remove.\n"
+msgstr ""
+"Неизвестный возвращаемый тип данных после исполнения подкоманды repo "
+"remove.\n"
+
+#: alteratorctlpackagesmodule.c:3185
+#, c-format
+msgid "Error while running repo Remove() method in %s: exit_code is NULL.\n"
+msgstr ""
+"Ошибка DBus во время работы метода repo Remove() в %s: код возврата равен "
+"NULL.\n"
+
+#: alteratorctlpackagesmodule.c:3221
+msgid ""
+"  alteratorctl packages [OPTIONS] [<SUBMODULE> [COMMAND] [arguments] "
+"[OPTIONS]]\n"
+"\n"
+msgstr ""
+"  alteratorctl packages [ОПЦИИ] [<ПОДМОДУЛЬ> [КОМАНДА] [аргументы] [ОПЦИИ]]\n"
+"\n"
+
+#: alteratorctlpackagesmodule.c:3222
+msgid "Submodules:\n"
+msgstr "Подмодули:\n"
+
+#: alteratorctlpackagesmodule.c:3223
+msgid "  apt                         Runs apt submodule command\n"
+msgstr "  apt                         Запуск команды подмодуля apt\n"
+
+#: alteratorctlpackagesmodule.c:3224
+msgid "  repo                        Runs repo submodule command\n"
+msgstr "  repo                        Запуск команды подмодуля repo\n"
+
+#: alteratorctlpackagesmodule.c:3225
+msgid ""
+"  rpm                         Runs rpm submodule command\n"
+"\n"
+msgstr ""
+"  rpm                         Запуск команды подмодуля rpm\n"
+"\n"
+
+#: alteratorctlpackagesmodule.c:3227
+msgid ""
+"  -h, --help                  Show module packages usage help\n"
+"\n"
+msgstr ""
+"  -h, --help                  Отобразить справку модуля packages\n"
+"\n"
+
+#: alteratorctlpackagesmodule.c:3228
+msgid ""
+"For more information on a specific submodule and its commands, use:\n"
+"  alteratorctl packages <SUBMODULE> (-h | --help)\n"
+"\n"
+msgstr ""
+"Для получения дополнительной информации по конкретному подмодулю и его "
+"командам используйте:\n"
+"  alteratorctl packages <ПОДМОДУЛЬ> (-h | --help)\n"
+"\n"
+
+#: alteratorctlpackagesmodule.c:3238
+msgid ""
+"  alteratorctl packages rpm <COMMAND> [argument] [OPTIONS]\n"
+"\n"
+msgstr ""
+"  alteratorctl packages rpm <КОМАНДА> [аргумент] [ОПЦИИ]\n"
+"\n"
+
+#: alteratorctlpackagesmodule.c:3240
+msgid "  files <name>                Prints files in specified package\n"
+msgstr "  files <имя>                 Отобразить файлы выбранного пакета\n"
+
+#: alteratorctlpackagesmodule.c:3241 alteratorctlpackagesmodule.c:3255
+#: alteratorctlpackagesmodule.c:3281
+msgid ""
+"  info                        Prints submodule info in alterator entry "
+"format\n"
+msgstr ""
+"  info                        Вывести информацию о подмодуле в формате "
+"alterator\n"
+"                              entry\n"
+
+#: alteratorctlpackagesmodule.c:3242
+msgid "  install <path>              Install package from rpm file\n"
+msgstr "  install <путь>              Устанавливает пакет из rpm файла\n"
+
+#: alteratorctlpackagesmodule.c:3243
+msgid "  list                        Prints all installed packages\n"
+msgstr ""
+"  list                        Вывести список всех установленных пакетов\n"
+
+#: alteratorctlpackagesmodule.c:3244
+msgid "  packageinfo <name>          Prints info for specified package\n"
+msgstr "  packageinfo <имя>           Вывести информацию об указанном пакете\n"
+
+#: alteratorctlpackagesmodule.c:3245
+msgid ""
+"  remove <name>               Remove specified package\n"
+"\n"
+msgstr ""
+"  remove <имя>                Удалить указанный пакет\n"
+"\n"
+
+#: alteratorctlpackagesmodule.c:3247
+msgid ""
+"  -h, --help                  Show rpm submodule usage\n"
+"\n"
+msgstr ""
+"  -h, --help                  Вызов справки подмодуля rpm\n"
+"\n"
+
+#: alteratorctlpackagesmodule.c:3253
+msgid ""
+"  alteratorctl packages apt <COMMAND> [argument] [OPTIONS]\n"
+"\n"
+msgstr ""
+"  alteratorctl packages apt <КОМАНДА> [аргументы] [ОПЦИИ]\n"
+"\n"
+
+#: alteratorctlpackagesmodule.c:3256
+msgid "  install <name>              Install specified package\n"
+msgstr "  install <имя>               Установить указанный пакет\n"
+
+#: alteratorctlpackagesmodule.c:3257
+msgid "  list                        Prints all available packages\n"
+msgstr "  list                        Вывести список всех доступных пакетов\n"
+
+#: alteratorctlpackagesmodule.c:3258
+msgid "  last-update                 Loads packages info last update time\n"
+msgstr ""
+"  last-update                 Вывести время последнего обновления\n"
+"                              пакетной базы\n"
+
+#: alteratorctlpackagesmodule.c:3259
+msgid "  reinstall <name>            Reinstalls specified package\n"
+msgstr "  reinstall <имя>             Переустановить указанный пакет\n"
+
+#: alteratorctlpackagesmodule.c:3260
+msgid "  remove <name>               Remove specified package\n"
+msgstr ""
+"  remove <имя>                Удалить указанный пакет\n"
+"\n"
+
+#: alteratorctlpackagesmodule.c:3261
+msgid "  search <name>               Prints info for specified package\n"
+msgstr "  search <имя>                Вывести информацию об указанном пакете\n"
+
+#: alteratorctlpackagesmodule.c:3262
+msgid ""
+"  update                      Update packages info\n"
+"\n"
+msgstr ""
+"  update                      Обновить информацию о пакетах\n"
+"\n"
+
+#: alteratorctlpackagesmodule.c:3267
+msgid ""
+"  --force-yes                 Disable confirmation before removing and\n"
+"                              installing a package. Caution, this action "
+"may\n"
+"                              result in immediate removal of system-"
+"critical\n"
+"                              packages. Use this option only if you fully\n"
+"                              understand the consequences!\n"
+msgstr ""
+"  --force-yes                 Автоматическое подтверждение удаления или\n"
+"                              установки пакета. Применяйте опцию с\n"
+"                              осторожностью. Данное действие может привести\n"
+"                              к немедленному удалению значимых для системы\n"
+"                              пакетов. Используйте опцию только при полном\n"
+"                              понимании последствий!\n"
+"\n"
+
+#: alteratorctlpackagesmodule.c:3272
+msgid ""
+"  -h, --help                  Show apt submodule usage\n"
+"\n"
+msgstr ""
+"  -h, --help                  Вызов справки подмодуля apt\n"
+"\n"
+
+#: alteratorctlpackagesmodule.c:3278
+msgid ""
+"  alteratorctl packages repo <COMMAND> [argument] [OPTIONS]\n"
+"\n"
+msgstr ""
+"  alteratorctl packages repo <КОМАНДА> [аргументы] [ОПЦИИ]\n"
+"\n"
+
+#: alteratorctlpackagesmodule.c:3280
+msgid "  add <name>                  Adds repo to sources list\n"
+msgstr "  add <имя>                   Добавить репозиторий в sources list\n"
+
+#: alteratorctlpackagesmodule.c:3282
+msgid "  list                        Prints repos from source list\n"
+msgstr ""
+"  list                        Распечатать список репозиториев из sources "
+"list\n"
+
+#: alteratorctlpackagesmodule.c:3283
+msgid ""
+"  remove <name>               Removes repo from sources list\n"
+"\n"
+msgstr ""
+"  remove <имя>                Удалить репозиторий из sources list\n"
+"\n"
+
+#: alteratorctlpackagesmodule.c:3285
+msgid ""
+"  -h, --help                  Show repo submodule usage\n"
+"\n"
+msgstr ""
+"  -h, --help                  Вызов справки подмодуля repo\n"
+"\n"
+
+#: alteratorctlpackagesmodule.c:3308
+msgid ""
+"Internal error in packages module while parsing arguments: *iface is NULL.\n"
+msgstr ""
+"Внутренняя ошибка модуля packages при обработке аргументов: *iface равен "
+"NULL.\n"
+
+#: alteratorctlpackagesmodule.c:3323
+msgid "Wrong arguments in packages module.\n"
+msgstr "Неправильные аргументы модуля packages.\n"
+
+#: alteratorctlpackagesmodule.c:3330
+msgid ""
+"Internal error in packages module while parsing arguments: module->commands "
+"is NULL.\n"
+msgstr ""
+"Внутренняя ошибка модуля packages при обработке аргументов: module->commands "
+"равен NULL.\n"
+
+#: alteratorctlpackagesmodule.c:3353
+msgid "Unknown packages submodule.\n"
+msgstr "Неизвестная команда модуля packages.\n"
+
+#: alteratorctlpackagesmodule.c:3384
+#, c-format
+msgid "Packages apt submodule options parsing failed: %s\n"
+msgstr "Обработка опций подмодуля packages apt завершилась неудачей: %s\n"
+
+#: alteratorctlpackagesmodule.c:3413
+msgid "Wrong apt arguments.\n"
+msgstr "Неправильные аргументы в подмодуле apt.\n"
+
+#: alteratorctlpackagesmodule.c:3444 alteratorctlpackagesmodule.c:3459
+#: alteratorctlpackagesmodule.c:3470 alteratorctlpackagesmodule.c:3481
+msgid "Wrong packages apt arguments.\n"
+msgstr "Неправильные аргументы подмодуля packages apt.\n"
+
+#: alteratorctlpackagesmodule.c:3496
+msgid "Unknown packages apt module command.\n"
+msgstr "Неизвестная команда подмодуля apt.\n"
+
+#: alteratorctlpackagesmodule.c:3530
+msgid "Wrong rpm arguments.\n"
+msgstr "Неправильные аргументы в подмодуле rpm.\n"
+
+#: alteratorctlpackagesmodule.c:3543
+msgid "Wrong packages rpm files arguments.\n"
+msgstr "Неправильные аргументы подкоманды rpm files.\n"
+
+#: alteratorctlpackagesmodule.c:3558
+msgid "Wrong packages rpm info arguments.\n"
+msgstr "Неправильные аргументы подкоманды packages rpm info.\n"
+
+#: alteratorctlpackagesmodule.c:3573
+msgid "Wrong rpm package_info arguments.\n"
+msgstr "Неправильные аргументы команды package_info подмодуля rpm.\n"
+
+#: alteratorctlpackagesmodule.c:3584
+msgid "Wrong rpm remove arguments.\n"
+msgstr "Неправильные аргументы подкоманды rpm remove.\n"
+
+#: alteratorctlpackagesmodule.c:3591
+msgid "Unknown rpm module command.\n"
+msgstr "Неизвестная команда в подмодуле rpm.\n"
+
+#: alteratorctlpackagesmodule.c:3616
+msgid "Wrong repo arguments.\n"
+msgstr "Неправильные аргументы в подмодуле repo.\n"
+
+#: alteratorctlpackagesmodule.c:3629
+msgid "Wrong repo add files arguments.\n"
+msgstr "Неправильные аргументы подкоманды repo add files.\n"
+
+#: alteratorctlpackagesmodule.c:3648
+msgid "Wrong repo remove info arguments.\n"
+msgstr "Неправильные аргументы подкоманды repo remove info.\n"
+
+#: alteratorctlpackagesmodule.c:3655
+msgid "Unknown repo module command.\n"
+msgstr "Неизвестная команда подмодуля repo.\n"
