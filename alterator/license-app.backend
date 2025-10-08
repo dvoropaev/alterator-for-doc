@@ -1,0 +1,9 @@
+type      = "Backend"
+module    = "executor"
+name      = "license"
+interface = "application1"
+
+[methods.Info]
+execute      = "cat /usr/share/alterator/applications/license.application"
+stdout_bytes = true
+action_id    = "Info"

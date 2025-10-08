@@ -1,0 +1,8 @@
+type            = "Object"
+name            = "release_notesApp"
+display_name.en = "Release Notes"
+display_name.ru = "Информация о дистрибутиве"
+comment.en      = "Alterator interface of release notes"
+comment.ru      = "Интерфейс Альтератора информации о дистрибутиве"
+category        = "X-Alterator-System"
+override        = "org.altlinux.alterator.legacy1"

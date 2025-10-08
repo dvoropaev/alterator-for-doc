@@ -1,0 +1,7 @@
+type            = "Application"
+interface       = "org.altlinux.alterator.license1"
+name            = "alterator-application-license"
+display_name.en = "License"
+comment.en      = "Alterator interface for viewing license"
+comment.ru      = "Интерфейс Альтератора для просмотра лицензии"
+exec            = "alt-systeminfo -l"

@@ -1,0 +1,31 @@
+object f8378f4fd55b63f611589ba422d68fe5817da2ff
+type commit
+tag v0.4.5
+tagger Kirill Sharov <sheriffkorov@altlinux.org> 1745039014 +0400
+
+Release v0.4.5 - 2025-04-19
+
+Changed:
+- Size of edition wizard window.
+
+Fixed:
+- Missing names of editions if locale is not en or ru.
+
+Removed:
+- Extra text about components from edition wizard.
+-----BEGIN PGP SIGNATURE-----
+
+iQIcBAABCAAGBQJoAy6+AAoJEOUEVfhiDQkg1/IP+gJa/RVXCJxuLBr3fgfR6zpX
+fM946Bn9jR4tgDzLnT4YOt3BSg2txU70VZflHBeNdDjkYnniCoux+hppL/uQb2Us
+GSrX/xs2dOh4rMUaBX0TndSJF8oOVAB6fqEw10gUgeXztl+o12BUGmlUYoYb+/lg
+JHMbmlp9QuYXQlK3mQDVS68HTOicxBHuZz7NMlhfdIfSNp2BlcSwPi7S7loqZR9G
+bQWz1TTJIAKd8fgp8On9Ik+YbFa1ZBwD5nzA202MEfHNj3BD6J3askq9kv750mI1
+081M389v4+ZG5xj2cnozaL8alWk6C7O/Y3U5nYlLCQ3sKKUXT8tpX45GLfFb79m1
+ciBpTu9A9Z7oT2FFcFgXaesAuEu4MgWML3cmav2+XouJuB7VvE34CsvAOnvm3gXP
+RPspqqjP/H/qzz8rpgEZNHKoZWIPP3ch5OBLvw7GaTrtjF1AN+6DrHVZR37npa4j
+agMMaMygXd3CYHLJPVrvXMhlK1cSKFGiAjpRPY5WSxGiimKxa9YgqDi7Pf6JIS+8
+nnNwjGUgU6H8PqkeWlsvpEMZOyLA6YoPmdkQhsK84Sm0QA+ub9jFynkps28SEoPs
+ge5wl9sKIe1KOVSJqYMekzwSnGQpEUWMHZzGtmBpwibLIG+kTkrKqRBCDBoI+Pnj
+9vrd4IiTJFWFs71si+jL
+=pldw
+-----END PGP SIGNATURE-----

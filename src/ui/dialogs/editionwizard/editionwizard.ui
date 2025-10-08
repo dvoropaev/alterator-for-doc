@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>alt::EditionWizard</class>
+ <widget class="QWizard" name="alt::EditionWizard">
+  <property name="windowModality">
+   <enum>Qt::WindowModality::WindowModal</enum>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>859</width>
+    <height>659</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>ALT Systeminfo - Switch Edition</string>
+  </property>
+  <property name="windowIcon">
+   <iconset theme="basealt"/>
+  </property>
+  <property name="modal">
+   <bool>true</bool>
+  </property>
+  <property name="options">
+   <set>QWizard::WizardOption::NoBackButtonOnStartPage</set>
+  </property>
+  <widget class="alt::SelectionWizardPage" name="editionSelectionWizardPage"/>
+  <widget class="alt::AgreementWizardPage" name="licenseAgreementWizardPage"/>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>alt::SelectionWizardPage</class>
+   <extends>QWizardPage</extends>
+   <header>ui/dialogs/editionwizard/selectionwizardpage.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>alt::AgreementWizardPage</class>
+   <extends>QWizardPage</extends>
+   <header>ui/dialogs/editionwizard/agreementwizardpage.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
