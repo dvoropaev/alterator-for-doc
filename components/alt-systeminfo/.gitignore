@@ -1,0 +1,9 @@
+.*
+!.gitignore
+!.gear
+!.clang-format
+!.clang-tidy
+build
+*.qm
+*.tr.qrc
+*.user

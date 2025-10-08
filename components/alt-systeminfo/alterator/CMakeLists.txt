@@ -1,0 +1,19 @@
+set(ALTERATOR_DATADIR "share/alterator")
+set(INTERFACES_DIR "share/dbus-1/interfaces")
+set(ACTIONS_DIR "share/polkit-1/actions")
+
+set(OBJECTS_DIR "${ALTERATOR_DATADIR}/objects")
+set(BACKENDS_DIR "${ALTERATOR_DATADIR}/backends")
+set(APPLICATIONS_DIR "${ALTERATOR_DATADIR}/applications")
+
+file(GLOB BACKENDS "${PROJECT_SOURCE_DIR}/alterator/*.backend")
+file(GLOB APPLICATIONS "${PROJECT_SOURCE_DIR}/alterator/*.application")
+file(GLOB OBJECTS "${PROJECT_SOURCE_DIR}/alterator/*.object")
+file(GLOB INTERFACES "${PROJECT_SOURCE_DIR}/alterator/*.xml")
+file(GLOB ACTIONS "${PROJECT_SOURCE_DIR}/alterator/*.policy")
+
+install(FILES ${OBJECTS} DESTINATION ${OBJECTS_DIR})
+install(FILES ${BACKENDS} DESTINATION ${BACKENDS_DIR})
+install(FILES ${APPLICATIONS} DESTINATION ${APPLICATIONS_DIR})
+install(FILES ${INTERFACES} DESTINATION ${INTERFACES_DIR})
+install(FILES ${ACTIONS} DESTINATION ${ACTIONS_DIR})

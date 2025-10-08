@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/logo">
+        <file>assets/basealt.png</file>
+        <file>assets/altlinux.png</file>
+        <file>assets/altlinux_rectangle.png</file>
+    </qresource>
+</RCC>

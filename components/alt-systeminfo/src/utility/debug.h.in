@@ -1,0 +1,12 @@
+#ifndef DEBUG_H
+#define DEBUG_H
+
+constexpr bool DEBUG = ${DEBUG};
+
+#define IF_DEBUG(command) \
+    if constexpr (DEBUG) \
+    { \
+        command; \
+    }
+
+#endif // DEBUG_H

@@ -1,0 +1,8 @@
+type            = "Application"
+interface       = "org.altlinux.alterator.systeminfo1"
+name            = "systeminfoApp"
+display_name.en = "About System"
+display_name.ru = "О системе"
+comment.en      = "Alterator application of system information"
+comment.ru      = "Приложение Альтератора информации о системе"
+exec            = "alt-systeminfo"

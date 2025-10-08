@@ -1,0 +1,19 @@
+---
+Checks: "*,
+        -llvmlibc-*,
+        -fuchsia-default-arguments-calls,
+        -modernize-use-trailing-return-type,
+        -readability-identifier-length,
+        -misc-include-cleaner,
+        -readability-redundant-access-specifiers,
+        -llvm-include-order,
+        -llvm-header-guard,
+        -bugprone-easily-swappable-parameters,
+        -fuchsia-default-arguments-declarations,
+        -altera-unroll-loops,
+        -altera-struct-pack-align,
+        -readability-redundant-member-init
+"
+WarningsAsErrors: ''
+HeaderFilterRegex: ''
+FormatStyle:     none

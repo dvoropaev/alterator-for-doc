@@ -1,0 +1,9 @@
+type      = "Backend"
+module    = "executor"
+name      = "release_notes"
+interface = "release_notes1"
+
+[methods.Info]
+execute      = "cat /usr/share/alterator/objects/release-notes.object"
+action_id    = "Info"
+stdout_bytes = true
