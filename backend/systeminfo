@@ -1,0 +1,424 @@
+#!/bin/bash
+#
+# Copyright (C) 2024 Kirill Sharov <sheriffkorov@altlinux.org>
+#
+# This file is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+#
+
+set -o pipefail
+
+BACKENDS_DIR="/usr/lib/alterator/backends"
+
+. shell-args
+. shell-error
+. shell-getopt
+. ${BACKENDS_DIR}/systeminfo.d/notes
+
+show_help() {
+	cat <<-EOF
+		Usage: $PROG <command>
+
+		Commands:
+		  host-name                 display hostname
+		  os-name                   display OS pretty name
+		  branch                    display packages repository branch
+		  kernel                    display Linux kernel version
+		  os-license                display OS license (supports edition)
+		  release-notes             display release notes of distr
+		  final-notes               display final installer step notes of distr
+		  locale                    display current system locale
+		  list-desktop-environments display installed desktop environments
+
+		  cpu                     display CPU information
+		  arch                    display architecture information
+		  gpu                     display GPU information
+		  memory                  display RAM volume in bytes
+		  drive                   display drive volume in bytes
+		  motherboard             display motherboard information
+		  monitor                 display monitors information
+
+		Options:
+		  -h, --help              show this text and exit.
+		  -a, --all               display all properties.
+
+		Report bugs to http://bugzilla.altlinux.org/
+
+	EOF
+	exit
+}
+
+extract_from_os-release() {
+	cat /etc/os-release | grep $1 | sed 's/'"$1"'=//; s/"//g'
+}
+
+get_host_name() {
+	hostname
+}
+
+get_os_name() {
+	extract_from_os-release 'PRETTY_NAME'
+}
+
+get_branch() {
+	rpm --eval %_priority_distbranch
+}
+
+get_notes_content_helper() {
+	local entity="${1}"
+	local path="$(get_notes_file_path ${entity})"
+	if [ ! -f "${path}" ]; then
+		exit 1
+	fi
+
+	cat "${path}"
+}
+
+get_os_license() {
+	get_notes_content_helper "license"
+}
+
+get_release_notes() {
+	get_notes_content_helper "release-notes"
+}
+
+get_final_notes() {
+	get_notes_content_helper "final-notes"
+}
+
+get_arch() {
+	cat /proc/sys/kernel/arch
+}
+
+get_kernel() {
+	cat /proc/sys/kernel/osrelease
+}
+
+#
+# Code using a fragment from Neofetch.
+# https://github.com/dylanaraps/neofetch
+# Copyright (c) 2015-2021 Dylan Araps
+# MIT License
+#
+get_cpu() {
+	local arch=$(get_arch)
+	cpu_cores="logical"
+
+	# Get CPU name.
+	cpu_file="/proc/cpuinfo"
+
+	case $arch in
+	"frv" | "hppa" | "m68k" | "openrisc" | "or"* | "powerpc" | "ppc"* | "sparc"*)
+		cpu="$(awk -F':' '/^cpu\t|^CPU/ {printf $2; exit}' "$cpu_file")"
+		;;
+
+	"s390"*)
+		cpu="$(awk -F'=' '/machine/ {print $4; exit}' "$cpu_file")"
+		;;
+
+	"ia64" | "m32r")
+		cpu="$(awk -F':' '/model/ {print $2; exit}' "$cpu_file")"
+		[[ -z "$cpu" ]] && cpu="$(awk -F':' '/family/ {printf $2; exit}' "$cpu_file")"
+		;;
+
+	*)
+		cpu="$(awk -F '\\s*: | @' \
+			'/model name|Hardware|Processor|^cpu model|chip type|^cpu type/ {
+				cpu=$2; if ($1 == "Hardware") exit } END { print cpu }' "$cpu_file")"
+		;;
+	esac
+
+	speed_dir="/sys/devices/system/cpu/cpu0/cpufreq"
+
+	# Select the right temperature file.
+	for temp_dir in /sys/class/hwmon/*; do
+		[[ "$(<"${temp_dir}/name")" =~ (cpu_thermal|coretemp|fam15h_power|k10temp) ]] && {
+			temp_dirs=("$temp_dir"/temp*_input)
+			temp_dir=${temp_dirs[0]}
+			break
+		}
+	done
+
+	# Get CPU speed.
+	if [[ -d "$speed_dir" ]]; then
+		speed="$(<"${speed_dir}/bios_limit")" ||
+			speed="$(<"${speed_dir}/scaling_max_freq")" ||
+			speed="$(<"${speed_dir}/cpuinfo_max_freq")"
+		speed="$((speed / 1000))"
+	else
+		case $arch in
+		"sparc"*)
+			# SPARC systems use a different file to expose clock speed information.
+			speed_file="/sys/devices/system/cpu/cpu0/clock_tick"
+			speed="$(($(<"$speed_file") / 1000000))"
+			;;
+
+		*)
+			speed="$(awk -F ': |\\.' '/cpu MHz|^clock/ {printf $2; exit}' "$cpu_file")"
+			speed="${speed/MHz/}"
+			;;
+		esac
+	fi
+
+	# Get CPU temp.
+	[[ -f "$temp_dir" ]] && deg="$(($(<"$temp_dir") * 100 / 10000))"
+
+	# Get CPU cores.
+	case $arch in
+	"sparc"*)
+		case $cpu_cores in
+		# SPARC systems doesn't expose detailed topology information in
+		# # /proc/cpuinfo so I have to use lscpu here.
+		"logical" | "on")
+			cores="$(lscpu | awk -F ': *' '/^CPU\(s\)/ {print $2}')"
+			;;
+
+		"physical")
+			cores="$(lscpu | awk -F ': *' '/^Core\(s\) per socket/ {print $2}')"
+			sockets="$(lscpu | awk -F ': *' '/^Socket\(s\)/ {print $2}')"
+			cores="$((sockets * cores))"
+			;;
+		esac
+		;;
+
+	*)
+		case $cpu_cores in
+		"logical" | "on")
+			cores="$(grep -c "^processor" "$cpu_file")"
+			;;
+
+		"physical")
+			cores="$(awk '/^core id/&&!a[$0]++{++i} END {print i}' "$cpu_file")"
+			;;
+		esac
+		;;
+	esac
+
+	# Trim spaces from core and speed output
+	cores="${cores//[[:space:]]/}"
+
+	printf "${cpu}\n${cores}\n${speed}\n"
+}
+
+get_monitor() {
+	for dev in /sys/class/drm/*/modes; do
+		read resolution <$dev
+		if [[ $resolution != "" ]]; then
+			echo $dev $resolution | sed 's/\/sys\/class\/drm\/card.-//; s/\/modes//'
+		fi
+	done
+}
+
+get_memory() {
+	local file='/proc/meminfo'
+	local volume=$(grep 'MemTotal' $file --max-count=1 |
+		awk '{ print $2 }')
+
+	echo $(($volume * 1024))
+}
+
+get_gpu() {
+	lspci |
+		awk '/VGA/ {
+			     split($0, output_array_vga_info, ":");
+			     print output_array_vga_info[3];
+         }' |
+		sed 's/^ //'
+}
+
+get_motherboard() {
+	cat /sys/devices/virtual/dmi/id/board_{vendor,name,version} |
+		sed 's/^ //'
+}
+
+get_drive() {
+	local drivefile='/proc/partitions'
+	local volumes=$(cat $drivefile | awk '!/ram/{ if (match($2, "^0")) print $3 }')
+
+	local -i sum=0
+	for volume in ${volumes}; do
+		sum+=$((${volume} * 1024))
+	done
+
+	echo ${sum}
+}
+
+get_locale() {
+	cat /etc/locale.conf |
+		sed 's/\=/ /' |
+		awk '{ print $2 }'
+}
+
+find_kde_inner() {
+	local file="${1}"
+	local major_version=$(grep "Version" ${file} |
+		sed 's/\=/ /' | awk '{ print $2 }' |
+		sed 's/\./ /g' | awk '{ print $1 }')
+
+	echo "KDE${major_version}"
+}
+
+find_kde() {
+	for file in /usr/share/{x,wayland-}sessions/plasma*.desktop; do
+		if [[ -f ${file} ]]; then
+			find_kde_inner "${file}"
+			return 0
+		fi
+	done
+}
+
+find_gnome() {
+	for file in /usr/share/{x,wayland-}sessions/gnome*.desktop; do
+		if [[ -f ${file} ]]; then
+			echo "GNOME"
+			return 0
+		fi
+	done
+}
+
+find_mate() {
+	for file in /usr/share/{x,wayland-}sessions/mate*.desktop; do
+		if [[ -f ${file} ]]; then
+			echo "MATE"
+			return 0
+		fi
+	done
+}
+
+find_cinnamon() {
+	for file in /usr/share/{x,wayland-}sessions/cinnamon*.desktop; do
+		if [[ -f ${file} ]]; then
+			echo "CINNAMON"
+			return 0
+		fi
+	done
+}
+
+find_xfce() {
+	for file in /usr/share/{x,wayland-}sessions/xfce*.desktop; do
+		if [[ -f ${file} ]]; then
+			echo "XFCE"
+			return 0
+		fi
+	done
+}
+
+list_desktop_environments() {
+	local list=$(
+		cat <<-EOF
+			$(find_cinnamon)
+			$(find_gnome)
+			$(find_kde)
+			$(find_mate)
+			$(find_xfce)
+		EOF
+	)
+
+	echo "${list}" | sed '/^$/d'
+}
+
+get_all() {
+	cat <<-EOF
+		HOSTNAME="$(get_host_name | head -c -1 | tr '\n' ',')"
+		OS_NAME="$(get_os_name | head -c -1 | tr '\n' ',')"
+		BRANCH="$(get_branch | head -c -1 | tr '\n' ',')"
+		KERNEL="$(get_kernel | head -c -1 | tr '\n' ',')"
+		CPU="$(get_cpu | head -c -1 | tr '\n' ',')"
+		ARCH="$(get_arch | head -c -1 | tr '\n' ',')"
+		GPU="$(get_gpu | head -c -1 | tr '\n' ',')"
+		MEMORY="$(get_memory | head -c -1 | tr '\n' ',')"
+		DRIVE="$(get_drive | head -c -1 | tr '\n' ',')"
+		MOTHERBOARD="$(get_motherboard | head -c -1 | tr '\n' ',')"
+		MONITOR="$(get_monitor | head -c -1 | tr '\n' ',')"
+	EOF
+}
+
+GETOPT_ALLOW_UNKNOWN=1
+TEMP=$(getopt -n $PROG -o $getopt_common_opts -l $getopt_common_longopts -- "$@") ||
+	show_usage
+eval set -- "$TEMP"
+
+while :; do
+	case "$1" in
+	--)
+		shift
+		break
+		;;
+	*)
+		parse_common_option "$1"
+		;;
+	esac
+	shift
+done
+
+[ "$#" -gt 0 ] ||
+	show_usage
+
+case "$1" in
+--all)
+	get_all
+	;;
+host-name)
+	get_host_name
+	;;
+os-name)
+	get_os_name
+	;;
+os-license)
+	get_os_license
+	;;
+release-notes)
+	get_release_notes
+	;;
+final-notes)
+	get_final_notes
+	;;
+arch)
+	get_arch
+	;;
+branch)
+	get_branch
+	;;
+kernel)
+	get_kernel
+	;;
+
+cpu)
+	get_cpu
+	;;
+gpu)
+	get_gpu
+	;;
+memory)
+	get_memory
+	;;
+drive)
+	get_drive
+	;;
+monitor)
+	get_monitor
+	;;
+motherboard)
+	get_motherboard
+	;;
+locale)
+	get_locale
+	;;
+list-desktop-environments)
+	list_desktop_environments
+	;;
+*)
+	show_help
+	;;
+esac

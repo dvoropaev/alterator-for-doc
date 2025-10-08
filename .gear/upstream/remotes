@@ -1,0 +1,3 @@
+[remote "upstream"]
+	url = ssh://forgejo@altlinux.space/alterator/alterator-backend-systeminfo.git
+	fetch = +refs/heads/*:refs/remotes/upstream/*

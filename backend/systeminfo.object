@@ -1,0 +1,7 @@
+type            = "Object"
+name            = "systeminfoApplicationInterface"
+display_name.en = "About System"
+display_name.ru = "О системе"
+comment.en      = "Alterator interface of system information"
+comment.ru      = "Интерфейс Альтератора информации о системе"
+category        = "X-Alterator-System"

@@ -1,0 +1,71 @@
+#!/bin/sh
+#
+# Copyright (C) 2025 Kirill Sharov <sheriffkorov@altlinux.org>
+#
+# This file is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+#
+
+get_translated_notes_legacy_file_path() {
+	local entry="${1}"
+
+	local LEGACY_DIRS="
+    /usr/share/alt-notes
+    /usr/share/alt-license
+    /var/lib/install3/licenses
+	"
+
+	local language="${LC_ALL%%_*}"
+	for dir in $LEGACY_DIRS; do
+		local path="${dir}/${entry}.${language}.html"
+		if [ -f "${path}" ]; then
+			echo "${path}"
+			return 0
+		fi
+		local common_path="${dir}/${entry}.all.html"
+		if [ -f "${common_path}" ]; then
+			echo "${common_path}"
+			return 0
+		fi
+	done
+
+	return 1
+}
+
+get_notes_file_path() {
+	local entity="${1}"
+	# Check edition notes (soft requirement on alterator-backend-edition-utils)
+	local exec_file="/usr/lib/alterator/backends/edition"
+	if [[ -f ${exec_file} ]]; then
+		${exec_file} ${entity} --path 2>/dev/null
+		if [[ $? -eq 0 ]]; then
+			exit 0
+		fi
+	fi
+
+	# Fallback to common
+	get_translated_notes_legacy_file_path "${entity}"
+}
+
+get_license() {
+	get_notes_file_path "license"
+}
+
+get_release_notes() {
+	get_notes_file_path "release-notes"
+}
+
+get_final_notes() {
+	get_notes_file_path "final-notes"
+}
