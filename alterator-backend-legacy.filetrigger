@@ -1,0 +1,5 @@
+#!/bin/sh -e
+
+if grep -qs '^/usr/share/alterator/applications'; then
+    /usr/lib/alterator-backend-legacy/alterator-generate-legacy-backends
+fi

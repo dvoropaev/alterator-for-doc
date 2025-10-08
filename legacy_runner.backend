@@ -1,0 +1,11 @@
+type = "Backend"
+module = "executor"
+name = "legacy_runner"
+interface = "application1"
+action_id = "org.altlinux.alterator.application1"
+
+[methods.Info]
+execute = "cat /usr/share/alterator/applications/legacy_runner.application"
+stdout_bytes = true
+action_id = "Info"
+

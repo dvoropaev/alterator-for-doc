@@ -1,0 +1,8 @@
+type = "Application"
+name = "alterator-application-legacy"
+display_name.en = "Alterator legacy runner"
+display_name.ru = "Запуск устаревших объектов Альтератора"
+comment.en = "Application for running legacy alterator objects via D-Bus with XServer DISPLAY and AUTHORITY environment"
+comment.ru = "Приложение запускающее объекты альтератора через D-Bus в окружении DISPLAY and AUTHORITY для XServer"
+exec = "/usr/lib/alterator-application-legacy/alterator-application-legacy %o"
+interface = "org.altlinux.alterator.legacy1"
