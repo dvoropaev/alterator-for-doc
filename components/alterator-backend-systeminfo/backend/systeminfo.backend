@@ -1,0 +1,79 @@
+type      = "Backend"
+module    = "executor"
+name      = "systeminfo"
+interface = "systeminfo1"
+
+[methods.Info]
+execute        = "cat /usr/share/alterator/objects/systeminfo.object"
+stdout_bytes   = true
+
+[methods.GetAll]
+execute        = "/usr/lib/alterator/backends/systeminfo --all"
+stdout_bytes   = true
+
+[methods.GetHostName]
+execute        = "/usr/lib/alterator/backends/systeminfo host-name"
+stdout_strings = true
+
+[methods.GetOperationSystemName]
+execute        = "/usr/lib/alterator/backends/systeminfo os-name"
+stdout_strings = true
+
+[methods.GetLicense]
+execute             = "/usr/lib/alterator/backends/systeminfo os-license"
+stdout_bytes        = true
+environment.LC_ALL  = {}
+
+[methods.GetReleaseNotes]
+execute             = "/usr/lib/alterator/backends/systeminfo release-notes"
+stdout_bytes        = true
+environment.LC_ALL  = {}
+
+[methods.GetFinalNotes]
+execute             = "/usr/lib/alterator/backends/systeminfo final-notes"
+stdout_bytes        = true
+environment.LC_ALL  = {}
+
+[methods.GetArch]
+execute        = "/usr/lib/alterator/backends/systeminfo arch"
+stdout_strings = true
+
+[methods.GetBranch]
+execute        = "/usr/lib/alterator/backends/systeminfo branch"
+stdout_strings = true
+
+[methods.GetKernel]
+execute        = "/usr/lib/alterator/backends/systeminfo kernel"
+stdout_strings = true
+
+[methods.GetCPU]
+execute        = "/usr/lib/alterator/backends/systeminfo cpu"
+stdout_strings = true
+
+[methods.GetGPU]
+execute        = "/usr/lib/alterator/backends/systeminfo gpu"
+stdout_strings = true
+
+[methods.GetMemory]
+execute        = "/usr/lib/alterator/backends/systeminfo memory"
+stdout_strings = true
+
+[methods.GetDrive]
+execute        = "/usr/lib/alterator/backends/systeminfo drive"
+stdout_strings = true
+
+[methods.GetMonitor]
+execute        = "/usr/lib/alterator/backends/systeminfo monitor"
+stdout_strings = true
+
+[methods.GetMotherboard]
+execute        = "/usr/lib/alterator/backends/systeminfo motherboard"
+stdout_strings = true
+
+[methods.GetLocale]
+execute        = "/usr/lib/alterator/backends/systeminfo locale"
+stdout_strings = true
+
+[methods.ListDesktopEnvironments]
+execute        = "/usr/lib/alterator/backends/systeminfo list-desktop-environments"
+stdout_strings = true

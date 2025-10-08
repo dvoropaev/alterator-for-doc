@@ -1,0 +1,75 @@
+<!DOCTYPE node PUBLIC
+  "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+  "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node name="/" xmlns:doc="http://www.freedesktop.org/dbus/1.0/doc.dtd">
+  <interface name="org.altlinux.alterator.systeminfo1">
+    <method name="GetAll">
+      <arg type="ay" name="stdout_bytes" direction="out"></arg>
+      <arg type="i" name="response" direction="out"></arg>
+    </method>
+    <method name="GetCPU">
+      <arg type="as" name="stdout_strings" direction="out"></arg>
+      <arg type="i" name="response" direction="out"></arg>
+    </method>
+    <method name="GetHostName">
+      <arg type="as" name="stdout_strings" direction="out"></arg>
+      <arg type="i" name="response" direction="out"></arg>
+    </method>
+    <method name="GetDrive">
+      <arg type="as" name="stdout_strings" direction="out"></arg>
+      <arg type="i" name="response" direction="out"></arg>
+    </method>
+    <method name="GetGPU">
+      <arg type="as" name="stdout_strings" direction="out"></arg>
+      <arg type="i" name="response" direction="out"></arg>
+    </method>
+    <method name="GetMemory">
+      <arg type="as" name="stdout_strings" direction="out"></arg>
+      <arg type="i" name="response" direction="out"></arg>
+    </method>
+    <method name="GetBranch">
+      <arg type="as" name="stdout_strings" direction="out"></arg>
+      <arg type="i" name="response" direction="out"></arg>
+    </method>
+    <method name="GetKernel">
+      <arg type="as" name="stdout_strings" direction="out"></arg>
+      <arg type="i" name="response" direction="out"></arg>
+    </method>
+    <method name="GetOperationSystemName">
+      <arg type="as" name="stdout_strings" direction="out"></arg>
+      <arg type="i" name="response" direction="out"></arg>
+    </method>
+    <method name="GetLicense">
+      <arg type="ay" name="stdout_bytes" direction="out"></arg>
+      <arg type="i" name="response" direction="out"></arg>
+    </method>
+    <method name="GetReleaseNotes">
+      <arg type="ay" name="stdout_bytes" direction="out"></arg>
+      <arg type="i" name="response" direction="out"></arg>
+    </method>
+    <method name="GetFinalNotes">
+      <arg type="ay" name="stdout_bytes" direction="out"></arg>
+      <arg type="i" name="response" direction="out"></arg>
+    </method>
+    <method name="GetArch">
+      <arg type="as" name="stdout_strings" direction="out"></arg>
+      <arg type="i" name="response" direction="out"></arg>
+    </method>
+    <method name="GetMonitor">
+      <arg type="as" name="stdout_strings" direction="out"></arg>
+      <arg type="i" name="response" direction="out"></arg>
+    </method>
+    <method name="GetMotherboard">
+      <arg type="as" name="stdout_strings" direction="out"></arg>
+      <arg type="i" name="response" direction="out"></arg>
+    </method>
+    <method name="GetLocale">
+      <arg type="as" name="stdout_strings" direction="out"></arg>
+      <arg type="i" name="response" direction="out"></arg>
+    </method>
+    <method name="ListDesktopEnvironments">
+      <arg type="as" name="stdout_strings" direction="out"></arg>
+      <arg type="i" name="response" direction="out"></arg>
+    </method>
+  </interface>
+</node>
