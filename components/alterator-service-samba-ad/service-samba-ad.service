@@ -1,0 +1,507 @@
+type = "Service"
+name = "samba_ad_service"
+category = "X-Alterator-Servers"
+display_name.en = "Samba AD"
+display_name.ru = "Samba AD"
+comment.en = "Samba active directory"
+comment.ru = "Samba active directory"
+
+[diag_tools.diag_domain_controller]
+bus = "system"
+path = "/org/altlinux/alterator/diag_domain_controller"
+
+[parameters.netBiosName]
+display_name.en = "NetBios name"
+display_name.ru = "NetBios имя"
+comment.en = "NetBios domain name, e.g. EXAMPLE"
+comment.ru = "NetBios имя домена, например EXAMPLE"
+type = "string"
+context = [
+    "deploy",
+    "backup",
+    "restore",
+    "diag",
+    "status"
+]
+required = [
+    "deploy",
+    "restore"
+]
+
+[parameters.realm]
+display_name.en = "Realm"
+display_name.ru = "Realm"
+comment.en = "DNS domain name, e.g. EXAMPLE.COM"
+comment.ru = "DNS имя домена, например EXAMPLE.COM"
+type = "string"
+context = [
+    "deploy",
+    "backup",
+    "restore",
+    "diag",
+    "status"
+]
+required = [
+    "deploy",
+    "restore"
+]
+
+[parameters.adminLogin]
+display_name.en = "Admin login"
+display_name.ru = "Логин администратора"
+comment.en = "Domain admin login name. Required to join DC to existing domain"
+comment.ru = "Логин администратора домена. Необходим для присоединения DC к существующему домену и понижению контроллера домена"
+type = "string"
+context = [
+    "deploy",
+    "undeploy"
+]
+required = [
+    "undeploy"
+]
+
+[parameters.adminPassword]
+display_name.en = "Admin password"
+display_name.ru = "Пароль администратора"
+type = "string"
+password = true
+context = [
+    "deploy",
+    "undeploy"
+]
+required = [
+    "deploy",
+    "undeploy"
+]
+
+[parameters.backendStore]
+display_name.en = "Backend store"
+display_name.ru = "Тип базы"
+comment.en = "tdb suitable for small domains; mdb for large domains"
+comment.ru = "tdb подходит для небольших доменов, mdb для крупных доменов"
+type = "enum"
+default = "tdb"
+context = [
+    "deploy",
+    "status"
+]
+required = [
+    "deploy",
+    "restore"
+]
+[parameters.backendStore.values.tdb]
+display_name.en = "tdb"
+display_name.ru = "tdb"
+[parameters.backendStore.values.mdb]
+display_name.en = "mdb"
+display_name.ru = "mdb"
+
+[parameters.backendStoreSize]
+display_name.en = "mdbv store size"
+display_name.ru = "Размер базы mdb"
+comment.en = "Size of mdb store for Samba AD in gigabytes"
+comment.ru = "Размер базы mdb для Samba AD в гигабайтах"
+type = "integer"
+default = 4
+context = [
+    "deploy",
+    "status"
+]
+required = [
+    "deploy"
+]
+
+[parameters.useRfc2307]
+display_name.en = "Use RFC 2307"
+display_name.ru = "Использовать RFC 2307"
+comment.en = "RFC 2307 attributes allows the storage of Unix user and group information in an LDAP directory"
+comment.ru = "RFC 2307 атрибуты позволяют хранить информацию о пользователях и группах Unix в каталоге LDAP"
+type = "boolean"
+context = [
+    "deploy",
+    "status"
+]
+required = [
+    "deploy"
+]
+
+[parameters.functionalLevel]
+display_name.en = "Functional level"
+display_name.ru = "Функциональный уровень"
+comment.en = "Domain functional level"
+comment.ru = "Функциональный уровень домена"
+type = "enum"
+default = "2008_R2"
+context = [
+    "deploy",
+    "status"
+]
+required = [
+    "deploy"
+]
+[parameters.functionalLevel.values.2008_R2]
+display_name.en = "2008 R2"
+display_name.ru = "2008 R2"
+[parameters.functionalLevel.values.2016]
+display_name.en = "2016"
+display_name.ru = "2016"
+
+[parameters.siteName]
+display_name.en = "Site name"
+display_name.ru = "Имя сайта"
+comment.en = "Samba AD site name, e.g. Default-First-Site-Name"
+comment.ru = "Имя сайта samba AD, например Default-First-Site-Name"
+type = "string"
+default = "Default-First-Site-Name"
+context = [
+    "deploy",
+    "status"
+]
+
+[parameters.mode]
+display_name.en = "Mode"
+display_name.ru = "Режим"
+comment.en = "Join to existing domain or create new domain"
+comment.ru = "Присоединиться к существующему домену или создать новый домен"
+type = "enum"
+default = "join"
+context = [
+    "deploy"
+]
+required = [
+    "deploy"
+]
+[parameters.mode.values.create]
+display_name.en = "Create new domain"
+display_name.ru = "Создать новый домен"
+[parameters.mode.values.join]
+display_name.en = "Join to existing domain"
+display_name.ru = "Присоединиться к существующему домену"
+
+[parameters.ipAddressDc]
+display_name.en = "IPv4 address of domain controller"
+display_name.ru = "IPv4 адрес контроллера домена"
+comment.en = "IPv4 address of Domain controller in existing domain"
+comment.ru = "IPv4 адрес контроллера домена в существующем домене"
+type = "string"
+context = [
+    "deploy",
+    "restore"
+]
+
+[parameters.bindSettings]
+display_name.en = "BIND settings"
+display_name.ru = "Настройки BIND"
+type = "object"
+context = [
+    "deploy",
+    "status",
+    "diag",
+    "configure"
+]
+constant = true
+[parameters.bindSettings.properties.allowQuery]
+display_name.en = "Allowed subnets"
+display_name.ru = " Разрешённые подсети"
+comment.en = "List of allowed subnets for DNS queries"
+comment.ru = "Список разрешённых подсетей для DNS запросов"
+type = "array"
+array_type = "string"
+array_min = 1
+required = true
+pattern = "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(?:/(?:[1-2]?[0-9]|3[0-2]))?$"
+[parameters.bindSettings.properties.allowRecursion]
+display_name.en = "Allowed subnets for recursion queries"
+display_name.ru = " Разрешённые Подсети для рекурсивных запросов"
+comment.en = "List of allowed subnets for DNS recursion queries"
+comment.ru = "Список разрешённых подсетей для DNS рекурсивных запросов"
+type = "array"
+array_type = "string"
+array_min = 1
+required = true
+pattern = "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(?:/(?:[1-2]?[0-9]|3[0-2]))?$"
+[parameters.bindSettings.properties.dnssecValidation]
+display_name.en = "DNSSEC"
+display_name.ru = "DNSSEC"
+comment.en = "Enable DNSSEC validation"
+comment.ru = "Включить проверку DNSSEC"
+type = "boolean"
+required = true
+default = false
+[parameters.bindSettings.properties.listenOn]
+display_name.en = "Listen on IPv4"
+display_name.ru = "Интерфейсы для прослушивания IPv4"
+comment.en = "List of IPv4 addresses to listen on"
+comment.ru = "Список IPv4 адресов для прослушивания"
+type = "array"
+array_type = "string"
+array_min = 1
+required = true
+pattern = "^(any|(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))$"
+default = [ "any" ]
+[parameters.bindSettings.properties.listenOnV6]
+display_name.en = "Listen on IPv6"
+display_name.ru = "Интерфейсы для прослушивания IPv6"
+comment.en = "List of IPv6 addresses to listen on"
+comment.ru = "Список IPv6 адресов для прослушивания"
+type = "array"
+array_type = "string"
+array_min = 1
+required = true
+pattern = "^(none|(?:[A-Fa-f0-9]{1,4}:){7}[A-Fa-f0-9]{1,4})$"
+default = [ "none" ]
+
+[parameters.dnsSettings]
+display_name.en = "DNS settings"
+display_name.ru = "Настройки DNS"
+comment.en = "DNS settings for Samba AD"
+comment.ru = "Настройки DNS для Samba AD"
+type = "object"
+context = [
+    "deploy",
+    "status",
+    "configure"
+]
+required = [
+    "deploy"
+]
+[parameters.dnsSettings.properties.forwarders]
+display_name.en = "Forwarders"
+display_name.ru = "Серверы пересылки"
+comment.en = "List of DNS servers to forward queries"
+comment.ru = "Список DNS серверов для пересылки запросов"
+type = "array"
+array_type = "string"
+array_min = 1
+pattern = "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+required = true
+[parameters.dnsSettings.properties.dnsBackend]
+display_name.en = "DNS backend"
+display_name.ru = "Бэкенд DNS"
+comment.en = "DNS backend for Samba AD"
+comment.ru = "Бэкенд DNS для Samba AD"
+type = "enum"
+required = true
+default = "sambaInternal"
+[parameters.dnsSettings.properties.dnsBackend.values.BIND9_DLZ]
+display_name.en = "BIND9"
+display_name.ru = "BIND9"
+[parameters.dnsSettings.properties.dnsBackend.values.SAMBA_INTERNAL]
+display_name.en = "Samba internal"
+display_name.ru = "Встроенный Samba"
+[parameters.dnsSettings.properties.bindSettings]
+display_name.en = "BIND settings"
+display_name.ru = "Настройки BIND"
+comment.en = "BIND settings for Samba AD"
+comment.ru = "Настройки BIND для Samba AD"
+type = "object"
+prototype = "bindSettings"
+
+[parameters.resetToDefaults]
+display_name.en = "Reset to defaults before deploy"
+display_name.ru = "Сбросить настройки к значениям до развёртывания"
+comment.en = "Reset all configuration files to default values. WILL DELETE DOMAIN COMPLETELY"
+comment.ru = "Вернёт все конфигурационные файлы к значениям по умолчанию. ПОЛНОСТЬЮ УДАЛИТ ВСЮ ИНФОРМАЦИЮ О ДОМЕНЕ С ДАННОГО СЕРВЕРА"
+type = "boolean"
+default = false
+context = [
+    "undeploy"
+]
+required = [
+    "undeploy"
+]
+
+[parameters.saveCurrentConfig]
+display_name.en = "Save current configuration"
+display_name.ru = "Сохранить текущую конфигурацию"
+comment.en = "Save configuration files before undeploy domain"
+comment.ru = "Сохранить конфигурационные файлы перед удалением домена"
+type = "boolean"
+context = [
+    "undeploy"
+]
+
+[parameters.dcToRemove]
+display_name.en = "DC to remove"
+display_name.ru = "DC для удаления"
+comment.en = "Name of dead DC to remove from domain"
+comment.ru = "Имя неактивного контроллера домена, который нужно удалить из домена"
+type = "string"
+context = [
+    "undeploy"
+]
+
+[parameters.removeOtherDC]
+display_name.en = "Remove other dead DC"
+display_name.ru = "Удалить неактивный Контроллер домена"
+type = "boolean"
+default = false
+context = [
+    "undeploy"
+]
+required = [
+    "undeploy"
+]
+
+[parameters.serverRole]
+display_name.en = "Server role"
+display_name.ru = "Роль сервера"
+comment.en = "Role of Samba AD server"
+comment.ru = "Роль сервера Samba AD"
+type = "enum"
+default = "dc"
+context = [
+    "deploy",
+    "status",
+]
+required = [
+    "deploy"
+]
+[parameters.serverRole.values.dc]
+display_name.en = "Domain controller"
+display_name.ru = "Контроллер домена"
+[parameters.serverRole.values.rodc]
+display_name.en = "Read-only domain controller"
+display_name.ru = "Контроллер домена только для чтения"
+
+[resources.smbConf]
+display_name.en = "Samba configuration file"
+display_name.ru = "Конфигурационный файл Samba"
+type = "file"
+path.value = "/etc/samba/smb.conf"
+
+[resources.krb5Conf]
+display_name.en = "Kerberos configuration file"
+display_name.ru = "Конфигурационный файл Kerberos"
+type = "file"
+path.value  = "/etc/krb5.conf"
+
+[resources.libSamba]
+display_name.en = "lib samba"
+display_name.ru = "lib samba"
+type = "directory"
+path.value  = "/usr/lib/samba"
+
+[resources.cacheSamba]
+display_name.en = "Samba cache"
+display_name.ru = "Кэш samba"
+type = "directory"
+path.value = "/var/cache/samba"
+
+[resources.sysVolSamba]
+display_name.en = "Sysvol"
+display_name.ru = "Sysvol"
+type = "directory"
+path.value = "/var/lib/samba/sysvol"
+
+[resources.Samba]
+display_name.en = "Samba systemd service"
+display_name.ru = "Сервис Samba"
+type = "systemd_unit"
+unit_name.value = "samba.service"
+
+[resources.bind9]
+display_name.en = "Bind9 systemd service"
+display_name.ru = "Сервис bind9"
+type = "systemd_unit"
+unit_name.value = "bind.service"
+
+[resources.bind9Conf]
+display_name.en = "Bind9 configuration file"
+display_name.ru = "Конфигурационный файл bind9"
+type = "file"
+path.value = "/etc/bind/named.conf"
+
+[resources.bind9folder]
+display_name.en = "Bind9 folder"
+display_name.ru = "Директория bind9"
+type = "directory"
+path.value = "/etc/bind"
+
+[resources.dns]
+display_name.en = "DNS"
+display_name.ru = "DNS"
+type = "port"
+inet_service.value = 53
+tcp = true
+udp = true
+
+[resources.kerberos]
+display_name.en = "Kerberos"
+display_name.ru = "Kerberos"
+type = "port"
+inet_service.value  = 88
+tcp = true
+udp = true
+
+[resources.ldap]
+display_name.en = "LDAP"
+display_name.ru = "LDAP"
+type = "port"
+inet_service.value  = 389
+tcp = true
+udp = true
+
+[resources.ldapS]
+display_name.en = "LDAPs"
+display_name.ru = "LDAPs"
+type = "port"
+inet_service.value  = 636
+tcp = true
+udp = true
+
+[resources.dcerpc]
+display_name.en = "DCE/RPC"
+display_name.ru = "DCE/RPC"
+type = "port"
+inet_service.value = 135
+tcp = true
+udp = true
+
+[resources.kPasswd]
+display_name.en = "Kerberos kpasswd"
+display_name.ru = "Kerberos kpasswd"
+type = "port"
+inet_service.value = 464
+tcp = true
+udp = true
+
+[resources.ntp]
+display_name.en = "SSH"
+display_name.ru = "SSH"
+type = "port"
+inet_service.value = 123
+tcp = false
+udp = true
+
+[resources.NetBiosName]
+display_name.en = "NetBios Name Service"
+display_name.ru = "NetBios Service Name"
+type = "port"
+inet_service.value = 137
+tcp = false
+udp = true
+
+[resources.NetBiosDatagram]
+display_name.en = "NetBios Datagram Service"
+display_name.ru = "NetBios Datagram Service"
+type = "port"
+inet_service.value = 138
+tcp = false
+udp = true
+
+[resources.NetBiosSession]
+display_name.en = "NetBios Session Service"
+display_name.ru = "NetBios Session Service"
+type = "port"
+inet_service.value  = 139
+tcp = true
+udp = false
+
+[resources.smb]
+display_name.en = "SMB over tcp"
+display_name.ru = "SMB over tcp"
+type = "port"
+inet_service.value = 445
+tcp = true
+udp = false

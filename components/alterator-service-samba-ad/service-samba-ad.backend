@@ -1,0 +1,60 @@
+type = "Backend"
+module = "executor"
+interface = "service1"
+name = "service_samba_ad"
+
+[methods.Info]
+execute = "cat /usr/share/alterator/services/service-samba-ad.service"
+action_id = "Info"
+stdout_bytes = true
+
+[methods.Deploy]
+execute = "service-samba-ad -p"
+action_id = "Deploy"
+stdin_string = true
+stdout_signal_name = "service_stdout_signal"
+stderr_signal_name = "service_stderr_signal"
+timeout = 600
+
+[methods.Undeploy]
+execute = "service-samba-ad -d"
+action_id = "Undeploy"
+stdin_string = true
+stdout_signal_name = "service_stdout_signal"
+stderr_signal_name = "service_stderr_signal"
+timeout = 600
+
+[methods.Configure]
+execute = "service-samba-ad -c"
+action_id = "Configure"
+stdin_string = true
+stdout_signal_name = "service_stdout_signal"
+stderr_signal_name = "service_stderr_signal"
+timeout = 600
+
+[methods.Start]
+execute = "service-samba-ad --start"
+action_id = "Start"
+timeout = 600
+
+[methods.Stop]
+execute = "service-samba-ad --stop"
+action_id = "Stop"
+timeout = 600
+
+[methods.Backup]
+execute = "service-samba-ad -b"
+action_id = "Backup"
+stdin_string = true
+timeout = 600
+
+[methods.Restore]
+execute = "service-samba-ad -r"
+action_id = "Restore"
+stdin_string = true
+timeout = 600
+
+[methods.Status]
+execute = "service-samba-ad -s"
+action_id = "Status"
+stdout_bytes = true

@@ -1,0 +1,185 @@
+#!/usr/bin/env bash
+# Samba active directory provision
+# Tool for provision samba active directory
+#
+# Copyright (C) 2024 Evgenii Sozonov <arzdez@altlinux.org>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# shellcheck disable=SC2034
+# shellcheck disable=SC1091
+# shellcheck disable=SC2086
+# shellcheck disable=SC2317
+# shellcheck disable=SC3037
+
+set -euo pipefail
+
+BIND_CONF_DIR="/etc/bind"
+SAMBA_DNS_CONF_DIR="/var/lib/samba/bind-dns"
+NAMED_CONF_OPTIONS="$BIND_CONF_DIR/options.conf"
+NAMED_CONF=$BIND_CONF_DIR"/named.conf"
+KEYTAB_FILE="$SAMBA_DNS_CONF_DIR/dns.keytab"
+
+setup_kerberos(){
+    grep -q KRB5RCACHETYPE /etc/sysconfig/bind || echo 'KRB5RCACHETYPE="none"' >> /etc/sysconfig/bind
+    control krb5-conf-ccache default
+}
+
+disable_bind_chroot(){
+    control bind-chroot disabled
+}
+
+add_tkey_gssapi_keytab(){
+    if ! grep -q "tkey-gssapi-keytab" "$NAMED_CONF_OPTIONS"; then
+        sed -i '/options {/a\    tkey-gssapi-keytab "'$KEYTAB_FILE'";' "$NAMED_CONF_OPTIONS"
+        sed -i '/options {/a\    minimal-responses yes;' "$NAMED_CONF_OPTIONS"
+    fi
+}
+
+add_samba_dns_conf(){
+    local include_line="include \"$SAMBA_DNS_CONF_DIR/named.conf\";"
+    if ! grep -Fxq "$include_line" "$NAMED_CONF"; then
+        echo "$include_line" >> "$NAMED_CONF"
+    fi
+}
+
+bind_ldb_modules_disable(){
+    echo "LDB_MODULES_DISABLE_DEEPBIND=1" >> /etc/sysconfig/bind
+}
+
+add_localnets() {
+    for conf_key in "allow-query" "allow-recursion"; do
+        if grep -q "$conf_key" "$NAMED_CONF_OPTIONS"; then
+            if ! grep -q "$conf_key\s*{[^}]*localnets" "$NAMED_CONF_OPTIONS"; then
+                sed -i "/$conf_key\s*{[^}]*}/{
+                    s/\($conf_key\s*{[^\}]*\)}/\1 localnets; }/
+                }" "$NAMED_CONF_OPTIONS"
+            fi
+        fi
+    done
+}
+
+add_logging() {
+    if ! grep -q "logging {" "$NAMED_CONF_OPTIONS"; then
+        sed -i '/options {/a\
+    logging {\
+    };' "$NAMED_CONF_OPTIONS"
+    fi
+
+    if ! grep -q "category lame-servers" "$NAMED_CONF_OPTIONS"; then
+        sed -i '/logging {/a\    category lame-servers { null; };' "$NAMED_CONF_OPTIONS"
+    fi
+}
+
+update_named_conf_options() {
+    local params_json="$1"
+    local forwarders="$2"
+    local keys
+    keys=$(echo "$params_json" | jq -r 'keys[]')
+
+    for key in $keys; do
+        local value
+        case "$key" in
+            allowQuery|allowRecursion|listenOn|listenOnV6)
+                value=$(echo "$params_json" | jq -r --arg k "$key" '.[$k] | join("; ")')
+                ;;
+            *)
+                value=$(echo "$params_json" | jq -r --arg k "$key" '.[$k]')
+                ;;
+        esac
+
+        case "$key" in
+            allowQuery)        conf_key="allow-query" ;;
+            allowRecursion)    conf_key="allow-recursion" ;;
+            dnssecValidation)  conf_key="dnssec-validation" ;;
+            listenOn)          conf_key="listen-on" ;;
+            listenOnV6)        conf_key="listen-on-v6" ;;
+            *)                 conf_key="$key" ;;
+        esac
+
+        if grep -q "$conf_key" "$NAMED_CONF_OPTIONS"; then
+            if grep -q "$conf_key\s*{[^}]*}" "$NAMED_CONF_OPTIONS"; then
+                sed -i "\|$conf_key\s*{[^}]*}|c\    $conf_key { $value; };" "$NAMED_CONF_OPTIONS"
+            else
+                sed -i "\|$conf_key|c\    $conf_key $value;" "$NAMED_CONF_OPTIONS"
+            fi
+        else
+            if [ "$conf_key" = "allow-query" ] || [ "$conf_key" = "allow-recursion" ] || [ "$conf_key" = "forwarders" ]; then
+                sed -i "/options {/a\    $conf_key { $value; };" "$NAMED_CONF_OPTIONS"
+            else
+                sed -i "/options {/a\    $conf_key $value;" "$NAMED_CONF_OPTIONS"
+            fi
+        fi
+    done
+
+    if [ -n "$forwarders" ]; then
+        if grep -q "forwarders" "$NAMED_CONF_OPTIONS"; then
+            sed -i "s/forwarders\s*{[^}]*}/forwarders { $forwarders; }/" "$NAMED_CONF_OPTIONS"
+        else
+            sed -i "/options {/a\    forwarders { $forwarders; };" "$NAMED_CONF_OPTIONS"
+        fi
+    fi
+
+    add_localnets
+    add_logging
+
+}
+
+remove_commented_lines() {
+    sed -i '/^\s*#/d;/^\s*\/\//d;/^\s*\/\*/,/^\s*\*\//d;/^\s*$/d' "$NAMED_CONF_OPTIONS"
+    return 0
+}
+
+backup_bind_config() {
+    local config_file="$1"
+    local type="$2"
+    local retval=0
+
+    mkdir -p /var/lib/alterator/service/samba-ad/config-backup/bind
+    local backup_file=
+
+    backup_file="/var/lib/alterator/service/samba-ad/config-backup/bind/$(basename $config_file).$type"
+    if [ -f "$backup_file" ]; then
+        echo "Backup file $backup_file already exists, skipping backup."
+    fi
+    if [ -f "$config_file" ]; then
+        cp -f "$config_file" "$backup_file" || retval=1
+    else
+        echo "File $config_file not found, skipping backup."
+    fi
+
+    return $retval
+}
+
+prepare_bind() {
+    local input_json="$1"
+    local forwarders="$2"
+    local path_to_bind_settings=".dnsSettings.bindSettings"
+    local retval=0
+    local params_json
+
+    params_json=$(echo "$input_json" | jq -c "$path_to_bind_settings")
+
+    backup_bind_config "$NAMED_CONF_OPTIONS" "original"
+    backup_bind_config "$NAMED_CONF" "original"
+    setup_kerberos
+    disable_bind_chroot
+    update_named_conf_options "$params_json" "$forwarders"
+    add_tkey_gssapi_keytab
+    add_samba_dns_conf
+    bind_ldb_modules_disable
+    remove_commented_lines
+
+    return $retval
+}

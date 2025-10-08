@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		},
+		{
+			"name": "SSH FS - srv1.service-tests",
+			"uri": "ssh://srv1.service-tests/"
+		},
+		{
+			"name": "SSH FS - srv2.service-tests",
+			"uri": "ssh://srv2.service-tests/"
+		}
+	],
+	"settings": {}
+}
