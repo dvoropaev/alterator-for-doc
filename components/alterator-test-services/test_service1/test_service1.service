@@ -1,0 +1,341 @@
+type = "Service"
+name = "test_service1"
+category = "X-Alterator-Servers"
+display_name.en = "test service 1"
+display_name.ru = "тестовый сервис 1"
+comment.en = "Description for test service 1"
+comment.ru = "Описание тестового сервиса 1"
+enable_force_deploy = true
+
+[diag_tools.tool1]
+bus="system"
+path="/org/altlinux/alterator/test_service1"
+
+[parameters.string_example]
+display_name.en = "String parameter"
+display_name.ru = "Строковый параметр"
+comment.en = "Parameter example, that takes place in all contexts"
+comment.ru = "Пример параметра, участвующего во всех контекстах"
+type = "string"
+context = ["deploy", "configure", "restore", "backup", "diag", "status"]
+default = "test string"
+
+[parameters.undeploy_param]
+display_name.en = "Undeploy parameter"
+display_name.ru = "Параметр отмены развёртывания"
+comment.en = "Undeploy-only parameter"
+comment.ru = "Этот параметр используется только во время отмены развёртывания"
+type = "string"
+context = ["undeploy"]
+default = "test string"
+
+[parameters.backup_param]
+display_name.en = "Backup parameter"
+display_name.ru = "Параметр резервного копирования"
+comment.en = "Backup-only parameter"
+comment.ru = "Этот параметр используется только во время резервного копирования"
+type = "string"
+context = ["backup"]
+default = "test string"
+
+[parameters.restore_param]
+display_name.en = "Restore parameter"
+display_name.ru = "Параметр восстановления"
+comment.en = "Restore-only parameter"
+comment.ru = "Этот параметр используется только во время восстановления"
+type = "string"
+context = ["restore"]
+default = "test string"
+
+[parameters.int_example]
+display_name.en = "Integer parameter"
+display_name.ru = "Целочисленный параметр"
+comment.en = "Integer parameter example, displayed in status only"
+comment.ru = "Пример целочисленного параметра, отображаемого только в статусе"
+type = "integer"
+context = [
+    "status", "diag"
+]
+default = 42
+
+[parameters.int_example2]
+display_name.en = "Hidden parameter"
+display_name.ru = "Скрытый параметр"
+comment.en = "Hidden parameter example"
+comment.ru = "Пример скрытого параметра"
+type = "integer"
+context = [
+    "diag", "deploy", "configure", "backup", "restore"
+]
+default = 42
+constant = true
+required = [
+    "diag", "deploy", "configure", "backup", "restore"
+]
+
+[parameters.string_example2]
+display_name.en = "Required parameter"
+display_name.ru = "Обязательный параметр"
+comment.en = "Required parameter example"
+comment.ru = "Пример обязательного параметра"
+type = "string"
+context = [
+    "status", "deploy", "configure", "backup", "restore"
+]
+default = "test string"
+required = [
+    "deploy", "configure", "backup", "restore"
+]
+
+[parameters.string_array_example]
+display_name.en = "Host list"
+display_name.ru = "Список серверов"
+comment.en = "Array parameter example"
+comment.ru = "Пример параметра типа массив"
+type = "array"
+array_type = "string"
+array_min = 1
+array_max = 4
+array_label.en = "Server"
+array_label.ru = "Сервер"
+pattern = "^([a-zA-Z0-9]+\\.)+([A-Za-z0-9]+)$"
+context = [
+    "diag", "status", "deploy", "configure"
+]
+default = [ "altlinux.org", "kernel.org", "www.foo.bar" ]
+required = [
+    "diag", "deploy", "configure"
+]
+
+[parameters.enum_example]
+display_name.en = "Enum parameter"
+display_name.ru = "Перечисление"
+comment.en = "Enum parameter example"
+comment.ru = "Пример параметра с перечислением"
+type = "enum"
+context = [
+    "status",
+    "deploy",
+    "configure"
+]
+default = "value_1"
+[parameters.enum_example.values.value_1]
+display_name.en = "Value 1"
+display_name.ru = "Значение 1"
+[parameters.enum_example.values.value_2]
+display_name.en = "Value 2"
+display_name.ru = "Значение 2"
+[parameters.enum_example.values.value_3]
+display_name.en = "Value 3"
+display_name.ru = "Значение 3"
+
+[parameters.boolean_example]
+display_name.en = "Boolean parameter"
+display_name.ru = "Булевый параметр"
+comment.en = "Boolean parameter example"
+comment.ru = "Пример булевого параметра"
+type = "boolean"
+context = [
+    "status",
+    "deploy",
+    "configure"
+]
+default = true
+
+
+[parameters.composite_param]
+display_name.en = "Composite parameter example"
+display_name.ru = "Пример составного параметра"
+comment.en = "This parameter consist of different values"
+comment.ru = "Этот параметр состоит из различных значений"
+type = "object"
+context = [ "deploy", "configure", "status" ]
+required = [ "deploy", "configure" ]
+[parameters.composite_param.properties.param1]
+display_name.en = "Sample string"
+display_name.ru = "Пример строки"
+comment.en = "comment"
+comment.ru = "комментарий"
+type = "string"
+#pattern = ".*"
+default = "test string"
+required = true
+[parameters.composite_param.properties.param2]
+display_name.en = "Sample integer"
+display_name.ru = "Пример числа"
+comment.en = "comment"
+comment.ru = "комментарий"
+type = "integer"
+min = 10
+max = 15
+default = 12
+required = true
+[parameters.composite_param.properties.param3]
+display_name.en = "Sample enum"
+display_name.ru = "Пример перечисления"
+comment.en = "comment"
+comment.ru = "комментарий"
+type = "enum"
+default = "value2"
+required = true
+[parameters.composite_param.properties.param3.values.value1]
+display_name.en = "Value 1"
+display_name.ru = "Значение 1"
+[parameters.composite_param.properties.param3.values.value2]
+display_name.en = "Value 2"
+display_name.ru = "Значение 2"
+[parameters.composite_param.properties.param3.values.value3]
+display_name.en = "Value 3"
+display_name.ru = "Значение 3"
+[parameters.composite_param.properties.param4]
+display_name.en = "Sample string 2"
+display_name.ru = "Пример строки 2"
+comment.en = "This parameter is not required"
+comment.ru = "Этот параметр необязательный"
+type = "string"
+#pattern = ".*"
+default = "test string"
+required = false
+
+
+
+[parameters.composite_array]
+display_name.en = "Composite parameter array example"
+display_name.ru = "Пример массива составных параметров"
+comment.en = "This parameter consist of different values"
+comment.ru = "Этот параметр состоит из различных значений"
+type = "array"
+array_type = "object"
+array_min = 2
+array_max = 10
+prototype = "composite_param"
+context = [ "deploy", "configure", "status" ]
+required = [ "deploy", "configure" ]
+
+
+
+[parameters.group_param]
+display_name.en = "Group parameter example"
+display_name.ru = "Пример группы"
+comment.en = "One of the values may be selected"
+comment.ru = "Может быть выбрано одно из значений"
+type = "enum"
+context = [ "deploy", "configure", "status" ]
+required = [ "deploy", "configure" ]
+default = "param3"
+[parameters.group_param.values.param1]
+display_name.en = "Variant 1"
+display_name.ru = "Вариант 1"
+comment.en = "comment"
+comment.ru = "комментарий"
+[parameters.group_param.values.param2]
+display_name.en = "Variant 2"
+display_name.ru = "Вариант 2"
+comment.en = "This variant requires additional parameters"
+comment.ru = "Для этого варианта требуются дополнительные параметры"
+[parameters.group_param.values.param2.properties.object_subparameter]
+display_name.en = "Object subparameter"
+display_name.ru = "Подпараметр-объект"
+comment.en = "Required object parameter, that appears only when 'Variant 2' of enum is selected"
+comment.ru = "Обязятельный параметр, появляется только когда выбран 'Вариант 2' для enum"
+type = "object"
+prototype = "composite_param"
+required = true
+[parameters.group_param.values.param3]
+display_name.en = "Variant 3"
+display_name.ru = "Вариант 3"
+comment.en = "This variant requires additional parameters"
+comment.ru = "Для этого варианта требуются дополнительные параметры"
+[parameters.group_param.values.param3.properties.array_subparameter]
+display_name.en = "Array subparameter"
+display_name.ru = "Подпараметр-массив"
+comment.en = "Non-required array parameter, that appears only when 'Variant 3' of enum is selected"
+comment.ru = "Необязятельный параметр-массив, появляется только когда выбран 'Вариант 3' для enum"
+type = "array"
+array_type = "object"
+array_min = 2
+array_max = 10
+prototype = "composite_param"
+required = false
+
+
+
+[parameters.dow]
+display_name.en = "day of week"
+display_name.ru = "день недели"
+comment.en = "This parameter is for diagnostics only"
+comment.ru = "Этот параметр только для диагностики"
+type = "enum"
+default = "monday"
+context = ["diag"]
+required = ["diag"]
+[parameters.dow.values.monday]
+display_name.en = "Monday"
+display_name.ru = "Понедельник"
+[parameters.dow.values.tuesday]
+display_name.en = "Tuesday"
+display_name.ru = "Вторник"
+[parameters.dow.values.wednesday]
+display_name.en = "Wednesday"
+display_name.ru = "Среда"
+[parameters.dow.values.thursday]
+display_name.en = "Thursday"
+display_name.ru = "Четверг"
+[parameters.dow.values.friday]
+display_name.en = "Friday"
+display_name.ru = "Пятница"
+[parameters.dow.values.saturday]
+display_name.en = "Saturday"
+display_name.ru = "Суббота"
+[parameters.dow.values.sunday]
+display_name.en = "Sunday"
+display_name.ru = "Воскресенье"
+
+
+[resources.configuration]
+display_name.en = "test_service1.conf"
+display_name.ru = "test_service1.conf"
+comment.en = "test_service1.conf file"
+comment.ru = "Файл test_service1.conf"
+type = "file"
+path.value = "/etc/test-services/test_service1.conf"
+
+[resources.cache]
+display_name.en = "Cache folder"
+display_name.ru = "Папка cache"
+comment.en = "Cache folder test_service1"
+comment.ru = "Папка cache test_service1"
+type = "directory"
+path.value = "/var/cache/test_service1"
+
+[resources.Samba]
+display_name.en = "Samba service"
+display_name.ru = "Сервис samba"
+comment.en =   "Samba service"
+comment.ru = "Управляющий юнит samba"
+type = "systemd_unit"
+unit_name.value = "samba.service"
+
+[resources.ssh]
+display_name.en = "SSH port"
+display_name.ru = "Порт SSH"
+type = "port"
+inet_service.value = 22
+tcp = true
+udp = false
+
+[parameters.overridable_port_num]
+display_name.en = "Overridable tcp port"
+display_name.ru = "Переопределяемый tcp порт"
+type = "integer"
+#default = 23
+context = [ "deploy", "configure", "status" ]
+
+[resources.overridable_port]
+display_name.en = "Overridable port"
+display_name.ru = "Переопределяемый порт"
+type = "port"
+inet_service.value = 23
+inet_service.parameter = "overridable_port_num"
+tcp = true
+udp = true

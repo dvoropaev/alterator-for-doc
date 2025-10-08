@@ -1,0 +1,240 @@
+type = "Service"
+name = "test_service2"
+category = "X-Alterator-Servers"
+display_name.en = "test service 2"
+display_name.ru = "тестовый сервис 2"
+comment.en = "Description for test service 2"
+comment.ru = "Описание тестового сервиса 2"
+
+[diag_tools.tool1]
+bus="system"
+path="/org/altlinux/alterator/test_service2"
+
+
+[diag_tools.missing_diag]
+bus="session"
+path="/org/altlinux/alterator/never_existed_diag"
+
+
+
+[parameters.string_example1]
+display_name.en = "String parameter 1"
+display_name.ru = "Строковый параметр 1"
+comment.en = "String parameter example"
+comment.ru = "Пример строкового параметра"
+type = "string"
+context = [
+    "status",
+    "deploy",
+    "configure",
+    "diag"
+]
+default = "test"
+
+[parameters.string_example2]
+display_name.en = "String parameter 2"
+display_name.ru = "Строковый параметр 2"
+comment.en = "String parameter example"
+comment.ru = "Пример строкового параметра"
+type = "string"
+context = [
+    "status",
+    "deploy",
+    "configure",
+    "diag"
+]
+
+[parameters.string_example3]
+display_name.en = "String parameter 3"
+display_name.ru = "Строковый параметр 3"
+comment.en = "String parameter example"
+comment.ru = "Пример строкового параметра"
+type = "string"
+context = [
+    "status",
+    "deploy",
+    "configure",
+    "diag"
+]
+default = "default string value"
+
+[parameters.int_example1]
+display_name.en = "Integer parameter 1"
+display_name.ru = "Целочисленный параметр 1"
+comment.en = "Integer parameter example 1"
+comment.ru = "Пример целочисленного параметра 1"
+type = "integer"
+context = [
+    "status",
+    "deploy",
+    "configure",
+    "diag"
+]
+default = 42
+
+[parameters.int_example2]
+display_name.en = "Integer parameter 2"
+display_name.ru = "Целочисленный параметр 2"
+comment.en = "Integer parameter example 2"
+comment.ru = "Пример целочисленного параметра 2"
+type = "integer"
+context = [
+    "status",
+    "deploy",
+    "configure",
+    "diag"
+]
+
+[parameters.enum_example1]
+display_name.en = "Enum parameter 1"
+display_name.ru = "Перечисление 1"
+comment.en = "Enum parameter example 1"
+comment.ru = "Пример параметра с перечислением 1"
+type = "enum"
+context = [
+    "status",
+    "deploy",
+    "configure",
+    "diag"
+]
+[parameters.enum_example1.values.value_1]
+display_name.en = "Value 1"
+display_name.ru = "Значение 1"
+[parameters.enum_example1.values.value_2]
+display_name.en = "Value 2"
+display_name.ru = "Значение 2"
+[parameters.enum_example1.values.value_3]
+display_name.en = "Value 3"
+display_name.ru = "Значение 3"
+
+[parameters.enum_example2]
+display_name.en = "Enum parameter 2"
+display_name.ru = "Перечисление 2"
+comment.en = "Enum parameter example 2"
+comment.ru = "Пример параметра с перечислением 2"
+type = "enum"
+context = [
+    "status",
+    "deploy",
+    "configure",
+    "diag"
+]
+[parameters.enum_example2.values.value_4]
+display_name.en = "Value 4"
+display_name.ru = "Значение 4"
+[parameters.enum_example2.values.value_5]
+display_name.en = "Value 5"
+display_name.ru = "Значение 5"
+[parameters.enum_example2.values.value_6]
+display_name.en = "Value 6"
+display_name.ru = "Значение 6"
+
+
+
+[parameters.boolean_example2]
+display_name.en = "Boolean parameter 2"
+display_name.ru = "Булевый параметр 2"
+comment.en = "Boolean parameter example"
+comment.ru = "Пример булевого параметра"
+type = "boolean"
+context = [
+    "deploy",
+    "configure"
+]
+
+[parameters.composite_example]
+display_name.en = "Composite parameter"
+display_name.ru = "Составной параметр"
+comment.en = "This parameter contains optional arrays"
+comment.ru = "Этот параметр содержит необязательные массивы"
+type = "object"
+context = [
+    "deploy",
+    "configure",
+    "status"
+]
+[parameters.composite_example.properties.param1]
+display_name.en = "Sample string"
+display_name.ru = "Пример строки"
+comment.en = "comment"
+comment.ru = "комментарий"
+type = "string"
+#pattern = ".*"
+default = "test string"
+required = true
+[parameters.composite_example.properties.param2]
+display_name.en = "Sample integer"
+display_name.ru = "Пример числа"
+comment.en = "comment"
+comment.ru = "комментарий"
+type = "integer"
+min = 10
+max = 15
+default = 12
+required = true
+[parameters.composite_example.properties.param3]
+display_name.en = "Sample enum array"
+display_name.ru = "Пример массива строк с перечислением"
+comment.en = "may contain from 1 to 3 elements"
+comment.ru = "может содержать от 1 до 3 элементов"
+type = "array"
+array_type = "enum"
+array_min = 1
+array_max = 3
+required = false
+default = ["value1", "value2"]
+[parameters.composite_example.properties.param3.values.value1]
+display_name.en = "Value 1"
+display_name.ru = "Значение 1"
+[parameters.composite_example.properties.param3.values.value2]
+display_name.en = "Value 2"
+display_name.ru = "Значение 2"
+[parameters.composite_example.properties.param3.values.value3]
+display_name.en = "Value 3"
+display_name.ru = "Значение 3"
+[parameters.composite_example.properties.param4]
+display_name.en = "Sample int array"
+display_name.ru = "Пример массива чисел"
+comment.en = "This parameter is not required. May contain any amount of numbers from 1 to 4"
+comment.ru = "Этот параметр необязательный. Может содержать любое количество чисел от 1 до 4"
+type = "array"
+array_type = "integer"
+min = 1
+max = 4
+default = [ 1, 2 ,3]
+required = false
+
+
+
+[resources.configuration]
+display_name.en = "test-service2.conf"
+display_name.ru = "test-service2.conf"
+comment.en = "test-service2.conf file"
+comment.ru = "Файл test-service2.conf"
+type = "file"
+path.value = "/etc/test-services/test-service2.conf"
+
+[resources.cache]
+display_name.en = "Cache folder"
+display_name.ru = "Папка cache"
+comment.en = "Cache folder test-service2"
+comment.ru = "Папка cache test-service2"
+type = "directory"
+path.value = "/var/cache/test-service2"
+
+
+[resources.sample_port]
+display_name.en = "sample port 1"
+display_name.ru = "пример порта 1"
+type = "port"
+inet_service.value = 22
+tcp = true
+udp = true
+
+[resources.http]
+display_name.en = "HTTP port"
+display_name.ru = "Порт HTTP"
+type = "port"
+inet_service.value = 80
+tcp = true
+udp = false
