@@ -1,0 +1,5 @@
+#!/bin/sh -euf
+
+if grep -qs '^/usr/share/alterator/editions'; then
+	/usr/lib/alterator/backends/edition.d/generate-editions-backends
+fi

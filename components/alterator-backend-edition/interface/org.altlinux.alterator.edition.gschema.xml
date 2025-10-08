@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="current-edition">
+  <schema id="org.altlinux.product.edition" path="/org/altlinux/product/edition/">
+    <key name="current" type="s">
+      <default>'regular'</default>
+      <summary>Current edition of product</summary>
+      <description>
+        Contains the id of current product edition.
+      </description>
+    </key>
+  </schema>
+</schemalist>

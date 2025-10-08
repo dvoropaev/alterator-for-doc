@@ -1,0 +1,42 @@
+type = "Backend"
+module = "executor"
+name = "global"
+interface = "current_edition1"
+
+[methods.Info]
+execute = "/usr/lib/alterator/backends/edition info"
+stdout_bytes = true
+action_id = "Info"
+
+[methods.Description]
+execute = "/usr/lib/alterator/backends/edition description"
+stdout_bytes = true
+action_id = "Description"
+environment.LC_ALL = {}
+
+[methods.License]
+execute = "/usr/lib/alterator/backends/edition license"
+stdout_bytes = true
+action_id = "License"
+environment.LC_ALL = {}
+
+[methods.ReleaseNotes]
+execute = "/usr/lib/alterator/backends/edition release-notes"
+stdout_bytes = true
+action_id = "Description"
+environment.LC_ALL = {}
+
+[methods.FinalNotes]
+execute = "/usr/lib/alterator/backends/edition final-notes"
+stdout_bytes = true
+action_id = "Description"
+environment.LC_ALL = {}
+
+[methods.Get]
+execute = "/usr/lib/alterator/backends/edition get"
+stdout_strings = true
+action_id = "Get"
+
+[methods.Set]
+execute = "/usr/lib/alterator/backends/edition set {edition_id}"
+action_id = "Set"
