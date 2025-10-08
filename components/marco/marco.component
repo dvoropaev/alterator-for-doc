@@ -1,0 +1,8 @@
+type = "Component"
+name = "marco"
+category = "window-manager"
+display_name.en = "Marco - MATE"
+display_name.ru = "Marco - MATE"
+
+[packages]
+mate-window-manager = {}

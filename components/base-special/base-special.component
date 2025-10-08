@@ -1,0 +1,16 @@
+type = "Component"
+name = "base-special"
+category = "core"
+display_name.en = "Base specific modules"
+display_name.ru = "Базовые специальные модули"
+
+[packages]
+alt-issue = {}
+control = {}
+libnss-role = {}
+alterator-roles-common = {}
+local-policy = {}
+
+# menu-icons-default = {}
+# xdg-user-dirs = {}
+# xdg-utils = {}

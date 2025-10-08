@@ -1,0 +1,4 @@
+type = "Category"
+name = "infra"
+display_name.en = "Infrastructure solutions"
+display_name.ru = "Инфраструктурные решения"

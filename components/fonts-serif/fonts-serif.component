@@ -1,0 +1,8 @@
+type = "Component"
+name = "fonts-serif"
+category = "fonts"
+display_name.en = "Serif"
+display_name.ru = "Serif"
+
+[packages]
+fonts-ttf-google-crosextra-caladea = {}

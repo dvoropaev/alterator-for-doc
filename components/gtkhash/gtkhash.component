@@ -1,0 +1,11 @@
+type = "Component"
+name = "gtkhash"
+category = "admin-apps"
+display_name.en = "GtkHash"
+display_name.ru = "GtkHash"
+
+[packages]
+gtkhash = {}
+gtkhash-caja = { desktop = ["MATE"] }
+gtkhash-nemo = { desktop = ["CINNAMON"] }
+gtkhash-thunar = { desktop = ["XFCE"] }

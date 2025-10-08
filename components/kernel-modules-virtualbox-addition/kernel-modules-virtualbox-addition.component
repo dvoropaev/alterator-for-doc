@@ -1,0 +1,8 @@
+type = "Component"
+name = "kernel-modules-virtualbox-addition"
+category = "kernel"
+display_name.en = "VirtualBox guests modules"
+display_name.ru = "Модули для гостевых машин VirtualBox"
+
+[packages]
+kernel-modules-virtualbox-addition = { arch = ["x86_64", "i586"], kernel_module = true }

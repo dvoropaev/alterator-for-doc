@@ -1,0 +1,8 @@
+type = "Component"
+name = "firefox"
+category = "browsers-apps"
+display_name.en = "Mozilla Firefox browser"
+display_name.ru = "Браузер Mozilla Firefox"
+
+[packages]
+firefox = {}

@@ -1,0 +1,8 @@
+type = "Component"
+name = "kernel-modules-virtualbox"
+category = "kernel"
+display_name.en = "VirtualBox host drivers"
+display_name.ru = "Хостовые драйверы для VirtualBox"
+
+[packages]
+kernel-modules-virtualbox = { arch = ["x86_64"], kernel_module = true }

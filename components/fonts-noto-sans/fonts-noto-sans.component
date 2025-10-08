@@ -1,0 +1,10 @@
+type = "Component"
+name = "fonts-noto-sans"
+category = "fonts"
+display_name.en = "Noto Sans"
+display_name.ru = "Noto Sans"
+
+[packages]
+fonts-ttf-google-noto-sans = {}
+fonts-ttf-google-noto-sans-vf = {}
+

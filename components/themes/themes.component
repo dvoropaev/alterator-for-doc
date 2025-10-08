@@ -1,0 +1,16 @@
+type = "Component"
+name = "themes"
+category = "graphics"
+display_name.en = "Themes"
+display_name.ru = "Темы"
+
+[packages]
+altlinux-freedesktop-menu-icon-theme-default = {}
+altlinux-freedesktop-menu-mate-like-menu = {}
+altlinux-freedesktop-menu-shallow-menu = {}
+sound-theme-freedesktop = {}
+icon-theme-adwaita = {}
+icon-theme-oxygen = {}
+icon-theme-Papirus = {}
+tango-icon-theme = {}
+tango-icon-theme-extras = {}

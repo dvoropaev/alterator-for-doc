@@ -1,0 +1,8 @@
+type = "Component"
+name = "gnutls-utils"
+category = "security"
+display_name.en = "GnuTLS - TLS protocol utilities"
+display_name.ru = "GnuTLS - утилиты протокола TLS"
+
+[packages]
+gnutls-utils = {}

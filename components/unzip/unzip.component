@@ -1,0 +1,8 @@
+type = "Component"
+name = "unzip"
+category = "archiving"
+display_name.en = "unzip"
+display_name.ru = "unzip"
+
+[packages]
+unzip = {}

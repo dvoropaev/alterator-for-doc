@@ -1,0 +1,8 @@
+type = "Component"
+name = "zip"
+category = "archiving"
+display_name.en = "zip"
+display_name.ru = "zip"
+
+[packages]
+zip = {}

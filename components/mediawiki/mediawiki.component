@@ -1,0 +1,13 @@
+type = "Component"
+name = "mediawiki"
+category = "network-infra"
+display_name.en = "MediaWiki"
+display_name.ru = "MediaWiki"
+comment.en = "MediaWiki is the software used for Wikipedia and the other Wikimedia Foundation websites"
+comment.ru = "Wiki — гипертекстовая среда для сбора и структурирования письменных сведений"
+
+[packages]
+mediawiki = {}
+mediawiki-apache2 = {}
+mediawiki-mysql = {}
+installed-db-office-server-mediawiki = {}

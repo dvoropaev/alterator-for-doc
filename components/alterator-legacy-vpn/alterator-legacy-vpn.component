@@ -1,0 +1,10 @@
+type = "Component"
+name = "alterator-legacy-vpn"
+category = "alterator-legacy-network"
+display_name.en = "VPN - Alterator (legacy)"
+display_name.ru = "VPN - Альтератор (legacy)"
+
+[packages]
+alterator-net-openvpn = {}
+alterator-net-pppoe = {}
+alterator-net-pptp = {}

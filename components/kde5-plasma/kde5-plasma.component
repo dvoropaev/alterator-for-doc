@@ -1,0 +1,31 @@
+type = "Component"
+name = "kde5-plasma"
+category = "kde5"
+display_name.en = "KDE5 - Plasma"
+display_name.ru = "KDE5 - Plasma"
+
+[packages]
+plasma5-addons = {}
+plasma5-bluedevil = {}
+plasma5-browser-integration = {}
+plasma5-desktop-maxi = {}
+plasma5-discover-fwupd = {}
+plasma5-discover-kns = {}
+plasma5-discover-flatpak = {}
+plasma5-discover-packagekit = {}
+plasma5-discover-snap = {}
+plasma5-disks = {}
+plasma5-kde-gtk-config = {}
+plasma5-kgamma = {}
+plasma5-khotkeys = {}
+plasma5-kinfocenter = {}
+plasma5-kinfocenter-maxi = {}
+plasma5-kmenuedit = {}
+plasma5-kscreen = {}
+plasma5-ksshaskpass = {}
+plasma5-kwrited = {}
+plasma5-libkscreen-utils = {}
+plasma5-oxygen = {}
+plasma5-oxygen-sounds = {}
+plasma5-thunderbolt = {}
+plasma5-workspace-wallpapers = {}

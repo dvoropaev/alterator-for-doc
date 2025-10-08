@@ -1,0 +1,9 @@
+type = "Component"
+name = "gscan2pdf"
+category = "scanning"
+display_name.en = "Scanning utils"
+display_name.ru = "Утилиты для сканирования"
+
+[packages]
+gimagereader-qt5 = {}
+gscan2pdf = {}

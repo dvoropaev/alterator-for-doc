@@ -1,0 +1,8 @@
+type = "Component"
+name = "xsane"
+category = "scanning"
+display_name.en = "XSane - graphical interface to SANE"
+display_name.ru = "XSane - графический интейрфейс для SANE"
+
+[packages]
+xsane = {}

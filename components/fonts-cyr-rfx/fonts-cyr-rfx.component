@@ -1,0 +1,9 @@
+type = "Component"
+name = "fonts-cyr-rfx"
+category = "fonts"
+display_name.en = "CYR-RFX"
+display_name.ru = "CYR-RFX"
+
+[packages]
+fonts-bitmap-cyr_rfx-iso10646-0400 = {}
+

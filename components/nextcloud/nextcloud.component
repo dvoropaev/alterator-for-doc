@@ -1,0 +1,12 @@
+type = "Component"
+name = "nextcloud"
+category = "network-infra"
+display_name.en = "Nextcloud"
+display_name.ru = "Nextcloud"
+comment.en = "Suite of client-server software for creating and using file hosting services"
+comment.ru = "Веб-приложение для синхронизации данных, общего доступа к файлам и удалённого хранения документов в «облаке»"
+
+[packages]
+nextcloud = {}
+nextcloud-apache2 = {}
+installed-db-office-server-nextcloud = {}

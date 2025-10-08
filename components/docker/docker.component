@@ -1,0 +1,9 @@
+type = "Component"
+name = "docker"
+category = "containers"
+display_name.en = "Docker"
+display_name.ru = "Docker"
+
+[packages]
+docker-engine = {}
+docker-compose = {}

@@ -1,0 +1,8 @@
+type = "Component"
+name = "rosa-crypto-tool"
+category = "admin-apps"
+display_name.en = "ROSA CryptoTool"
+display_name.ru = "ROSA CryptoTool"
+
+[packages]
+rosa-crypto-tool = {}

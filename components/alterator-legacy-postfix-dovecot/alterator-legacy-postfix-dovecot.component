@@ -1,0 +1,8 @@
+type = "Component"
+name = "alterator-legacy-postfix-dovecot"
+category = "alterator-legacy-services"
+display_name.en = "Postfix server - Alterator (legacy)"
+display_name.ru = "Postfix сервер - Альтератор (legacy)"
+
+[packages]
+alterator-postfix-dovecot = {}

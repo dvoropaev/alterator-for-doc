@@ -1,0 +1,10 @@
+type = "Component"
+name = "ascon-locman-plm-server"
+category = "ascon-business-solutions"
+display_name.en = "LOCMAN:PLM (server)"
+display_name.ru = "ЛОЦМАН:PLM (сервер)"
+draft = true
+
+[packages]
+
+

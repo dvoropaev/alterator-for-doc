@@ -1,0 +1,8 @@
+type = "Component"
+name = "branding-alt-server-gnome"
+category = "brandings"
+display_name.en = "ALT Server branding - GNOME"
+display_name.ru = "Альт Сервер брендинг - GNOME"
+
+[packages]
+branding-alt-server-gnome-settings = {}

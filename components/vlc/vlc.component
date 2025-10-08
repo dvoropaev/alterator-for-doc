@@ -1,0 +1,14 @@
+type = "Component"
+name = "vlc"
+category = "media-apps"
+display_name.en = "VLC"
+display_name.ru = "VLC"
+
+[packages]
+vlc = {}
+vlc-maxi = {}
+vlc-plugin-gnutls = {}
+vlc-plugin-h264 = {}
+vlc-plugin-h265 = {}
+vlc-plugin-modplug = {}
+vlc-plugin-speex = {}

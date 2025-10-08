@@ -1,0 +1,8 @@
+type = "Component"
+name = "brasero"
+category = "cd-dvd-apps"
+display_name.en = "Brasero - CD/DVD burning tool"
+display_name.ru = "Brasero - запись CD/DVD"
+
+[packages]
+brasero = {}

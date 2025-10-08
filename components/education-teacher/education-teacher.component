@@ -1,0 +1,15 @@
+type = "Component"
+name = "education-teacher"
+category = "education-apps"
+display_name.en = "Software for teachers"
+display_name.ru = "ПО для учителей"
+comment.en = "Software for teachers"
+comment.ru = "Образовательное программное обеспечение (для учителей)"
+
+[packages]
+veyon = {}
+ansible = {}
+semaphore = { exclude_arch = ["e2k"] }
+virt-viewer = {}
+OpenBoard = {}
+touchegg = {}

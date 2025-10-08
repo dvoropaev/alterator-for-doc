@@ -1,0 +1,10 @@
+type = "Component"
+name = "usbip"
+category = "network-infra"
+display_name.en = "Usbip"
+display_name.ru = "Usbip"
+
+[packages]
+usbip = {}
+usbip-gui = {}
+usbip-server = {}

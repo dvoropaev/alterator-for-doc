@@ -1,0 +1,8 @@
+type = "Component"
+name = "nagios"
+category = "network-infra"
+display_name.en = "Nagios"
+display_name.ru = "Nagios"
+
+[packages]
+nagios = {}

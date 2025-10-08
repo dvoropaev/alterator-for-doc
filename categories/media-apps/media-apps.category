@@ -1,0 +1,5 @@
+type = "Category"
+name = "media-apps"
+category = "apps"
+display_name.en = "Media tools"
+display_name.ru = "Инструменты мультимедиа"

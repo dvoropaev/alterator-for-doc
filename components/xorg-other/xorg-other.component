@@ -1,0 +1,8 @@
+type = "Component"
+name = "xorg-other"
+category = "graphics"
+display_name.en = "Xorg - other"
+display_name.ru = "Xorg - другое"
+
+[packages]
+xorg-conf-libinput-touchpad = {}

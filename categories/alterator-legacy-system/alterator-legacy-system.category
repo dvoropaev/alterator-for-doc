@@ -1,0 +1,5 @@
+type = "Category"
+name = "alterator-legacy-system"
+category = "alterator-legacy"
+display_name.en = "Basic system management - Alterator (legacy)"
+display_name.ru = "Базовое системное управление - Альтератор (legacy)"

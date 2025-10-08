@@ -1,0 +1,10 @@
+type = "Component"
+name = "dr-web-server-security-suite-11"
+category = "doctor-web"
+display_name.en = "Dr.Web Server Security Suite 11"
+display_name.ru = "Dr.Web Server Security Suite 11"
+draft = true
+
+[packages]
+
+

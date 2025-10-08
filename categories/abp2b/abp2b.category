@@ -1,0 +1,8 @@
+type = "Category"
+name = "abp2b"
+category = "vendors"
+display_name.en = "ABP2B"
+display_name.ru = "АБП2Б"
+comment.en = "ABP2B"
+comment.ru = "АБП2Б"
+draft = true

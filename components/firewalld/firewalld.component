@@ -1,0 +1,8 @@
+type = "Component"
+name = "firewalld"
+category = "network"
+display_name.en = "firewalld"
+display_name.ru = "firewalld"
+
+[packages]
+firewalld = {}

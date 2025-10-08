@@ -1,0 +1,10 @@
+type = "Component"
+name = "fonts-gnu-freefont"
+category = "fonts"
+display_name.en = "GNU FreeFont"
+display_name.ru = "GNU FreeFont"
+
+[packages]
+fonts-ttf-gnu-freefont-sans = {}
+fonts-ttf-gnu-freefont-serif = {}
+

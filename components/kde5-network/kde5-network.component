@@ -1,0 +1,9 @@
+type = "Component"
+name = "kde5-network"
+category = "kde5"
+display_name.en = "KDE5 - network"
+display_name.ru = "KDE5 - сеть"
+
+[packages]
+kde5-krdc = {}
+kde5-network-filesharing = {}

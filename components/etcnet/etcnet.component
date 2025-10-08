@@ -1,0 +1,8 @@
+type = "Component"
+name = "etcnet"
+category = "network-subsystem"
+display_name.en = "Etcnet"
+display_name.ru = "Etcnet"
+
+[packages]
+etcnet = {}

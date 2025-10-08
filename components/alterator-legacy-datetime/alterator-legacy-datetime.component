@@ -1,0 +1,8 @@
+type = "Component"
+name = "alterator-legacy-datetime"
+category = "alterator-legacy-system"
+display_name.en = "Date and time - Alterator (legacy)"
+display_name.ru = "Дата и время - Альтератор (legacy)"
+
+[packages]
+alterator-datetime = {}

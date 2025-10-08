@@ -1,0 +1,13 @@
+type = "Component"
+name = "base"
+category = "core"
+display_name.en = "Base system modules"
+display_name.ru = "Базовые системные модули"
+
+[packages]
+interactivesystem = {}
+basesystem = {}
+filesystem = {}
+setup = {}
+systemd = {}
+rpm = {}

@@ -1,0 +1,8 @@
+type = "Component"
+name = "alterator-legacy-notes"
+category = "alterator-legacy-system"
+display_name.en = "Licence and notes - Alterator (legacy)"
+display_name.ru = "Лицензия и примечания  - Альтератор (legacy)"
+
+[packages]
+alterator-notes = {}

@@ -1,0 +1,8 @@
+type = "Component"
+name = "gdm"
+category = "dm"
+display_name.en = "GDM"
+display_name.ru = "GDM"
+
+[packages]
+gdm = {}

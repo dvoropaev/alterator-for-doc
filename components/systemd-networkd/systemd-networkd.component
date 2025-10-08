@@ -1,0 +1,8 @@
+type = "Component"
+name = "systemd-networkd"
+category = "network-subsystem"
+display_name.en = "Systemd-networkd"
+display_name.ru = "Systemd-networkd"
+
+[packages]
+systemd-networkd = {}

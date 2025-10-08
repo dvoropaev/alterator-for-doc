@@ -1,0 +1,14 @@
+type = "Component"
+name = "storage-base"
+category = "storage"
+display_name.en = "Managing Block Devices"
+display_name.ru = "Управление блочными устройствами"
+
+[packages]
+smartmontools = {}
+fdisk = {}
+gdisk = {}
+cfdisk = {}
+sfdisk = {}
+lsblk = {}
+losetup = {}

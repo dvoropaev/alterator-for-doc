@@ -1,0 +1,8 @@
+type = "Component"
+name = "bacula-client"
+category = "agents"
+display_name.en = "Bacula - client"
+display_name.ru = "Bacula - клиент"
+
+[packages]
+bacula13-client = {}

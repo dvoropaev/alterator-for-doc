@@ -1,0 +1,9 @@
+type = "Component"
+name = "podsec"
+category = "containers"
+display_name.en = "Podsec"
+display_name.ru = "Podsec"
+
+[packages]
+podsec = {}
+podsec-inotify = {}

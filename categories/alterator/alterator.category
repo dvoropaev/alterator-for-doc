@@ -1,0 +1,7 @@
+type = "Category"
+name = "alterator"
+category = "apps"
+display_name.en = "Alterator"
+display_name.ru = "Альтератор"
+comment.en = "Alterator applications"
+comment.ru = "Приложения Альтератора"

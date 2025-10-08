@@ -1,0 +1,8 @@
+type = "Component"
+name = "packagekit"
+category = "services"
+display_name.en = "PackageKit"
+display_name.ru = "PackageKit"
+
+[packages]
+packagekit = {}

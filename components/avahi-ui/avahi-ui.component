@@ -1,0 +1,8 @@
+type = "Component"
+name = "avahi-ui"
+category = "admin-apps"
+display_name.en = "Avahi - UI tools for mDNS"
+display_name.ru = "Avahi - графические инструменты для mDNS"
+
+[packages]
+avahi-ui = {}

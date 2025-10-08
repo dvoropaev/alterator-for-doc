@@ -1,0 +1,8 @@
+type = "Component"
+name = "systemd-timesyncd"
+category = "time"
+display_name.en = "Systemd-timesyncd"
+display_name.ru = "Systemd-timesyncd"
+
+[packages]
+systemd-timesyncd = {}

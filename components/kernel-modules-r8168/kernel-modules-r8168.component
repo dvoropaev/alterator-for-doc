@@ -1,0 +1,8 @@
+type = "Component"
+name = "kernel-modules-r8168"
+category = "kernel"
+display_name.en = "RTL8168 based RealTek Ethernet controllers drivers"
+display_name.ru = "Драйверы Ethernet-контроллеров RealTek на базе RTL8168"
+
+[packages]
+kernel-modules-r8168 = { kernel_module = true }

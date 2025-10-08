@@ -1,0 +1,9 @@
+type = "Component"
+name = "virtualbox"
+category = "virt-tools"
+display_name.en = "VirtualBox"
+display_name.ru = "VirtualBox"
+
+[packages]
+virtualbox = {}
+kernel-modules-virtualbox = { arch = ["x86_64"], kernel_module = true }

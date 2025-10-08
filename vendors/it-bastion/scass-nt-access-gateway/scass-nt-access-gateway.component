@@ -1,0 +1,10 @@
+type = "Component"
+name = "scass-nt-access-gateway"
+category = "it-bastion"
+display_name.en = "SCASS NT Access Gateway"
+display_name.ru = "СКДПУ НТ Шлюз доступа"
+draft = true
+
+[packages]
+
+

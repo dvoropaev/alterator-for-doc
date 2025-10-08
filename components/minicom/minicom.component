@@ -1,0 +1,8 @@
+type = "Component"
+name = "minicom"
+category = "utils"
+display_name.en = "minicom - terminal emulation"
+display_name.ru = "minicom - эмулятор терминала"
+
+[packages]
+minicom = {}

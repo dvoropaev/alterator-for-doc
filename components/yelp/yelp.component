@@ -1,0 +1,8 @@
+type = "Component"
+name = "yelp"
+category = "system-apps"
+display_name.en = "Help browser for the GNOME desktop"
+display_name.ru = "Браузер справки для рабочего окружения GNOME"
+
+[packages]
+yelp = {}

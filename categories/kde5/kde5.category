@@ -1,0 +1,7 @@
+type = "Category"
+name = "kde5"
+category = "de"
+display_name.en = "KDE5 Desktop"
+display_name.ru = "Рабочий стол KDE5"
+comment.en = "KDE5 desktop environment"
+comment.ru = "Среда рабочего стола KDE5"

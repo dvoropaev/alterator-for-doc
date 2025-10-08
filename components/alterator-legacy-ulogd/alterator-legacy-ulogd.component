@@ -1,0 +1,8 @@
+type = "Component"
+name = "alterator-legacy-ulogd"
+category = "alterator-legacy-services"
+display_name.en = "ulogd logging daemon - Alterator (legacy)"
+display_name.ru = "Служба журналирования ulogd - Альтератор (legacy)"
+
+[packages]
+alterator-ulogd = {}

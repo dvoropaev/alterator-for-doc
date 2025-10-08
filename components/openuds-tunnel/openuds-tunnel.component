@@ -1,0 +1,8 @@
+type = "Component"
+name = "openuds-tunnel"
+category = "network-infra"
+display_name.en = "OpenUDS - tunneling server"
+display_name.ru = "OpenUDS - сервер туннелирования"
+
+[packages]
+openuds-tunnel = {}

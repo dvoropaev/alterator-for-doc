@@ -1,0 +1,8 @@
+type = "Component"
+name = "freenx-server"
+category = "network-infra"
+display_name.en = "FreeNX - server"
+display_name.ru = "FreeNX - сервер"
+
+[packages]
+freenx-server = {}

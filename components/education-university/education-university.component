@@ -1,0 +1,41 @@
+type = "Component"
+name = "education-university"
+category = "education-apps"
+display_name.en = "Software for university"
+display_name.ru = "ПО для высшего образования"
+comment.en = "Educational software (university)"
+comment.ru = "Образовательное программное обеспечение (высшее образование)"
+
+[packages]
+inkscape = {}
+gimp = {}
+gimp-help-ru = {}
+blender = { arch = ["x86_64", "aarch64"] }
+scribus = {}
+codeblocks = {}
+qt-creator = { exclude_arch = ["e2k"] }
+qt-creator-doc = { exclude_arch = ["e2k"] }
+cmake = {}
+ninja-build = {}
+qt5-base-devel = {}
+qt5-base-doc = {}
+lazarus = { arch = ["x86_64", "i586"] }
+gambas-full = { arch = ["x86_64", "i586"] }
+openscad = { arch = ["x86_64", "i586"] }
+swi-prolog = {}
+wxMaxima = {}
+octave = {}
+gnuplot-qt = {}
+qcad = { exclude_arch = ["e2k"] }
+freecad = { arch = ["x86_64", "aarch64"] }
+qgis = { exclude_arch = ["e2k", "i586"] }
+qgis-grass = { exclude_arch = ["e2k", "i586"] }
+qgis-python = { exclude_arch = ["e2k", "i586"] }
+projectlibre = {}
+openmpi = {}
+fritzing = {}
+python3-tools = {}
+python3-module-pygame = {}
+python3-module-pygame-doc = {}
+python3-modules-curses = {}
+pip = {}

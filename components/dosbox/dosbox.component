@@ -1,0 +1,8 @@
+type = "Component"
+name = "dosbox"
+category = "emulators"
+display_name.en = "DOSBox"
+display_name.ru = "DOSBox"
+
+[packages]
+dosbox = {}

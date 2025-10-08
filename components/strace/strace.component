@@ -1,0 +1,8 @@
+type = "Component"
+name = "strace"
+category = "utils"
+display_name.en = "strace"
+display_name.ru = "strace"
+
+[packages]
+strace = {}

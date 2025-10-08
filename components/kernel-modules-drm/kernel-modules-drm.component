@@ -1,0 +1,9 @@
+type = "Component"
+name = "kernel-modules-drm"
+category = "kernel"
+display_name.en = "Drivers for DRM"
+display_name.ru = "Драйверы для DRM"
+
+[packages]
+kernel-modules-drm-nouveau = { kernel_module = true }
+kernel-modules-drm = { kernel_module = true }

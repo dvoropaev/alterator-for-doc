@@ -1,0 +1,8 @@
+type = "Component"
+name = "alterator-legacy-xkb"
+category = "alterator-legacy-gui"
+display_name.en = "Keyboard - Alterator (legacy)"
+display_name.ru = "Клавиатура - Альтератор (legacy)"
+
+[packages]
+alterator-xkb = {}

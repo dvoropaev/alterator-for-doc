@@ -1,0 +1,10 @@
+type = "Component"
+name = "fonts-wenquanyi"
+category = "fonts"
+display_name.en = "WenQuanYi"
+display_name.ru = "WenQuanYi"
+
+[packages]
+fonts-bitmap-wqy = {}
+fonts-ttf-wqy-zenhei = {}
+

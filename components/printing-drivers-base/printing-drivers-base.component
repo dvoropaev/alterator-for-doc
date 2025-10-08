@@ -1,0 +1,8 @@
+type = "Component"
+name = "printing-drivers-base"
+category = "printing"
+display_name.en = "Drivers - base"
+display_name.ru = "Драйверы - базовый"
+
+[packages]
+printer-drivers-base = {}

@@ -1,0 +1,8 @@
+type = "Category"
+name = "academy-of-business-solutions"
+category = "vendors"
+display_name.en = "Academy of Business Solutions"
+display_name.ru = "Академия Бизнес Решений"
+comment.en = "Academy of Business Solutions"
+comment.ru = "Академия Бизнес Решений"
+draft = true

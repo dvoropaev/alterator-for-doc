@@ -1,0 +1,8 @@
+type = "Component"
+name = "tokens-auth-esmart"
+category = "tokens"
+display_name.en = "ESMART - PKCS11 authentication support"
+display_name.ru = "ESMART - поддержка аутентификации PKCS11"
+
+[packages]
+pkcs11-profiles-isbc = {}

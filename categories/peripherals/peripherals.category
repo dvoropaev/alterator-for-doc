@@ -1,0 +1,4 @@
+type = "Category"
+name = "peripherals"
+display_name.en = "Peripherals"
+display_name.ru = "Периферийные устройства"

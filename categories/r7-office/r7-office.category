@@ -1,0 +1,6 @@
+type = "Category"
+name = "r7-office"
+category = "vendors"
+display_name.en = "R7-Office"
+display_name.ru = "Р7-Офис"
+draft = true

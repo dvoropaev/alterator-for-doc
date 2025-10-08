@@ -1,0 +1,9 @@
+type = "Component"
+name = "cron"
+category = "services"
+display_name.en = "Cron - job scheduler"
+display_name.ru = "Cron - планировщик заданий"
+
+[packages]
+crontabs = {}
+#vixie-cron = {}

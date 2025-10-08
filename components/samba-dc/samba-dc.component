@@ -1,0 +1,10 @@
+type = "Component"
+name = "samba-dc"
+category = "domain-infra"
+display_name.en = "Samba AD - domain controller"
+display_name.ru = "Samba AD - контроллер домена"
+
+[packages]
+task-samba-dc = {}
+samba-winbind-clients = {}
+bind-utils = {}

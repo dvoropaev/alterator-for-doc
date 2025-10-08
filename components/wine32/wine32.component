@@ -1,0 +1,8 @@
+type = "Component"
+name = "wine32"
+category = "windows-env"
+display_name.en = "Wine (32-bit support)"
+display_name.ru = "Wine (32-битная поддержка)"
+
+[packages]
+i586-wine = { arch = ["x86_64"] }

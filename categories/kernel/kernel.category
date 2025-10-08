@@ -1,0 +1,7 @@
+type = "Category"
+name = "kernel"
+category = "system"
+display_name.en = "Kernel and modules"
+display_name.ru = "Ядро и модули"
+comment.en = "Kernel and kernel modules"
+comment.ru = "Ядро и модули ядра"

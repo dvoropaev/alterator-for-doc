@@ -1,0 +1,8 @@
+type = "Component"
+name = "java-runtime-21"
+category = "env"
+display_name.en = "Java-Runtime 21"
+display_name.ru = "Java-Runtime 21"
+
+[packages]
+java-21-openjdk = {}

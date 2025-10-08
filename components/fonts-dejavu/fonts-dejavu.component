@@ -1,0 +1,9 @@
+type = "Component"
+name = "fonts-dejavu"
+category = "fonts"
+display_name.en = "DejaVu"
+display_name.ru = "DejaVu"
+
+[packages]
+fonts-ttf-dejavu = {}
+

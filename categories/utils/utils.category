@@ -1,0 +1,5 @@
+type = "Category"
+name = "utils"
+category = "system"
+display_name.en = "System utilities"
+display_name.ru = "Системные утилиты"

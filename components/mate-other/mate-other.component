@@ -1,0 +1,8 @@
+type = "Component"
+name = "mate-other"
+category = "mate"
+display_name.en = "MATE - other"
+display_name.ru = "MATE - другое"
+
+[packages]
+mate-document-viewer-xps = {}

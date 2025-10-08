@@ -1,0 +1,5 @@
+type = "Category"
+name = "diagnostics"
+category = "system"
+display_name.en = "Diagnostic tools"
+display_name.ru = "Диагностические инструменты"

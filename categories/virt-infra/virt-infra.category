@@ -1,0 +1,5 @@
+type = "Category"
+name = "virt-infra"
+category = "infra"
+display_name.en = "Virtualization infrastruture"
+display_name.ru = "Инфраструктура виртуализации"

@@ -1,0 +1,7 @@
+type = "Category"
+name = "libraries"
+category = "core"
+display_name.en = "Libraries"
+display_name.ru = "Библиотеки"
+comment.en = "System libraries"
+comment.ru = "Системные библиотеки"

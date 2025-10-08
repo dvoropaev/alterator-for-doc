@@ -1,0 +1,8 @@
+type = "Component"
+name = "git-server"
+category = "network-infra"
+display_name.en = "Git - server"
+display_name.ru = "Git - сервер"
+
+[packages]
+git-server = {}

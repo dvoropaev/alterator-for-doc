@@ -1,0 +1,10 @@
+type = "Component"
+name = "alterator-explorer"
+category = "alterator"
+display_name.en = "Alterator - graphical system explorer"
+display_name.ru = "Альтератор - графический обозреватель системы"
+
+[packages]
+alterator-explorer = {}
+alterator-application-components = {}
+alterator-application-systeminfo = {}

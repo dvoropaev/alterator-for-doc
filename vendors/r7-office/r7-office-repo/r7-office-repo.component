@@ -1,0 +1,9 @@
+type = "Component"
+name = "r7-office-repo"
+category = "r7-office"
+display_name.en = "R7-Office repository"
+display_name.ru = "Репозиторий Р7-Офис"
+draft = true
+
+[packages]
+apt-conf-r7 = {}

@@ -1,0 +1,9 @@
+type = "Component"
+name = "alterator-legacy-ldap"
+category = "alterator-legacy-services"
+display_name.en = "Managing LDAP users and groups - Alterator (legacy)"
+display_name.ru = "Управление пользователями и группами LDAP - Альтератор (legacy)"
+
+[packages]
+alterator-ldap-groups = {}
+alterator-ldap-users = {}

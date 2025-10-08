@@ -1,0 +1,10 @@
+type = "Component"
+name = "ascon-pilot-ice-web-edition-of-the-client-application"
+category = "ascon-design-systems"
+display_name.en = "Pilot-ICE, WEB-edition of the client application"
+display_name.ru = "Pilot-ICE, WEB-редакция клиентского приложения"
+draft = true
+
+[packages]
+
+

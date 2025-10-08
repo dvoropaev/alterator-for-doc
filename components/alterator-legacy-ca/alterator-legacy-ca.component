@@ -1,0 +1,8 @@
+type = "Component"
+name = "alterator-legacy-ca"
+category = "alterator-legacy-services"
+display_name.en = "Certification Authority Manager - Alterator (legacy)"
+display_name.ru = "Менеджер Удостоверяющего Центра - Альтератор (legacy)"
+
+[packages]
+alterator-ca = {}

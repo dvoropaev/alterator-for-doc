@@ -1,0 +1,17 @@
+type = "Component"
+name = "network-manager"
+category = "network-subsystem"
+display_name.en = "NetworkManager"
+display_name.ru = "NetworkManager"
+
+[packages]
+NetworkManager = {}
+NetworkManager-l2tp = {}
+NetworkManager-openvpn = {}
+NetworkManager-pptp = {}
+NetworkManager-vpnc = {}
+NetworkManager-ssh = {}
+NetworkManager-openconnect = {}
+NetworkManager-strongswan = {}
+NetworkManager-libreswan = {}
+NetworkManager-tui = {}

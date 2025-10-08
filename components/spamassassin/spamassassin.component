@@ -1,0 +1,8 @@
+type = "Component"
+name = "spamassassin"
+category = "network"
+display_name.en = "SpamAssassin - mail filter"
+display_name.ru = "SpamAssassin - почтовый фильтр"
+
+[packages]
+spamassassin = {}

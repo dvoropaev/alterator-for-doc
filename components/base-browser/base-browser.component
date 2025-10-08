@@ -1,0 +1,9 @@
+type = "Component"
+name = "base-browser"
+category = "browsers-apps"
+display_name.en = "System browser"
+display_name.ru = "Системный браузер"
+
+[packages]
+chromium-gost = { arch = ["x86_64"] }
+firefox-esr = { arch = ["aarch64"] }

@@ -1,0 +1,5 @@
+type = "Category"
+name = "fonts"
+category = "graphics"
+display_name.en = "Fonts"
+display_name.ru = "Шрифты"

@@ -1,0 +1,6 @@
+Provides a set of D-Bus interfaces for
+querying and manipulating user account information and an implementation
+of these interfaces, based on the useradd, usermod and userdel commands.
+
+**Home page:**  
+<https://www.freedesktop.org/wiki/Software/AccountsService/>

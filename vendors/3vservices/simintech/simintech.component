@@ -1,0 +1,10 @@
+type = "Component"
+name = "simintech"
+category = "3vservices"
+display_name.en = "Dynamic modeling environment SimInTech"
+display_name.ru = "Среда динамического моделирования SimInTech"
+draft = true
+
+[packages]
+
+

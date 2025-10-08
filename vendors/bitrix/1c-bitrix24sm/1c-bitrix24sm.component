@@ -1,0 +1,10 @@
+type = "Component"
+name = "1c-bitrix24sm"
+category = "bitrix"
+display_name.en = "1C-Bitrix:Site Management"
+display_name.ru = "1С-Битрикс:Управление сайтом"
+draft = true
+
+[packages]
+
+

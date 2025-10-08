@@ -1,0 +1,8 @@
+type = "Component"
+name = "open-vm-tools"
+category = "agents"
+display_name.en = "Open Virtual Machine Tools"
+display_name.ru = "Open Virtual Machine Tools"
+
+[packages]
+open-vm-tools = {}

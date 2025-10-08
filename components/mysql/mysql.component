@@ -1,0 +1,10 @@
+type = "Component"
+name = "mysql"
+category = "databases"
+display_name.en = "MySQL"
+display_name.ru = "MySQL"
+
+[packages]
+MySQL-client = {}
+MySQL-server = {}
+MySQL-server-perl = {}

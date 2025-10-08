@@ -1,0 +1,8 @@
+type = "Component"
+name = "alterator-legacy-secsetup"
+category = "alterator-legacy-system"
+display_name.en = "Security settings - Alterator (legacy)"
+display_name.ru = "Настройки безопасности - Альтератор (legacy)"
+
+[packages]
+alterator-secsetup = {}

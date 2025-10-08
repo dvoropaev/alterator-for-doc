@@ -1,0 +1,8 @@
+type = "Component"
+name = "nftables"
+category = "network"
+display_name.en = "nftables"
+display_name.ru = "nftables"
+
+[packages]
+nftables = {}

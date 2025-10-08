@@ -1,0 +1,8 @@
+type = "Component"
+name = "dotnet-framework9"
+category = "windows-env"
+display_name.en = ".NET Framework 9.0"
+display_name.ru = ".NET Framework 9.0"
+
+[packages]
+"dotnet-9.0" = {}

@@ -1,0 +1,10 @@
+type = "Component"
+name = "1c-bitrix24"
+category = "bitrix"
+display_name.en = "1C-Bitrix24"
+display_name.ru = "1C-Битрикс24"
+draft = true
+
+[packages]
+
+

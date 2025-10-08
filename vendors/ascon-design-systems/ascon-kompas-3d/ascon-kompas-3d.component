@@ -1,0 +1,10 @@
+type = "Component"
+name = "ascon-kompas-3d"
+category = "ascon-design-systems"
+display_name.en = "KOMPAS-3D"
+display_name.ru = "КОМПАС-3D"
+draft = true
+
+[packages]
+
+

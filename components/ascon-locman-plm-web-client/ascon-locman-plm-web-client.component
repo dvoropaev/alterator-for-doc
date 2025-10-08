@@ -1,0 +1,10 @@
+type = "Component"
+name = "ascon-locman-plm-web-client"
+category = "ascon-business-solutions"
+display_name.en = "LOCMAN:PLM Web-client"
+display_name.ru = "ЛОЦМАН:PLM Веб-клиент"
+draft = true
+
+[packages]
+
+

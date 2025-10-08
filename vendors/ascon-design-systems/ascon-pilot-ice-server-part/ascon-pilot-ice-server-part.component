@@ -1,0 +1,10 @@
+type = "Component"
+name = "ascon-pilot-ice-server-part"
+category = "ascon-design-systems"
+display_name.en = "Pilot-ICE, server part"
+display_name.ru = "Pilot-ICE, серверная часть"
+draft = true
+
+[packages]
+
+

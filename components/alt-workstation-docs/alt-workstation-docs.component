@@ -1,0 +1,8 @@
+type = "Component"
+name = "alt-workstation-docs"
+category = "docs"
+display_name.en = "ALT Workstation documentation"
+display_name.ru = "Документация Альт Рабочая станция"
+
+[packages]
+docs-alt-workstation = {}

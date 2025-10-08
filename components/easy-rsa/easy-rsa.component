@@ -1,0 +1,8 @@
+type = "Component"
+name = "easy-rsa"
+category = "admin-apps"
+display_name.en = "Simplified CA utility (easy-rsa)"
+display_name.ru = "Упрощённая утилита управления сертификатами (easy-rsa)"
+
+[packages]
+easy-rsa = {}

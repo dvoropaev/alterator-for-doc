@@ -1,0 +1,8 @@
+type = "Component"
+name = "alt-domain-docs"
+category = "docs"
+display_name.en = "ALT Domain documentation"
+display_name.ru = "Документация Альт Домен"
+
+[packages]
+docs-alt-domain = {}

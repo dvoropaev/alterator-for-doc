@@ -1,0 +1,8 @@
+type = "Component"
+name = "pcmcia-legacy"
+category = "core"
+display_name.en = "Legacy PCMCIA subsystem"
+display_name.ru = "Устаревшая подсистема PCMCIA"
+
+[packages]
+pcmciautils = {}

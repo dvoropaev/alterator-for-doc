@@ -1,0 +1,8 @@
+type = "Component"
+name = "keepalived"
+category = "network-infra"
+display_name.en = "Keepalived - high availability and load balancing solution"
+display_name.ru = "Keepalived - решение для обеспечения высокой доступности и балансировки нагрузки"
+
+[packages]
+keepalived = {}

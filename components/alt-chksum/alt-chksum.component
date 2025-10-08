@@ -1,0 +1,8 @@
+type = "Component"
+name = "alt-chksum"
+category = "core"
+display_name.en = "ALT checksum utility"
+display_name.ru = "Утилита ALT checksum"
+
+[packages]
+alt-chksum = {}

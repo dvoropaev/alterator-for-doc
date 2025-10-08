@@ -1,0 +1,8 @@
+type = "Component"
+name = "kernel-images"
+category = "kernel"
+display_name.en = "Linux kernel"
+display_name.ru = "Ядро Linux"
+
+[packages]
+kernel-image = { kernel_module = true }

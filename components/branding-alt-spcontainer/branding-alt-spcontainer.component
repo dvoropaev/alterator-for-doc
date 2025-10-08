@@ -1,0 +1,10 @@
+type = "Component"
+name = "branding-alt-spcontainer"
+category = "brandings"
+display_name.en = "ALT SP Container branding"
+display_name.ru = "Альт СП Контейнер брендинг"
+
+[packages]
+branding-alt-spcontainer-graphics = {}
+branding-alt-spcontainer-notes = {}
+branding-alt-spcontainer-release = {}

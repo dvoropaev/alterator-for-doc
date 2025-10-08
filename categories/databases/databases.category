@@ -1,0 +1,5 @@
+type = "Category"
+name = "databases"
+category = "infra"
+display_name.en = "Database management systems"
+display_name.ru = "Системы управления базами данных"

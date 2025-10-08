@@ -1,0 +1,7 @@
+type = "Category"
+name = "system-apps"
+category = "apps"
+display_name.en = "System application"
+display_name.ru = "Системные приложения"
+comment.en = "System application"
+comment.ru = "Системные приложения"

@@ -1,0 +1,7 @@
+type = "Category"
+name = "mate"
+category = "de"
+display_name.en = "MATE Desktop"
+display_name.ru = "Рабочий стол MATE"
+comment.en = "MATE desktop environment"
+comment.ru = "Среда рабочего стола MATE"

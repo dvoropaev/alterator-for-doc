@@ -1,0 +1,5 @@
+type = "Category"
+name = "archiving"
+category = "system"
+display_name.en = "Archiving utilities"
+display_name.ru = "Утилиты архивации"

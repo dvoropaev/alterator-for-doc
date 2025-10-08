@@ -1,0 +1,8 @@
+type = "Category"
+name = "stc-apm"
+category = "vendors"
+display_name.en = "Scientific-technical center \"APM\""
+display_name.ru = "Научно-технический центр \"АПМ\""
+comment.en = "Scientific-technical center \"APM\""
+comment.ru = "Научно-технический центр \"АПМ\""
+draft = true

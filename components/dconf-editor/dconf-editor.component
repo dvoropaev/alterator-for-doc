@@ -1,0 +1,8 @@
+type = "Component"
+name = "dconf-editor"
+category = "system-apps"
+display_name.en = "dconf registry editor"
+display_name.ru = "Редактор реестра dconf"
+
+[packages]
+dconf-editor = {}

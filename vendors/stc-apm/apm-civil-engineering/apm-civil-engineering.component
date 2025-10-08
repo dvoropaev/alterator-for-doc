@@ -1,0 +1,10 @@
+type = "Component"
+name = "apm-civil-engineering"
+category = "stc-apm"
+display_name.en = "APM Civil Engineering"
+display_name.ru = "APM Civil Engineering"
+draft = true
+
+[packages]
+
+

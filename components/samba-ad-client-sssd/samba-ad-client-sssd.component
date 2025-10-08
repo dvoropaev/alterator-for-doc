@@ -1,0 +1,8 @@
+type = "Component"
+name = "samba-ad-client-sssd"
+category = "domain-infra"
+display_name.en = "Samba AD - client (sssd)"
+display_name.ru = "Samba AD - клиент (sssd)"
+
+[packages]
+task-auth-ad-sssd = {}

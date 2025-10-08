@@ -1,0 +1,10 @@
+type = "Component"
+name = "alpha-platform"
+category = "automiq-soft"
+display_name.en = "Alpha platform"
+display_name.ru = "Альфа платформа"
+draft = true
+
+[packages]
+
+

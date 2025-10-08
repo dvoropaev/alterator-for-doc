@@ -1,0 +1,5 @@
+type = "Category"
+name = "storage"
+category = "system"
+display_name.en = "Storage management"
+display_name.ru = "Управление блочными устройствами"

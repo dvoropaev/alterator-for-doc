@@ -1,0 +1,8 @@
+type = "Component"
+name = "thunderbird"
+category = "mail-apps"
+display_name.en = "Thunderbird"
+display_name.ru = "Thunderbird"
+
+[packages]
+thunderbird = {}

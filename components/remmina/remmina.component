@@ -1,0 +1,9 @@
+type = "Component"
+name = "remmina"
+category = "remote-access-apps"
+display_name.en = "Client - Remmina"
+display_name.ru = "Клиент - Remmina"
+
+[packages]
+remmina = {}
+remmina-plugins = {}

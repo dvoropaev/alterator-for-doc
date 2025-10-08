@@ -1,0 +1,10 @@
+type = "Component"
+name = "ascon-pilot-bim-server-part"
+category = "ascon-design-systems"
+display_name.en = "Pilot-BIM, server part"
+display_name.ru = "Pilot-BIM, серверная часть"
+draft = true
+
+[packages]
+
+

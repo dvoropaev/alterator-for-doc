@@ -1,0 +1,8 @@
+type = "Component"
+name = "e2fsprogs"
+category = "fs"
+display_name.en = "E2fsprogs"
+display_name.ru = "E2fsprogs"
+
+[packages]
+e2fsprogs = {}

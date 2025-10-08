@@ -1,0 +1,8 @@
+type = "Component"
+name = "inxi"
+category = "utils"
+display_name.en = "inxi - system information tool"
+display_name.ru = "inxi - утилита создания отчётов о системе"
+
+[packages]
+inxi = {}

@@ -1,0 +1,10 @@
+type = "Component"
+name = "1c-platform-enterprise"
+category = "1c"
+display_name.en = "Platform «1C:Enterprise»"
+display_name.ru = "Платформа «1С:Предприятие»"
+draft = true
+
+[packages]
+
+

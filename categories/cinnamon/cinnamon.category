@@ -1,0 +1,7 @@
+type = "Category"
+name = "cinnamon"
+category = "de"
+display_name.en = "Cinnamon Desktop"
+display_name.ru = "Рабочий стол Cinnamon"
+comment.en = "Cinnamon desktop environment"
+comment.ru = "Среда рабочего стола Cinnamon"

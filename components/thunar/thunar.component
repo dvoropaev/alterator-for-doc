@@ -1,0 +1,11 @@
+type = "Component"
+name = "thunar"
+category = "xfce"
+display_name.en = "Thunar"
+display_name.ru = "Thunar"
+
+[packages]
+thunar = {}
+thunar-archive-plugin = {}
+thunar-media-tags-plugin = {}
+thunar-shares-plugin = {}

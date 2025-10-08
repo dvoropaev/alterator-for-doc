@@ -1,0 +1,8 @@
+type = "Component"
+name = "colord"
+category = "graphics"
+display_name.en = "Color profile management service"
+display_name.ru = "Служба управления цветовыми профилями"
+
+[packages]
+colord = {}

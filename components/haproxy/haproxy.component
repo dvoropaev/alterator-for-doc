@@ -1,0 +1,8 @@
+type = "Component"
+name = "haproxy"
+category = "network-infra"
+display_name.en = "HA-Proxy - TCP/HTTP reverse proxy for high availability environments"
+display_name.ru = "HA-Proxy - обратный прокси-сервер TCP/HTTP для среды высокой доступности"
+
+[packages]
+haproxy = {}

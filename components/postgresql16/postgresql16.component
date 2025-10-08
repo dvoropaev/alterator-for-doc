@@ -1,0 +1,17 @@
+type = "Component"
+name = "postgresql16"
+category = "databases"
+display_name.en = "PostgreSQL - 16"
+display_name.ru = "PostgreSQL - 16"
+
+[packages]
+postgresql16-server = {}
+postgresql16-contrib = {}
+
+#postgresql16-tcl = {}
+#postgresql16-credcheck = {}
+#postgresql16-pg_checksums = {}
+#postgresql16-pg_repack = {}
+#postgresql16-pgaudit = {}
+#postgresql16-pgauditlogtofile = {}
+#postgresql16-repmgr = {}

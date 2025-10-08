@@ -1,0 +1,8 @@
+type = "Component"
+name = "nvidia-encode"
+category = "graphics"
+display_name.en = "NVIDIA Video Encoding runtime"
+display_name.ru = "NVIDIA Video Encoding runtime"
+
+[packages]
+libnvidia-encode = {}

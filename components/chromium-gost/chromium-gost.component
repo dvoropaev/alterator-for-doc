@@ -1,0 +1,8 @@
+type = "Component"
+name = "chromium-gost"
+category = "browsers-apps"
+display_name.en = "Chromium-Gost browser"
+display_name.ru = "Браузер Chromium-Gost"
+
+[packages]
+chromium-gost = { arch = ["x86_64"] }

@@ -1,0 +1,8 @@
+type = "Component"
+name = "midnight-commander"
+category = "utils"
+display_name.en = "Midnight Commander"
+display_name.ru = "Midnight Commander"
+
+[packages]
+mc = {}

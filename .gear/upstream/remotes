@@ -1,0 +1,3 @@
+[remote "upstream"]
+	url = ssh://forgejo@altlinux.space/alterator/alt-components-base.git
+	fetch = +refs/heads/*:refs/remotes/upstream/*

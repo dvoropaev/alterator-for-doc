@@ -1,0 +1,13 @@
+type = "Component"
+name = "moodle"
+category = "network-infra"
+display_name.en = "Moodle"
+display_name.ru = "Moodle"
+comment.en = "Free and open-source learning management system"
+comment.ru = "Система управления образовательными электронными курсами"
+
+[packages]
+moodle = {}
+moodle-apache2 = {}
+moodle-local-mysql = {}
+installed-db-office-server-moodle = {}

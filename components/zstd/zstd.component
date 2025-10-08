@@ -1,0 +1,8 @@
+type = "Component"
+name = "zstd"
+category = "archiving"
+display_name.en = "zstd"
+display_name.ru = "zstd"
+
+[packages]
+zstd = {}

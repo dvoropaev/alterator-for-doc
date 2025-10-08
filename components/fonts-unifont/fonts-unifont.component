@@ -1,0 +1,10 @@
+type = "Component"
+name = "fonts-unifont"
+category = "fonts"
+display_name.en = "Unifont"
+display_name.ru = "Unifont"
+
+[packages]
+fonts-ttf-unifont = {}
+
+

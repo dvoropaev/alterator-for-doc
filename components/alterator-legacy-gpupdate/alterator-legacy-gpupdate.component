@@ -1,0 +1,8 @@
+type = "Component"
+name = "alterator-legacy-gpupdate"
+category = "alterator-legacy-system"
+display_name.en = "Group policy - Alterator (legacy)"
+display_name.ru = "Групповые политики - Альтератор (legacy)"
+
+[packages]
+alterator-gpupdate = {}

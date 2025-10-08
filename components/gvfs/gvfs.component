@@ -1,0 +1,9 @@
+type = "Component"
+name = "gvfs"
+category = "storage"
+display_name.en = "gvfs"
+display_name.ru = "gvfs"
+
+[packages]
+gvfs = {}
+gvfs-utils = {}

@@ -1,0 +1,10 @@
+type = "Component"
+name = "integration-component-line-production-control"
+category = "ant-digital-services"
+display_name.en = "Integration component line production control"
+display_name.ru = "Интеграционная компонента ЛПУ"
+draft = true
+
+[packages]
+
+

@@ -1,0 +1,8 @@
+type = "Component"
+name = "isomaster"
+category = "bootable-media-tools"
+display_name.en = "ISO Master"
+display_name.ru = "ISO Master"
+
+[packages]
+isomaster = {}

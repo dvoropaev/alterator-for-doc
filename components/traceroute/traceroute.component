@@ -1,0 +1,8 @@
+type = "Component"
+name = "traceroute"
+category = "network"
+display_name.en = "traceroute"
+display_name.ru = "traceroute"
+
+[packages]
+traceroute = {}

@@ -1,0 +1,410 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="ru">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Альт Домен | Базальт СПО</title>
+    <style type="text/css">
+        body {
+            font-family: fonts-ttf-google-croscore-arimo;
+            line-height: 1.2;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0;
+            color: #333333;
+            background-color: #f9f9f9;
+        }
+		table {
+			width: 100%;
+			border-collapse: collapse;
+        }
+		td {
+            padding: 10px;
+        }
+        h1 {
+            color: #333333;
+            font-size: 2.5em;
+            margin-bottom: 0.5em;
+        }
+        h2, h3 {
+            color: #333333;
+        }
+        .card {
+			padding-left: 1em;
+        }
+		b {
+            color: #f3921a;
+		}
+        ul {
+            padding-left: 1.5em;
+        }
+        li {
+        }
+        a {
+            color: #DA8317;
+            text-decoration: underline;
+            font-weight: 400;
+        }
+        footer {
+            padding: 2em;
+            color: #8a8e8f;
+            font-size: 0.8em;
+        }
+		</style>
+</head>
+<body>
+	<table>
+		<tr>
+			<td>
+                <center>
+                    <img src="/usr/share/icons/hicolor/scalable/apps/basealt.svg" alt="Базальт СПО" class="logo">
+                    <h1>Альт Домен</h1>
+					<h3>Редакция дистрибутива Альт Сервер</h3>
+					<br><br>
+                </center>
+
+            <div>
+            <h2>Содержание</h2>
+            <ul>
+                <li><a href="#overview">Обзор</a></li>
+				<li><a href="#editions">Редакции и компоненты</a></li>
+                <li><a href="#version-11.0">11.0</a>
+                    <ul>
+                        <li><a href="#version-11.0-details">Поддерживаемые архитектуры</a></li>
+                        <li><a href="#version-11.0-software">Программное обеспечение</a></li>
+                        <li><a href="#version-11.0-notes">Примечания к выпуску</a></li>
+                        <li><a href="#version-11.0-changes">Изменения</a></li>
+                    </ul>
+                </li>				
+                 <li><a href="#version-11.1">11.1</a>
+                    <ul>
+                        <li><a href="#version-11.1-details">Поддерживаемые архитектуры</a></li>
+                        <li><a href="#version-11.1-software">Программное обеспечение</a></li>
+                        <li><a href="#version-11.1-notes">Примечания к выпуску</a></li>
+                    </ul>
+				</li>
+				<li><a href="#version-11.2">11.2</a></li>
+                 <li><a href="#support">Сроки поддержки</a></li>
+                 <li><a href="#resources">Полезные ресурсы</a></li>
+			</ul>
+            </div>
+
+            <div id="overview">
+            <h2>Обзор</h2>
+            <p><strong>Альт Домен</strong> — дистрибутив, предоставляющий комплекс служб для управления доменом; разработан <a href="https://www.basealt.ru" target="_blank">ООО «Базальт СПО»</a> на базе <a href="https://www.altlinux.org/Одиннадцатая_платформа" target="_blank">Одиннадцатой платформы</a>.</p>
+           </div>
+        
+            <div id="editions">
+            <h2>Редакции и компоненты</h2>
+            <p>«Альт Домен» распространяется в рамках дистрибутива «Альт Сервер» 11.0 посредством редакции.</p>
+            <p>Редакция - набор компонентов, которые сопровождаются в данном продукте. Смена редакций возможна с помощью консольной утилиты управления модулями Альтератора alteratorctl и <a href="https://www.altlinux.org/Alteratorctl/editions_module" target="_blank">модуля выбора редакций</a>. Также выбор редакции доступен в графике: ЦУС → Система → О системе. </p>
+            <p>Компоненты - целостный набор пакетов, обеспечивающий функциональные возможности продукта. Для управления компонентами используется приложение alt-components - новый модуль ЦУС «Управление компонентами», - и <a href="https://www.altlinux.org/Alt-components" target="_blank">components</a> - модуль приложения alteratorctl.</p>
+			<h3>На данный момент в дистрибутиве доступны две редакции:</h3>
+            <div class="card">
+<table cellspacing="0" cellpadding="0" border="0">
+	<tbody>	
+		<tr>	
+			<td valign="top" nowrap="">
+				<small>
+					<font size="3"><b>Редакция Альт Сервер</b></font>
+					<br>
+					<font>Серверная операционная система</font>
+					<br>
+					<a href="https://www.basealt.ru/alt-server" target="_blank">Подробнее</a>
+				</small>
+			</td>
+			
+			<td valign="top" nowrap="">
+				<small>
+				</small>
+			</td>
+			
+			<td valign="top" nowrap="">
+				<small>
+					<font size="3"><b>Редакция Альт Домен</b></font>
+					<br>
+					<font>Комплекс служб управления доменом</font>
+					<br>
+					<a href="https://www.basealt.ru/alt-domain" target="_blank">Подробнее</a>
+				</small>
+			</td>
+		</tr>		
+	</tbody>
+</table>
+             </div>
+            </div>
+				
+            <div id="version-11.0">
+                 <h2>11.0</h2>
+            
+                 <div id="version-11.0-details">
+                <h3>Поддерживаемые архитектуры</h3>
+                <ul>
+                    <li>x86_64</li>
+                    <li>AArch64</li>
+                </ul>
+            </div>
+
+                 <div id="version-11.0-software">
+                <h3>Базовое программное обеспечение</h3>
+                <ul>
+                    <li>Ядро Linux 6.12</li>
+                    <li>Glibc 2.38</li>
+                    <li>systemd 255</li>
+                    <li>OpenSSL 3.3</li>
+                </ul>
+                <h3>Серверное программное обеспечение</h3>
+				<p>Системы управления базами данных</p>
+				<ul>
+                    <li>MariaDB 10.11</li>
+                    <li>PostgreSQL 17.5</li>
+                </ul>
+				<p>Сетевая инфраструктура</p>
+				<ul>
+					<li>Apache 2.4</li>
+					<li>Dovecot 2.3</li>
+					<li>Kea 2.7</li>
+                    <li>NGINX 1.26</li>
+					<li>OpenUDS 3.6</li>
+					<li>Proxmox VE Backup Server 3.3</li>
+                    <li>Squid 7.0</li>
+					<li>Zabbix 7.0</li>
+                </ul>
+				<p>Сетевые сервисы</p>
+				<ul>
+                    <li>BIND 9.18</li>
+				</ul>
+				<p>Периферийные устройства</p>
+				<ul>
+                    <li>CUPS 2.4</li>
+				</ul>
+				<p>Сетевые сервисы - Альтератор (legacy)</p>
+				<ul>
+                    <li>Postfix 3.8</li>
+				</ul>
+				<p>Доменная инфраструктура</p>
+				<ul>
+                    <li>Samba AD 4.20</li>
+                    <li>FreeIPA 4.12</li>
+				</ul>
+				<p>Контейнеризация</p>
+				<ul>
+                    <li>Podman 5.4</li>
+                    <li>Docker 27.1</li>
+                    <li>Kubernetes 1.31</li>
+                </ul>
+                <p>Дополнительное программное обеспечение</p>
+                <ul>
+                    <li>Рабочая среда GNOME 47</li>
+                    <li>Веб-браузер Chromium 135.0 (только x86_64)</li>
+                    <li>Веб-браузер Firefox ESR 128.10 (для AArch64)</li>
+                </ul>
+            </div>
+
+                 <div id="version-11.0-notes">
+                <h3>Примечания к выпуску</h3>
+                <ul>
+                    <li>Дистрибутив основан на десятой версии <a href="https://www.altlinux.org/Альт_Сервер_10" title="Альт Сервер 10">«Альт Сервер»</a>, отличается базовым набором компонентов и не устанавливается по умолчанию - список компонентов дистрибутива и их установка доступны после смены редакции.</li>
+                </ul>
+            </div>
+
+                 <div id="version-11.0-changes">
+                <h3>Изменения по сравнению с Альт Сервер 10</h3>
+                <ul>
+                    <li>Собрана на более свежей пакетной базе <a href="https://www.altlinux.org/Branches/p11" target="_blank">ветки p11.</a></li>
+                    <li>Вход в rescue запрашивает логин root с пустым паролем.</li>
+                    <li>Установка системы происходит в минимальном режиме — с графикой или без нее. Для установки доступны редакции «Альт Сервер» и «Альт Домен».</li>
+                    <li>В дистрибутиве представлена новая версия Альтератора — <a href="https://www.altlinux.org/Alterator_on_D-Bus" target="_blank">Альтератор на D-Bus</a>.</li>
+                    <li>Набор клиентских приложений: alterator-explorer, adt, alteratorctl.</li>
+                    <li>Новый модуль ЦУС <a href="https://www.altlinux.org/Alt-components" target="_blank">«Управление компонентами»</a> (приложение alt-components).</li>
+                    <li>В графической версии дистрибутива используется рабочая среда GNOME.</li>
+                    <li>Список избранных приложений, указанных в панели рабочего стола: Nautilus, Chromium (только x86_64) или Firefox (для AArch64), Console, ЦУС.</li>
+                </ul>
+            </div>
+            </div>
+				
+			            <div id="version-11.1">
+                 <h2>11.1</h2>
+            
+                 <div id="version-11.1-details">
+                <h3>Поддерживаемые архитектуры</h3>
+                <ul>
+                    <li>x86_64</li>
+                    <li>AArch64</li>
+                </ul>
+            </div>
+
+                 <div id="version-11.1-software">
+                <h3>Базовое программное обеспечение</h3>
+                <ul>
+                    <li>Ядро Linux 6.12</li>
+                    <li>Glibc 2.38</li>
+                    <li>systemd 255</li>
+                    <li>OpenSSL 3.3</li>
+                </ul>
+                <h3>Серверное программное обеспечение</h3>
+				<p>Системы управления базами данных</p>
+				<ul>
+                    <li>MariaDB 10.11</li>
+                    <li>PostgreSQL 17.5</li>
+                </ul>
+				<p>Сетевая инфраструктура</p>
+				<ul>
+					<li>Apache 2.4</li>
+					<li>Dovecot 2.3</li>
+					<li>Kea 2.7</li>
+                    <li>NGINX 1.26</li>
+					<li>OpenUDS 3.6</li>
+					<li>Proxmox VE Backup Server 3.4</li>
+                    <li>Squid 7.0</li>
+					<li>Zabbix 7.0</li>
+                </ul>
+				<p>Сетевые сервисы</p>
+				<ul>
+                    <li>BIND 9.18</li>
+				</ul>
+				<p>Периферийные устройства</p>
+				<ul>
+                    <li>CUPS 2.4</li>
+				</ul>
+				<p>Сетевые сервисы - Альтератор (legacy)</p>
+				<ul>
+                    <li>Postfix 3.8</li>
+				</ul>
+				<p>Доменная инфраструктура</p>
+				<ul>
+                    <li>Samba AD 4.20</li>
+                    <li>FreeIPA 4.12</li>
+				</ul>
+				<p>Контейнеризация</p>
+				<ul>
+                    <li>Podman 5.4</li>
+                    <li>Docker 27.1</li>
+                    <li>Kubernetes 1.31</li>
+                </ul>
+                <p>Дополнительное программное обеспечение</p>
+                <ul>
+                    <li>Рабочая среда GNOME 47</li>
+                    <li>Веб-браузер Chromium 137.0 (только x86_64)</li>
+                    <li>Веб-браузер Firefox ESR 128.10 (для AArch64)</li>
+                </ul>
+            </div>
+
+                 <div id="version-11.1-notes">
+                <h3>Примечания к выпуску</h3>
+                <ul>
+                    <li>Предыдущая версия <a href="https://www.altlinux.org/Альт_Домен_11" title="Альт Домен 11.0">«Альт Домен» 11.0</a>.</li>
+                </ul>
+            </div>
+
+                 <div id="version-11.1-changes">
+            </div>
+            </div>
+
+            <div id="version-11.2">
+            <h2>11.2</h2>
+            <p>В разработке. Ожидается в 2026 году.</p>
+        </div>
+
+            <div id="support">
+            <h2>Сроки поддержки</h2>
+            <div>
+                <p>В части обновлений по безопасности (если иное не предусмотрено условиями поставки):</p>
+                <ul>
+                    <li>1 января 2028 года для дистрибутива «Альт Домен»  11.0, но не ранее полугода с момента выпуска новой версии (12.0).</li>
+                </ul>
+            </div>
+        </div>
+
+            <div id="resources">
+			        <h2>Полезные ресурсы</h2>
+                        <div class="card">
+<table cellspacing="0" cellpadding="0" border="0">
+	<tbody>		
+		<tr>
+			<td valign="top">
+				<small>
+					<font size="3"><b>О продукте Альт Домен</b></font>
+					<br>
+					<font>Информация о серверном дистрибутиве</font>
+					<br>
+					<a href="https://www.basealt.ru/alt-domain" target="_blank">Подробнее</a>
+					<br><br>
+					
+					<font size="3"><b>Одиннадцатая платформа</b></font>
+					<br>
+					<font>Сведения о базовой платформе p11</font>
+					<br>
+					<a href="https://www.altlinux.org/Одиннадцатая_платформа" target="_blank">Подробнее</a>
+					<br><br>
+					
+					<font size="3"><b>Документация</b></font>
+					<br>
+					<font>Руководства и техническая документация</font>
+					<br>
+					<a href="https://www.basealt.ru/documentation" target="_blank">Открыть</a>
+
+				</small>
+			 </td>
+			 <td valign="top" nowrap="">
+				<small>
+				</small>
+			</td>
+			 <td valign="top" nowrap="">
+				<small>
+					<font size="3"><b>Сообщить о проблеме</b></font>
+					<br>
+					<font>Система отслеживания ошибок</font>
+					<br>
+					<a href="https://bugzilla.altlinux.org/enter_bug.cgi?product=Альт Сервер" target="_blank">Bugzilla</a>
+					<br><br>
+					
+					<font size="3"><b>Часто задаваемые вопросы</b></font>
+					<br>
+					<font>Ответы на распространенные вопросы</font>
+					<br>
+					<a href="https://www.altlinux.org/FAQ" target="_blank">Читать FAQ</a>
+					<br><br>
+					
+					<font size="3"><b>Обратная связь</b></font>
+					<br>
+					<font>Поделитесь своим мнением о продукте</font>
+					<br>
+					<a href="https://www.basealt.ru/product-feedback" target="_blank">Оставить отзыв</a>
+				</small>
+			</td>
+		</tr>
+	</tbody>
+</table>
+							<br><br>
+<h3>Отправьте запрос на сопровождение</h3>
+<table cellspacing="0" cellpadding="0" border="0">
+	<tbody>	
+			<tr valign="top" nowrap="">
+				<small>
+				</small>
+			</tr>
+		<tr>
+			<td>
+				<small>
+				<font size="3" face="arial"><b>Техподдержка</b></font>
+					<br>
+					<font>Заполните форму запроса, указав номер сертификата техподдержки</font>
+				    <br>
+				    <a href="https://www.basealt.ru/sr" target="_blank">Техподдержка</a>
+				<br><br>
+				</small>
+		    </td>
+		</tr>		
+	</tbody>
+</table>
+                </div>
+                </div>
+                <footer>
+    <p align="center">© ООО "БАЗАЛЬТ СПО" 2016-@YEAR@. Все права защищены.</p>
+    <p align="center"><a href="https://www.basealt.ru" target="_blank">basealt.ru</a> | <a href="https://www.altlinux.org/Главная_страница" target="_blank">altlinux.org</a></p>
+</footer>
+			</td>
+		</tr>	
+	</table>				
+</body>
+</html>

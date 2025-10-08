@@ -1,0 +1,9 @@
+type = "Component"
+name = "virtualbox-guest"
+category = "agents"
+display_name.en = "VirtualBox - guest additions"
+display_name.ru = "VirtualBox - гостевые дополнения"
+
+[packages]
+virtualbox-guest-additions = { arch = ["x86_64", "i586"] }
+kernel-modules-virtualbox-addition = { arch = ["x86_64", "i586"], kernel_module = true }

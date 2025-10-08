@@ -1,0 +1,5 @@
+type = "Category"
+name = "time"
+category = "system"
+display_name.en = "Time synchronization"
+display_name.ru = "Синхронизация времени"

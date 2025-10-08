@@ -1,0 +1,12 @@
+type = "Component"
+name = "stardict"
+category = "desktop-apps"
+display_name.en = "StarDict dictionary"
+display_name.ru = "Словарь StarDict"
+
+[packages]
+stardict = {}
+stardict-mueller7 = {}
+stardict-slovnyk_en-ru = {}
+stardict-slovnyk_ru-en = {}
+# WyabdcRealPeopleTTS = {}

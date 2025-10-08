@@ -1,0 +1,8 @@
+type = "Component"
+name = "gnome-boxes"
+category = "virt-tools"
+display_name.en = "Gnome Boxes"
+display_name.ru = "Gnome Boxes"
+
+[packages]
+gnome-boxes = {}

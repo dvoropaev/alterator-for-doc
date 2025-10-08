@@ -1,0 +1,8 @@
+type = "Component"
+name = "glusterfs11"
+category = "clusters"
+display_name.en = "GlusterFS11 - server"
+display_name.ru = "GlusterFS11 - сервер"
+
+[packages]
+glusterfs11-server = {}

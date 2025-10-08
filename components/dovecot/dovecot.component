@@ -1,0 +1,8 @@
+type = "Component"
+name = "dovecot"
+category = "network-infra"
+display_name.en = "Dovecot - server"
+display_name.ru = "Dovecot - сервер"
+
+[packages]
+dovecot = {}

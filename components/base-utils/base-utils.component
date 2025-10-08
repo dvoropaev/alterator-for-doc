@@ -1,0 +1,42 @@
+type = "Component"
+name = "base-utils"
+category = "core"
+display_name.en = "Base system utilities"
+display_name.ru = "Базовые системные утилиты"
+
+[packages]
+util-linux = {}
+acl = {}
+attr = {}
+libcap-utils = {}
+psmisc = {}
+termutils = {}
+
+coreutils = {}
+keyutils = {}
+gostsum = {}
+
+passwd = {}
+shadow-suite = {}
+shadow-utils = {}
+
+bash = {}
+bash-completion = {}
+bash-completion-util-linux = {}
+
+grep = {}
+sed = {}
+
+kbd = {}
+terminfo-extra = {}
+
+usbutils = {}
+pciutils = {}
+
+file = {}
+less = {}
+lsof = {}
+bc = {}
+xxd = {}
+
+wget = {}

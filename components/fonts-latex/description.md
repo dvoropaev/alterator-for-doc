@@ -1,0 +1,1 @@
+Xft - compatible versions of some LaTeX fonts, for visually displaying math symbols in LyX. You will need to install this package if your version of Qt uses Xft to display fonts (most recent systems). It is distributed under a distributable license.

@@ -1,0 +1,7 @@
+type = "Category"
+name = "fs"
+category = "system"
+display_name.en = "File subsystem"
+display_name.ru = "Файловая подсистема"
+comment.en = "File subsystem"
+comment.ru = "Файловая подсистема"

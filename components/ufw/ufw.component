@@ -1,0 +1,8 @@
+type = "Component"
+name = "ufw"
+category = "network"
+display_name.en = "UFW"
+display_name.ru = "UFW"
+
+[packages]
+ufw = {}

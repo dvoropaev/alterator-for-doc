@@ -1,0 +1,8 @@
+type = "Category"
+name = "doctor-web"
+category = "vendors"
+display_name.en = "Doctor Web"
+display_name.ru = "Доктор Веб"
+comment.en = "Doctor Web"
+comment.ru = "Доктор Веб"
+draft = true

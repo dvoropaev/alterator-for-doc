@@ -1,0 +1,9 @@
+type = "Component"
+name = "fonts-terminus"
+category = "fonts"
+display_name.en = "Terminus"
+display_name.ru = "Terminus"
+
+[packages]
+fonts-bitmap-terminus = {}
+

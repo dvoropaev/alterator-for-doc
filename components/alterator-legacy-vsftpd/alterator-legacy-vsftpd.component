@@ -1,0 +1,8 @@
+type = "Component"
+name = "alterator-legacy-vsftpd"
+category = "alterator-legacy-services"
+display_name.en = "vsftpd - Alterator (legacy)"
+display_name.ru = "vsftpd - Альтератор (legacy)"
+
+[packages]
+alterator-vsftpd = {}

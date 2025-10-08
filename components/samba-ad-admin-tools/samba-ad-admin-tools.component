@@ -1,0 +1,9 @@
+type = "Component"
+name = "samba-ad-admin-tools"
+category = "admin-apps"
+display_name.en = "Samba AD - administration tools"
+display_name.ru = "Samba AD - инструменты администрирования"
+
+[packages]
+admc = {}
+gpui = {}

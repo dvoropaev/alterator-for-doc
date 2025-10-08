@@ -1,0 +1,8 @@
+type = "Component"
+name = "lshw"
+category = "utils"
+display_name.en = "lshw - hardware information tool"
+display_name.ru = "lshw - утилита создания отчётов об оборудовании"
+
+[packages]
+lshw = {}

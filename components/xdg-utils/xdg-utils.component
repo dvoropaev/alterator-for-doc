@@ -1,0 +1,8 @@
+type = "Component"
+name = "xdg-utils"
+category = "xdg"
+display_name.en = "Utils"
+display_name.ru = "Утилиты"
+
+[packages]
+xdg-utils = {}

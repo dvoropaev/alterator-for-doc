@@ -1,0 +1,8 @@
+type = "Component"
+name = "fonts-liberation"
+category = "fonts"
+display_name.en = "Liberation"
+display_name.ru = "Liberation"
+
+[packages]
+fonts-ttf-liberation = {}

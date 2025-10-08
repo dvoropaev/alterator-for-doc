@@ -1,0 +1,8 @@
+type = "Component"
+name = "alterator-legacy-limits"
+category = "alterator-legacy-system"
+display_name.en = "Limits - Alterator (legacy)"
+display_name.ru = "Настройка ограничений - Альтератор (legacy)"
+
+[packages]
+alterator-limits = {}

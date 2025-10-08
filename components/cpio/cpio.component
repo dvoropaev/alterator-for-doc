@@ -1,0 +1,8 @@
+type = "Component"
+name = "cpio"
+category = "archiving"
+display_name.en = "cpio"
+display_name.ru = "cpio"
+
+[packages]
+cpio = {}

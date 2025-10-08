@@ -1,0 +1,9 @@
+type = "Component"
+name = "firmware-tools"
+category = "utils"
+display_name.en = "Firmware tools"
+display_name.ru = "Инструменты для работы с прошивками"
+
+[packages]
+ipmitool = {}
+iucode_tool = { arch = ["x86_64", "i586"] }

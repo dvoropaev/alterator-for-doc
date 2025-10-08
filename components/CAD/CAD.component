@@ -1,0 +1,15 @@
+type = "Component"
+name = "CAD"
+category = "apps"
+display_name.en = "CAD"
+display_name.ru = "CAD"
+
+[packages]
+engineering-2D-CAD = {}
+engineering-3D-CAD = {}
+engineering-3D-printing = {}
+engineering-APCS = {}
+engineering-CAM = {}
+engineering-CNC = {}
+engineering-EDA = {}
+engineering-misc = {}

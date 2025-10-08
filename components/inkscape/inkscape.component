@@ -1,0 +1,8 @@
+type = "Component"
+name = "inkscape"
+category = "graphics-apps"
+display_name.en = "Inkscape"
+display_name.ru = "Inkscape"
+
+[packages]
+inkscape = {}

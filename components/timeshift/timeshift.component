@@ -1,0 +1,8 @@
+type = "Component"
+name = "timeshift"
+category = "admin-apps"
+display_name.en = "Timeshift"
+display_name.ru = "Timeshift"
+
+[packages]
+timeshift = {}

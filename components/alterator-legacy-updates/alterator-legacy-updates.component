@@ -1,0 +1,8 @@
+type = "Component"
+name = "alterator-legacy-updates"
+category = "alterator-legacy-system"
+display_name.en = "System update - Alterator (legacy)"
+display_name.ru = "Обновление системы - Альтератор (legacy)"
+
+[packages]
+alterator-updates = {}

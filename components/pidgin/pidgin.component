@@ -1,0 +1,8 @@
+type = "Component"
+name = "pidgin"
+category = "desktop-apps"
+display_name.en = "Pidgin - instant messaging"
+display_name.ru = "Pidgin - обмен мгновенными сообщениями"
+
+[packages]
+pidgin = {}

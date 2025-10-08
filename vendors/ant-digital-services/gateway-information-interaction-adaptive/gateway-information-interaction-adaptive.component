@@ -1,0 +1,10 @@
+type = "Component"
+name = "gateway-information-interaction-adaptive"
+category = "ant-digital-services"
+display_name.en = "Gateway information interaction adaptive"
+display_name.ru = "Шлюз информационного взаимодействия адаптивный"
+draft = true
+
+[packages]
+
+

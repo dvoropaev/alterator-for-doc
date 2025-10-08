@@ -1,0 +1,8 @@
+type = "Component"
+name = "lxc"
+category = "containers"
+display_name.en = "Linux Containers"
+display_name.ru = "Linux Containers"
+
+[packages]
+lxc = {}

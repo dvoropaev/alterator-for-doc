@@ -1,0 +1,8 @@
+type = "Component"
+name = "cgroup"
+category = "containers"
+display_name.en = "Control groups infrastructure"
+display_name.ru = "Инфраструктура Control groups"
+
+[packages]
+cgroup = {}

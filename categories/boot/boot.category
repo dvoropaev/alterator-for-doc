@@ -1,0 +1,7 @@
+type = "Category"
+name = "boot"
+category = "system"
+display_name.en = "Boot"
+display_name.ru = "Загрузка"
+comment.en = "Boot subsystem"
+comment.ru = "Подсистема загрузки"

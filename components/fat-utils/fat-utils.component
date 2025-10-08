@@ -1,0 +1,11 @@
+type = "Component"
+name = "fat-utils"
+category = "fs"
+display_name.en = "FAT/FAT32/exFAT utilities"
+display_name.ru = "Утилиты FAT/FAT32/exFAT"
+
+[packages]
+dosfstools = {}
+fatresize = {}
+mtools = {}
+exfatprogs = {}

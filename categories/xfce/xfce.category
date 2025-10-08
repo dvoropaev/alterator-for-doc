@@ -1,0 +1,7 @@
+type = "Category"
+name = "xfce"
+category = "graphics"
+display_name.en = "Xfce Desktop"
+display_name.ru = "Рабочий стол Xfce"
+comment.en = "Xfce desktop environment"
+comment.ru = "Среда рабочего стола Xfce"

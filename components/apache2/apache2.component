@@ -1,0 +1,14 @@
+type = "Component"
+name = "apache2"
+category = "network-infra"
+display_name.en = "Apache2"
+display_name.ru = "Apache2"
+
+[packages]
+apache2 = {}
+apache2-httpd-prefork = {}
+apache2-mod_http2 = {}
+apache2-mod_auth_gssapi = {}
+apache2-mod_ssl = {}
+apache2-mod_ldap = {}
+apache2-mod_wsgi-py3 = {}

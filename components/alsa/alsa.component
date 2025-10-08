@@ -1,0 +1,12 @@
+type = "Component"
+name = "alsa"
+category = "media"
+display_name.en = "Advanced Linux Sound Architecture (ALSA)"
+display_name.ru = "Расширенная звуковая архитектура Linux (ALSA)"
+
+[packages]
+alsa-plugins-pulse = {}
+alsa-plugins = {}
+alsa-set-initial-options = {}
+alsa-utils = {}
+alsa-tools = {}

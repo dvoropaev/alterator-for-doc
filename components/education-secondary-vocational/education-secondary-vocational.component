@@ -1,0 +1,35 @@
+type = "Component"
+name = "education-secondary-vocational"
+category = "education-apps"
+display_name.en = "Software for secondary vocational"
+display_name.ru = "ПО для среднего профессионального образования"
+comment.en = "Educational software (secondary vocational)"
+comment.ru = "Образовательное программное обеспечение (среднее профессиональное образование)"
+
+[packages]
+inkscape = {}
+gimp = {}
+gimp-help-ru = {}
+blender = { arch = ["x86_64", "aarch64", "e2k"] }
+scribus = {}
+codeblocks = {}
+lazarus = { arch = ["x86_64", "i586"] }
+freecad = { arch = ["x86_64", "aarch64"] }
+qcad = { exclude_arch = ["e2k"] }
+wxMaxima = {}
+octave = {}
+gnuplot-qt = {}
+qt-creator = { exclude_arch = ["e2k", "i586"] }
+qt-creator-doc = { exclude_arch = ["e2k", "i586"] }
+cmake = {}
+ninja-build = {}
+qt5-base-devel = {}
+qt5-base-doc = {}
+logisim = {}
+fritzing = {}
+projectlibre = {}
+python3-tools = {}
+python3-module-pygame = {}
+python3-module-pygame-doc = {}
+python3-modules-curses = {}
+pip = {}

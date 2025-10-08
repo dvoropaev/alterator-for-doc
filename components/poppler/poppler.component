@@ -1,0 +1,8 @@
+type = "Component"
+name = "poppler"
+category = "graphics-tools"
+display_name.en = "PDF rendering library utils"
+display_name.ru = "Утилиты библиотеки рендеринга PDF"
+
+[packages]
+poppler = {}

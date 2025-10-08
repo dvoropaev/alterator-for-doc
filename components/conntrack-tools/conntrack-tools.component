@@ -1,0 +1,8 @@
+type = "Component"
+name = "conntrack-tools"
+category = "network-infra"
+display_name.en = "Conntrack-tools - connection tracking management and state synchronization"
+display_name.ru = "Conntrack-tools - управление отслеживанием соединений и синхронизация состояний"
+
+[packages]
+conntrack-tools = {}

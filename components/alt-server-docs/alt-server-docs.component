@@ -1,0 +1,8 @@
+type = "Component"
+name = "alt-server-docs"
+category = "docs"
+display_name.en = "ALT Server documentation"
+display_name.ru = "Документация Альт Сервер"
+
+[packages]
+docs-alt-server = {}

@@ -1,0 +1,8 @@
+type = "Component"
+name = "mono-runtime"
+category = "windows-env"
+display_name.en = "Mono-Runtime"
+display_name.ru = "Mono-Runtime"
+
+[packages]
+mono-full = {}

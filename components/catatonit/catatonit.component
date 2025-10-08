@@ -1,0 +1,8 @@
+type = "Component"
+name = "catatonit"
+category = "containers"
+display_name.en = "Catatonit"
+display_name.ru = "Catatonit"
+
+[packages]
+catatonit = {}

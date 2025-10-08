@@ -1,0 +1,18 @@
+type = "Component"
+name = "network-manager-gtk3"
+category = "system-apps"
+display_name.en = "NetworkManager - GTK3"
+display_name.ru = "NetworkManager - GTK3"
+
+[packages]
+NetworkManager = {}
+NetworkManager-l2tp-gtk3 = {}
+NetworkManager-openvpn-gtk3 = {}
+NetworkManager-openconnect-gtk = {}
+NetworkManager-pptp-gtk3 = {}
+NetworkManager-vpnc-gtk3 = {}
+NetworkManager-ssh-gtk3 = {}
+NetworkManager-strongswan-gtk3 = {}
+NetworkManager-sstp-gtk = {}
+NetworkManager-applet-gtk = {}
+NetworkManager-tui = {}

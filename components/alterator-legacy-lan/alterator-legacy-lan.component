@@ -1,0 +1,8 @@
+type = "Component"
+name = "alterator-legacy-lan"
+category = "alterator-legacy-network"
+display_name.en = "Ethernet - Alterator (legacy)"
+display_name.ru = "Ethernet - Альтератор (legacy)"
+
+[packages]
+alterator-net-eth = {}

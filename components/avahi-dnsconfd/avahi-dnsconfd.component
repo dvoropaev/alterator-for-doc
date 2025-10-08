@@ -1,0 +1,8 @@
+type = "Component"
+name = "avahi-dnsconfd"
+category = "network"
+display_name.en = "Avahi - DNS configuration"
+display_name.ru = "Avahi - DNS configuration"
+
+[packages]
+avahi-dnsconfd = {}

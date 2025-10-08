@@ -1,0 +1,52 @@
+type = "Component"
+name = "education-highschool"
+category = "education-apps"
+display_name.en = "Software for highschool"
+display_name.ru = "ПО для cредней школы"
+comment.en = "Educational software (highschool)"
+comment.ru = "Образовательное программное обеспечение (cредняя школа)"
+
+[packages]
+task-edu = {}
+kumir2 = {}
+codeblocks = {}
+kolourpaint = {}
+lazarus = { arch = ["x86_64", "i586"] }
+openscad = { arch = ["x86_64", "i586"] }
+synfigstudio = { arch = ["x86_64", "e2k", "i586"] }
+dia = {}
+trikStudio = {}
+marble = {}
+wxMaxima = {}
+bluefish = {}
+afce = {}
+qt5-translations = {}
+scratch = { arch = ["e2k", "i586"] }
+scratch-desktop = { arch = ["x86_64", "aarch64"] }
+qcad = { exclude_arch = ["e2k"] }
+trikStudioJunior = { exclude_arch = ["e2k"] }
+khelpcenter = { exclude_arch = ["e2k", "i586"] }
+freecad = { arch = ["x86_64", "aarch64"] }
+python3-tools = {}
+pip = {}
+python3-module-pygame = {}
+python3-module-pygame-doc = {}
+python3-modules-curses = {}
+gcompris-qt = {}
+gcompris-qt-voices-ru = {}
+ktouch = {}
+kbruch = {}
+parley = {}
+kanagram = {}
+khangman = {}
+kwordquiz = {}
+kturtle = {}
+step = {}
+kig = {}
+kmplot = {}
+kalgebra = {}
+cantor = {}
+rocs = {}
+kgeography = {}
+minuet = {}
+abiword = {}

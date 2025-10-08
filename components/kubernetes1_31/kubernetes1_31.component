@@ -1,0 +1,11 @@
+type = "Component"
+name = "kubernetes1_31"
+category = "containers"
+display_name.en = "Kubernetes 1.31"
+display_name.ru = "Kubernetes 1.31"
+
+[packages]
+"kubernetes1.31-kubeadm" = {}
+"kubernetes1.31-kubelet" = {}
+"kubernetes1.31-crio" = {}
+"cri-tools1.31" = {}

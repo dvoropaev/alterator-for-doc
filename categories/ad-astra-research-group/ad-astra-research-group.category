@@ -1,0 +1,8 @@
+type = "Category"
+name = "ad-astra-research-group"
+category = "vendors"
+display_name.en = "AdAstrA Research Group"
+display_name.ru = "АдАстрА Рисерч Груп"
+comment.en = "AdAstrA Research Group"
+comment.ru = "АдАстрА Рисерч Груп"
+draft = true

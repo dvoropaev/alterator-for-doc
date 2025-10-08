@@ -1,0 +1,8 @@
+type = "Component"
+name = "urbackup-client"
+category = "agents"
+display_name.en = "UrBackup - client"
+display_name.ru = "UrBackup - клиент"
+
+[packages]
+urbackup-client = {}

@@ -1,0 +1,8 @@
+type = "Component"
+name = "alterator-legacy-x11"
+category = "alterator-legacy-gui"
+display_name.en = "Display - Alterator (legacy)"
+display_name.ru = "Дисплей - Альтератор (legacy)"
+
+[packages]
+alterator-x11 = {}

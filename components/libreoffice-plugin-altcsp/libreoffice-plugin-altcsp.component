@@ -1,0 +1,8 @@
+type = "Component"
+name = "libreoffice-plugin-altcsp"
+category = "office-apps"
+display_name.en = "LibreOffice - plugin ALT CSP CryptoPro"
+display_name.ru = "LibreOffice - плагин ALT CSP КриптоПро"
+
+[packages]
+LibreOffice-plugin-altcsp = {}

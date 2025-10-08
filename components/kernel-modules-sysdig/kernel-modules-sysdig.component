@@ -1,0 +1,8 @@
+type = "Component"
+name = "kernel-modules-sysdig"
+category = "kernel"
+display_name.en = "Realtek RTL8188EU Wireless drivers"
+display_name.ru = "Драйверы для Realtek RTL8188EU Wireless"
+
+[packages]
+kernel-modules-sysdig = { kernel_module = true }

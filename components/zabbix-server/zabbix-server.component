@@ -1,0 +1,13 @@
+type = "Component"
+name = "zabbix-server"
+category = "network-infra"
+display_name.en = "Zabbix - server"
+display_name.ru = "Zabbix - сервер"
+
+[packages]
+zabbix-preinstall = {}
+
+# zabbix-server-pgsql = {}
+# zabbix-server-mysql = {}
+# zabbix-phpfrontend-apache2 = {}
+# "zabbix-phpfrontend-php8.2" = {}

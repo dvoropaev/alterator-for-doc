@@ -1,0 +1,8 @@
+type = "Category"
+name = "altx-soft"
+category = "vendors"
+display_name.en = "ALTX-SOFT"
+display_name.ru = "АЛТЭКС-СОФТ"
+comment.en = "ALTX-SOFT"
+comment.ru = "АЛТЭКС-СОФТ"
+draft = true

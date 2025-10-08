@@ -1,0 +1,8 @@
+type = "Component"
+name = "krb5-ticket-watcher"
+category = "desktop-apps"
+display_name.en = "Kerberos tickets watcher applet"
+display_name.ru = "Апплет отслеживания билетов Kerberos"
+
+[packages]
+krb5-ticket-watcher = {}

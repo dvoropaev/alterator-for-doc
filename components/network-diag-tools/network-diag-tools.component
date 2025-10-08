@@ -1,0 +1,12 @@
+type = "Component"
+name = "network-diag-tools"
+category = "network"
+display_name.en = "Network diagnostic tools"
+display_name.ru = "Средства сетевой диагностики"
+
+[packages]
+iftop = {}
+lft = {}
+mtr = {}
+# scanssh = {}
+whois = {}

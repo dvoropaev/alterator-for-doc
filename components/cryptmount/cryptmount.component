@@ -1,0 +1,8 @@
+type = "Component"
+name = "cryptmount"
+category = "admin-apps"
+display_name.en = "Utility for mounting an encrypted file system"
+display_name.ru = "Утилита для монтирования зашифрованных файловых систем"
+
+[packages]
+cryptmount = {}

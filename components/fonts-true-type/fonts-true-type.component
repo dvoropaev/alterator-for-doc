@@ -1,0 +1,8 @@
+type = "Component"
+name = "fonts-true-type"
+category = "fonts"
+display_name.en = "TrueType"
+display_name.ru = "TrueType"
+
+[packages]
+fonts-ttf-xorg = {}

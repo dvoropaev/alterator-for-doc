@@ -1,0 +1,10 @@
+type = "Component"
+name = "yandex"
+category = "browsers-apps"
+display_name.en = "Yandex Browser"
+display_name.ru = "Яндекс Браузер"
+comment.en = "Web-browser"
+comment.ru = "Веб-браузер"
+
+[packages]
+yandex-browser-stable = {}

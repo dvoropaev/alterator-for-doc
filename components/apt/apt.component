@@ -1,0 +1,15 @@
+type = "Component"
+name = "apt"
+category = "core"
+display_name.en = "APT"
+display_name.ru = "APT"
+
+[packages]
+apt = {}
+apt-repo = {}
+apt-conf-branch = {}
+apt-https = {}
+apt-rsync = {}
+apt-scripts = {}
+#apt-updatecache = {}
+update-kernel = {}

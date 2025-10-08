@@ -1,0 +1,8 @@
+type = "Component"
+name = "alterator-legacy-xinetd"
+category = "alterator-legacy-services"
+display_name.en = "Xinetd management - Alterator (legacy)"
+display_name.ru = "Управление Xinetd - Альтератор (legacy)"
+
+[packages]
+alterator-xinetd = {}

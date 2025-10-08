@@ -1,0 +1,8 @@
+type = "Component"
+name = "alterator-legacy-roles"
+category = "alterator-legacy-system"
+display_name.en = "Configuring Roles - Alterator (legacy)"
+display_name.ru = "Управление ролями - Альтератор (legacy)"
+
+[packages]
+alterator-roles = {}

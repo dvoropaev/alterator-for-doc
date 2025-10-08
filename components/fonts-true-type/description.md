@@ -1,0 +1,1 @@
+TrueType (TTF) is a scalable font format developed by Apple in the late 1980s and later adopted by Microsoft. It provides high quality rendering on screen and in print due to its built-in hinting mechanisms. TrueType fonts are widely used in various operating systems and support many languages and characters. It is distributed under the MIT/X11 license.

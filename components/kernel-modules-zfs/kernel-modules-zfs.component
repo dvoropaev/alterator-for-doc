@@ -1,0 +1,8 @@
+type = "Component"
+name = "kernel-modules-zfs"
+category = "kernel"
+display_name.en = "Drivers for ZFS"
+display_name.ru = "Драйверы для ZFS"
+
+[packages]
+kernel-modules-zfs = { kernel_module = true }

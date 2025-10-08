@@ -1,0 +1,10 @@
+type = "Component"
+name = "security-analysis-redcheck-2_6"
+category = "altx-soft"
+display_name.en = "Security analysis RedCheck-2.6"
+display_name.ru = "Средство анализа защищенности RedCheck-2.6"
+draft = true
+
+[packages]
+
+

@@ -1,0 +1,8 @@
+type = "Component"
+name = "gimagereader-qt"
+category = "ocr-apps"
+display_name.en = "gImageReader (QT-frontend to tesseract)"
+display_name.ru = "gImageReader (QT-фронтенд для tesseract)"
+
+[packages]
+gimagereader-qt5 = {}

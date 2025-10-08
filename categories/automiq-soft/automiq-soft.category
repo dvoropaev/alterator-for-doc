@@ -1,0 +1,8 @@
+type = "Category"
+name = "automiq-soft"
+category = "vendors"
+display_name.en = "Automiq Soft"
+display_name.ru = "Атомик Софт"
+comment.en = "Automiq Soft"
+comment.ru = "Атомик Софт"
+draft = true

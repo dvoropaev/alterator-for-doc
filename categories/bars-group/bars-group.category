@@ -1,0 +1,8 @@
+type = "Category"
+name = "bars-group"
+category = "vendors"
+display_name.en = "BARS Group"
+display_name.ru = "БАРС Груп"
+comment.en = "BARS Group"
+comment.ru = "БАРС Груп"
+draft = true

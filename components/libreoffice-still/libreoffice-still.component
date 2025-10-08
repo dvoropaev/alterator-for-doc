@@ -1,0 +1,14 @@
+type = "Component"
+name = "libreoffice-still"
+category = "office-apps"
+display_name.en = "LibreOffice - Productivity Suite"
+display_name.ru = "LibreOffice - Productivity Suite"
+
+[packages]
+LibreOffice-still = {}
+LibreOffice-still-langpack-ru = { language = "ru" }
+LibreOffice-still-kde6 = { desktop = ["KDE6"] }
+
+#LibreOffice-still-integrated = {}
+#LibreOffice-still-extensions = {}
+#LibreOffice-still-mimetypes = {}

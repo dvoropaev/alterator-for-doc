@@ -1,0 +1,8 @@
+type = "Category"
+name = "ascon-design-systems"
+category = "vendors"
+display_name.en = "ASCON-Design systems"
+display_name.ru = "АСКОН-Системы проектирования"
+comment.en = "ASCON-Design systems"
+comment.ru = "АСКОН-Системы проектирования"
+draft = true

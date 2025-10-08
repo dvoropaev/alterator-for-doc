@@ -1,0 +1,8 @@
+type = "Component"
+name = "kernel-modules-drbd9"
+category = "kernel"
+display_name.en = "Drivers for DRDB"
+display_name.ru = "Драйверы для DRDB"
+
+[packages]
+kernel-modules-drbd9 = { kernel_module = true }

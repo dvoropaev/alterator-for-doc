@@ -1,0 +1,68 @@
+type = "Component"
+name = "gnome-base"
+category = "gnome"
+display_name.en = "GNOME - base"
+display_name.ru = "GNOME - базовый"
+
+[packages]
+gnome-session-wayland = {}
+gnome-session-xsession = {}
+gnome-control-center = {}
+gnome-shell = {}
+gnome-shell-extensions = {}
+gnome-extensions-app = {}
+gnome-tour = {}
+
+userpasswd-gnome = {}
+
+# Panel Mode
+alt-panelmoded = {}
+alt-gnome-experimental-settings = {}
+
+#gnome-icon-theme <- gnome-shell | yelp
+#gnome-icon-theme-symbolic <- gnome-shell | gnome-session | yelp
+
+gnome-console = {}
+gnome-text-editor = {}
+gnome-logs = {}
+gnome-backgrounds = {}
+gnome-calculator = {}
+gnome-clocks = {}
+file-roller = {}
+loupe = {}
+snapshot = {}
+gtkhash = {}
+papers = {}
+key-rack = {}
+
+gnome-tweaks = {}
+dconf-editor = {}
+
+gvfs-backends = {}
+#fuse-gvfs <- gfvs <- (every backend)
+nautilus = {}
+nautilus-share = {}
+samba-usershares = {}
+
+yelp = {}
+gnome-user-docs = {}
+
+gnome-themes-extra = {}
+libgtk2-engine-adwaita = {}
+fonts-otf-abattis-cantarell = {}
+# Fix problem with QT5 and QT6 window decoration in Wayland
+qadwaitadecorations-qt5 = {}
+qadwaitadecorations-qt6 = {}
+
+# 
+#resources
+
+# alternative old
+#gnome-terminal
+
+# misc
+#power-profiles-daemon
+#g4music
+
+# Autostart manager
+#ignition-adw

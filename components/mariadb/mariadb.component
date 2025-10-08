@@ -1,0 +1,8 @@
+type = "Component"
+name = "mariadb"
+category = "databases"
+display_name.en = "MariaDB"
+display_name.ru = "MariaDB"
+
+[packages]
+mariadb = {}

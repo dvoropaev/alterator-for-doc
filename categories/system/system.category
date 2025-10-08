@@ -1,0 +1,6 @@
+type = "Category"
+name = "system"
+display_name.en = "System"
+display_name.ru = "Система"
+comment.en = "System"
+comment.ru = "Система"

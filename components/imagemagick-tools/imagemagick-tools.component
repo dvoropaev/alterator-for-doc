@@ -1,0 +1,8 @@
+type = "Component"
+name = "imagemagick-tools"
+category = "graphics-tools"
+display_name.en = "ImageMagick tools"
+display_name.ru = "Инструменты ImageMagick"
+
+[packages]
+ImageMagick-tools = {}

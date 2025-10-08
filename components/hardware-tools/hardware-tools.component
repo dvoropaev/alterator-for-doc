@@ -1,0 +1,15 @@
+type = "Component"
+name = "hardware-tools"
+category = "utils"
+display_name.en = "Hardware tools"
+display_name.ru = "Инструменты для аппаратных средств"
+
+[packages]
+lm_sensors3 = {}
+cpupower = {}
+irqbalance = {}
+
+lshw = {}
+hw-probe = {}
+hwinfo = {}
+hwinfo-utils = {}

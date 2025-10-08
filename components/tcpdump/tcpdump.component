@@ -1,0 +1,8 @@
+type = "Component"
+name = "tcpdump"
+category = "network"
+display_name.en = "tcpdump - network traffic monitoring tool"
+display_name.ru = "tcpdump - инструмент мониторинга сетевого трафика"
+
+[packages]
+tcpdump = {}

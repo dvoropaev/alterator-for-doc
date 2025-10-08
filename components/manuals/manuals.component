@@ -1,0 +1,13 @@
+type = "Component"
+name = "manuals"
+category = "core"
+display_name.en = "Reference information"
+display_name.ru = "Cправочная информация"
+
+[packages]
+info = {}
+pinfo = {}
+man-db = {}
+man-pages = {}
+man-pages-ru = {}
+# man-pages-ru-extra = {}

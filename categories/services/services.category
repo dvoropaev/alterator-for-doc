@@ -1,0 +1,7 @@
+type = "Category"
+name = "services"
+category = "system"
+display_name.en = "System services"
+display_name.ru = "Системные службы"
+comment.en = "System services"
+comment.ru = "Системные службы"

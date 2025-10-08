@@ -1,0 +1,10 @@
+type = "Component"
+name = "information-management-system"
+category = "ant-digital-services"
+display_name.en = "Information management system"
+display_name.ru = "Информационная управляющая система"
+draft = true
+
+[packages]
+
+

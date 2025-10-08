@@ -1,0 +1,8 @@
+type = "Component"
+name = "ipcalc"
+category = "network"
+display_name.en = "ipcalc"
+display_name.ru = "ipcalc"
+
+[packages]
+ipcalc = {}

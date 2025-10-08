@@ -1,0 +1,8 @@
+type = "Component"
+name = "fonts-xo"
+category = "fonts"
+display_name.en = "XO Fonts"
+display_name.ru = "XO Fonts"
+
+[packages]
+fonts-ttf-XO = {}

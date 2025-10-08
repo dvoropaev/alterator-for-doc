@@ -1,0 +1,5 @@
+type = "Category"
+name = "graphics-apps"
+category = "apps"
+display_name.en = "Graphics manipulation applications"
+display_name.ru = "Приложения для работы с графикой"

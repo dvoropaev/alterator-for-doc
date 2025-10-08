@@ -1,0 +1,9 @@
+type = "Component"
+name = "fonts-croscore-arimo"
+category = "fonts"
+display_name.en = "Croscore Arimo"
+display_name.ru = "Croscore Arimo"
+
+[packages]
+fonts-ttf-google-croscore-arimo = {}
+

@@ -1,0 +1,19 @@
+type = "Component"
+name = "samba-ad-client-support"
+category = "domain-infra"
+display_name.en = "Samba AD - client infrastructure support"
+display_name.ru = "Samba AD - поддержка клиентской инфраструктуры"
+
+[packages]
+task-auth-ad-sssd = {}
+task-auth-ad-winbind = {}
+alterator-roles-common = {}
+adcli = {}
+gpupdate = {}
+gpresult = {}
+
+dconf = {}
+packagekit = {}
+xdg-user-dirs = {}
+
+alterator-auth = {}

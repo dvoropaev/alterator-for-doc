@@ -1,0 +1,10 @@
+type = "Component"
+name = "bars-web-views"
+category = "bars-group"
+display_name.en = "BARS.Web-Views"
+display_name.ru = "БАРС.Web-Своды"
+draft = true
+
+[packages]
+
+

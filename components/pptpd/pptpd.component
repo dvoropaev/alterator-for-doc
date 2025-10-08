@@ -1,0 +1,8 @@
+type = "Component"
+name = "pptpd"
+category = "network-infra"
+display_name.en = "PPTPd - PPTP server for establishing VPN connections"
+display_name.ru = "PPTPd - сервер PPTP для организации VPN соединений"
+
+[packages]
+pptpd = {}

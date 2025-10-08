@@ -1,0 +1,9 @@
+type = "Component"
+name = "postgresql17-1c"
+category = "databases"
+display_name.en = "PostgreSQL 1C - 17"
+display_name.ru = "PostgreSQL 1C - 17"
+
+[packages]
+postgresql17-1C-server = {}
+postgresql17-1C-contrib = {}

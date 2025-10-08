@@ -1,0 +1,8 @@
+type = "Component"
+name = "ADT"
+category = "admin-apps"
+display_name.en = "ADT"
+display_name.ru = "ADT"
+
+[packages]
+adt = {}

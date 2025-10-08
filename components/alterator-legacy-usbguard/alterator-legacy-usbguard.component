@@ -1,0 +1,8 @@
+type = "Component"
+name = "alterator-legacy-usbguard"
+category = "alterator-legacy-system"
+display_name.en = "USBGuard - Alterator (legacy)"
+display_name.ru = "USBGuard - Альтератор (legacy)"
+
+[packages]
+alterator-usbguard = {}

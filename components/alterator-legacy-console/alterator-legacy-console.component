@@ -1,0 +1,8 @@
+type = "Component"
+name = "alterator-legacy-console"
+category = "alterator-legacy-system"
+display_name.en = "Console emulator for Web-interface - Alterator (legacy)"
+display_name.ru = "Эмулятор консоли для Web-интерфейса - Альтератор (legacy)"
+
+[packages]
+alterator-console = {}

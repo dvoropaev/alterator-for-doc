@@ -1,0 +1,10 @@
+type = "Component"
+name = "osec"
+category = "security"
+display_name.en = "Lightweight files integrity check"
+display_name.ru = "Легковесная проверка целостности файлов"
+
+[packages]
+osec = {}
+osec-cronjob = {}
+osec-mailreport = {}

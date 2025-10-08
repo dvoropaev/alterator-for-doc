@@ -1,0 +1,10 @@
+type = "Component"
+name = "regula-document-reader-desktop-linux"
+category = "regula-baltija"
+display_name.en = "Regula Document Reader Desktop Linux"
+display_name.ru = "Regula Document Reader Desktop Linux"
+draft = true
+
+[packages]
+
+

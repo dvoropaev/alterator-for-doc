@@ -1,0 +1,9 @@
+type = "Component"
+name = "grub"
+category = "boot"
+display_name.en = "GRUB - boot loader"
+display_name.ru = "GRUB - загрузчик"
+
+[packages]
+grub-efi = {}
+grub-pc = { arch = ["x86_64", "i586"] }

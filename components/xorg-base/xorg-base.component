@@ -1,0 +1,45 @@
+type = "Component"
+name = "xorg-base"
+category = "graphics"
+display_name.en = "Xorg - base"
+display_name.ru = "Xorg - базовый"
+
+[packages]
+xauth = {}
+x-cursor-theme-jimmac = {}
+xinit = {}
+xinput = {}
+xorg-drv-amdgpu = {}
+xorg-drv-ati = {}
+xorg-drv-cirrus = {}
+xorg-drv-evdev = {}
+xorg-drv-fbdev = {}
+xorg-drv-intel = { arch = ["x86_64", "i586"] }
+xorg-drv-joystick = {}
+xorg-drv-libinput = {}
+xorg-drv-mga = {}
+xorg-drv-nouveau = {}
+xorg-drv-qxl = {}
+xorg-drv-radeon = {}
+xorg-drv-spiceqxl = {}
+xorg-drv-synaptics = {}
+xorg-drv-vboxvideo = { arch = ["x86_64", "i586"] }
+xorg-drv-vesa = { arch = ["x86_64", "i586"] }
+xorg-drv-video = {}
+xorg-drv-vmware = { arch = ["x86_64", "i586"] }
+xorg-drv-void = {}
+xorg-drv-wacom = {}
+# xorg-96dpi = {}
+xorg-dri-virtio = {}
+xorg-dri-vmwgfx = { arch = ["x86_64", "i586"] }
+xorg-dri-armsoc = { arch = ["aarch64"] }
+xorg-dri-intel = { arch = ["x86_64", "i586"] }
+xorg-dri-nouveau = { arch = ["x86_64", "i586", "aarch64"] }
+xorg-dri-radeon = {}
+xorg-dri-swrast = {}
+xorg-extension-vnc = {}
+xorg-proto-devel = {}
+xorg-server = {}
+xorg-utils = {}
+xterm = {}
+xorg-xwayland = {}

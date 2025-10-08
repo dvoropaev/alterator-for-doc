@@ -1,0 +1,9 @@
+type = "Component"
+name = "keycloak"
+category = "network-infra"
+display_name.en = "Keycloak"
+display_name.ru = "Keycloak"
+
+[packages]
+# build for x86_64 only yet
+keycloak = { arch = ["x86_64"] }

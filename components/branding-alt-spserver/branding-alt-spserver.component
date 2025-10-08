@@ -1,0 +1,14 @@
+type = "Component"
+name = "branding-alt-spserver"
+category = "brandings"
+display_name.en = "ALT SP Server branding"
+display_name.ru = "Альт СП Сервер брендинг"
+
+[packages]
+branding-alt-spserver-alterator = {}
+branding-alt-spserver-bootloader = {}
+branding-alt-spserver-bootsplash = {}
+branding-alt-spserver-graphics = {}
+branding-alt-spserver-indexhtml = {}
+branding-alt-spserver-notes = {}
+branding-alt-spserver-release = {}

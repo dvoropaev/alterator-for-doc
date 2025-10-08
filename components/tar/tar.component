@@ -1,0 +1,8 @@
+type = "Component"
+name = "tar"
+category = "archiving"
+display_name.en = "tar"
+display_name.ru = "tar"
+
+[packages]
+tar = {}

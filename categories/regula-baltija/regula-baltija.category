@@ -1,0 +1,8 @@
+type = "Category"
+name = "regula-baltija"
+category = "vendors"
+display_name.en = "Regula Baltija"
+display_name.ru = "Regula Baltija"
+comment.en = "Regula Baltija"
+comment.ru = "Regula Baltija"
+draft = true

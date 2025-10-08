@@ -1,0 +1,9 @@
+type = "Component"
+name = "system-config-printer"
+category = "admin-apps"
+display_name.en = "Graphic printer configurator"
+display_name.ru = "Графический конфигуратор принтеров"
+
+[packages]
+system-config-printer = {}
+system-config-printer-udev = {}

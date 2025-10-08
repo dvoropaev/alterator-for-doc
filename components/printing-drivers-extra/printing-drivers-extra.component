@@ -1,0 +1,21 @@
+type = "Component"
+name = "printing-drivers-extra"
+category = "printing"
+display_name.en = "Drivers - extra"
+display_name.ru = "Драйверы - расширенный"
+
+[packages]
+printer-driver-brlaser = {}
+printer-driver-capt = {}
+printer-driver-foo2capt = {}
+printer-driver-foo2kyo = {}
+printer-driver-lbp660 = { arch = ["x86_64", "i586"] }
+printer-driver-lxx74 = {}
+printer-driver-magicolor2430dl = {}
+printer-driver-magicolor2530dl = {}
+printer-driver-magicolor5430dl = {}
+printer-driver-magicolor5440dl = {}
+printer-driver-oki = {}
+printer-driver-rname = {}
+printer-drivers-X11 = {}
+printer-driver-Xerox-Phaser-3200MFP = {}

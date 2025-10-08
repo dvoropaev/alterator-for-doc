@@ -1,0 +1,8 @@
+type = "Component"
+name = "hyperv-daemons"
+category = "agents"
+display_name.en = "HyperV daemons suite"
+display_name.ru = "HyperV daemons suite"
+
+[packages]
+hyperv-daemons = {}

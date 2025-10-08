@@ -1,0 +1,8 @@
+type = "Component"
+name = "wine"
+category = "windows-env"
+display_name.en = "Wine"
+display_name.ru = "Wine"
+
+[packages]
+wine-full = { arch = ["x86_64", "i586", "aarch64"] }

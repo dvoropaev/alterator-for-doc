@@ -1,0 +1,14 @@
+type = "Component"
+name = "education-tools"
+category = "education-apps"
+display_name.en = "Helper software"
+display_name.ru = "Вспомогательное ПО"
+
+[packages]
+grub-customizer = { exclude_arch = ["e2k"] }
+starboard-preinstall = { arch = ["x86_64", "i586"] }
+bumblebee = { arch = ["x86_64", "i586"] }
+virtualbox-guest-utils = { arch = ["x86_64", "i586"] }
+xorg-dri-intel = { arch = ["x86_64", "i586"] }
+adp = {}
+rtc = { arch = ["e2k"] }

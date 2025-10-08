@@ -1,0 +1,76 @@
+type = "Component"
+name = "education-lite"
+category = "education-apps"
+display_name.en = "Lightweight basic set"
+display_name.ru = "Облегчённый базовый набор"
+
+[packages]
+audacity = {}
+bluefish = {}
+codeblocks = {}
+codeblocks-contrib = {}
+dia = {}
+calibre = { exclude_arch = ["e2k", "i586"] }
+goldendict-ng = { exclude_arch = ["e2k", "i586"] }
+stardict = { arch = ["e2k", "i586"] }
+dict-mueller7-utf8 = {}
+gcc = {}
+inkscape = {}
+gimp = {}
+gimp-help-ru = {}
+java-devel = {}
+kdenlive = {}
+scribus = {}
+shotwell = { exclude_arch = ["e2k"] }
+logisim = {}
+basic256 = {}
+geany = {}
+geany-themes = {}
+geany-plugins = { exclude_arch = ["e2k"] }
+freemind = { arch = ["e2k"] }
+gnome-games-klotski = {}
+gnome-games-mahjongg = {}
+gnome-games-aisleriot = { exclude_arch = ["e2k"] }
+xsane = {}
+xsane-doc-ru = {}
+simple-scan = {}
+imagination = {}
+connector = {}
+fonts-otf-mozilla-fira = {}
+kumir2 = {}
+octave = {}
+gnuplot-qt = {}
+wxMaxima = {}
+gimagereader-gtk = {}
+tesseract = {}
+tesseract-langpack-ru = {}
+tesseract-langpack-en = {}
+qt5-translations = {}
+khelpcenter = { exclude_arch = ["e2k", "i586"] }
+netpolice-filter = {}
+netpolice-main = {}
+ddclient = { exclude_arch = ["e2k"] }
+perl-IO-Socket-SSL = {}
+docx2txt = {}
+odt2txt = {}
+puppet = { exclude_arch = ["e2k"] }
+x11spice = { arch = ["x86_64", "aarch64"] }
+openssh-server = { arch = ["x86_64", "aarch64"] }
+LibreOffice-still-extensions = { exclude_arch = ["e2k"] }
+LibreOffice-still-integrated = { exclude_arch = ["e2k"] }
+LibreOffice-still-gtk3 = { exclude_arch = ["e2k"] }
+LibreOffice-still-langpack-ru = { exclude_arch = ["e2k"] }
+libreoffice-languagetool = { }
+LibreOffice-extensions = { arch = ["e2k"] }
+LibreOffice-integrated = { arch = ["e2k"] }
+LibreOffice-gtk3 = { arch = ["e2k"] }
+LibreOffice-langpack-ru = { arch = ["e2k"] }
+mythes-ru = {}
+hyphen-ru = {}
+gst-plugins-bad = {}
+gst-plugins-ugly = {}
+pentaho-reporting-flow-engine = {}
+perl-DBD-mysql = {}
+postgresql-jdbc = {}
+mysql-connector-java = {}
+thunderbird = { arch = ["x86_64", "aarch64"] }
