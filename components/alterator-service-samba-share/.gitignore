@@ -1,0 +1,6 @@
+/samba_share.sh
+/service-samba-shares
+/service-samba-shares.backend
+/samba-shares.log
+/service-samba-shares.service
+/copy_files.sh
