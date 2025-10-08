@@ -1,0 +1,68 @@
+name = "diagnostic_tool4"
+type = "Backend"
+module = "executor"
+interface = "diag1"
+
+[methods.Info]
+execute = "cat /usr/share/alterator/diagnostic_tool4_user/diagnostic_tool4_user.diag"
+stdout_bytes = true
+thread_limit = 3
+action_id = "Info"
+
+[methods.Run]
+execute = "/usr/lib/adt-test-tools/adt-test-tool-user {param}"
+stdout_signal_name = "diag1_stdout_signal"
+stderr_signal_name = "diag1_stderr_signal"
+action_id = "Run"
+
+[methods.List]
+execute = "/usr/lib/adt-test-tools/adt-test-tool-user -l"
+stdout_strings = true
+action_id = "List"
+
+[methods.Report]
+execute = "/usr/lib/adt-test-tools/adt-test-tool-user -r"
+stdout_bytes = true
+action_id = "Report"
+
+[methods.Run.environment.common]
+default = "??"
+
+[methods.Run.environment.param1_session]
+default = "!!"
+
+[methods.Run.environment.param2_session]
+default = "!!"
+
+[methods.Run.environment.param3_session]
+default = "!!"
+
+[methods.Run.environment.param4_session]
+default = "!!"
+
+[methods.Run.environment.param5_session]
+default = "!!"
+
+[methods.Run.environment.param6_session]
+default = "!!"
+
+[methods.Run.environment.param7_session]
+default = "!!"
+
+[methods.Run.environment.param8_session]
+default = "!!"
+
+[methods.Run.environment.param9_session]
+default = "!!"
+
+[methods.Run.environment.param10_session]
+default = "!!"
+
+[methods.Run.environment.param11_session]
+default = "!!"
+
+[methods.Run.environment.param12_session]
+default = "!!"
+
+[methods.Run.environment.param13_session]
+default = "!!"

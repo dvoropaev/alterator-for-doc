@@ -1,0 +1,27 @@
+name = "diagnostic_tool3-user"
+type = "Diag"
+category = "adtCategory"
+icon = "system-run"
+report_suffix = "zip"
+display_name.en = "default nema diagnostic tool3-user"
+display_name.ru = "диагностический инструмент3-user"
+comment.en = "defulat description diag tool3-user"
+comment.ru = "описание диагностического инструмента3-user"
+
+[tests.test1]
+display_name.en = "default name of test1 of diagnostic tool 3-user"
+display_name.ru = "тест 1 диагностического инструмента 3-user"
+comment.en = "default description of test 1 in diagnostic tool 3-user"
+comment.ru = "описание теста 1 диагностического инструмента 3-user"
+
+[tests.test2]
+display_name.en = "default name of test1 of diagnostic tool 3-user"
+display_name.ru = "тест 2 диагностического инструмента 3-user"
+comment.en = "default description of test 2 in diagnostic tool 3-user"
+comment.ru = "описание теста 2 диагностического инструмента 3-user"
+
+[tests.test3]
+display_name.en = "default name of test1 of diagnostic tool 3-user"
+display_name.ru = "тест 3 диагностического инструмента 3-user"
+comment.en = "default description of test 3 in diagnostic tool 3-user"
+comment.ru = "описание теста 3 диагностического инструмента 3-user"

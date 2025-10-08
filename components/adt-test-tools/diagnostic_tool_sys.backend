@@ -1,0 +1,26 @@
+name = "diagnostic_tool"
+type = "Backend"
+module = "executor"
+interface = "diag1"
+
+[methods.Info]
+execute = "cat /usr/share/alterator/diagnostic_tool/diagnostic_tool_sys.diag"
+stdout_bytes = true
+thread_limit = 3
+action_id = "Info"
+
+[methods.Run]
+execute = "/usr/lib/adt-test-tools/adt-test-tool {param}"
+stdout_signal_name = "diag1_stdout_signal"
+stderr_signal_name = "diag1_stderr_signal"
+action_id = "Run"
+
+[methods.List]
+execute = "/usr/lib/adt-test-tools/adt-test-tool -l"
+stdout_strings = true
+action_id = "List"
+
+[methods.Report]
+execute = "/usr/lib/adt-test-tools/adt-test-tool -r"
+stdout_bytes = true
+action_id = "Report"

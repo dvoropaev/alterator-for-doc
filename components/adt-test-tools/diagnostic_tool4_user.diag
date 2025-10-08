@@ -1,0 +1,147 @@
+name = "diagnostic_tool4"
+type = "Diag"
+category = "adtCategory"
+icon = "system-run"
+report_suffix = "zip"
+display_name.en = "defautl diagnostic tool 4 user"
+display_name.ru = "диагностический инструмент 4 user"
+comment.en = "default description diag tool 4 user"
+comment.ru = "описание диагностического инструмента 4 user"
+
+[parameters.common]
+display_name.en = "common_ses"
+display_name.ru = "common_int ses"
+comment.en = "This is mode comment for common in diagnostic_tool4_ses"
+comment.ru = "Это комментарий для common диагностического инструмента 4 ses"
+type = "int"
+value = 2000
+
+[parameters.mode]
+display_name.en = "mode"
+display_name.ru = "режим"
+comment.en = "This is mode comment for diagnostic tool 4 user"
+comment.ru = "Это комментарий для диагностического инструмента 4 user"
+type = "enum"
+enum_values = { type = "string", values = ["first", "second value", "third"], default = "first" }
+
+[parameters.param1_session]
+display_name.en = "param1"
+display_name.ru = "параметр1"
+comment.en = "This is mode comment for session param1 in diagnostic_tool4 user"
+comment.ru = "Это комментарий для сессионного параметра 1 диаг инструмента 4 user"
+type = "int"
+value = 255
+
+[parameters.param2_session]
+display_name.en = "param2"
+display_name.ru = "параметр2"
+comment.en = "This is mode comment for session param2 in diagnostic_tool4 user"
+comment.ru = "Это комментарий для сессионного параметра 2 диаг инструмента 4 user"
+type = "int"
+value = 255
+
+[parameters.param3_session]
+display_name.en = "param3"
+display_name.ru = "параметр3"
+comment.en = "This is mode comment for session param3 in diagnostic_tool4 user"
+comment.ru = "Это комментарий для сессионного параметра 3 диаг инструмента 4 user"
+type = "int"
+value = 25
+
+[parameters.param4_session]
+display_name.en = "param4"
+display_name.ru = "параметр4"
+comment.en = "This is mode comment for session param4 in diagnostic_tool4 user"
+comment.ru = "Это комментарий для сессионного параметра 4 диаг инструмента 4 user"
+type = "int"
+value = 25
+
+[parameters.param5_session]
+display_name.en = "param5"
+display_name.ru = "параметр5"
+comment.en = "This is mode comment for session param5 in diagnostic_tool4_user"
+comment.ru = "Это комментарий для сессионного параметра 5 диаг инструмента 4_user"
+type = "string"
+value = "DEFAULT_STRING"
+
+[parameters.param6_session]
+display_name.en = "param6"
+display_name.ru = "параметр6"
+comment.en = "This is comment for session param6 (enum int) with default mandatory user"
+comment.ru = "Это комментарий для сессионного параметра6 типа enum int со значением по умолчанию user"
+type = "enum"
+enum_values = { type = "int", values = [1, 2, 3] }
+
+[parameters.param7_session]
+display_name.en = "param7"
+display_name.ru = "параметр7"
+comment.en = "This is comment for session param7 (enum int) without default user"
+comment.ru = "Это комментарий для сессионного параметра типа enum int со без значения по умолчанию user"
+type = "enum"
+enum_values = { type = "int", values = [1, 2, 3] }
+
+[parameters.param8_session]
+display_name.en = "param8"
+display_name.ru = "параметр8"
+comment.en = "This is comment for session param8 (enum int) with default user"
+comment.ru = "Это комментарий для сессионного параметра8 типа enum int со значением по умолчанию user"
+type = "enum"
+enum_values = { type = "string", values = ["first", "second", "third"], default = "third" }
+
+[parameters.param9_session]
+display_name.en = "param9"
+display_name.ru = "параметр9"
+comment.en = "This is comment for session param9 (enum int) without default user"
+comment.ru = "Это комментарий для сессионного параметра9 типа enum int без значения по умолчанию user"
+type = "enum"
+enum_values = { type = "string", values = ["first", "second", "third"] }
+
+[parameters.param10_session]
+display_name.en = "param10"
+display_name.ru = "параметр10"
+comment.en = "This is comment for session param10 (enum int) with wrong default user"
+comment.ru = "Это комментарий для параметра10 типа enum int c ошибкой значения по умолчанию user"
+type = "enum"
+enum_values = { type = "string", values = ["first", "2", "third"], default = "2" }
+
+[parameters.param11_session]
+display_name.en = "param11"
+display_name.ru = "параметр11"
+comment.en = "This is comment for session param11 (enum int) user"
+comment.ru = "Это комментарий для сессионного параметра11 типа enum int cо значением по умолчанию user"
+type = "enum"
+enum_values = { type = "string", values = ["first", "2", "third"], default = "third" }
+
+[parameters.param12_session]
+display_name.en = "param12"
+display_name.ru = "параметр12"
+comment.en = "This is comment for session param12 with user"
+comment.ru = "Это комментарий для сессионного параметра12 с ошибкой типа enum int user"
+type = "enum"
+enum_values = { type = "int", values = [1, 2] }
+
+[parameters.param13_session]
+display_name.en = "param13"
+display_name.ru = "параметр13"
+comment.en = "This is comment for session param13 (enum int) with wrong default user"
+comment.ru = "Это комментарий для сессионного параметра13 типа enum int c по ошибкой умолчанию user"
+type = "enum"
+enum_values = { type = "string", values = ["first", "2", "third"], default = "third" }
+
+[tests.test1]
+display_name.en = "default name of test 1 of diagnostic tool 4 user"
+display_name.ru = "тест 1 диагностического инструмента 4 user"
+comment.en = "default description of test 1 in diagnostic tool 4 user"
+comment.ru = "описание теста 1 диагностического инструмента 4 user"
+
+[tests.test2]
+display_name.en = "default name of test 2 of diagnostic tool 4 user"
+display_name.ru = "тест 2 диагностического инструмента 4 user"
+comment.en = "default description of test 2 in diagnostic tool 4 user"
+comment.ru = "описание теста 2 диагностического инструмента 4 user"
+
+[tests.test3]
+display_name.en = "default name of test 3 of diagnostic tool 4 user"
+display_name.ru = "тест 3 диагностического инструмента 4 user"
+comment.en = "default description of test 3 in diagnostic tool 4 user"
+comment.ru = "описание теста 3 диагностического инструмента 4 user"

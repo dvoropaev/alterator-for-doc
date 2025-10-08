@@ -1,0 +1,120 @@
+#!/bin/bash -e
+
+prog="Diagnostic Tool"
+version="0.0.1"
+runcmd=run
+
+show_usage() {
+    echo "Test diagnostic tool"
+    echo ""
+    echo "Usage: $PROG [options] [<check/test-function-name>]"
+    echo ""
+    echo "<check/test-function-name> must be a function name from the list of tests"
+    echo ""
+    echo "Options:"
+    echo "  -h, --help         This message"
+    echo "  -V, --version      Display version number"
+    echo "  -l, --list         List of tests"
+    echo "  -r, --report       Send report"
+    echo ""
+    return
+}
+
+print_version() {
+	echo "$prog" ": " "$version"
+	exit 0;
+}
+
+test1() {
+	echo "Test 1: begin"
+	sleep 0.1
+	printenv | while IFS= read -r line; do
+	      echo "$line"
+	done
+	for(( i=0; i<10; i++ ))
+	do
+	    echo "Test 1 : step $i"
+	    sleep 0.5
+	done
+	sleep 0.1
+	echo "Test 1: end"
+	exit $?
+}
+
+test2() {
+#This test if failed for testing 
+	echo "Test 2: begin"
+	printenv | while IFS= read -r line; do
+	      echo "$line"
+	done
+	sleep 0.1
+	for(( i=0; i<10; i++ ))
+	do
+	    echo "Test 2 : step $i"
+	    sleep 0.5
+	done
+	sleep 0.1
+	echo "Test 2: failed" >&2
+	exit 1
+}
+
+test3() {
+	echo "Test 3: begin"
+	printenv | while IFS= read -r line; do
+	      echo "$line"
+	done
+	sleep 0.1
+	for(( i=0; i<10; i++ ))
+	do
+	    echo "Test 3 : step $i"
+	    sleep 0.5
+	done
+	sleep 0.1
+	echo "Test 3: end"
+	exit $?
+}
+
+report() {
+    current_date=$(date +"%Y-%m-%d_%H:%M")
+    filename="/tmp/report_$current_date.txt"
+    archive_name="/tmp/report_$current_date.zip"
+	cat >"${filename}" <<EOF
+Begin report:
+Body of report:
+End of report:
+EOF
+    zip -mqj "${archive_name}" "$filename"
+    cat "${archive_name}"
+    rm -rf "${archive_name}"
+}
+
+if [ "$#" -eq 1 ]
+then
+  case "$1" in
+    -h | --help) show_usage
+    ;;
+    -l | --list) listcmd=1
+    ;;
+    -v | --version) print_version
+    ;;
+    -r | --report) report
+    ;;
+    test1) test1
+    ;;
+    test2) test2
+    ;;
+    test3) test3
+    ;;
+    *) echo "Unrecognized option: $1" ; show_usage ; exit 1
+    ;;
+  esac
+else
+	show_usage
+	exit 1
+fi
+
+if ! test -z $listcmd; then
+    echo "test1"
+	echo "test2"
+	echo "test3"
+fi
