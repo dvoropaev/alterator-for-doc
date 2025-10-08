@@ -1,0 +1,6 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+  <qresource prefix="/">
+    <file alias="warning">resources/dialog-warning-symbolic.svg</file>
+  </qresource>
+</RCC>

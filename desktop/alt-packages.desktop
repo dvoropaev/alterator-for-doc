@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=ALT Packages
+Name[ru]=Альт Пакеты
+GenericName=ALT Packages
+GenericName[ru]=Альт Пакеты
+Comment=Graphical application for managing packages and repositories of packages
+Comment[ru]=Графическое приложение для управления пакетами и пакетными репозиториями
+Exec=alt-packages
+Icon=alterator
+Categories=Settings;System;
+NoDisplay=true

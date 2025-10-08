@@ -1,0 +1,7 @@
+CMakeLists.txt.user
+/build/
+
+#Generated files
+*.tr.qrc
+*.qm
+.cache/

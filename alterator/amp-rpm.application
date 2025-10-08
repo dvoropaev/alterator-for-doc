@@ -1,0 +1,7 @@
+type            = "Application"
+interface       = "org.altlinux.alterator.rpm1"
+name            = "amp-rpm"
+display_name.en = "RPM"
+comment.en      = "Alterator interface for rpm"
+comment.ru      = "Интерфейс Альтератора для rpm"
+exec            = "alt-packages -o /org/altlinux/alterator/rpm"
