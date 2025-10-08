@@ -1,0 +1,10 @@
+type = "Backend"
+module = "executor"
+name = "adt"
+interface = "application1"
+action_id = "org.altlinux.alterator.application1"
+
+[methods.Info]
+execute = "cat /usr/share/alterator/applications/adt.application"
+stdout_bytes = true
+action_id = "Info"
