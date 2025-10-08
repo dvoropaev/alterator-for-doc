@@ -1,0 +1,14 @@
+type = "Backend"
+module = "executor"
+name = "global"
+interface = "categories1"
+
+[methods.Info]
+execute = "/usr/lib/alterator-backend-categories/category-info {name}"
+stdout_bytes = true
+action_id = "Info"
+
+[methods.List]
+execute = "/usr/lib/alterator-backend-categories/list-categories"
+stdout_strings = true
+action_id = "List"

@@ -1,0 +1,102 @@
+#!/usr/bin/python3
+#
+# Copyright (C) 2025 Michael Chernigin <chernigin@altlinux.org>
+#
+# This file is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+#
+
+import os
+import argparse
+import tomlkit
+from configparser import ConfigParser, SectionProxy
+from pathlib import Path
+
+import alterator_entry as ae
+
+OLD_CATEGORIES_DIR = Path("/usr/share/alterator/desktop-directories")
+NEW_CATEGORIES_DIR = Path("/usr/share/alterator/categories")
+
+
+def upper_region(locale: str) -> str:
+    if "_" not in locale:
+        return locale
+    language, region = locale.split("_")
+    return f"{language}_{region.upper()}"
+
+
+def extract_translations(section: SectionProxy, prefix: str) -> dict[str, str]:
+    related_keys = filter(lambda key: key.startswith(prefix + "["), section)
+    languages = map(lambda key: key.split("[")[1].split("]")[0], related_keys)
+    return dict(
+        (upper_region(lang), section[f"{prefix}[{lang}]"]) for lang in languages
+    )
+
+
+def convert_to_toml(parser: ConfigParser) -> str:
+    de = parser["Desktop Entry"]
+
+    data = dict()
+    data["type"] = "Category"
+    data["name"] = de["X-Alterator-Category"]
+    data["display_name"] = {"en": de["Name"], **extract_translations(de, "name")}
+    data["comment"] = {"en": de["Comment"], **extract_translations(de, "comment")}
+    data["icon"] = de["icon"]
+
+    WEIGHTS = {
+        "X-Alterator-System": 1000,
+        "X-Alterator-VCS": 990,
+        "X-Alterator-Pkg": 980,
+        "X-Alterator-Programs": 970,
+        "X-Alterator-Programs": 960,
+        "X-Alterator-Users": 950,
+        "X-Alterator-Network": 940,
+        "X-Alterator-Remote Desktop": 930,
+        "X-Alterator-Firewall": 920,
+        "X-Alterator-Graphical interface": 900,
+    }
+
+    data["weight"] = WEIGHTS.get(data["name"], 500)
+
+    return tomlkit.dumps(data)
+
+
+def iter_dir(dir: Path) -> list[str]:
+    return os.listdir(dir) if os.path.isdir(dir) else []
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("name")
+    args = parser.parse_args()
+
+    for file in iter_dir(NEW_CATEGORIES_DIR):
+        file_path = NEW_CATEGORIES_DIR / file
+        if not file_path.exists():
+            continue
+        if args.name == ae.get_field(file_path, "name"):
+            print(file_path.read_text(), end="")
+            return
+
+    for file in iter_dir(OLD_CATEGORIES_DIR):
+        file_path = OLD_CATEGORIES_DIR / file
+        parser = ConfigParser()
+        parser.read(file_path)
+        if args.name == parser.get("Desktop Entry", "X-Alterator-Category"):
+            print(convert_to_toml(parser), end="")
+            return
+
+
+if __name__ == "__main__":
+    main()
