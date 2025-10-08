@@ -1,0 +1,98 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Samba AD Provision Parameters",
+    "type": "object",
+    "$comment": "This schema is used to validate the parameters passed to the Samba AD provision API",
+            "propertyNames": {
+                "enum": [
+                    "netBiosName",
+                    "realm",
+                    "adminPassword",
+                    "dnsBackend",
+                    "dnsForwarder",
+                    "backendStore",
+                    "backendStoreSize",
+                    "useRfc2307",
+                    "forceDeploy",
+                    "functionalLevel",
+                    "siteName",
+                    "serverRole",
+                    "mode"
+                ]
+            },
+            "properties": {
+                "domain": {
+                    "type": "string"
+                },
+                "domain_realm": {
+                    "type": "string"
+                },
+                "admpass": {
+                    "type": "string"
+                },
+                "dns_backend": {
+                    "type": "string",
+                    "enum": [
+                        "SAMBA_INTERNAL",
+                        "BIND9_DLZ"
+                    ]
+                },
+                "server_role": {
+                    "type": "string",
+                    "enum": [
+                        "dc",
+                        "domain controller",
+                        "member server",
+                        "member",
+                        "standalone"
+                    ]
+                },
+                "backend_store": {
+                    "type": "string",
+                    "enum": [
+                        "tdb",
+                        "mdb"
+                    ]
+                },
+                "backend_store_size": {
+                    "$comment": "This property is required if backend_store is mdb",
+                    "type": "integer"
+                },
+                "dns_forwarder": {
+                    "$comment": "This property is required if dns_backend is SAMBA_INTERNAL",
+                    "type": "string",
+                    "pattern": "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+                },
+                "use_mitkrb5": {
+                    "type": "boolean"
+                },
+                "use_rfc": {
+                    "type": "boolean"
+                },
+                "force_deploy": {
+                    "$comment": "This property used to force deploy the provision",
+                    "type": "boolean"
+                },
+                "function_level": {
+                    "type": "string",
+                    "enum": [
+                        "2000",
+                        "2003",
+                        "2008",
+                        "2008_R2",
+                        "2016"
+                    ]
+                },
+                "site_name": {
+                    "type": "string"
+                },
+                "mode": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                    "netBiosName",
+                    "realm",
+                    "adminPassword"
+            ]
+    }

@@ -1,0 +1,386 @@
+#!/usr/bin/env bash
+# Samba active directory provision
+# Tool for provision samba active directory
+#
+# Copyright (C) 2024 Evgenii Sozonov <arzdez@altlinux.org>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# shellcheck disable=SC2034
+# shellcheck disable=SC1091
+# shellcheck disable=SC2086
+# shellcheck disable=SC2317
+# shellcheck disable=SC3037
+set -euo pipefail
+
+SMB_CONF="/etc/samba/smb.conf"
+STATUS_FILE="/var/lib/alterator/service/samba-ad/status.json"
+
+get_samba_db_type() {
+    local db_type=
+
+    local sam_ldb_dir="/var/lib/samba/private/sam.ldb.d"
+    if [ -d "$sam_ldb_dir" ]; then
+        if ls "$sam_ldb_dir"/*-lock &>/dev/null; then
+            db_type="mdb"
+        else
+            db_type="tdb"
+        fi
+    else
+        db_type="tdb"
+    fi
+
+    echo "$db_type"
+    return 0
+}
+
+get_mdb_size() {
+    local path_to_sam_db="/var/lib/samba/private/sam.ldb"
+    local path_to_db="/var/lib/samba/private/sam.ldb.d"
+    local db_name=
+    local db_size=
+    db_name="$(tdbdump $path_to_sam_db | grep sam.ldb.d | cut -f 2 -d ":" | cut -f 1 -d "\\" | cut -f 2 -d "/")"
+    db_size_bite=$(mdb_stat -ne "$path_to_db/CN=CONFIGURATION,$db_name" | grep "Map size" |  cut -f 5 -d " ")
+    to_gigabyte=$((1024 * 1024 * 1024))
+    db_size=$(echo "scale=0; $db_size_bite / $to_gigabyte" | bc)
+    echo $db_size
+    return 0
+}
+
+get_realm() {
+    local realm
+    realm=$(grep '^\s*realm\s*=' "$SMB_CONF" | awk -F= '{gsub(/^[ \t]+|[ \t]+$/, "", $2); print $2}')
+    echo "$realm"
+    return 0
+}
+
+get_netbios_domain_name() {
+    local net_bios_name=
+    local realm=
+    realm="$(get_realm)"
+    net_bios_name="${realm%%.*}"
+    echo "$net_bios_name"
+    return 0
+}
+
+get_site_name() {
+    local site_name=
+    local retval=0
+
+    domain_info="$(samba-tool domain info 127.0.0.1)" || retval=1
+    if [ $retval -ne 0 ]; then
+        echo "Default-First-Site-Name"
+    else
+        site_name=$(echo "$domain_info" | grep 'Server site' | awk -F: '{gsub(/^[ \t]+|[ \t]+$/, "", $2); print $2}')
+        echo "$site_name"
+    fi
+
+    return 0
+}
+
+get_functional_level() {
+    local f_level=
+    local retval=0
+
+    domain_info="$(samba-tool domain level show)" || retval=1
+    if [ $retval -ne 0 ]; then
+        echo "2008_R2"
+    else
+        f_level=$(echo "$domain_info" | grep 'Domain function level' | awk -F: '{gsub(/^[ \t]+|[ \t]+$/, "", $2); print $2}')
+        if [ "$f_level" = "(Windows) 2008 R2" ]; then
+            f_level="2008_R2"
+        elif [ "$f_level" = "(Windows) 2016" ]; then
+            f_level="2016"
+        else
+            f_level="2008_R2"
+        fi
+    fi
+    echo "$f_level"
+    return 0
+}
+
+get_server_role() {
+    local role=
+    local retval=0
+
+    role="$(grep '^\s*server role\s*=' "$SMB_CONF" | awk -F= '{gsub(/^[ \t]+|[ \t]+$/, "", $2); print $2}')" || retval=1
+    if [ $retval -ne 0 ]; then
+        echo "dc"
+    else
+        if [ "$role" = "active directory domain controller" ]; then
+            role="dc"
+        else
+            role="rodc"
+        fi
+        echo "$role"
+    fi
+    return 0
+}
+
+get_rfc2307() {
+    local rfc2307=
+    rfc2307=$(grep '^\s*idmap_ldb:use rfc2307\s*=' "$SMB_CONF" | awk -F= '{gsub(/^[ \t]+|[ \t]+$/, "", $2); print $2}') || retval=1
+
+    if [ "$rfc2307" = "yes" ]; then
+        echo "true"
+    else
+        echo "false"
+    fi
+    return 0
+}
+
+get_dns_backend() {
+    local server_services=
+    local dns_backend=
+    server_services="$(grep '^\s*server services\s*=' "$SMB_CONF")" || dns_backend="SAMBA_INTERNAL"
+
+    if [ -z "$server_services" ]; then
+        dns_backend="SAMBA_INTERNAL"
+    elif grep -q 'dns' <<< "$server_services"  ||  grep -q '-dns' <<< "$server_services" ; then
+        dns_backend="BIND9_DLZ"
+    else
+        dns_backend="SAMBA_INTERNAL"
+    fi
+
+    echo "$dns_backend"
+}
+
+get_forwarders_samba_internal() {
+    local forwarders=
+    forwarders=$(grep '^\s*forwarders\s*=' "$SMB_CONF" | awk -F= '{gsub(/^[ \t]+|[ \t]+$/, "", $2); print $2}' | sed 's/\[//g; s/\]//g') || retval=1
+    if [ -z "$forwarders" ]; then
+        forwarders=""
+    fi
+    echo "$forwarders"
+    return 0
+}
+
+get_forwarders_bind9_dlz() {
+    local forwarders=
+    forwarders="$(grep '^\s*forwarders\s*{' -A1 /etc/bind/options.conf | grep 'forwarders' | cut -f 2 -d "{" | cut -f 1 -d "}" | sed 's/;/ /g')" || retval=1
+    if [ -z "$forwarders" ]; then
+        forwarders=""
+    fi
+    echo "$forwarders"
+    return 0
+}
+
+get_allowed_query_subnets() {
+    local allowed_subnets=
+    allowed_subnets=$(grep '^\s*allow-query\s*{' /etc/bind/options.conf | sed 's/.*allow-query\s*{//; s/};.*//' | sed 's/;/ /g' ) || retval=1
+    if [ -z "$allowed_subnets" ]; then
+        allowed_subnets=""
+    fi
+    echo "$allowed_subnets"
+    return 0
+}
+
+get_allowed_recursion_subnets() {
+    local allowed_subnets=
+    allowed_subnets=$(grep '^\s*allow-recursion\s*{' /etc/bind/options.conf | sed 's/.*allow-recursion\s*{//; s/};.*//' | sed 's/;/ /g' ) || retval=1
+    if [ -z "$allowed_subnets" ]; then
+        allowed_subnets=""
+    fi
+    echo "$allowed_subnets"
+    return 0
+}
+
+get_listen_on_bind9_ipv4() {
+    local listen_on_ipv4=
+    listen_on_ipv4=$(grep '^\s*listen-on\s*{' /etc/bind/options.conf | sed 's/.*listen-on\s*{//; s/};.*//' | sed 's/;/ /g' ) || retval=1
+    if [ -z "$listen_on_ipv4" ]; then
+        listen_on_ipv4="any"
+    fi
+    echo "$listen_on_ipv4"
+    return 0
+}
+
+get_listen_on_bind9_ipv6() {
+    local listen_on_ipv6=
+    listen_on_ipv6=$(grep '^\s*listen-on-v6\s*{' /etc/bind/options.conf | sed 's/.*listen-on-v6\s*{//; s/};.*//' | sed 's/;/ /g' ) || retval=1
+    if [ -z "$listen_on_ipv6" ]; then
+        listen_on_ipv6="none"
+    fi
+    echo "$listen_on_ipv6"
+    return 0
+}
+
+update_bind_settings() {
+    local key="$1"
+    local value=$2
+    local is_array="${3-false}"
+    local tmp_file=
+
+    tmp_file=$(mktemp)
+
+    if [ "$is_array" = "true" ]; then
+        jq --arg key "$key" --arg value "$value" '.dnsSettings.bindSettings[$key] |= if $value == "" then [] else ($value | split(" ") | map(select(. != "")) | unique) end' "$STATUS_FILE" > "$tmp_file"
+    else
+        jq --arg key "$key" --arg value "$value" '.dnsSettings.bindSettings.[$key] = $value' "$STATUS_FILE" > "$tmp_file"
+    fi
+
+    mv "$tmp_file" "$STATUS_FILE"
+
+    return 0
+}
+update_status_help() {
+    local key="$1"
+    local value=$2
+    local pathto="${3-.}"
+    local is_array="${4-false}"
+    local tmp_file=
+
+    tmp_file=$(mktemp)
+
+    if [ $pathto = "dnsSettings" ]; then
+        if [ "$is_array" = "true" ]; then
+            jq --arg key "$key" --arg value "$value" '.dnsSettings[$key] |= if $value == "" then [] else ($value | split(" ") | map(select(. != "")) | unique) end' "$STATUS_FILE" > "$tmp_file"
+        else
+            jq --arg key "$key" --arg value "$value" '.dnsSettings.[$key] = $value' "$STATUS_FILE" > "$tmp_file"
+        fi
+    else
+        jq --arg key "$key" --arg value $value  '.[$key] = $value' "$STATUS_FILE" > "$tmp_file"
+    fi
+
+    mv "$tmp_file" "$STATUS_FILE"
+
+    return 0
+}
+
+get_deployed() {
+    local deployed=false
+
+    if ! grep -q "server role *= *active directory domain controller" "$SMB_CONF"; then
+        deployed=false
+    else
+        if [ ! -d "/var/lib/samba/private" ]; then
+            deployed=false
+        else
+            if [ ! -e "/var/lib/samba/private/sam.ldb" ]; then
+                deployed=false
+            else 
+                deployed=true
+            fi
+        fi
+    fi
+
+    echo "$deployed"
+
+    return 0
+}
+
+unit_enabled() {
+    local dns_backend_type="$1"
+    local started=false
+    if systemctl is-active --quiet samba.service; then
+        if [ "$dns_backend_type" = "BIND9_DLZ" ]; then
+            if systemctl is-active --quiet bind.service; then
+                started=true
+            else
+                started=false
+            fi
+        else
+            started=true
+        fi
+    else
+        started=false
+    fi
+
+    echo "$started"
+    return 0
+}
+
+remove_bool_quotes() {
+    local tmp_file
+    tmp_file=$(mktemp) || return 1
+
+    jq '
+      def fix:
+        if type=="object" then with_entries(.value |= fix)
+        elif type=="array" then map(fix)
+        elif type=="string" and (. == "true" or . == "false") then (if . == "true" then true else false end)
+        else .
+        end;
+      fix
+    ' "$STATUS_FILE" > "$tmp_file" && mv "$tmp_file" "$STATUS_FILE"
+
+    return 0
+}
+
+update_status() {
+    local realm=
+    local netBiosName=
+    local siteName=
+    local functionalLevel=
+    local serverRole=
+    local useRfc2307=
+    local backendStore=
+    local backendStoreSize=
+    local dnsBackend=
+    local deployed=
+    local started=
+    local forwarders=
+    local listen_on_ipv4=
+    local listen_on_ipv6=
+    local allowed_query_subnets=
+    local allowed_recursion_subnets=
+    local retval=0
+
+    realm=$(get_realm) || retval=1
+    netBiosName="$(get_netbios_domain_name)" || retval=1
+    siteName="$(get_site_name)" || retval=1
+    functionalLevel="$(get_functional_level)" || retval=1
+    serverRole="$(get_server_role)" || retval=1
+    useRfc2307="$(get_rfc2307)" || retval=1
+    dnsBackend="$(get_dns_backend)" || retval=1
+    backendStore="$(get_samba_db_type)" || retval=1
+    deployed="$(get_deployed)" || retval=1
+    started="$(unit_enabled "$dnsBackend")" || retval=1
+    if [ "$backendStore" = "mdb" ]; then
+        backendStoreSize="$(get_mdb_size)" || retval=1
+        update_status_help "backendStoreSize" $backendStoreSize
+    fi
+    if [ "$dnsBackend" = "SAMBA_INTERNAL" ]; then
+        forwarders="$(get_forwarders_samba_internal)" || retval=1
+    else
+        forwarders="$(get_forwarders_bind9_dlz)" || retval=1
+        listen_on_ipv4="$(get_listen_on_bind9_ipv4) "|| retval=1
+        listen_on_ipv6="$(get_listen_on_bind9_ipv6)" || retval=1
+        allowed_query_subnets="$(get_allowed_query_subnets)" || retval=1
+        allowed_recursion_subnets="$(get_allowed_recursion_subnets)" || retval=1
+        update_bind_settings "listenOn" "$listen_on_ipv4" "true"
+        update_bind_settings "listenOnV6" "$listen_on_ipv6" "true"
+        update_bind_settings "allowQuery" "$allowed_query_subnets" "true"
+        update_bind_settings "allowRecursion" "$allowed_recursion_subnets" "true"
+    fi
+
+    update_status_help "realm" "$realm"
+    update_status_help "netBiosName" "$netBiosName" 
+    update_status_help "siteName" "$siteName" 
+    update_status_help "functionalLevel" "$functionalLevel" 
+    update_status_help "serverRole" "$serverRole" 
+    update_status_help "useRfc2307" $useRfc2307
+    update_status_help "backendStore" "$backendStore" 
+    update_status_help "dnsBackend" "$dnsBackend" "dnsSettings"
+    update_status_help "deployed" $deployed
+    update_status_help "started" $started
+    update_status_help "forwarders" "$forwarders" "dnsSettings" "true"
+
+    remove_bool_quotes
+
+    status_output="$(cat "$STATUS_FILE")"
+    echo "$status_output"
+
+    exit 0
+}

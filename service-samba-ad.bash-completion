@@ -1,0 +1,40 @@
+#!/usr/bin/bash
+
+_service_samba_ad() {
+    local cur prev words cword
+
+    cword="${COMP_CWORD}"
+    words=("${COMP_WORDS[@]}")
+    cur="${words[cword]}"
+    prev="${words[cword - 1]}"
+
+    local opts_long="--help --version --join --demote --provision --restore --backup --status --start --stop --configure"
+    local opts_short="-h -v -j -d -p -b -r -s"
+    local all_opts="${opts_long} ${opts_short}"
+    local mode_opts="--join --demote --provision --restore --backup --status --start --stop --configure" # Primary modes
+
+    if [[ "$cur" == -* ]]; then
+        COMPREPLY=($(compgen -W "${all_opts}" -- "$cur"))
+        return 0
+    fi
+
+    local i
+    local mode_option_present=0
+    for ((i = 1; i < cword; i++)); do
+        case "${words[i]}" in
+            --join | -j | --demote | -d | --provision | -p | --restore | -r | --backup | -b | --status | -s | --start | --stop | --configure)
+                mode_option_present=1
+                break
+                ;;
+        esac
+    done
+
+    if [[ $mode_option_present -eq 0 ]]; then
+        COMPREPLY=($(compgen -W "${mode_opts}" -- "$cur"))
+        return 0
+    fi
+
+    COMPREPLY=($(compgen -f -- "$cur"))
+}
+
+complete -o nosort -F _service_samba_ad service-samba-ad
