@@ -1,0 +1,14 @@
+chmod +x init_mono.sh pull_updates.sh
+
+
+export PREFIX_BASE="components"  # куда складывать компоненты
+export MONO_ORIGIN="git@github.com:dvoropaev/alterator-for-doc.git" #репо для монорепо
+./init_mono.sh
+
+
+
+git push -u origin main
+
+
+./pull_updates.sh         # обновить всё
+
