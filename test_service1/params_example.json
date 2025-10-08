@@ -1,0 +1,43 @@
+{
+  "composite_array": [
+    {
+      "param1": "test string",
+      "param2": 12,
+      "param3": {
+        "value2": {}
+      }
+    },
+    {
+      "param1": "test string",
+      "param2": 12,
+      "param3": {
+        "value2": {}
+      }
+    }
+  ],
+  "composite_param": {
+    "param1": "test string",
+    "param2": 12,
+    "param3": {
+      "value2": {}
+    }
+  },
+  "group_param": {
+    "param2": {
+      "object_subparameter": {
+        "param1": "test string",
+        "param2": 12,
+        "param3": {
+          "value1": {}
+        }
+      }
+    }
+  },
+  "int_example2": 42,
+  "string_array_example": [
+    "altlinux.org",
+    "kernel.org",
+    "www.foo.bar"
+  ],
+  "string_example2": "test string"
+}

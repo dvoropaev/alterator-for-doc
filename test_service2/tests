@@ -1,0 +1,63 @@
+#!/bin/bash
+
+list(){
+    echo test1
+    echo test2
+    echo test3
+}
+
+test1() {
+    echo "Test 1: begin"
+    sleep 0.1
+    printenv | while IFS= read -r line; do
+            echo "$line"
+    done
+    for(( i=0; i<10; i++ ))
+    do
+        echo "Test 1 : step $i"
+        sleep 0.5
+    done
+    sleep 0.1
+    echo "Test 1: end"
+    exit $?
+}
+
+test2() {
+# This test is failed if string_example1 equals "fail"
+# string_example1 is not required, so if it' missing - it's ok
+    echo "Test 2: begin"
+    sleep 1
+
+    case $string_example1 in
+        fail)
+            echo 'ERROR: string_example1 = "fail"' >&2
+            echo "Test 2: failed" >&2
+            exit 1
+            ;;
+        *)
+            echo "$string_example1 ok"
+            echo "Test 2: end"
+            exit 0
+            ;;
+    esac
+}
+
+test3() {
+# This test is failed if enum_example1 equals "value_3"
+# enum_example1 is not required, so if it' missing - it's ok
+    echo "Test 2: begin"
+    sleep 1
+
+    case $enum_example1 in
+        value_3)
+            echo 'ERROR: enum_example1 = "value3"' >&2
+            echo "Test 2: failed" >&2
+            exit 1
+            ;;
+        *)
+            echo "$enum_example1 ok"
+            echo "Test 2: end"
+            exit 0
+            ;;
+    esac
+}

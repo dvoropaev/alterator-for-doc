@@ -1,0 +1,213 @@
+#!/bin/bash
+
+file="$1"
+path="$2"
+
+[ ! -d "$path" ] && mkdir -p "$path"
+
+parse(){
+    taplo get $@ < "$file" 2>/dev/null
+}
+
+name=`parse name`
+
+get_table_names(){
+    parse -o toml "$1" | grep '^\[[^.]*\]' | tr -d '[]' || echo ''
+}
+
+
+array_to_json(){
+    sed 's/^$//' | jq -R . | jq -sc .
+}
+
+
+has_context(){
+    parse "parameters.$1.context" | grep "$2" &> /dev/null
+}
+
+is_required(){
+    local name=$1
+    local table=$2
+    local match=
+    if [ -z $3 ]
+    then
+        match='true'
+    else
+        match=$3
+    fi
+    parse "$table.$name.required" | grep "$match" &> /dev/null
+}
+
+map(){
+    func=$1
+    while read x
+    do
+        $func "$x" "${@:2}"
+    done
+}
+
+filter(){
+    func=$1
+    while read x
+    do
+        $func "$x" "${@:2}" && echo "$x"
+    done
+}
+
+overrides(){
+    parse 'resources.*.'$2'.parameter' | grep $1 > /dev/null
+}
+
+get_constraints(){
+    local constraints=
+    local name=$1
+    local table=$2
+    local type=$3
+    local def=$4
+
+    case $type in
+        array)
+            array_type=`parse "$table.$name.array_type"`
+            [ "$array_type" == "enum" ] && array_type='string'
+
+            constraints=', "items": { "type": "'$array_type'"'
+            constraints+=`get_constraints $name $table $array_type false`
+            constraints+='}'
+
+            min=`parse "$table.$name.array_min"`
+            max=`parse "$table.$name.array_max"`
+
+            [ ! -z $min ] && constraints+=', "minItems": '$min
+            [ ! -z $max ] && constraints+=', "maxItems": '$max
+        ;;
+
+        enum)
+            constraints=', "maxProperties": 1, "properties": '
+            constraints+="{`get_table_names "$table.$name.values" | map get_enum_val "$table.$name.values" | join`}"
+        ;;
+
+        integer)
+            min=`parse "$table.$name.min"`
+            max=`parse "$table.$name.max"`
+
+            if overrides $name port_number
+            then
+                [ ! -z $min ] && min=0
+                [ ! -z $max ] && max=65535
+            fi
+
+            [ ! -z $min ] && constraints+=', "minimum": '$min
+            [ ! -z $max ] && constraints+=', "maximum": '$max
+        ;;
+
+        string)
+            pattern=`parse "$table.$name.pattern"`
+            [ ! -z $pattern ] && constraints=', "pattern": "'${pattern//\\/\\\\}'"'
+        ;;
+        "object")
+            prototype=`parse "$table.$name.prototype"`
+            [[ -z $prototype && -n $USE_REF ]] && prototype=$name
+
+            if [ ! -z $prototype ]
+            then
+                echo ', "$ref": "#/definitions/'$prototype'"'
+            else
+                local property_names=`get_table_names "$table.$name.properties"`
+
+                cat << EOF
+,"propertyNames": {
+    "enum": `array_to_json <<< "${property_names[@]}"`
+},
+"properties": {
+    `map get_prop "$table.$name.properties" <<< "${property_names[@]}" | join`
+},
+EOF
+                echo '"required": '`filter is_required "$table.$name.properties" <<< "${property_names[@]}" | array_to_json`
+            fi
+        ;;
+
+    esac
+    echo "$constraints"
+}
+
+get_prop(){
+    local name=$1
+    local table=$2
+
+    if [ "$name" == 'force_deploy' ]
+    then
+        echo '"force_deploy": {"type":"boolean"}'
+    else
+        local prop_type=`parse "$table.$name.type"`
+        local constraints=`get_constraints $name $table $prop_type $def`
+
+        [ "$prop_type" == "enum" ] && prop_type='object'
+
+        echo -n "\"$name\": "
+        echo "{ \"type\": \"${prop_type}\" $constraints }" | jq -c
+    fi
+}
+
+get_enum_val(){
+    local name=$1
+    local table=$2
+
+    echo -n \"$name\": {\"type\": \"object\"
+
+    local property_names=`get_table_names "$table.$name.properties"`
+    if [ ! -z $property_names ]
+    then
+        echo -n ', "properties":'
+        echo -n "{`map get_prop "$table.$name.properties" <<< ${property_names[@]} | join`},"
+        echo -n "\"required\": `filter is_required "$table.$name.properties" <<< ${property_names[@]} | array_to_json`"
+    fi
+    echo '}'
+}
+
+join(){
+    readarray -t data
+    local IFS=,
+    echo "${data[*]}"
+}
+
+build_schema(){
+    local context="$1"
+
+    has_context_(){ has_context $1 $context; }
+    is_object(){
+        parse "parameters.$1.type" |
+        grep object >/dev/null &&
+        get_table_names "parameters.$1.properties" > /dev/null
+    }
+
+    local param_names=`get_table_names parameters | filter has_context_`
+
+    [ "$context" == 'deploy' ] &&
+        parse 'enable_force_deploy' | grep true >/dev/null &&
+        param_names+=$'\nforce_deploy'
+
+    cat << EOF | jq > "$path/${context}-parameter-validation.schema.json"
+{
+    "\$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "$name $context Parameters",
+    "type": "object",
+    "\$comment": "This schema is used to validate the $context parameters passed to the $name API",
+    "propertyNames": {
+        "enum": `[ ! -z "${param_names[@]}" ] && array_to_json <<< "${param_names[@]}" || echo '[]'`
+    },
+    "properties": {
+        `[ ! -z "${param_names[@]}" ] && USE_REF=true map get_prop "parameters" <<< "${param_names[@]}" | join`
+    },
+    "required": `filter is_required "parameters" "$context" <<< "${param_names[@]}" | array_to_json`,
+    "definitions": {
+        `filter is_object <<< ${param_names[@]} | map get_prop "parameters" | join`
+    }
+}   
+EOF
+
+}
+
+for ctx in deploy undeploy configure restore backup diag #status
+do
+    build_schema "$ctx"
+done

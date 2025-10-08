@@ -1,0 +1,22 @@
+{
+  "composite_example": {
+    "param1": "test string",
+    "param2": 12,
+    "param3": [
+      "value2",
+      "value1"
+    ],
+    "param4": [
+      1,
+      2,
+      3,
+      4,
+      4,
+      4
+    ]
+  },
+  "enum_example2": "value_4",
+  "int_example1": 42,
+  "int_example2": 0,
+  "string_example3": "default string value"
+}

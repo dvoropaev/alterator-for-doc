@@ -1,0 +1,90 @@
+name = "test_service1"
+type = "Diag"
+category = "adtCategory"
+icon = "system-run"
+report_suffix = "zip"
+display_name.en = "Test service 1 diagnostic tool"
+display_name.ru = "диагностический инструмент тестового сервиса 1"
+comment.en = "Test service 1 diagnostic tool description"
+comment.ru = "описание диагностического инструмента тестового сервиса 1"
+
+
+[parameters.deploy_mode]
+display_name.en = "mode"
+display_name.ru = "режим"
+comment.en = "This parameter determines current diagnostic step"
+comment.ru = "Этот параметр определяет текущий этап диагностики"
+type = "enum"
+enum_values = { type = "string", values = ["pre", "post"], default = "post" }
+
+
+[parameters.string_example1]
+display_name.en = "String parameter 1"
+display_name.ru = "Строковый параметр 1"
+comment.en = "String parameter example"
+comment.ru = "Пример строкового параметра"
+type = "string"
+
+[parameters.string_example2]
+display_name.en = "String parameter 2"
+display_name.ru = "Строковый параметр 2"
+comment.en = "String parameter example"
+comment.ru = "Пример строкового параметра"
+type = "string"
+
+[parameters.string_example3]
+display_name.en = "String parameter 3"
+display_name.ru = "Строковый параметр 3"
+comment.en = "String parameter example"
+comment.ru = "Пример строкового параметра"
+type = "string"
+
+[parameters.int_example1]
+display_name.en = "Integer parameter 1"
+display_name.ru = "Целочисленный параметр 1"
+comment.en = "Integer parameter example 1"
+comment.ru = "Пример целочисленного параметра 1"
+type = "int"
+
+[parameters.int_example2]
+display_name.en = "Integer parameter 2"
+display_name.ru = "Целочисленный параметр 2"
+comment.en = "Integer parameter example 2"
+comment.ru = "Пример целочисленного параметра 2"
+type = "int"
+
+[parameters.enum_example1]
+display_name.en = "Enum parameter 1"
+display_name.ru = "Перечисление 1"
+comment.en = "Enum parameter example 1"
+comment.ru = "Пример параметра с перечислением 1"
+type = "enum"
+enum_values = {type = "string", values = ["value_1", "value_2", "value_3"]}
+
+[parameters.enum_example2]
+display_name.en = "Enum parameter 2"
+display_name.ru = "Перечисление 2"
+comment.en = "Enum parameter example 2"
+comment.ru = "Пример параметра с перечислением 2"
+type = "enum"
+enum_values = {type = "string", values = ["value_4", "value_5", "value_6"]}
+
+
+[tests.test1]
+display_name.en = "test 1"
+display_name.ru = "тест 1"
+comment.en = "default description of test 1"
+comment.ru = "описание теста 1"
+
+[tests.test2]
+display_name.en = "test 2"
+display_name.ru = "тест 2"
+comment.en = "default description of test 2"
+comment.ru = "описание теста 2"
+
+[tests.test3]
+display_name.en = "test 3"
+display_name.ru = "тест 3"
+comment.en = "this test does its checks in predeploy only"
+comment.ru = "это тест производит проверки только в предварительной диагностике"
+
