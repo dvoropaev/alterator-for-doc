@@ -1,0 +1,60 @@
+type = "Backend"
+module = "executor"
+interface = "service1"
+name = "service_chrony"
+
+[methods.Info]
+execute = "cat /usr/share/alterator/services/service-chrony.service"
+action_id = "Info"
+stdout_bytes = true
+
+[methods.Deploy]
+execute = "service-chrony -d"
+action_id = "Deploy"
+stdin_string = true
+stdout_signal_name = "service_stdout_signal"
+stderr_signal_name = "service_stderr_signal"
+timeout = 600
+
+[methods.Undeploy]
+execute = "service-chrony -u"
+action_id = "Undeploy"
+stdin_string = true
+stdout_signal_name = "service_stdout_signal"
+stderr_signal_name = "service_stderr_signal"
+timeout = 600
+
+[methods.Configure]
+execute = "service-chrony --configure"
+action_id = "Configure"
+stdin_string = true
+stdout_signal_name = "service_stdout_signal"
+stderr_signal_name = "service_stderr_signal"
+timeout = 600
+
+[methods.Start]
+execute = "service-chrony --start"
+action_id = "Start"
+timeout = 600
+
+[methods.Stop]
+execute = "service-chrony --stop"
+action_id = "Stop"
+timeout = 600
+
+[methods.Backup]
+execute = "service-chrony -b"
+action_id = "Backup"
+stdin_string = true
+timeout = 600
+
+[methods.Restore]
+execute = "service-chrony -r"
+action_id = "Restore"
+stdin_string = true
+timeout = 600
+
+[methods.Status]
+execute = "service-chrony -s"
+action_id = "Status"
+stdout_bytes = true

@@ -1,0 +1,376 @@
+type = "Service"
+name = "Chrony service"
+category = "X-Alterator-Servers"
+display_name.en = "Chrony service"
+display_name.ru = "Сервис Chrony"
+no_default_diag = true
+
+[parameters.disableDefaultPoll]
+display_name.en = "Disable default poll"
+display_name.ru = "Убрать пул по умолчанию"
+type = "boolean"
+context = [
+    "deploy",
+    "configure",
+    "status"
+]
+
+[parameters.ntpServersSettings]
+display_name.en = "NTP servers settings"
+display_name.ru = "Настройки серверов NTP"
+comment.ru = "Позволяют добавлять параметры, регулирующие работу серверов"
+comment.en = "Allows you to add parameters that regulate the operation of servers"
+type = "array"
+array_type = "object"
+prototype = "ntpServer"
+context = [
+    "deploy",
+    "status",
+    "configure"
+]
+required = [
+    "deploy"
+]
+
+[parameters.ntpPoolsSettings]
+display_name.en = "Settings of NTP pools"
+display_name.ru = "Настройки пулов серверов NTP"
+comment.ru = "Позволяют добавлять параметры, регулирующие работу пулов"
+comment.en = "Allows you to add parameters that regulate the operation of pools"
+type = "array"
+array_type = "object"
+prototype = "ntpPool"
+context = [
+    "deploy",
+    "status",
+    "configure"
+]
+required = [
+    "deploy"
+]
+
+[parameters.ntpServer]
+display_name.en = "NTP server"
+display_name.ru = "Сервер NTP"
+type = "object"
+context = []
+[parameters.ntpServer.properties.serverDomainName]
+display_name.en = "Domain name of NTP server"
+display_name.ru = "Доменное имя сервера NTP"
+type = "string"
+required = true
+[parameters.ntpServer.properties.bursts]
+display_name.en = "burst/iburst"
+display_name.ru = "burst/iburst"
+comment.ru = "Отправляет пакет из 8 запросов (ibusrt) или 4 запросов (burst), когда от сервера не удается получить данные"
+comment.en = "Sends a packet of 8 requests (ibusrt) or 4 requests (burst) when data cannot be received from the server"
+type = "enum"
+default = "iburst"
+required = true
+[parameters.ntpServer.properties.bursts.values.burst]
+display_name.en = "burst"
+display_name.ru = "burst"
+[parameters.ntpServer.properties.bursts.values.iburst]
+display_name.en = "iburst"
+display_name.ru = "iburst"
+[parameters.ntpServer.properties.minpoll]
+display_name.en = "Minpoll"
+display_name.ru = "Minpoll"
+comment.ru = "Минимальный интервал между запросами на сервер. Степень 2 в секунду"
+comment.en = "Minimum interval between requests on the server. Power of 2 per second" 
+type = "integer"
+min = -7
+max = 24
+required = false
+[parameters.ntpServer.properties.maxpoll]
+display_name.en = "Maxpoll"
+display_name.ru = "Maxpoll"
+comment.ru = "Максимальный интервал между запросами на сервер. Степень 2 в секунду"
+comment.en = "Maximum interval between requests on the server. Power of 2 per second" 
+type = "integer"
+min = -7
+max = 24
+required = false
+[parameters.ntpServer.properties.offline]
+display_name.en = "Offline mode"
+display_name.ru = "Режим оффлайн"
+type = "enum"
+required = false
+[parameters.ntpServer.properties.offline.values.offline]
+display_name.en = "offline"
+display_name.ru = "offline"
+[parameters.ntpServer.properties.offline.values.auto_offline]
+display_name.en = "auto offline"
+display_name.ru = "auto offline"
+[parameters.ntpServer.properties.prefer]
+display_name.en = "Prefer this server"
+display_name.ru = "Предпочитать этот сервер другим"
+type = "boolean"
+required = false
+[parameters.ntpServer.properties.noSelect]
+display_name.en = "Never select this source"
+display_name.ru = "Никогда не выбирать этот сервер"
+type = "boolean"
+required = false
+[parameters.ntpServer.properties.trust]
+display_name.en = "Assume time from this source is always true."
+display_name.ru = "Время из этого источника всегда истинно"
+type = "boolean"
+required = false
+[parameters.ntpServer.properties.require]
+display_name.en = "Require that server"
+display_name.ru = "Сделать этот сервер обязательным"
+type = "boolean"
+required = false
+
+[parameters.ntpPool]
+display_name.en = "NTP pool"
+display_name.ru = "Пул серверов NTP"
+type = "object"
+context = []
+[parameters.ntpPool.properties.poolDomainName]
+display_name.en = "Domain name of NTP pool"
+display_name.ru = "Доменное имя пула серверов NTP"
+type = "string"
+required = true
+[parameters.ntpPool.properties.bursts]
+display_name.en = "burst/iburst"
+display_name.ru = "burst/iburst"
+comment.ru = "Отправляет пакет из 8 запросов (ibusrt) или 4 запросов (burst), когда от сервера не удается получить данные"
+comment.en = "Sends a packet of 8 requests (ibusrt) or 4 requests (burst) when data cannot be received from the server"
+type = "enum"
+default = "iburst"
+required = true
+[parameters.ntpPool.properties.bursts.values.burst]
+display_name.en = "burst"
+display_name.ru = "burst"
+[parameters.ntpPool.properties.bursts.values.iburst]
+display_name.en = "iburst"
+display_name.ru = "iburst"
+[parameters.ntpPool.properties.maxsources]
+display_name.en = "Maxsources"
+display_name.ru = "Maxsources"
+comment.ru = "Максимальное количество серверов, выбираемых из этого пула. От 1 до 16"
+comment.en = "The maximum number of servers to select from this pool. From 1 to 16" 
+type = "integer"
+min = 1
+max = 16
+default = 4
+[parameters.ntpPool.properties.minpoll]
+display_name.en = "Minpoll"
+display_name.ru = "Minpoll"
+comment.ru = "Минимальный интервал между запросами на сервер. Степень 2 в секунду"
+comment.en = "Minimum interval between requests on the server. Power of 2 per second" 
+type = "integer"
+min = -7
+max = 24
+required = false
+[parameters.ntpPool.properties.maxpoll]
+display_name.en = "Maxpoll"
+display_name.ru = "Maxpoll"
+comment.ru = "Максимальный интервал между запросами на сервер. Степень 2 в секунду"
+comment.en = "Maximum interval between requests on the server. Power of 2 per second" 
+type = "integer"
+min = -7
+max = 24
+required = false
+[parameters.ntpPool.properties.offline]
+display_name.en = "Offline mode"
+display_name.ru = "Режим оффлайн"
+type = "enum"
+required = false
+[parameters.ntpPool.properties.offline.values.offline]
+display_name.en = "offline"
+display_name.ru = "offline"
+[parameters.ntpPool.properties.offline.values.auto_offline]
+display_name.en = "auto offline"
+display_name.ru = "auto offline"
+[parameters.ntpPool.properties.prefer]
+display_name.en = "Prefer this pool"
+display_name.ru = "Предпочитать этот пул другим"
+type = "boolean"
+required = false
+[parameters.ntpPool.properties.noSelect]
+display_name.en = "Never select this source"
+display_name.ru = "Никогда не выбирать этот пул"
+type = "boolean"
+required = false
+[parameters.ntpPool.properties.trust]
+display_name.en = "Assume time from this source is always true."
+display_name.ru = "Время из этого источника всегда истинно"
+type = "boolean"
+required = false
+[parameters.ntpPool.properties.required]
+display_name.en = "Require that server"
+display_name.ru = "Сделать этот пул обязательным"
+type = "boolean"
+required = false
+
+[parameters.ntpDefaultPool]
+display_name.en = "NTP default pool"
+display_name.ru = "Пул серверов NTP по умолчанию"
+comment.en = "pool.ntp.org"
+comment.ru = "pool.ntp.org"
+type = "object"
+context = [ 
+    "deploy", 
+    "configure",
+    "status" 
+]
+[parameters.ntpDefaultPool.properties.bursts]
+display_name.en = "burst/iburst"
+display_name.ru = "burst/iburst"
+comment.ru = "Отправляет пакет из 8 запросов (ibusrt) или 4 запросов (burst), когда от сервера не удается получить данные"
+comment.en = "Sends a packet of 8 requests (ibusrt) or 4 requests (burst) when data cannot be received from the server"
+type = "enum"
+default = "iburst"
+required = true
+[parameters.ntpDefaultPool.properties.bursts.values.burst]
+display_name.en = "burst"
+display_name.ru = "burst"
+[parameters.ntpDefaultPool.properties.bursts.values.iburst]
+display_name.en = "iburst"
+display_name.ru = "iburst"
+[parameters.ntpDefaultPool.properties.maxsources]
+display_name.en = "Maxsources"
+display_name.ru = "Maxsources"
+comment.ru = "Максимальное количество серверов, выбираемых из этого пула. От 1 до 16"
+comment.en = "The maximum number of servers to select from this pool. From 1 to 16" 
+type = "integer"
+min = 1
+max = 16
+default = 4
+[parameters.ntpDefaultPool.properties.minpoll]
+display_name.en = "Minpoll"
+display_name.ru = "Minpoll"
+comment.ru = "Минимальный интервал между запросами на сервер. Степень 2 в секунду"
+comment.en = "Minimum interval between requests on the server. Power of 2 per second" 
+type = "integer"
+min = -7
+max = 24
+required = false
+[parameters.ntpDefaultPool.properties.maxpoll]
+display_name.en = "Maxpoll"
+display_name.ru = "Maxpoll"
+comment.ru = "Максимальный интервал между запросами на сервер. Степень 2 в секунду"
+comment.en = "Maximum interval between requests on the server. Power of 2 per second" 
+type = "integer"
+min = -7
+max = 24
+required = false
+[parameters.ntpDefaultPool.properties.offline]
+display_name.en = "Offline mode"
+display_name.ru = "Режим оффлайн"
+comment.ru = "offline сразу отмечает сервер не доступен, auto offline сделает сервер недоступным при сбое отправки запроса" 
+comment.en = "offline immediately marks the server as unavailable, auto offline will make the server unavailable if the request fails"
+type = "enum"
+required = false
+[parameters.ntpDefaultPool.properties.offline.values.offline]
+display_name.en = "offline"
+display_name.ru = "offline"
+[parameters.ntpDefaultPool.properties.offline.values.auto_offline]
+display_name.en = "auto offline"
+display_name.ru = "auto offline"
+[parameters.ntpDefaultPool.properties.prefer]
+display_name.en = "Prefer this server"
+display_name.ru = "Предпочитать этот сервер другим"
+type = "boolean"
+required = false
+[parameters.ntpDefaultPool.properties.noSelect]
+display_name.en = "Never select this source"
+display_name.ru = "Никогда не выбирать этот сервер"
+type = "boolean"
+required = false
+[parameters.ntpDefaultPool.properties.trust]
+display_name.en = "Assume time from this source is always true."
+display_name.ru = "Время из этого источника всегда истинно"
+type = "boolean"
+required = false
+[parameters.ntpDefaultPool.properties.required]
+display_name.en = "Require that server"
+display_name.ru = "Сделать этот пул обязательным"
+type = "boolean"
+required = false
+
+[parameters.clientsSettings]
+display_name.en = "Clients subnets settings"
+display_name.ru = "Настройка клиентских подсетей"
+comment.ru = "Позволяет добавить локальные подсети, из которых можно использовать данный сервер как сервер NTP"
+type = "object"
+context = [
+    "status",
+    "configure"
+]
+[parameters.clientsSettings.properties.localStratum]
+display_name.en = "Local stratum of this server"
+display_name.ru = "Уровень этого сервера"
+type = "integer"
+default = 10
+required = true
+[parameters.clientsSettings.properties.subnetIpAddresses]
+display_name.en = "IP address of local subnets"
+display_name.ru = "IP адрес локальных подсетей"
+type = "array"
+array_type = "string"
+array_min = 1
+pattern = "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)/(?:[1-2]?[0-9]|3[0-2])$"
+
+[parameters.makestep]
+display_name.en = "Makestep"
+display_name.ru = "Makestep"
+comment.en = "Corrects the system time stepwise if the discrepancy is greater than the specified one. The first number is a float, the second is an integer"
+comment.ru = "Корректирует системное время скачком, если расхождение больше заданного. Первое число с плавающей точкой, второе - целое"
+type = "string"
+default = "1.0 3"
+pattern = "^[0-9]+\\.[0-9]+ [0-9]+$"
+context = [
+    "deploy",
+    "status",
+    "configure"
+]
+required = [
+    "deploy"
+]
+
+[parameters.rtcSync]
+display_name.en = "RTC parameter"
+display_name.ru = "Параметр RTC"
+comment.en = "Copy system time to RTC"
+comment.ru = "Копировать системное время в RTC"
+type = "boolean"
+default = true
+context = [
+    "deploy",
+    "status",
+    "configure"
+]
+required = [
+    "deploy"
+]
+
+[parameters.backupName]
+display_name.en = "Name of backup"
+display_name.ru = "Имя резервной копии"
+comment.en = "Your backup is saved in the /var/lib/alterator/service/service-chrony/backups/ folder."
+comment.ru = "Ваша резервная копия сохраняется в папке /var/lib/alterator/service/service-chrony/backups/"
+type = "string"
+context = [
+    "backup",
+    "restore"
+]
+required = [
+    "backup",
+    "restore"
+]
+
+[resources.chronyConf]
+display_name.en = "Chrony configuring file"
+display_name.ru = "Конфигурационный файл Chrony"
+type = "file"
+path.value = "/etc/chrony.conf"
+
+[resources.Chronyd]
+display_name.en = "Chronyd service"
+display_name.ru = "Сервис chronyd"
+type = "systemd_unit"
+unit_name.value = "chronyd.service"
