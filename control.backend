@@ -1,0 +1,50 @@
+type = "Backend"
+module = "executor"
+name = "control"
+interface = "control1"
+action_id = "org.altlinux.alterator.control1"
+
+[methods.Info]
+execute = "cat /usr/share/alterator/objects/control.object"
+stdout_bytes = true
+action_id = "Info"
+
+[methods.ListAll]
+execute = "/usr/lib/alterator-backend-control/control-helper list-all"
+stdout_bytes = true
+action_id = "List"
+
+[methods.ListFacilities]
+execute = "/usr/lib/alterator-backend-control/control-helper list"
+stdout_strings = true
+action_id = "List"
+
+[methods.Values]
+execute = "/usr/lib/alterator-backend-control/control-helper values {facility}"
+stdout_strings = true
+stderr_strings = true
+action_id = "List"
+
+[methods.Summary]
+execute = "control {facility} summary"
+stdout_bytes = true
+stderr_strings = true
+action_id = "List"
+
+[methods.Help]
+execute = "control {facility} help"
+stdout_strings = true
+stderr_strings = true
+action_id = "List"
+
+[methods.Get]
+execute = "control {facility} status"
+stdout_bytes = true
+stderr_strings = true
+action_id = "Get"
+
+[methods.Set]
+execute = "control {facility} {status}"
+stderr_strings = true
+action_id = "Set"
+
