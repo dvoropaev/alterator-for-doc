@@ -1,0 +1,29 @@
+[project]
+name = "alterator"
+version = "0.2.2"
+description = "Python module for new Alterator"
+authors = [{ name = "Andrey Cherepanov", email = "cas@altlinux.org" }]
+license = { text = "GPL-3.0-or-later" }
+dependencies = ["dbus", "tomllib"]
+classifiers = [
+    "Development Status :: 3 - Aplpha",
+    "Environment :: Other Environment",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GPL-3.0 License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+[build-system]
+requires = ["setuptools>=77.0"]
+build-backend = "setuptools.build_meta"
+
+[project.urls]
+homepage = "https://altlinux.space/alterator"
+repository = "https://altlinux.space/alterator/python3-module-alterator"
