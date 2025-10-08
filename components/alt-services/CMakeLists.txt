@@ -1,0 +1,202 @@
+cmake_minimum_required(VERSION 3.16)
+
+project(alt-services VERSION 0.1 LANGUAGES CXX)
+
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+find_package(QT NAMES Qt6 Qt5      REQUIRED COMPONENTS Widgets DBus LinguistTools)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets DBus LinguistTools)
+
+find_package(ECM REQUIRED NO_MODULE)
+set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
+find_package(KF6                   REQUIRED COMPONENTS WidgetsAddons)
+
+set(TS_FILES
+    ts/en_US.ts
+    ts/ru_RU.ts
+)
+
+include_directories("src" ${CMAKE_CURRENT_BINARY_DIR})
+
+set(PROJECT_SOURCES
+    src/main.cpp
+
+# APPLICATION
+    src/app/ServicesApp.h
+    src/app/ServicesApp.cpp
+
+    src/app/AppSettings.h
+    src/app/AppSettings.cpp
+
+    src/controller/Controller.h
+    src/controller/Controller.cpp
+    src/controller/ControllerPrivate.h
+    src/controller/ControllerPrivate.cpp
+
+    src/controller/DBusProxy.h
+    src/controller/DBusProxy.cpp
+
+# DATA CLASSES
+    src/data/TranslatableObject.h
+    src/data/TranslatableObject.cpp
+
+    src/data/Property.h
+    src/data/Property.cpp
+
+    src/data/Parameter.h
+    src/data/Parameter.cpp
+
+    src/data/Resource.h
+    src/data/Resource.cpp
+
+    src/data/Service.h
+    src/data/Service.cpp
+
+# DATA MODELS
+    src/data/models/ParameterModel.h
+    src/data/models/ParameterModel.cpp
+
+    src/data/models/ParameterStatusModel.h
+    src/data/models/ParameterStatusModel.cpp
+
+    src/data/models/ServiceModel.h
+    src/data/models/ServiceModel.cpp
+
+    src/data/models/ResourceModel.h
+    src/data/models/ResourceModel.cpp
+
+# MAIN WIDGETS
+    src/ui/MainWindow.cpp
+    src/ui/MainWindow.h
+    src/ui/MainWindow.ui
+
+    src/ui/AboutDialog.h
+    src/ui/AboutDialog.cpp
+    src/ui/AboutDialog.ui
+
+    src/ui/ServiceWidget.h
+    src/ui/ServiceWidget.cpp
+    src/ui/ServiceWidget.ui
+
+    src/ui/ActionWizard.h
+    src/ui/ActionWizard.cpp
+    src/ui/ActionWizard.ui
+
+    src/ui/DiagSelectionForm.h
+    src/ui/DiagSelectionForm.cpp
+    src/ui/DiagSelectionForm.ui
+
+# MISC WIDGETS
+    src/ui/ObjectInfoWidget.h
+    src/ui/ObjectInfoWidget.cpp
+    src/ui/ObjectInfoWidget.ui
+
+    src/ui/CustomTreeView.h
+    src/ui/CustomTreeView.cpp
+
+    src/ui/ObjectInfoDelegate.h
+    src/ui/ObjectInfoDelegate.cpp
+
+
+# FORM VARIANTS
+    src/ui/forms/BaseForm.h
+
+    src/ui/forms/CompactForm.h
+    src/ui/forms/CompactForm.cpp
+
+    src/ui/forms/DetailedForm.h
+    src/ui/forms/DetailedForm.cpp
+    src/ui/forms/DetailedForm.ui
+
+# FORM EDITORS
+    src/ui/forms/editors/Editor.h
+    src/ui/forms/editors/Editor.cpp
+
+    src/ui/forms/editors/compact/CompactArrayFace.h
+    src/ui/forms/editors/compact/CompactArrayFace.cpp
+
+    src/ui/forms/editors/compact/PrimitiveEditor.h
+    src/ui/forms/editors/compact/PrimitiveEditor.cpp
+
+    src/ui/forms/editors/detailed/CompositeEditor.h
+    src/ui/forms/editors/detailed/CompositeEditor.cpp
+
+    src/ui/forms/editors/detailed/GroupEditor.h
+    src/ui/forms/editors/detailed/GroupEditor.cpp
+
+    src/ui/forms/editors/detailed/CompositeArrayEditor.h
+    src/ui/forms/editors/detailed/CompositeArrayEditor.cpp
+    src/ui/forms/editors/detailed/CompositeArrayEditor.ui
+
+    src/ui/forms/editors/detailed/ArrayEditor.h
+    src/ui/forms/editors/detailed/ArrayEditor.cpp
+    src/ui/forms/editors/detailed/ArrayEditor.ui
+
+    src/ui/forms/editors/detailed/misc/EditorTitle.h
+    src/ui/forms/editors/detailed/misc/EditorTitle.cpp
+    src/ui/forms/editors/detailed/misc/EditorTitle.ui
+
+    src/ui/forms/editors/detailed/misc/CollapseButton.h
+    src/ui/forms/editors/detailed/misc/CollapseButton.cpp
+
+    src/ui/forms/editors/detailed/misc/ValidationIndicator.h
+    src/ui/forms/editors/detailed/misc/ValidationIndicator.cpp
+    src/ui/forms/editors/detailed/misc/ValidationIndicator.ui
+
+    src/ui/forms/editors/detailed/DetailedEditor.h
+    src/ui/forms/editors/detailed/wrappers/EditorWrapper.h
+
+    src/ui/forms/editors/detailed/wrappers/InlineEditor.h
+    src/ui/forms/editors/detailed/wrappers/InlineEditor.cpp
+    src/ui/forms/editors/detailed/wrappers/InlineEditor.ui
+
+    src/ui/forms/editors/detailed/wrappers/CollapsibleEditor.h
+    src/ui/forms/editors/detailed/wrappers/CollapsibleEditor.cpp
+    src/ui/forms/editors/detailed/wrappers/CollapsibleEditor.ui
+
+    src/ui/forms/editors/detailed/wrappers/CompositeArrayItem.h
+    src/ui/forms/editors/detailed/wrappers/CompositeArrayItem.cpp
+    src/ui/forms/editors/detailed/wrappers/CompositeArrayItem.ui
+)
+
+add_custom_target(app_ts
+    DEPENDS ${TS_FILES}
+    COMMAND ${Qt${QT_VERSION_MAJOR}_LUPDATE_EXECUTABLE} * -recursive ${CMAKE_CURRENT_BINARY_DIR} -ts ${TS_FILES} -no-obsolete
+)
+
+set_source_files_properties(${TS_FILES} PROPERTIES OUTPUT_LOCATION ${CMAKE_CURRENT_BINARY_DIR})
+
+
+include(cmake/TranslationUtils.cmake)
+include(cmake/Version.cmake)
+
+
+if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
+    qt_add_translation(QM_FILES ${TS_FILES})
+    add_translation_resource(RESOURCES_SRC ${PROJECT_NAME} ${QM_FILES})
+else()
+    qt5_add_translation(QM_FILES ${TS_FILES})
+    add_translation_resource(RESOURCES_SRC ${PROJECT_NAME} ${QM_FILES})
+endif()
+
+add_executable(${PROJECT_NAME} ${PROJECT_SOURCES} ${RESOURCES_SRC})
+
+target_link_libraries(${PROJECT_NAME} PRIVATE
+    Qt${QT_VERSION_MAJOR}::Widgets
+    Qt${QT_VERSION_MAJOR}::DBus
+    KF6::WidgetsAddons
+    Qt6Solutions_SingleApplication-2.6
+)
+
+
+include(GNUInstallDirs)
+install(TARGETS ${PROJECT_NAME}
+    BUNDLE DESTINATION .
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)

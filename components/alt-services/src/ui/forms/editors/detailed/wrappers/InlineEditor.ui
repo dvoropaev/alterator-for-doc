@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>InlineEditor</class>
+ <widget class="QWidget" name="InlineEditor">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>254</width>
+    <height>95</height>
+   </rect>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="EditorTitle" name="title" native="true"/>
+     </item>
+     <item>
+      <widget class="QWidget" name="content" native="true">
+       <layout class="QHBoxLayout" name="horizontalLayout_2"/>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="ValidationIndicator" name="indicator" native="true"/>
+   </item>
+   <item>
+    <widget class="Line" name="line">
+     <property name="orientation">
+      <enum>Qt::Orientation::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ValidationIndicator</class>
+   <extends>QWidget</extends>
+   <header>ui/forms/editors/detailed/misc/ValidationIndicator.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>EditorTitle</class>
+   <extends>QWidget</extends>
+   <header>ui/forms/editors/detailed/misc/EditorTitle.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
