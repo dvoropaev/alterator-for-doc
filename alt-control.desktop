@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=System restrictions
+Name[ru]=Системные ограничения
+GenericName=System restrictions
+GenericName[ru]=Системные ограничения
+Comment=Application for system restrictions management
+Comment[ru]=Приложениe для управления системными ограничениями
+Exec=alt-control
+Icon=alterator
+Categories=Settings;System;
+NoDisplay=true
