@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=ALT Components
+Name[ru]=Альт Компоненты
+GenericName=ALT Components
+GenericName[ru]=Альт Компоненты
+Comment=Application for component instalation and removal
+Comment[ru]=Приложениe для установки и удаления системных компонентов
+Exec=alt-components
+Icon=alterator
+Categories=Settings;System;
+NoDisplay=true

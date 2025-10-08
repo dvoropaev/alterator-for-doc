@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>alt::MainWindow</class>
+ <widget class="QMainWindow" name="alt::MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>200</width>
+    <height>200</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>ALT Components</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+     <horstretch>10</horstretch>
+     <verstretch>10</verstretch>
+    </sizepolicy>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout_2">
+    <property name="spacing">
+     <number>6</number>
+    </property>
+    <property name="leftMargin">
+     <number>6</number>
+    </property>
+    <property name="topMargin">
+     <number>6</number>
+    </property>
+    <property name="rightMargin">
+     <number>6</number>
+    </property>
+    <property name="bottomMargin">
+     <number>6</number>
+    </property>
+    <item>
+     <widget class="alt::ComponentsWidget" name="componentsWidget" native="true">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="alt::MainStatusBar" name="statusbar"/>
+      </item>
+      <item>
+       <widget class="QPushButton" name="updatePushButton">
+        <property name="text">
+         <string>Update sources</string>
+        </property>
+        <property name="icon">
+         <iconset theme="view-refresh"/>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="resetPushButton">
+        <property name="text">
+         <string>Reset</string>
+        </property>
+        <property name="icon">
+         <iconset theme="QIcon::ThemeIcon::EditUndo"/>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="applyPushButton">
+        <property name="text">
+         <string>Apply</string>
+        </property>
+        <property name="icon">
+         <iconset theme="emblem-default"/>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="viewMenu">
+    <property name="title">
+     <string>&amp;View</string>
+    </property>
+    <widget class="QMenu" name="languageMenu">
+     <property name="title">
+      <string>&amp;Language</string>
+     </property>
+    </widget>
+    <widget class="QMenu" name="viewModeMenu">
+     <property name="title">
+      <string>&amp;View mode</string>
+     </property>
+     <addaction name="actionBySections"/>
+     <addaction name="actionByTags"/>
+     <addaction name="actionPlain"/>
+     <addaction name="separator"/>
+     <addaction name="actionNames_and_IDs"/>
+     <addaction name="actionNames_only"/>
+     <addaction name="actionIDs_only"/>
+    </widget>
+    <widget class="QMenu" name="editorLayoutMenu">
+     <property name="title">
+      <string>&amp;Editor layout</string>
+     </property>
+     <addaction name="actionContent"/>
+    </widget>
+    <addaction name="viewModeMenu"/>
+    <addaction name="languageMenu"/>
+    <addaction name="editorLayoutMenu"/>
+   </widget>
+   <widget class="QMenu" name="helpMenu">
+    <property name="title">
+     <string>&amp;Help</string>
+    </property>
+    <addaction name="manualAction"/>
+    <addaction name="aboutAction"/>
+   </widget>
+   <widget class="QMenu" name="menu_Tools">
+    <property name="title">
+     <string>&amp;Tools</string>
+    </property>
+    <widget class="QMenu" name="menu_System">
+     <property name="title">
+      <string>&amp;System</string>
+     </property>
+     <addaction name="actionDisable_deletion_base_components"/>
+     <addaction name="actionDisable_the_removal_of_packages_installed_manually"/>
+    </widget>
+    <addaction name="menu_System"/>
+    <addaction name="action_Show_logs"/>
+    <addaction name="actionShow_drafts"/>
+    <addaction name="actionOther"/>
+   </widget>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <addaction name="actionReload_components"/>
+    <addaction name="separator"/>
+    <addaction name="actionQuit"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="viewMenu"/>
+   <addaction name="menu_Tools"/>
+   <addaction name="helpMenu"/>
+  </widget>
+  <action name="manualAction">
+   <property name="text">
+    <string>&amp;Manual</string>
+   </property>
+  </action>
+  <action name="aboutAction">
+   <property name="text">
+    <string>&amp;About</string>
+   </property>
+  </action>
+  <action name="action_Show_logs">
+   <property name="text">
+    <string>&amp;Show logs</string>
+   </property>
+  </action>
+  <action name="actionReload_components">
+   <property name="text">
+    <string>&amp;Reload components</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="actionShow_drafts">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Show drafts</string>
+   </property>
+  </action>
+  <action name="actionQuit">
+   <property name="text">
+    <string>&amp;Quit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionBySections">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;By sections</string>
+   </property>
+  </action>
+  <action name="actionByTags">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;By tags</string>
+   </property>
+  </action>
+  <action name="actionPlain">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Plain</string>
+   </property>
+  </action>
+  <action name="actionContent">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Content panel</string>
+   </property>
+  </action>
+  <action name="actionDisable_deletion_base_components">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Disable the removal of basic components</string>
+   </property>
+  </action>
+  <action name="actionDisable_the_removal_of_packages_installed_manually">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Disable the removal of packages installed manually</string>
+   </property>
+  </action>
+  <action name="actionNames_and_IDs">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Names and IDs</string>
+   </property>
+  </action>
+  <action name="actionNames_only">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Names only</string>
+   </property>
+  </action>
+  <action name="actionIDs_only">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;IDs only</string>
+   </property>
+  </action>
+  <action name="actionOther">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Show the &quot;Other Components&quot; section</string>
+   </property>
+  </action>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>alt::ComponentsWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">ui/componentswidget/componentswidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>alt::MainStatusBar</class>
+   <extends>QStatusBar</extends>
+   <header location="global">ui/statusbar/mainstatusbar.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
