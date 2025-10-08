@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=ALT Services
+Name[ru]=Альт Сервисы
+GenericName=ALT Services
+GenericName[ru]=Альт Сервисы
+Comment=Application for deploying services
+Comment[ru]=Приложениe для запуска сервисов
+Exec=alt-services
+Icon=alterator
+Categories=Settings;System;
+NoDisplay=true

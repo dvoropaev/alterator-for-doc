@@ -1,0 +1,8 @@
+type = "Application"
+name = "alt-services"
+display_name.en = "Alt Services"
+display_name.ru = "Alt Сервисы"
+comment.en = "Application for managing services"
+comment.ru = "Приложение для управления сервисами"
+interface = "org.altlinux.alterator.service1"
+exec = "alt-services -o %o"
