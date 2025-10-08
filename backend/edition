@@ -1,0 +1,339 @@
+#!/usr/bin/python3
+#
+# Copyright (C) 2025 Michael Chernigin <chernigin@altlinux.org>
+# Copyright (C) 2025 Kirill Sharov <sheriffkorov@altlinux.org>
+#
+# This file is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+#
+
+from pathlib import Path
+from typing import Dict, Optional
+import subprocess
+import argparse
+import sys
+import os
+import alterator_entry as ae
+
+EDITIONS_DIR = Path("/usr/share/alterator/editions")
+LICENSES_DIR = Path("/usr/share/distro-licenses")
+LEGACY_NOTES_DIR = Path("/usr/share/alt-notes")
+
+DCONF_EDITION_PATH = "org/altlinux/product/edition"
+
+
+SUCCESS = 0
+ERROR_EDITION_NOT_SET = 101
+ERROR_EDITION_NOT_FOUND = 102
+ERROR_FILE_NOT_FOUND = 201
+
+
+def get_edition_file(name: str) -> Optional[Path]:
+    if not EDITIONS_DIR.is_dir():
+        return None
+
+    for f in EDITIONS_DIR.rglob("*.edition"):
+        if ae.get_field(f, "name") == name:
+            return f
+    return None
+
+
+def get_localized_file(base_path: Path, prefix: str) -> Optional[Path]:
+    locale = os.getenv("LC_ALL", "en_US").split(".")[0]
+    variants = [
+        f"{prefix}.{locale}.html",
+        f"{prefix}.{locale.split('_')[0]}.html",
+        f"{prefix}.all.html",
+        f"{prefix}.html",
+    ]
+
+    for variant in variants:
+        if (base_path / variant).exists():
+            return base_path / variant
+
+
+def get_current_edition_name() -> Optional[str]:
+    os_release = read_os_release()
+    if "VARIANT_ID" in os_release:
+        print("Info: edition got from /etc/os-release", file=sys.stderr)
+        return os_release["VARIANT_ID"]
+
+    dconf_read = (
+        subprocess.run(
+            ["dconf", "read", f"/{DCONF_EDITION_PATH}/current"],
+            env={"DCONF_PROFILE": "system"},
+            capture_output=True,
+            text=True,
+        )
+        .stdout.strip()
+        .strip("'")
+    )
+
+    if dconf_read:
+        print(
+            f"Info: edition got from dconf distr base by '/{DCONF_EDITION_PATH}/current' key",
+            file=sys.stderr,
+        )
+
+    return dconf_read if dconf_read else None
+
+
+def read_os_release() -> Dict[str, str]:
+    with open("/etc/os-release", "r") as f:
+        return dict(
+            line.strip().split("=", 1)
+            for line in f
+            if "=" in line and not line.startswith("#")
+        )
+
+
+def write_os_release(data: Dict[str, str]):
+    with open("/etc/os-release", "w") as f:
+        for key, value in data.items():
+            f.write(f"{key}={value}\n")
+
+
+def set_current_edition(edition: str):
+    if not os.access("/etc/dconf/db/distr", os.W_OK):
+        sys.exit("Error: not enough permissions")
+
+    edition_file = get_edition_file(edition)
+    if not edition_file:
+        sys.exit(f"Error: edition file not found for '{edition}'")
+    display_name = ae.get_field(edition_file, "display_name.en")
+
+    Path("/etc/dconf/db/distr.d/99-edition").write_text(
+        f"[{DCONF_EDITION_PATH}]\ncurrent='{edition}'\n"
+    )
+    subprocess.run(["dconf", "compile", "/etc/dconf/db/distr", "/etc/dconf/db/distr.d"])
+
+    data = read_os_release()
+    data["VARIANT_ID"] = edition
+    data["VARIANT"] = f'"{display_name}"'
+    write_os_release(data)
+
+    current_edition = get_current_edition_name()
+    if current_edition is None:
+        sys.exit("Error: edition not set")
+    current_edition_file = get_edition_file(current_edition)
+    if current_edition_file is None:
+        sys.exit(
+            f"Error: not found edition file for current edition '{current_edition}'"
+        )
+    return current_edition_file
+
+
+def fix_data_source():
+    edition = get_current_edition_name()
+    if edition is None:
+        sys.exit("Erorr: info about current edition is not available")
+    set_current_edition(edition)
+
+
+def notes_path_helper(edition_name: str, entity: str) -> tuple[Optional[Path], int]:
+    edition_file = get_edition_file(edition_name)
+    if edition_file is None:
+        return (None, ERROR_EDITION_NOT_FOUND)
+
+    if entity == "license":
+        license_name = ae.get_field(edition_file, "license")
+        dir = Path(LICENSES_DIR / license_name)
+    else:
+        dir = edition_file.parent
+
+    path = get_localized_file(dir, entity)
+    if path is not None:
+        return (path, SUCCESS)
+    else:
+        return (None, ERROR_FILE_NOT_FOUND)
+
+
+def notes_path(edition_name: Optional[str], entity: str) -> tuple[Optional[Path], int]:
+    # Requested by name
+    if edition_name is not None:
+        return notes_path_helper(edition_name, entity)
+    # Requested current
+    else:
+        name = get_current_edition_name()
+        if name is not None:
+            return notes_path_helper(name, entity)
+        else:
+            # Fallback to legacy
+            path = get_localized_file(LEGACY_NOTES_DIR, entity)
+            if path is not None:
+                return (path, SUCCESS)
+            else:
+                return (None, ERROR_EDITION_NOT_SET)
+
+
+def info_path_helper(edition_name: str) -> tuple[Optional[Path], int]:
+    path = get_edition_file(edition_name)
+    if path is None:
+        return (None, ERROR_EDITION_NOT_FOUND)
+    else:
+        return (path, SUCCESS)
+
+
+def info_path(edition_name: Optional[str]) -> tuple[Optional[Path], int]:
+    # Requested by name
+    if edition_name is not None:
+        return info_path_helper(edition_name)
+    # Requested current
+    else:
+        name = get_current_edition_name()
+        if name is not None:
+            return info_path_helper(name)
+        else:
+            return (None, ERROR_EDITION_NOT_SET)
+
+
+# -- Commands --
+
+
+def handle_result(
+    code: int, edition_name: Optional[str], entity: Optional[str], callback
+):
+    if code == ERROR_EDITION_NOT_FOUND:
+        sys.exit(f"Error: edition '{edition_name}' not found")
+    elif code == ERROR_FILE_NOT_FOUND:
+        sys.exit(f"Error: file '{entity}' not found")
+    elif code == ERROR_EDITION_NOT_SET:
+        sys.exit("Error: edition not set")
+    else:
+        callback()
+
+
+def info_command(args: argparse.Namespace) -> None:
+    (path, code) = info_path(args.name)
+
+    def callback() -> None:
+        if path is not None:
+            print(path if args.path else path.read_text())
+
+    handle_result(code, args.name, None, callback)
+
+
+def file_command_helper(args: argparse.Namespace, entity: str) -> None:
+    (path, code) = notes_path(args.name, entity)
+
+    def callback() -> None:
+        if path is not None:
+            print(path if args.path else path.read_text())
+
+    handle_result(code, args.name, entity, callback)
+
+
+def description_command(args: argparse.Namespace) -> None:
+    file_command_helper(args, "description")
+
+
+def license_command(args: argparse.Namespace) -> None:
+    file_command_helper(args, "license")
+
+
+def release_notes_command(args: argparse.Namespace) -> None:
+    file_command_helper(args, "release-notes")
+
+
+def final_notes_command(args: argparse.Namespace) -> None:
+    file_command_helper(args, "final-notes")
+
+
+def get_command(_args: argparse.Namespace) -> None:
+    current_edition = get_current_edition_name()
+    if not current_edition:
+        sys.exit("Error: edition is not set")
+    print(current_edition)
+
+
+def set_command(args: argparse.Namespace) -> None:
+    set_current_edition(args.name)
+
+
+def recover_command(_: argparse.Namespace) -> None:
+    fix_data_source()
+
+
+def list_command(_: argparse.Namespace) -> None:
+    if not EDITIONS_DIR.is_dir():
+        return None
+
+    for f in EDITIONS_DIR.rglob("*.edition"):
+        name = ae.get_field(f, "name")
+        if isinstance(name, str):
+            print(name)
+
+    return None
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    subparsers = parser.add_subparsers(title="subcommands", required=True)
+
+    list_parser = subparsers.add_parser("list", help="get list of editions")
+    list_parser.set_defaults(function=list_command)
+
+    info_parser = subparsers.add_parser("info", help="get TOML info about edition")
+    info_parser.add_argument("name", help="edition name (optional)", nargs="?")
+    info_parser.add_argument("-p", "--path", action="store_true")
+    info_parser.set_defaults(function=info_command)
+
+    description_parser = subparsers.add_parser(
+        "description", help="get edition description file path"
+    )
+    description_parser.add_argument("name", help="edition name (optional)", nargs="?")
+    description_parser.add_argument("-p", "--path", action="store_true")
+    description_parser.set_defaults(function=description_command)
+
+    license_parser = subparsers.add_parser(
+        "license", help="get edition license file path"
+    )
+    license_parser.add_argument("name", help="edition name (optional)", nargs="?")
+    license_parser.add_argument("-p", "--path", action="store_true")
+    license_parser.set_defaults(function=license_command)
+
+    release_notes_parser = subparsers.add_parser(
+        "release-notes", help="get edition release-notes file path"
+    )
+    release_notes_parser.add_argument("name", help="edition name (optional)", nargs="?")
+    release_notes_parser.add_argument("-p", "--path", action="store_true")
+    release_notes_parser.set_defaults(function=release_notes_command)
+
+    final_notes_parser = subparsers.add_parser(
+        "final-notes", help="get edition final-notes file path"
+    )
+    final_notes_parser.add_argument("name", help="edition name (optional)", nargs="?")
+    final_notes_parser.add_argument("-p", "--path", action="store_true")
+    final_notes_parser.set_defaults(function=final_notes_command)
+
+    get_parser = subparsers.add_parser("get", help="get current edition name")
+    get_parser.set_defaults(function=get_command)
+
+    set_parser = subparsers.add_parser("set", help="set current edition")
+    set_parser.add_argument("name", help="edition name")
+    set_parser.set_defaults(function=set_command)
+
+    recover_parser = subparsers.add_parser(
+        "recover",
+        help="recover data sources of current edition if one of data sources is corrupted",
+    )
+    recover_parser.set_defaults(function=recover_command)
+
+    args = parser.parse_args()
+    exit_code = args.function(args)
+    sys.exit(exit_code)
+
+
+if __name__ == "__main__":
+    main()

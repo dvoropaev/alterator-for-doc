@@ -1,0 +1,27 @@
+<!DOCTYPE node PUBLIC
+    "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+    "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node>
+    <interface name="org.altlinux.alterator.edition1">
+        <method name="Info">
+            <arg type="ay" name="stdout_bytes" direction="out"></arg>
+            <arg type="i" name="response" direction="out"></arg>
+        </method>
+        <method name="Description">
+            <arg type="ay" name="stdout_bytes" direction="out"></arg>
+            <arg type="i" name="response" direction="out"></arg>
+        </method>
+        <method name="License">
+            <arg type="ay" name="stdout_bytes" direction="out"></arg>
+            <arg type="i" name="response" direction="out"></arg>
+        </method>
+        <method name="ReleaseNotes">
+            <arg type="ay" name="stdout_bytes" direction="out"></arg>
+            <arg type="i" name="response" direction="out"></arg>
+        </method>
+        <method name="FinalNotes">
+            <arg type="ay" name="stdout_bytes" direction="out"></arg>
+            <arg type="i" name="response" direction="out"></arg>
+        </method>
+    </interface>
+</node>
