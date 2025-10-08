@@ -1,0 +1,39 @@
+name: alterator-browser-ci
+
+on:
+  workflow_dispatch:
+  workflow_call:
+  push:
+    branches: [ "*" ]
+  pull_request:
+    types: [ opened, synchronize, ready_for_review ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  alterator-browser-build-container:
+    uses: ./.github/workflows/build-container.yml
+    secrets: inherit
+    strategy:
+      matrix:
+        os: [ { distr: "alt:sisyphus", artifact: "sisyphus" } ]
+        architecture: [ amd64, i386 ]
+    with:
+      distr: ${{ matrix.os.distr }}
+      architecture: ${{ matrix.architecture }}
+
+  alterator-browser-browser-build:
+    uses: ./.github/workflows/build.yml
+    needs: [ alterator-browser-build-container ]
+    secrets: inherit
+    strategy:
+      matrix:
+        os: [ { distr: "alt:sisyphus", artifact: "sisyphus" } ]
+        architecture: [ amd64, i386 ]
+      fail-fast: false
+    with:
+      artifact: ${{ matrix.os.artifact }}
+      architecture: ${{ matrix.architecture }}
+
