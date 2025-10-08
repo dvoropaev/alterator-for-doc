@@ -1,0 +1,8 @@
+type            = "Object"
+name            = "control"
+display_name.en = "System restrictions"
+display_name.ru = "Системные ограничения"
+comment.en      = "Alterator interface for system restrictions management"
+comment.ru      = "Интерфейс Альтератора для управления системными ограничениями"
+category        = "X-Alterator-System"
+override        = "org.altlinux.alterator.legacy1"
