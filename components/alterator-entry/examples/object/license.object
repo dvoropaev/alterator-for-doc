@@ -1,0 +1,8 @@
+type            = "Object"
+name            = "alterator-backend-license"
+display_name.en = "License"
+display_name.ru = "Лицензионный договор"
+comment.en      = "Alterator interface for license viewing"
+comment.ru      = "Интерфейс Альтератора для просмотра лицензии"
+category        = "X-Alterator-System"
+override        = "org.altlinux.alterator.legacy1"

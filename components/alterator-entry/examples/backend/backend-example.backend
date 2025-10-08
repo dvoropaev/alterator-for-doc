@@ -1,0 +1,17 @@
+name = "lister"
+type = "Backend"
+module = "executor"
+interface = "lister1"
+
+[methods.List]
+execute = "ls {param}"
+stdout_strings = true
+action_id = "List"
+timeout = 100
+
+[methods.ListAllLong]
+execute = "ls -al {dir}"
+stdout_strings = true
+action_id = "ListAllLong"
+timeout = 1000
+

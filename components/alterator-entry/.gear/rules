@@ -1,0 +1,2 @@
+tar: .
+copy: .gear/pyproject_deps.json

@@ -1,0 +1,4 @@
+name = "cat1"
+type = "Category"
+display_name.en = "System accounting"
+icon = "groups/accounting"

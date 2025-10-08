@@ -1,0 +1,23 @@
+{
+  "sources": {
+    "metadata": {
+      "deps": [
+        "jsonschema",
+        "tomlkit"
+      ],
+      "srctype": "metadata"
+    },
+    "pep517": {
+      "deps": [
+        "wheel"
+      ],
+      "srctype": "pep517"
+    },
+    "pep518": {
+      "deps": [
+        "setuptools"
+      ],
+      "srctype": "pep518"
+    }
+  }
+}

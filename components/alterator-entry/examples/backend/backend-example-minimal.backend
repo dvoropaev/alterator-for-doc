@@ -1,0 +1,9 @@
+name = "god"
+type = "Backend"
+module = "executor"
+interface = "god1"
+
+[methods.AskForAnswers]
+execute = "echo 42"
+stdout_strings = true
+action_id = "AskForAnswers"

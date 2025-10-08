@@ -1,0 +1,41 @@
+type = "Edition"
+name = "edition_domain"
+display_name.en = "ALT Domain"
+display_name.ru = "Альт Домен"
+
+license = "ALT_Server_License"
+arches = [ "x86_64", "aarch64", "i586" ]
+
+desktop_environment = "GNOME"
+kflavours = { default = "6.12", options = [ "6.6", "6.12" ] }
+languages = { default = "ru", options = [ "ru", "en" ] }
+
+[tags.development]
+display_name.en = "Development"
+display_name.ru = "Разработка"
+
+[tags.entertainment]
+display_name.en = "Entertainment"
+display_name.ru = "Развлечения"
+
+[tags.security]
+display_name.en = "Security"
+display_name.ru = "Безопасность"
+
+[sections.base]
+display_name.en = "Base components"
+display_name.ru = "Базовые компоненты"
+components = [
+    "build_essentials",
+    "rust_dev_tools",
+    "clang-tools"
+]
+
+[sections.main]
+display_name.en = "Edition components"
+display_name.ru = "Компоненты редакции"
+components = [
+    "security_emulation_tools",
+    "test_component1",
+    "test_component2"
+]

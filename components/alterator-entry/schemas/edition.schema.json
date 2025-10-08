@@ -1,0 +1,157 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Alterator Edition",
+    "type": "object",
+    "propertyNames": {
+        "enum": [
+            "type",
+            "name",
+            "display_name",
+            "license",
+            "arches",
+            "desktop_environment",
+            "kflavours",
+            "languages",
+            "sections",
+            "tags"
+        ]
+    },
+    "$comment": "TODO(chernigin): figure out required fields",
+    "required": [
+        "type",
+        "name",
+        "sections"
+    ],
+    "properties": {
+        "type": {
+            "type": "string",
+            "const": "Edition"
+        },
+        "name": {
+            "type": "string"
+        },
+        "display_name": {
+            "type": "object",
+            "propertyNames": {
+                "pattern": "^[a-z]{2}(_[A-Z]{2})?$"
+            },
+            "additionalProperties": {
+                "type": "string"
+            },
+            "required": [
+                "en"
+            ]
+        },
+        "license": {
+            "type": "string"
+        },
+        "desktop_environment": {
+            "type": "string",
+            "enum": [
+                "CINNAMON",
+                "GNOME",
+                "KDE5",
+                "KDE6",
+                "MATE",
+                "XFCE"
+            ]
+        },
+        "languages": {
+            "$ref": "#/definitions/options_with_default"
+        },
+        "arches": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "$comment": "TODO(chernigin): fill enum with all needed arches",
+                "enum": [
+                    "x86_64",
+                    "i586",
+                    "aarch64",
+                    "riscv64",
+                    "loongarch64",
+                    "e2k",
+                    "e2kv4",
+                    "e2kv5",
+                    "e2kv6"
+                ]
+            }
+        },
+        "kflavours": {
+            "$ref": "#/definitions/options_with_default"
+        },
+        "sections": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "object",
+                "propertyNames": {
+                    "enum": [
+                        "display_name",
+                        "components"
+                    ]
+                },
+                "properties": {
+                    "display_name": {
+                        "$ref": "#/definitions/field_with_locale"
+                    },
+                    "components": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "tags": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "object",
+                "properties": {
+                    "display_name": {
+                        "$ref": "#/definitions/field_with_locale"
+                    }
+                },
+                "required": ["display_name"]
+            }
+        }
+    },
+    "definitions": {
+        "field_with_locale": {
+            "type": "object",
+            "propertyNames": {
+                "pattern": "^[a-z]{2}(_[A-Z]{2})?$"
+            },
+            "additionalProperties": {
+                "type": "string"
+            },
+            "required": [
+                "en"
+            ]
+        },
+        "options_with_default": {
+            "type": "object",
+            "propertyNames": {
+                "enum": [
+                    "default",
+                    "options"
+                ]
+            },
+            "required": [
+                "default",
+                "options"
+            ],
+            "properties": {
+                "default": {
+                    "type": "string"
+                },
+                "options": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}
