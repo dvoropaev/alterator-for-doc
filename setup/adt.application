@@ -1,0 +1,8 @@
+type = "Application"
+name = "adt"
+display_name.en = "Alt Diagnostic Tool"
+display_name.ru = "Alt Diagnostic Tool"
+comment.en = "ALT Diagnostic Tool"
+comment.ru = "Диагностический инструмент"
+interface = "org.altlinux.alterator.diag1"
+exec = "adt -o %o -r -t -g"

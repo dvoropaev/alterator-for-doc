@@ -1,0 +1,13 @@
+#ifndef VERSION_H
+#define VERSION_H
+
+#define ADT_VERSION_MAJOR ${ADT_VERSION_MAJOR}
+#define ADT_VERSION_MINOR ${ADT_VERSION_MINOR}
+#define ADT_VERSION_PATCH ${ADT_VERSION_PATCH}
+
+inline QString getApplicationVersion()
+{
+  return QString("%1.%2.%3").arg(ADT_VERSION_MAJOR).arg(ADT_VERSION_MINOR).arg(ADT_VERSION_PATCH);
+}
+
+#endif // VERSION_H
