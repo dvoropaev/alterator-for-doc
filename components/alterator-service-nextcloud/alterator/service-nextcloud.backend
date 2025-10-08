@@ -1,0 +1,60 @@
+type = "Backend"
+module = "executor"
+interface = "service1"
+name = "service_nextcloud"
+
+[methods.Info]
+execute = "cat /usr/share/alterator/service/service-nextcloud.service"
+action_id = "Info"
+stdout_bytes = true
+
+[methods.Deploy]
+execute = "deploy nextcloud"
+action_id = "Deploy"
+stdin_string = true
+stdout_signal_name = "service_stdout_signal"
+stderr_signal_name = "service_stderr_signal"
+timeout = 1200
+
+[methods.Undeploy]
+execute = "deploy -r nextcloud"
+action_id = "Undeploy"
+stdin_string = true
+stdout_signal_name = "service_stdout_signal"
+stderr_signal_name = "service_stderr_signal"
+timeout = 1200
+
+[methods.Configure]
+execute = "echo soon"
+action_id = "Configure"
+stdin_string = true
+stdout_signal_name = "service_stdout_signal"
+stderr_signal_name = "service_stderr_signal"
+timeout = 1200
+
+[methods.Start]
+execute = "echo soon"
+action_id = "Start"
+timeout = 1200
+
+[methods.Stop]
+execute = "echo soon"
+action_id = "Stop"
+timeout = 1200
+
+[methods.Backup]
+execute = "echo soon"
+action_id = "Backup"
+stdin_string = true
+timeout = 1200
+
+[methods.Restore]
+execute = "echo soon"
+action_id = "Restore"
+stdin_string = true
+timeout = 1200
+
+[methods.Status]
+execute = "deploy -s nextcloud"
+action_id = "Status"
+stdout_bytes = true

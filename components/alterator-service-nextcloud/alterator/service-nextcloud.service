@@ -1,0 +1,23 @@
+type = "Service"
+name = "Nextcloud service"
+category = "X-Alterator-Servers"
+display_name.en = "Nextcloud service"
+display_name.ru = "Сервис Nextcloud"
+comment.en = "Nextcloud service"
+comment.ru = "Сервис Nextcloud"
+no_default_diag = true
+enable_force_deploy = false
+
+[parameters.adminPassword]
+type = "string"
+display_name.en = "Admin password"
+display_name.ru = "Пароль администратора"
+comment.en = "Password for the Nextcloud admin user"
+comment.ru = "Пароль администратора Nextcloud"
+context = [
+    "deploy"
+]
+required = [
+    "deploy"
+]
+password = true
