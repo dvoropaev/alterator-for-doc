@@ -1,0 +1,45 @@
+#!/usr/bin/python3
+#
+# Copyright (C) 2025 Michael Chernigin <chernigin@altlinux.org>
+#
+# This file is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+#
+
+import os
+from configparser import ConfigParser
+from pathlib import Path
+
+import alterator_entry as ae
+
+OLD_CATEGORIES_DIR = Path("/usr/share/alterator/desktop-directories")
+NEW_CATEGORIES_DIR = Path("/usr/share/alterator/categories")
+
+
+def iter_dir(dir: Path) -> list[str]:
+    return os.listdir(dir) if os.path.isdir(dir) else []
+
+
+def main():
+    for file in iter_dir(NEW_CATEGORIES_DIR):
+        print(ae.get_field(NEW_CATEGORIES_DIR / file, "name"))
+
+    for file in iter_dir(OLD_CATEGORIES_DIR):
+        parser = ConfigParser()
+        parser.read(OLD_CATEGORIES_DIR / file)
+        print(parser.get("Desktop Entry", "X-Alterator-Category"))
+
+
+if __name__ == "__main__":
+    main()
