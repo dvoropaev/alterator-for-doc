@@ -1,0 +1,8 @@
+type = "Category"
+name = "bitrix"
+category = "vendors"
+display_name.en = "1C-Битрикс"
+display_name.ru = "1C-Битрикс"
+comment.en = "1C-Битрикс"
+comment.ru = "1C-Битрикс"
+draft = true

@@ -1,0 +1,10 @@
+type = "Component"
+name = "monitoring-tools"
+category = "utils"
+display_name.en = "Monitoring tools"
+display_name.ru = "Инструменты мониторинга"
+
+[packages]
+audit = {}
+systemd-analyze = {}
+sysstat = {}

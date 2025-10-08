@@ -1,0 +1,8 @@
+type = "Component"
+name = "alterator-legacy-zabbix-agent"
+category = "alterator-legacy-network"
+display_name.en = "Zabbix agent - Alterator (legacy)"
+display_name.ru = "Zabbix агент - Альтератор (legacy)"
+
+[packages]
+alterator-zabbix-agent = {}

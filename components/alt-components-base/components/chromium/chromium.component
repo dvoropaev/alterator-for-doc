@@ -1,0 +1,8 @@
+type = "Component"
+name = "chromium"
+category = "browsers-apps"
+display_name.en = "Chromium browser"
+display_name.ru = "Браузер Chromium"
+
+[packages]
+chromium = {}

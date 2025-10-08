@@ -1,0 +1,7 @@
+type = "Category"
+name = "ocr-apps"
+category = "apps"
+display_name.en = "OCR (optical recognition) applications"
+display_name.ru = "Приложения распознавания текстов (OCR)"
+comment.en = "Optical character recognition (OCR) applications"
+comment.ru = "Приложения оптического распознавания текстов (OCR)"

@@ -1,0 +1,5 @@
+type = "Category"
+name = "tokens"
+category = "peripherals"
+display_name.en = "Hardware tokens subsystem"
+display_name.ru = "Подсистема аппаратных токенов"

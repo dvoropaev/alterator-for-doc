@@ -1,0 +1,8 @@
+type = "Component"
+name = "iptables"
+category = "network"
+display_name.en = "iptables"
+display_name.ru = "iptables"
+
+[packages]
+iptables = {}

@@ -1,0 +1,10 @@
+type = "Component"
+name = "ascon-polinom-mdm-web-client"
+category = "ascon-business-solutions"
+display_name.en = "POLINOM:MDM (web-client)"
+display_name.ru = "ПОЛИНОМ:MDM (веб-клиент)"
+draft = true
+
+[packages]
+
+

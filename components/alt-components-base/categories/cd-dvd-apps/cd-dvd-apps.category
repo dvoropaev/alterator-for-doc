@@ -1,0 +1,5 @@
+type = "Category"
+name = "cd-dvd-apps"
+category = "apps"
+display_name.en = "CD/DVD tools"
+display_name.ru = "Инструменты CD/DVD"

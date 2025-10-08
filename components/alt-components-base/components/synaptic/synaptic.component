@@ -1,0 +1,8 @@
+type = "Component"
+name = "synaptic"
+category = "system-apps"
+display_name.en = "Synaptic"
+display_name.ru = "Synaptic"
+
+[packages]
+synaptic-usermode = {}

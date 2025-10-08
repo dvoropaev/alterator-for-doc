@@ -1,0 +1,6 @@
+type = "Category"
+name = "apps"
+display_name.en = "Applications"
+display_name.ru = "Приложения"
+comment.en = "Client software"
+comment.ru = "Клиентские приложения"

@@ -1,0 +1,7 @@
+type = "Category"
+name = "security"
+category = "system"
+display_name.en = "Security"
+display_name.ru = "Безопасность"
+comment.en = "Security utilities"
+comment.ru = "Утилиты безопасности"

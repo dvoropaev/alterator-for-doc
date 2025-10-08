@@ -1,0 +1,10 @@
+type = "Component"
+name = "cups"
+category = "printing"
+display_name.en = "CUPS - printing service"
+display_name.ru = "CUPS - служба печати"
+
+[packages]
+cups = {}
+cups-pdf = {}
+cups-ppd = {}

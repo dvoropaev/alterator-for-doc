@@ -1,0 +1,7 @@
+type = "Category"
+name = "xdg"
+category = "graphics"
+display_name.en = "XDG"
+display_name.ru = "XDG"
+comment.en = "XDG"
+comment.ru = "XDG"

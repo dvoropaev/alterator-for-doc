@@ -1,0 +1,8 @@
+type = "Component"
+name = "alt-csp-cryptopro"
+category = "admin-apps"
+display_name.en = "ALT CSP CryptoPro GUI Tool"
+display_name.ru = "Графический инструмент ALT CSP КриптоПро"
+
+[packages]
+alt-csp-cryptopro = {}

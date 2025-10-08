@@ -1,0 +1,7 @@
+type = "Category"
+name = "kde6"
+category = "de"
+display_name.en = "KDE6 Desktop"
+display_name.ru = "Рабочий стол KDE6"
+comment.en = "KDE6 desktop environment"
+comment.ru = "Среда рабочего стола KDE6"

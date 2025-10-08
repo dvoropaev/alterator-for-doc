@@ -1,0 +1,62 @@
+type = "Component"
+name = "education-server-apps"
+category = "education-apps"
+display_name.en = "Server software for education"
+display_name.ru = "Серверные приложения для образования"
+comment.en = "Server applications for education (includes Moodle, Nextcloud and MediaWiki)"
+comment.ru = "Образовательное программное обеспечение (серверные приложения включая Moodle, Nextcloud и MediaWiki)"
+
+[packages]
+semaphore = { exclude_arch = ["e2k"] }
+mariadb-server = {}
+mariadb-client = {}
+nano = {}
+dansguardian = {}
+perl-DBD-mysql = {}
+ejabberd = {}
+alterator-datetime = {}
+alterator-console = {}
+apache2 = {}
+apache2-httpd-worker = {}
+installed-db-office-server-mediawiki = {}
+installed-db-office-server-nextcloud = {}
+installed-db-office-server-moodle = {}
+moodle-qtype_coderunner = {}
+alt-domain-server = {}
+alterator-fbi = {}
+alterator-ca = {}
+alterator-bind = {}
+alterator-dhcp = {}
+alterator-firsttime = {}
+alterator-kdc = {}
+alterator-ldap-groups = {}
+alterator-ldap-users = {}
+alterator-mirror = {}
+alterator-net-domain = {}
+alterator-net-eth = {}
+alterator-net-pppoe = {}
+alterator-net-pptp = {}
+alterator-netinst = { arch = ["x86_64", "i586"] }
+alterator-net-openvpn = {}
+alterator-net-routing = {}
+alterator-net-bond = {}
+alterator-net-bridge = {}
+alterator-net-iptables = {}
+alterator-openldap = {}
+alterator-openvpn-server = {}
+alterator-squid = {}
+alterator-squidmill = {}
+alterator-quota = {}
+alterator-trust = {}
+alterator-vsftpd = {}
+alterator-xinetd = {}
+alterator-postfix-dovecot = {}
+alterator-ulogd = {}
+anonftp = {}
+samba4 = {}
+xauth = {}
+xrdp = {}
+pulseaudio-module-xrdp = {}
+docker-ce = { arch = ["x86_64", "i586"] }
+lsb = { arch = ["x86_64", "i586"] }
+tcpdump = {}

@@ -1,0 +1,8 @@
+type = "Component"
+name = "kernel-doc"
+category = "docs"
+display_name.en = "Kernel documentation"
+display_name.ru = "Документация для ядра"
+
+[packages]
+kernel-doc = { kernel_module = true }

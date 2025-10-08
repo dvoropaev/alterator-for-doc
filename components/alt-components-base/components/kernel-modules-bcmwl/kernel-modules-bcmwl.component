@@ -1,0 +1,8 @@
+type = "Component"
+name = "kernel-modules-bcmwl"
+category = "kernel"
+display_name.en = "Broadcom IEEE 802.11a/b/g/n adapters drivers"
+display_name.ru = "Драйверы Broadcom IEEE 802.11a/b/g/n адаптеров"
+
+[packages]
+kernel-modules-bcmwl = { arch = ["x86_64", "i586"], kernel_module = true }

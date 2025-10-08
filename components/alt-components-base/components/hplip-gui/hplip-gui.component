@@ -1,0 +1,8 @@
+type = "Component"
+name = "hplip-gui"
+category = "system-apps"
+display_name.en = "Graphical toolbox for HP peripherals"
+display_name.ru = "Графические инструменты для периферии HP"
+
+[packages]
+hplip-gui = {}

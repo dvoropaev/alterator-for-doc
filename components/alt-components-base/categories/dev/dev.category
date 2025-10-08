@@ -1,0 +1,4 @@
+type = "Category"
+name = "dev"
+display_name.en = "Development tools"
+display_name.ru = "Средства разработки"

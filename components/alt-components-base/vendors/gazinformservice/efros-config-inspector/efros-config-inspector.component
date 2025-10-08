@@ -1,0 +1,10 @@
+type = "Component"
+name = "efros-config-inspector"
+category = "gazinformservice"
+display_name.en = "Efros Config Inspector"
+display_name.ru = "Efros Config Inspector"
+draft = true
+
+[packages]
+
+

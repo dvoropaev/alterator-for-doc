@@ -1,0 +1,5 @@
+type = "Category"
+name = "printing"
+category = "peripherals"
+display_name.en = "Printing subsystem"
+display_name.ru = "Подсистема печати"

@@ -1,0 +1,11 @@
+type = "Component"
+name = "samba"
+category = "network-infra"
+display_name.en = "Samba file server"
+display_name.ru = "Файловый сервер Samba"
+
+[packages]
+samba = {}
+samba-common-tools = {}
+samba-usershares = {}
+samba-client = {}

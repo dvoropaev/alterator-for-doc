@@ -1,0 +1,8 @@
+type = "Component"
+name = "alterator-legacy-root"
+category = "alterator-legacy-system"
+display_name.en = "System Administrator - Alterator (legacy)"
+display_name.ru = "Администратор системы - Альтератор (legacy)"
+
+[packages]
+alterator-root = {}

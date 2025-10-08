@@ -1,0 +1,8 @@
+type = "Component"
+name = "openuds-actor"
+category = "agents"
+display_name.en = "OpenUDS - actor"
+display_name.ru = "OpenUDS - actor"
+
+[packages]
+openuds-actor = {}

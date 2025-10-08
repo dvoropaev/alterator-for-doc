@@ -1,0 +1,9 @@
+type = "Component"
+name = "xdg-user-dirs"
+category = "core"
+display_name.en = "User directories"
+display_name.ru = "Пользовательские каталоги"
+
+[packages]
+xdg-user-dirs = {}
+# xdg-user-dirs-gtk = {} -> to /graphics

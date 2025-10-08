@@ -1,0 +1,8 @@
+type = "Component"
+name = "gnupg2"
+category = "security"
+display_name.en = "GnuPG2"
+display_name.ru = "GnuPG2"
+
+[packages]
+gnupg2 = {}

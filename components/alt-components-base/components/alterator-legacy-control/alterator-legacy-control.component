@@ -1,0 +1,8 @@
+type = "Component"
+name = "alterator-legacy-control"
+category = "alterator-legacy-system"
+display_name.en = "Control system facilities - Alterator (legacy)"
+display_name.ru = "Инструменты управления control - Альтератор (legacy)"
+
+[packages]
+alterator-control = {}

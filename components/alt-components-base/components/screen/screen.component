@@ -1,0 +1,8 @@
+type = "Component"
+name = "screen"
+category = "utils"
+display_name.en = "GNU Screen - terminal manager"
+display_name.ru = "Менеджер терминала - GNU Screen"
+
+[packages]
+screen = {}

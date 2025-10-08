@@ -1,0 +1,8 @@
+type = "Component"
+name = "kernel-modules-v4l2loopback"
+category = "kernel"
+display_name.en = "Modules for v4l2-loopback device"
+display_name.ru = "Модули петлевого устройства v4l2"
+
+[packages]
+kernel-modules-v4l2loopback = { kernel_module = true }

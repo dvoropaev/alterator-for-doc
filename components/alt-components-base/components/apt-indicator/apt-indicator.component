@@ -1,0 +1,8 @@
+type = "Component"
+name = "apt-indicator"
+category = "desktop-apps"
+display_name.en = "APT indicator"
+display_name.ru = "APT indicator"
+
+[packages]
+apt-indicator = {}

@@ -1,0 +1,8 @@
+type = "Component"
+name = "squid"
+category = "network-infra"
+display_name.en = "Squid - server"
+display_name.ru = "Squid - сервер"
+
+[packages]
+squid = {}

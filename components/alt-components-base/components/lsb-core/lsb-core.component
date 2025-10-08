@@ -1,0 +1,10 @@
+type = "Component"
+name = "lsb-core"
+category = "core"
+display_name.en = "Linux Standard Base - core"
+display_name.ru = "Linux Standard Base - core"
+
+[packages]
+lsb-release = {}
+lsb-core = {}
+lsb-init = {}

@@ -1,0 +1,13 @@
+type = "Component"
+name = "firmware"
+category = "boot"
+display_name.en = "Kernel Firmware"
+display_name.ru = "Прошивки драйверов"
+
+[packages]
+firmware-linux = {}
+firmware-alsa-sof = {}
+firmware-ast_dp501 = {}
+firmware-intel-ucode = {}
+firmware-ql6312 = {}
+firmware-linux-mellanox = {}

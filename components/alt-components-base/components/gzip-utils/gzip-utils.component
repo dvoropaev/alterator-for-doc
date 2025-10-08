@@ -1,0 +1,8 @@
+type = "Component"
+name = "gzip-utils"
+category = "archiving"
+display_name.en = "Additional compression utilities"
+display_name.ru = "Дополнительные утилиты сжатия"
+
+[packages]
+gzip-utils = {}

@@ -1,0 +1,8 @@
+type = "Component"
+name = "alterator-legacy-quota"
+category = "alterator-legacy-system"
+display_name.en = "Disk quotas - Alterator (legacy)"
+display_name.ru = "Дисковые квоты - Альтератор (legacy)"
+
+[packages]
+alterator-quota = {}

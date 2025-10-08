@@ -1,0 +1,8 @@
+type = "Component"
+name = "alterator-legacy-users"
+category = "alterator-legacy-system"
+display_name.en = "Local accounts - Alterator (legacy)"
+display_name.ru = "Локальные учётные записи - Альтератор (legacy)"
+
+[packages]
+alterator-users = {}

@@ -1,0 +1,8 @@
+type = "Component"
+name = "firefox-esr"
+category = "browsers-apps"
+display_name.en = "Mozilla Firefox ESR browser"
+display_name.ru = "Браузер Mozilla Firefox ESR"
+
+[packages]
+firefox-esr = {}

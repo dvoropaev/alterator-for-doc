@@ -1,0 +1,9 @@
+type = "Component"
+name = "alt-server-defaults"
+category = "core"
+display_name.en = "Default Server Settings"
+display_name.ru = "Настройки Сервера по умолчанию"
+
+[packages]
+alt-issue-server = {}
+etcnet-defaults-server = {}

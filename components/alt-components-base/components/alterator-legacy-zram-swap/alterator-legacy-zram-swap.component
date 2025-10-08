@@ -1,0 +1,8 @@
+type = "Component"
+name = "alterator-legacy-zram-swap"
+category = "alterator-legacy-system"
+display_name.en = "Setting up zram-swap - Alterator (legacy)"
+display_name.ru = "Настройка zram-swap - Альтератор (legacy)"
+
+[packages]
+alterator-zram-swap = {}

@@ -1,0 +1,8 @@
+type = "Component"
+name = "nvidia-optix"
+category = "graphics"
+display_name.en = "NVIDIA OptiX runtime"
+display_name.ru = "NVIDIA OptiX runtime"
+
+[packages]
+libnvoptix = {}

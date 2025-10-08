@@ -1,0 +1,8 @@
+type = "Component"
+name = "nmap"
+category = "network"
+display_name.en = "Nmap"
+display_name.ru = "Nmap"
+
+[packages]
+nmap = {}

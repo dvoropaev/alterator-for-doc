@@ -1,0 +1,8 @@
+type = "Component"
+name = "alterator-legacy-shares"
+category = "alterator-legacy-services"
+display_name.en = "Network Shares - Alterator (legacy)"
+display_name.ru = "Сетевые каталоги - Альтератор (legacy)"
+
+[packages]
+alterator-net-shares = {}

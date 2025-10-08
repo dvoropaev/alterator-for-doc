@@ -1,0 +1,8 @@
+type = "Component"
+name = "diagnostics-domain-client"
+category = "diagnostics"
+display_name.en = "Domain client"
+display_name.ru = "Клиент домена"
+
+[packages]
+diag-domain-client = {}

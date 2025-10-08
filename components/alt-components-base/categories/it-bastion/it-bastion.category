@@ -1,0 +1,8 @@
+type = "Category"
+name = "it-bastion"
+category = "vendors"
+display_name.en = "IT BASTION"
+display_name.ru = "АйТи БАСТИОН"
+comment.en = "IT BASTION"
+comment.ru = "АйТи БАСТИОН"
+draft = true

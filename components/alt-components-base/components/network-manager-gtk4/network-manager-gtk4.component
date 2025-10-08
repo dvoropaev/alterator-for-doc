@@ -1,0 +1,18 @@
+type = "Component"
+name = "network-manager-gtk4"
+category = "system-apps"
+display_name.en = "NetworkManager - GTK4"
+display_name.ru = "NetworkManager - GTK4"
+
+[packages]
+NetworkManager = {}
+NetworkManager-l2tp-gtk4 = {}
+NetworkManager-openconnect-gtk4 = {}
+NetworkManager-openvpn-gtk4 = {}
+NetworkManager-pptp-gtk4 = {}
+NetworkManager-vpnc-gtk4 = {}
+NetworkManager-sstp-gtk4 = {}
+NetworkManager-ssh-gtk4 = {}
+NetworkManager-strongswan-gtk4 = {}
+NetworkManager-libreswan-gtk4 = {}
+NetworkManager-tui = {}

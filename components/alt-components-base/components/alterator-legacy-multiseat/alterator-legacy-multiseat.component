@@ -1,0 +1,8 @@
+type = "Component"
+name = "alterator-legacy-multiseat"
+category = "alterator-legacy-gui"
+display_name.en = "Multiseat configuration - Alterator (legacy)"
+display_name.ru = "Многоместная конфигурация - Альтератор (legacy)"
+
+[packages]
+alterator-multiseat = {}

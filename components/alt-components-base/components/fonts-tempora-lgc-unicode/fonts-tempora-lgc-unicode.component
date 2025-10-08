@@ -1,0 +1,10 @@
+type = "Component"
+name = "fonts-tempora-lgc-unicode"
+category = "fonts"
+display_name.en = "Tempora LGC Unicode"
+display_name.ru = "Tempora LGC Unicode"
+
+[packages]
+fonts-ttf-tempora = {}
+
+

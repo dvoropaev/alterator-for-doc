@@ -1,0 +1,5 @@
+type = "Category"
+name = "virt-tools"
+category = "env"
+display_name.en = "Virtualization tools"
+display_name.ru = "Инструменты виртуализации"

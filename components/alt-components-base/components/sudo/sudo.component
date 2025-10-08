@@ -1,0 +1,8 @@
+type = "Component"
+name = "sudo"
+category = "security"
+display_name.en = "sudo - delegate authority utility"
+display_name.ru = "sudo - утилита делегирования полномочий"
+
+[packages]
+sudo = {}

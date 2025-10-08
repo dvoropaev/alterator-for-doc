@@ -1,0 +1,8 @@
+type = "Component"
+name = "icinga2"
+category = "network-infra"
+display_name.en = "Icinga2 - network monitoring application"
+display_name.ru = "Icinga2 - приложение для мониторинга сети"
+
+[packages]
+icinga2 = {}

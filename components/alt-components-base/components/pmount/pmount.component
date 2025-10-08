@@ -1,0 +1,8 @@
+type = "Component"
+name = "pmount"
+category = "fs"
+display_name.en = "pmount - automount utility"
+display_name.ru = "Утилита автомонтирования pmount"
+
+[packages]
+pmount = {}

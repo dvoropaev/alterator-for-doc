@@ -1,0 +1,8 @@
+type = "Component"
+name = "alterator-legacy-bond"
+category = "alterator-legacy-network"
+display_name.en = "Bonding - Alterator (legacy)"
+display_name.ru = "Bonding - Альтератор (legacy)"
+
+[packages]
+alterator-net-bond = {}

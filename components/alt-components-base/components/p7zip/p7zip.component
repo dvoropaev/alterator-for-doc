@@ -1,0 +1,8 @@
+type = "Component"
+name = "p7zip"
+category = "archiving"
+display_name.en = "7-Zip"
+display_name.ru = "7-Zip"
+
+[packages]
+p7zip = {}

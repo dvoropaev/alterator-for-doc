@@ -1,0 +1,5 @@
+type = "Category"
+name = "domain-infra"
+category = "infra"
+display_name.en = "Domain infrastruture"
+display_name.ru = "Доменная инфраструктура"

@@ -1,0 +1,8 @@
+type = "Component"
+name = "altmediawriter"
+category = "bootable-media-tools"
+display_name.en = "ALT Media Writer"
+display_name.ru = "ALT Media Writer"
+
+[packages]
+altmediawriter = {}

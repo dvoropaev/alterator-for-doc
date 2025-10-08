@@ -1,0 +1,8 @@
+type = "Component"
+name = "gnupg2-gostcrypto"
+category = "security"
+display_name.en = "GnuPG2 Gost Crypto"
+display_name.ru = "GnuPG2 Gost Crypto"
+
+[packages]
+gnupg2-gostcrypto = {}

@@ -1,0 +1,5 @@
+type = "Category"
+name = "dm"
+category = "graphics"
+display_name.en = "Display managers"
+display_name.ru = "Mенеджеры графических сред"

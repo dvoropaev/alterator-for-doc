@@ -1,0 +1,10 @@
+type = "Component"
+name = "freeipa-server"
+category = "domain-infra"
+display_name.en = "FreeIPA - server"
+display_name.ru = "FreeIPA - сервер"
+
+[packages]
+freeipa-server-trust-ad = {}
+freeipa-server-dns = {}
+freeipa-server = {}

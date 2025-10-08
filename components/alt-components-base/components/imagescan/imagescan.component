@@ -1,0 +1,8 @@
+type = "Component"
+name = "imagescan"
+category = "scanning"
+display_name.en = "ImageScan for Epson scanners"
+display_name.ru = "ImageScan для сканеров Epson"
+
+[packages]
+imagescan = {}

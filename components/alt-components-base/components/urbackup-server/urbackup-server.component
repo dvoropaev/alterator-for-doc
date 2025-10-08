@@ -1,0 +1,8 @@
+type = "Component"
+name = "urbackup-server"
+category = "network-infra"
+display_name.en = "UrBackup - server"
+display_name.ru = "UrBackup - сервер"
+
+[packages]
+urbackup-server = {}

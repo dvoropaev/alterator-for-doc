@@ -1,0 +1,8 @@
+type = "Component"
+name = "iscan-firmware"
+category = "scanning"
+display_name.en = "Firmware for Epson flatbed scanners"
+display_name.ru = "Прошивки для планшетных сканеров Epson"
+
+[packages]
+firmware-iscan = {}

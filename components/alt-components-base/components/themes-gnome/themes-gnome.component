@@ -1,0 +1,12 @@
+type = "Component"
+name = "themes-gnome"
+category = "graphics"
+display_name.en = "Themes GNOME"
+display_name.ru = "Темы GNOME"
+
+[packages]
+gnome-icon-theme = {}
+gnome-icon-theme-symbolic = {}
+gnome-themes-extra = {}
+gnome-themes-extra-data = {}
+icon-naming-utils = {}

@@ -1,0 +1,8 @@
+type = "Component"
+name = "alterator-legacy-osec"
+category = "alterator-legacy-system"
+display_name.en = "Integrity control - Alterator (legacy)"
+display_name.ru = "Контроль целостности - Альтератор (legacy)"
+
+[packages]
+alterator-osec = {}

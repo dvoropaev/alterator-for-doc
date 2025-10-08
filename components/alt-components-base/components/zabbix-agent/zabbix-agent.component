@@ -1,0 +1,8 @@
+type = "Component"
+name = "zabbix-agent"
+category = "agents"
+display_name.en = "Zabbix - agent"
+display_name.ru = "Zabbix - агент"
+
+[packages]
+zabbix-agent = {}

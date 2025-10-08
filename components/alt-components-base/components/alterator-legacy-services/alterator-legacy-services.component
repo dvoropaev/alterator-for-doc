@@ -1,0 +1,8 @@
+type = "Component"
+name = "alterator-legacy-services"
+category = "alterator-legacy-services"
+display_name.en = "System services - Alterator (legacy)"
+display_name.ru = "Системные службы - Альтератор (legacy)"
+
+[packages]
+alterator-services = {}

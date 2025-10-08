@@ -1,0 +1,8 @@
+type = "Component"
+name = "alterator-legacy-logs"
+category = "alterator-legacy-system"
+display_name.en = "System logs - Alterator (legacy)"
+display_name.ru = "Системные журналы - Альтератор (legacy)"
+
+[packages]
+alterator-logs = {}

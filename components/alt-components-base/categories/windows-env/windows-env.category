@@ -1,0 +1,5 @@
+type = "Category"
+name = "windows-env"
+category = "env"
+display_name.en = "Windows compatible environments"
+display_name.ru = "Среды совместимые с Windows"

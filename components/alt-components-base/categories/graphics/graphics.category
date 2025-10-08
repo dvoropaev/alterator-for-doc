@@ -1,0 +1,5 @@
+type = "Category"
+name = "graphics"
+category = "system"
+display_name.en = "Graphics subsystem"
+display_name.ru = "Графическая подсистема"

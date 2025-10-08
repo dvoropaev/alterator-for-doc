@@ -1,0 +1,5 @@
+type = "Category"
+name = "clusters"
+category = "infra"
+display_name.en = "Clusters"
+display_name.ru = "Кластеры"

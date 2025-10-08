@@ -1,0 +1,12 @@
+type = "Component"
+name = "fonts-droid"
+category = "fonts"
+display_name.en = "Droid"
+display_name.ru = "Droid"
+
+[packages]
+fonts-ttf-google-droid-sans-mono = {}
+fonts-ttf-google-droid-sans = {}
+fonts-ttf-google-droid-kufi = {}
+fonts-ttf-google-droid-all = {}
+fonts-ttf-google-droid-serif = {}

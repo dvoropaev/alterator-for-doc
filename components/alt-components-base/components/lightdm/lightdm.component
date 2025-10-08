@@ -1,0 +1,9 @@
+type = "Component"
+name = "lightdm"
+category = "dm"
+display_name.en = "LightDM"
+display_name.ru = "LightDM"
+
+[packages]
+lightdm = {}
+lightdm-gtk-greeter = {}

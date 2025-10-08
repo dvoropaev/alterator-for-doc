@@ -1,0 +1,16 @@
+type = "Component"
+name = "education-preschool"
+category = "education-apps"
+display_name.en = "Software for preschool"
+display_name.ru = "ПО для дошкольного образования"
+comment.en = "Educational software (preschool)"
+comment.ru = "Образовательное программное обеспечение (дошкольное образование)"
+
+[packages]
+gcompris-qt = {}
+gcompris-qt-voices-ru = {}
+tuxpaint = {}
+khangman = {}
+kanagram = {}
+qt5-translations = {}
+khelpcenter = { exclude_arch = ["e2k", "i586"] }

@@ -1,0 +1,5 @@
+type = "Category"
+name = "alterator-legacy-services"
+category = "alterator-legacy"
+display_name.en = "Network services - Alterator (legacy)"
+display_name.ru = "Сетевые сервисы - Альтератор (legacy)"

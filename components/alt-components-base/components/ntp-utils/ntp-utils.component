@@ -1,0 +1,8 @@
+type = "Component"
+name = "ntp-utils"
+category = "network"
+display_name.en = "NTP utilities"
+display_name.ru = "NTP utilities"
+
+[packages]
+ntp-utils = {}

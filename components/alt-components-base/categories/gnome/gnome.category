@@ -1,0 +1,7 @@
+type = "Category"
+name = "gnome"
+category = "de"
+display_name.en = "GNOME Desktop"
+display_name.ru = "Рабочий стол GNOME"
+comment.en = "GNOME desktop environment"
+comment.ru = "Среда рабочего стола GNOME"

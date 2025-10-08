@@ -1,0 +1,11 @@
+type = "Component"
+name = "scsi-utils"
+category = "storage"
+display_name.en = "Utilities for SCSI devices"
+display_name.ru = "Утилиты для управления SCSI устройствами"
+
+[packages]
+sg3_utils = {}
+sdparm = {}
+
+# udev-rules-sgutils <- sg3_utils

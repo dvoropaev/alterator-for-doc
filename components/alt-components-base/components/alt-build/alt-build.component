@@ -1,0 +1,21 @@
+type = "Component"
+name = "alt-build"
+category = "dev"
+display_name.en = "ALT build tools"
+display_name.ru = "Сборочные инструменты для Альт"
+
+[packages]
+git = {}
+gear = {}
+hasher = {}
+mkimage = {}
+rpm-build = {}
+sisyphus_check = {}
+apt-repo-tools = {}
+builder-useradd = {}
+gear-remotes-utils = {}
+github2spec = {}
+kernel-build-tools = {}
+
+# mkisofs = {}
+# squashfs-tools = {}

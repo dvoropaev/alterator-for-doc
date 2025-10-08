@@ -1,0 +1,8 @@
+type = "Component"
+name = "simple-scan"
+category = "scanning"
+display_name.en = "Simple graphical scanning utility"
+display_name.ru = "Простая графическая утилита сканирования"
+
+[packages]
+simple-scan = {}

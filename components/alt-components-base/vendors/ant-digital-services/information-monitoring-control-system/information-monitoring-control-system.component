@@ -1,0 +1,10 @@
+type = "Component"
+name = "information-monitoring-control-system"
+category = "ant-digital-services"
+display_name.en = "Information-monitoring control system"
+display_name.ru = "Информационно-мониторинговая управляющая система"
+draft = true
+
+[packages]
+
+

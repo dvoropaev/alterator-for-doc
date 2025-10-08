@@ -1,0 +1,8 @@
+type = "Component"
+name = "settime-rfc867"
+category = "time"
+display_name.en = "Legacy rfc867 time synchronization"
+display_name.ru = "Синхронизация времени по устаревшему rfc867"
+
+[packages]
+settime-rfc867 = {}

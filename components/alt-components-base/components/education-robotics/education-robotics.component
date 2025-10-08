@@ -1,0 +1,12 @@
+type = "Component"
+name = "education-robotics"
+category = "education-apps"
+display_name.en = "Software for robotics"
+display_name.ru = "ПО для робототехники"
+comment.en = "Software for robotics (gz-sim, arduino)"
+comment.ru = "Программное обеспечение для робототехники (gz-sim, arduino)"
+
+[packages]
+gz-sim = {}
+arduino = {}
+trikStudio = { arch = ["x86_64", "aarch64"] }

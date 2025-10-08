@@ -1,0 +1,10 @@
+type = "Component"
+name = "xdg-desktop-portal"
+category = "xdg"
+display_name.en = "Desktop portal"
+display_name.ru = "Desktop portal"
+
+[packages]
+xdg-desktop-portal = {}
+xdg-desktop-portal-gnome = {}
+xdg-desktop-portal-gtk = {}

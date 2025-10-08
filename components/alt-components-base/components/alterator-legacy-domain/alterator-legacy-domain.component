@@ -1,0 +1,8 @@
+type = "Component"
+name = "alterator-legacy-domain"
+category = "alterator-legacy-network"
+display_name.en = "ALT Domain (deprecated) - Alterator (legacy)"
+display_name.ru = "ALT Domain (устаревший) - Альтератор (legacy)"
+
+[packages]
+alterator-net-domain = {}

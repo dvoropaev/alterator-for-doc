@@ -1,0 +1,10 @@
+type = "Component"
+name = "dr-web-enterprise-security-suite-13"
+category = "doctor-web"
+display_name.en = "Dr.Web Enterprise Security Suite 13"
+display_name.ru = "Dr.Web Enterprise Security Suite 13"
+draft = true
+
+[packages]
+
+

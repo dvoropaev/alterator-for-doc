@@ -1,0 +1,9 @@
+type = "Component"
+name = "cryptopro-preinstall"
+category = "tokens"
+display_name.en = "Environment for CryptoPro CSP"
+display_name.ru = "Окружение для КриптоПро CSP"
+draft = true
+
+[packages]
+cryptopro-preinstall = {}

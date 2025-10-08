@@ -1,0 +1,8 @@
+type = "Component"
+name = "audacity"
+category = "media-apps"
+display_name.en = "Audacity"
+display_name.ru = "Audacity"
+
+[packages]
+audacity = {}

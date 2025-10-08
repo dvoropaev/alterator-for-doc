@@ -1,0 +1,8 @@
+type = "Component"
+name = "usb-modeswitch"
+category = "usb-tools"
+display_name.en = "USB - mode switching tool"
+display_name.ru = "USB - инструмент переключения режимов"
+
+[packages]
+usb-modeswitch = {}

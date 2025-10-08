@@ -1,0 +1,9 @@
+type = "Component"
+name = "tokens-auth-rutokenecp"
+category = "tokens"
+display_name.en = "RuToken ECP - PKCS11 authentication support"
+display_name.ru = "РуТокен ЭЦП - поддержка аутентификации PKCS11"
+
+[packages]
+pkcs11-profiles-rutokenecp = {}
+pcsc-lite-rutokens = {}

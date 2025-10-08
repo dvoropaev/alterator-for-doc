@@ -1,0 +1,8 @@
+type = "Category"
+name = "ascon-business-solutions"
+category = "vendors"
+display_name.en = "ASCON-Business-solutions"
+display_name.ru = "АСКОН-Бизнес-решения"
+comment.en = "ASCON-Business-solutions"
+comment.ru = "АСКОН-Бизнес-решения"
+draft = true

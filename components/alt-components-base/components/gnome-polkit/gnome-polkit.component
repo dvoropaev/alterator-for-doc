@@ -1,0 +1,8 @@
+type = "Component"
+name = "gnome-polkit"
+category = "gnome"
+display_name.en = "GNOME - PolicyKit"
+display_name.ru = "GNOME - PolicyKit"
+
+[packages]
+polkit-gnome = {}

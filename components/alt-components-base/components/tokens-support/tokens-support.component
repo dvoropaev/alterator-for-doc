@@ -1,0 +1,32 @@
+type = "Component"
+name = "tokens-support"
+category = "tokens"
+display_name.en = "Tokens support"
+display_name.ru = "Поддержка токенов"
+
+[packages]
+
+# Tools
+opensc = {}
+pcsc-tools = {}
+
+# Generic PAM
+pam_pkcs11 = {}
+
+# Initramfs support
+make-initrd-smartcard = {}
+
+# Generic USB CCID IFD Handler
+pcsc-lite-ccid = {}
+
+# USB IFD Handler for RutokenS
+pcsc-lite-rutokens = {}
+
+# RuToken ECP library
+librtpkcs11ecp = {}
+
+# JaCarta library
+libjcpkcs11 = {}
+
+# ESMART library
+isbc-pkcs11 = {}

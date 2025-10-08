@@ -1,0 +1,8 @@
+type = "Component"
+name = "tokens-p11-kit-proxy-auth"
+category = "tokens"
+display_name.en = "PKCS#11 Kit Proxy - authentication support"
+display_name.ru = "PKCS#11 Kit Proxy - поддержка аутентификации"
+
+[packages]
+pkcs11-profiles-p11-kit-proxy = {}

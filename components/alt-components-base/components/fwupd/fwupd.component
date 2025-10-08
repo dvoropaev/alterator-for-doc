@@ -1,0 +1,9 @@
+type = "Component"
+name = "fwupd"
+category = "utils"
+display_name.en = "Firmware update daemon"
+display_name.ru = "Служба обновления прошивок"
+
+[packages]
+fwupd = {}
+fwupd-efi = {}

@@ -1,0 +1,7 @@
+type = "Category"
+name = "agents"
+category = "system"
+display_name.en = "Agents"
+display_name.ru = "Агенты"
+comment.en = "Software agents"
+comment.ru = "Программные агенты"

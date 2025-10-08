@@ -1,0 +1,8 @@
+type = "Component"
+name = "alterator-legacy-mirror"
+category = "alterator-legacy-services"
+display_name.en = "Repository mirror - Alterator (legacy)"
+display_name.ru = "Зеркало репозитория - Альтератор (legacy)"
+
+[packages]
+alterator-mirror = {}

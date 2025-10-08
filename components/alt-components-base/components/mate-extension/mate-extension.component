@@ -1,0 +1,8 @@
+type = "Component"
+name = "mate-extension"
+category = "mate"
+display_name.en = "MATE - extension"
+display_name.ru = "MATE - расширения"
+
+[packages]
+xapps-schemas = {}

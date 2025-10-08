@@ -1,0 +1,10 @@
+type = "Component"
+name = "pipewire"
+category = "media"
+display_name.en = "PipeWire"
+display_name.ru = "PipeWire"
+
+[packages]
+pipewire = {}
+pipewire-utils = {}
+wireplumber = {}

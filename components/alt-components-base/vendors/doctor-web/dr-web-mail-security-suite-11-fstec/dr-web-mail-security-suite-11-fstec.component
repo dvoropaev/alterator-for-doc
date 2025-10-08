@@ -1,0 +1,10 @@
+type = "Component"
+name = "dr-web-mail-security-suite-11-fstec"
+category = "doctor-web"
+display_name.en = "Dr.Web Mail Security Suite 11-FSTEC"
+display_name.ru = "Dr.Web Mail Security Suite 11-ФСТЭК"
+draft = true
+
+[packages]
+
+

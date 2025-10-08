@@ -1,0 +1,8 @@
+type = "Component"
+name = "kernel-modules-nvidia"
+category = "kernel"
+display_name.en = "Drivers for nVidia"
+display_name.ru = "Драйверы для nVidia"
+
+[packages]
+kernel-modules-nvidia = { kernel_module = true }

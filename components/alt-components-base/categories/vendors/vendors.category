@@ -1,0 +1,5 @@
+type = "Category"
+name = "vendors"
+display_name.en = "Third-party vendors"
+display_name.ru = "Сторонние поставщики"
+draft = true

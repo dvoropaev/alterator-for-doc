@@ -1,0 +1,9 @@
+type = "Component"
+name = "fprintd"
+category = "security"
+display_name.en = "Fingerprint access"
+display_name.ru = "Доступ по отпечатку пальца"
+
+[packages]
+fprintd = {}
+pam_fprintd = {}

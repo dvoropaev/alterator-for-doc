@@ -1,0 +1,7 @@
+type = "Category"
+name = "media"
+category = "system"
+display_name.en = "Media control"
+display_name.ru = "Управление мультимедиа"
+comment.en = "Media subsystem"
+comment.ru = "Мультимедиа подсистема"

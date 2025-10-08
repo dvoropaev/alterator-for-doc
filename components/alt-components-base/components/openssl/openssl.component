@@ -1,0 +1,8 @@
+type = "Component"
+name = "openssl"
+category = "security"
+display_name.en = "OpenSSL"
+display_name.ru = "OpenSSL"
+
+[packages]
+openssl = {}

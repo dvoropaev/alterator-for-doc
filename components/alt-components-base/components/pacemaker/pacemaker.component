@@ -1,0 +1,9 @@
+type = "Component"
+name = "pacemaker"
+category = "clusters"
+display_name.en = "Pacemaker - High Availability cluster"
+display_name.ru = "Pacemaker - отказоустойчивый кластер (High Availability)"
+
+[packages]
+pacemaker = {}
+pcs = {}

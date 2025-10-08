@@ -1,0 +1,9 @@
+type = "Component"
+name = "alterator-legacy-kiosk"
+category = "alterator-legacy-gui"
+display_name.en = "Kiosk - Alterator (legacy)"
+display_name.ru = "Kiosk - Альтератор (legacy)"
+
+[packages]
+alterator-kiosk = {}
+kiosk-mate-profiles = { desktop = ["MATE"] }

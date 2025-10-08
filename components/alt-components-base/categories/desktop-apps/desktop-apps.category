@@ -1,0 +1,5 @@
+type = "Category"
+name = "desktop-apps"
+category = "apps"
+display_name.en = "Desktop environment tools"
+display_name.ru = "Инструменты среды рабочего стола"

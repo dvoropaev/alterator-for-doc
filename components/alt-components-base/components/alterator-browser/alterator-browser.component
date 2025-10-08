@@ -1,0 +1,8 @@
+type = "Component"
+name = "alterator-browser"
+category = "alterator-legacy"
+display_name.en = "Alterator - graphical browser (legacy)"
+display_name.ru = "Альтератор - графический браузер (legacy)"
+
+[packages]
+alterator-browser-qt6 = {}

@@ -1,0 +1,9 @@
+type = "Component"
+name = "system-editors"
+category = "core"
+display_name.en = "System text editors"
+display_name.ru = "Системные текстовые редакторы"
+
+[packages]
+vim-console = {}
+nano = {}

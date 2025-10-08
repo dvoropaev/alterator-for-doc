@@ -1,0 +1,8 @@
+type = "Category"
+name = "ant-digital-services"
+category = "vendors"
+display_name.en = "ANT Digital Services"
+display_name.ru = "АНТ Цифровые Сервисы"
+comment.en = "ANT Digital Services"
+comment.ru = "АНТ Цифровые Сервисы"
+draft = true

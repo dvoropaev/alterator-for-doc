@@ -1,0 +1,10 @@
+type = "Component"
+name = "trace-mode"
+category = "ad-astra-research-group"
+display_name.en = "TRACE MODE"
+display_name.ru = "TRACE MODE"
+draft = true
+
+[packages]
+
+

@@ -1,0 +1,9 @@
+type = "Component"
+name = "fonts-fira"
+category = "fonts"
+display_name.en = "Fira"
+display_name.ru = "Fira"
+
+[packages]
+fonts-otf-mozilla-fira = {}
+

@@ -1,0 +1,10 @@
+type = "Component"
+name = "samba-ad-client-winbind"
+category = "domain-infra"
+display_name.en = "Samba AD - client (winbind)"
+display_name.ru = "Samba AD - клиент (winbind)"
+
+[packages]
+task-auth-ad-winbind = {}
+alterator-roles-common = {}
+adcli = {}

@@ -1,0 +1,10 @@
+type = "Component"
+name = "ssh-server"
+category = "services"
+display_name.en = "SSH - server"
+display_name.ru = "SSH - сервер"
+
+[packages]
+openssh-blacklist = {}
+openssh-server = {}
+openssh-server-control = {}

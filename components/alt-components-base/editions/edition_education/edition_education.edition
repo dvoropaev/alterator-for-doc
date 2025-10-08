@@ -1,0 +1,35 @@
+type = "Edition"
+name = "edition_education"
+display_name.en = "ALT Education"
+display_name.ru = "Альт Образование"
+
+license = "ALT_Education_License/11.0"
+arches = [ "x86_64", "aarch64" ]
+
+desktop_environment = "KDE6"
+kflavours = { default = "6.12", options = [ "6.6", "6.12" ] }
+languages = { default = "ru", options = [ "ru", "en" ] }
+
+[sections.base]
+display_name.en = "Base components"
+display_name.ru = "Базовые компоненты"
+components = [
+	"moodle",
+	"nextcloud",
+	"mediawiki",
+	"yandex",
+	"fonts-ttf-ms",
+]
+
+[sections.education]
+display_name.en = "Education components"
+display_name.ru = "Образовательные компоненты"
+components = [
+	"education-preschool",
+	"education-highschool",
+	"education-secondary-vocational",
+	"education-university",
+	"education-teacher",
+	"education-server-apps",
+	"education-robotics",
+]

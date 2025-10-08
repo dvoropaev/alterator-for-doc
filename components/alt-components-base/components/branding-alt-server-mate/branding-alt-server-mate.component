@@ -1,0 +1,8 @@
+type = "Component"
+name = "branding-alt-server-mate"
+category = "brandings"
+display_name.en = "ALT Server branding - MATE"
+display_name.ru = "Альт Сервер брендинг - MATE"
+
+[packages]
+branding-alt-server-mate-settings = {}

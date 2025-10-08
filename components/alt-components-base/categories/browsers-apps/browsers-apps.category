@@ -1,0 +1,5 @@
+type = "Category"
+name = "browsers-apps"
+category = "apps"
+display_name.en = "Browsers"
+display_name.ru = "Браузеры"

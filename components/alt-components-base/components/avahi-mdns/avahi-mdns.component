@@ -1,0 +1,10 @@
+type = "Component"
+name = "avahi-mdns"
+category = "network"
+display_name.en = "Avahi - mDNS"
+display_name.ru = "Avahi - mDNS"
+
+[packages]
+avahi-tools = {}
+avahi-daemon = {}
+libnss-mdns = {}

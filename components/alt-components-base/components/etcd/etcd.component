@@ -1,0 +1,8 @@
+type = "Component"
+name = "etcd"
+category = "clusters"
+display_name.en = "Etcd"
+display_name.ru = "Etcd"
+
+[packages]
+etcd = {}

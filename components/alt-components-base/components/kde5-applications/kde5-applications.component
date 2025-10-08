@@ -1,0 +1,17 @@
+type = "Component"
+name = "kde5-applications"
+category = "kde5"
+display_name.en = "KDE5 - applications"
+display_name.ru = "KDE5 - приложения"
+
+[packages]
+kde5-connect = {}
+kde5-ffmpegthumbs = {}
+kde5-k3b = {}
+kde5-kgpg = {}
+kde5-kolourpaint = {}
+kde5-kruler = {}
+kde5-kteatime = {}
+kde5-ktorrent = {}
+kde5-messenger-client-6-mix = {}
+synaptic-kde = {}

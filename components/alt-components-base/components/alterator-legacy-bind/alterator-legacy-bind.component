@@ -1,0 +1,10 @@
+type = "Component"
+name = "alterator-legacy-bind"
+category = "alterator-legacy-services"
+display_name.en = "BIND DNS server - Alterator (legacy)"
+display_name.ru = "BIND DNS сервер - Альтератор (legacy)"
+
+[packages]
+alterator-bind = {}
+openresolv-bind = {}
+#installer-feature-resolver-bind-stage3 = {}

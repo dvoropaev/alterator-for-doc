@@ -1,0 +1,8 @@
+type = "Component"
+name = "dotnet-framework8"
+category = "windows-env"
+display_name.en = ".NET Framework 8.0"
+display_name.ru = ".NET Framework 8.0"
+
+[packages]
+"dotnet-8.0" = {}

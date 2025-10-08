@@ -1,0 +1,12 @@
+type = "Component"
+name = "gimp"
+category = "graphics-apps"
+display_name.en = "GIMP"
+display_name.ru = "GIMP"
+
+[packages]
+gimp = {}
+gimp-help-en = {}
+gimp-help-ru = { language = "ru" }
+gimp-plugin-gutenprint = {}
+gimp-plugin-ufraw = {}

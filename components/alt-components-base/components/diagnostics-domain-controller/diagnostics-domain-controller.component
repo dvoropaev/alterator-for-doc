@@ -1,0 +1,8 @@
+type = "Component"
+name = "diagnostics-domain-controller"
+category = "diagnostics"
+display_name.en = "Domain controller"
+display_name.ru = "Контроллер домена"
+
+[packages]
+diag-domain-controller = {}

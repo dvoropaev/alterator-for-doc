@@ -1,0 +1,8 @@
+type = "Component"
+name = "dotnet-sdk8"
+category = "dev"
+display_name.en = "SDK for .NET Framework 8.0"
+display_name.ru = "SDK for .NET Framework 8.0"
+
+[packages]
+"dotnet-sdk-8.0" = {}

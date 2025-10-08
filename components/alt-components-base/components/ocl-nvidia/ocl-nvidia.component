@@ -1,0 +1,8 @@
+type = "Component"
+name = "ocl-nvidia"
+category = "graphics"
+display_name.en = "NVIDIA OpenCL runtime"
+display_name.ru = "NVIDIA OpenCL runtime"
+
+[packages]
+ocl-nvidia = {}

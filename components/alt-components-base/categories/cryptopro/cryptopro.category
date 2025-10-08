@@ -1,0 +1,6 @@
+type = "Category"
+name = "cryptopro"
+category = "vendors"
+display_name.en = "CryptoPro"
+display_name.ru = "КриптоПро"
+draft = true

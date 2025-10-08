@@ -1,0 +1,9 @@
+type = "Component"
+name = "audacious"
+category = "media-apps"
+display_name.en = "Audacious"
+display_name.ru = "Audacious"
+
+[packages]
+audacious = {}
+audacious-plugins = {}

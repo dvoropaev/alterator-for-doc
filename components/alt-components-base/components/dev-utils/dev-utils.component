@@ -1,0 +1,14 @@
+type = "Component"
+name = "dev-utils"
+category = "dev"
+display_name.en = "Base development utilities"
+display_name.ru = "Базовые утилиты разработки"
+
+[packages]
+make = {}
+diffutils = {}
+patch = {}
+xml-utils = {}
+jq = {}
+
+git-core = {}

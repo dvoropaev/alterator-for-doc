@@ -1,0 +1,8 @@
+type = "Component"
+name = "xdg-dbus-proxy"
+category = "xdg"
+display_name.en = "Proxy for D-Bus"
+display_name.ru = "Прокси-сервер для D-Bus"
+
+[packages]
+xdg-dbus-proxy = {}

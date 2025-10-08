@@ -1,0 +1,9 @@
+type = "Component"
+name = "ca-certs"
+category = "core"
+display_name.en = "CA Certificates"
+display_name.ru = "Корневые сертификаты"
+
+[packages]
+ca-certificates = {}
+"ca-certificates-digital.gov.ru" = {}

@@ -1,0 +1,8 @@
+type = "Component"
+name = "telnet"
+category = "network"
+display_name.en = "telnet"
+display_name.ru = "telnet"
+
+[packages]
+telnet = {}

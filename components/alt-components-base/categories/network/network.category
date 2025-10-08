@@ -1,0 +1,7 @@
+type = "Category"
+name = "network"
+category = "system"
+display_name.en = "Network management utilities"
+display_name.ru = "Инструменты управления сетью"
+comment.en = "Network management utilities"
+comment.ru = "Инструменты управления сетью"

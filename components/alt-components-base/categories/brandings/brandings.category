@@ -1,0 +1,5 @@
+type = "Category"
+name = "brandings"
+category = "core"
+display_name.en = "Brandings"
+display_name.ru = "Брендинги"

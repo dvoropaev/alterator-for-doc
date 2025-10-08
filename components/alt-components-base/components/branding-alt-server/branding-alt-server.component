@@ -1,0 +1,9 @@
+type = "Component"
+name = "branding-alt-server"
+category = "brandings"
+display_name.en = "ALT Server branding"
+display_name.ru = "Альт Сервер брендинг"
+
+[packages]
+branding-alt-server-notes = {}
+branding-alt-server-release = {}

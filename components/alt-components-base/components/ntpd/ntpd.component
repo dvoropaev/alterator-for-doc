@@ -1,0 +1,8 @@
+type = "Component"
+name = "ntpd"
+category = "time"
+display_name.en = "NTPD"
+display_name.ru = "NTPD"
+
+[packages]
+ntpd = {}

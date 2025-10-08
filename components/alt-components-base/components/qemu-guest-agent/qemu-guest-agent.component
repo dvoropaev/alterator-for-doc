@@ -1,0 +1,9 @@
+type = "Component"
+name = "qemu-guest-agent"
+category = "agents"
+display_name.en = "QEMU guest agent"
+display_name.ru = "Гостевой агент QEMU"
+
+[packages]
+qemu-guest-agent = {}
+spice-vdagent = {}

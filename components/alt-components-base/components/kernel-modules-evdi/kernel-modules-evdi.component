@@ -1,0 +1,8 @@
+type = "Component"
+name = "kernel-modules-evdi"
+category = "kernel"
+display_name.en = "Drivers for EVDI"
+display_name.ru = "Драйверы для EVDI"
+
+[packages]
+kernel-modules-evdi = { kernel_module = true }

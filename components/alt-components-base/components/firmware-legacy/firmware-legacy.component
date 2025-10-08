@@ -1,0 +1,11 @@
+type = "Component"
+name = "firmware-legacy"
+category = "boot"
+display_name.en = "Kernel Firmware (outdated)"
+display_name.ru = "Прошивки драйверов (устаревшие)"
+
+[packages]
+firmware-ipw2100 = {}
+firmware-ipw2200 = {}
+firmware-prism54 = {}
+firmware-aic94xx-seq = {}

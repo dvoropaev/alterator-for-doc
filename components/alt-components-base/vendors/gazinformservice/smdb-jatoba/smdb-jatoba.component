@@ -1,0 +1,10 @@
+type = "Component"
+name = "smdb-jatoba"
+category = "gazinformservice"
+display_name.en = "SMDB «Jatoba»"
+display_name.ru = "СУБД «Jatoba»"
+draft = true
+
+[packages]
+
+

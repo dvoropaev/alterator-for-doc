@@ -1,0 +1,5 @@
+type = "Category"
+name = "de"
+category = "graphics"
+display_name.en = "Desktop environments"
+display_name.ru = "Среды рабочего стола"

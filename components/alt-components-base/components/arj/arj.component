@@ -1,0 +1,8 @@
+type = "Component"
+name = "arj"
+category = "archiving"
+display_name.en = "arj"
+display_name.ru = "arj"
+
+[packages]
+arj = {}

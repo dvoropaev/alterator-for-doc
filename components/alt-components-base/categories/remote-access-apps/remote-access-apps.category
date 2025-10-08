@@ -1,0 +1,5 @@
+type = "Category"
+name = "remote-access-apps"
+category = "apps"
+display_name.en = "Remote access applications"
+display_name.ru = "Приложения удалённого доступа"

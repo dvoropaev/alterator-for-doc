@@ -1,0 +1,12 @@
+type = "Component"
+name = "bacula-mysql"
+category = "network-infra"
+display_name.en = "Bacula - backup service (mysql)"
+display_name.ru = "Bacula - служба резервного копирования (mysql)"
+
+[packages]
+# bacula13 = {} <- SQLite3 is no longer supported.
+bacula13-console = {}
+bacula13-director-mysql = {}
+bacula13-storage = {}
+mt-st = {}

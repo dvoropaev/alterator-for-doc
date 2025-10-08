@@ -1,0 +1,8 @@
+type = "Component"
+name = "kernel-modules-tripso"
+category = "kernel"
+display_name.en = "SELinux labels translation modules"
+display_name.ru = "Модули трансляции меток SELinux"
+
+[packages]
+kernel-modules-tripso = { kernel_module = true }

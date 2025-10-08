@@ -1,0 +1,12 @@
+type = "Component"
+name = "pulseaudio"
+category = "media"
+display_name.en = "PulseAudio"
+display_name.ru = "PulseAudio"
+
+[packages]
+pulseaudio = {}
+pulseaudio-utils = {}
+
+# pulseaudio-daemon = {}
+# pulseaudio-gsettings = {}

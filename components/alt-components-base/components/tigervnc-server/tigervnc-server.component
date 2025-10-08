@@ -1,0 +1,8 @@
+type = "Component"
+name = "tigervnc-server"
+category = "network-infra"
+display_name.en = "Server - TigerVNC"
+display_name.ru = "Сервер - TigerVNC"
+
+[packages]
+tigervnc-server = {}

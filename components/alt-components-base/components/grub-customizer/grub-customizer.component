@@ -1,0 +1,8 @@
+type = "Component"
+name = "grub-customizer"
+category = "admin-apps"
+display_name.en = "GRUB - graphical configuration tool"
+display_name.ru = "GRUB - графический инструмент настройки"
+
+[packages]
+grub-customizer = {}

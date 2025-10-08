@@ -1,0 +1,5 @@
+type = "Category"
+name = "wireless"
+category = "system"
+display_name.en = "Wireless management"
+display_name.ru = "Управление беспроводными устройствами"

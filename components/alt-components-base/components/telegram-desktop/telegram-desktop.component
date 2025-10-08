@@ -1,0 +1,8 @@
+type = "Component"
+name = "telegram-desktop"
+category = "desktop-apps"
+display_name.en = "Telegram Desktop"
+display_name.ru = "Telegram Desktop"
+
+[packages]
+telegram-desktop = {}

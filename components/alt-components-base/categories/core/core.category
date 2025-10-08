@@ -1,0 +1,7 @@
+type = "Category"
+name = "core"
+category = "system"
+display_name.en = "Core system modules"
+display_name.ru = "Основные системные модули"
+comment.en = "Key system components"
+comment.ru = "Ключевые системные компоненты"

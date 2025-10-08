@@ -1,0 +1,10 @@
+type = "Component"
+name = "fonts-latex"
+category = "fonts"
+display_name.en = "LaTeX"
+display_name.ru = "LaTeX"
+
+[packages]
+fonts-ttf-latex-xft = {}
+
+

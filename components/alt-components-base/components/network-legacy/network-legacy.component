@@ -1,0 +1,16 @@
+type = "Component"
+name = "network-legacy"
+category = "network"
+display_name.en = "Legacy network utilities"
+display_name.ru = "Устаревшие средства управлению сетью"
+
+[packages]
+net-tools = {}
+
+dhcpcd = {}
+ifplugd = {}
+lftp = {}
+netlist = {}
+nscd = {}
+nss-ldapd = {}
+#libnss-fallback = {}

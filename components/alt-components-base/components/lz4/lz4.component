@@ -1,0 +1,8 @@
+type = "Component"
+name = "lz4"
+category = "archiving"
+display_name.en = "lz4"
+display_name.ru = "lz4"
+
+[packages]
+lz4 = {}

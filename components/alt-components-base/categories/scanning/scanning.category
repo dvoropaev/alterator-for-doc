@@ -1,0 +1,5 @@
+type = "Category"
+name = "scanning"
+category = "peripherals"
+display_name.en = "Scanning subsystem"
+display_name.ru = "Подсистема сканирования"

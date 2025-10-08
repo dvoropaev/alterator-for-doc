@@ -1,0 +1,8 @@
+type = "Category"
+name = "3vservices"
+category = "vendors"
+display_name.en = "3v services Software Development"
+display_name.ru = "3В Сервис"
+comment.en = "3v services Software Development"
+comment.ru = "3В Сервис"
+draft = true

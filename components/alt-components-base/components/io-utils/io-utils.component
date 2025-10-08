@@ -1,0 +1,9 @@
+type = "Component"
+name = "io-utils"
+category = "utils"
+display_name.en = "IO diagnostic tools"
+display_name.ru = "Инструменты диагностики ввода-вывода"
+
+[packages]
+iotop = {}
+fio = {}

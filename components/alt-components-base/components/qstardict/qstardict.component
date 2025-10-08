@@ -1,0 +1,12 @@
+type = "Component"
+name = "qstardict"
+category = "desktop-apps"
+display_name.en = "QStarDict dictionary"
+display_name.ru = "Словарь QStarDict"
+
+[packages]
+qstardict = {}
+stardict-mueller7 = {}
+stardict-slovnyk_en-ru = {}
+stardict-slovnyk_ru-en = {}
+# WyabdcRealPeopleTTS = {}

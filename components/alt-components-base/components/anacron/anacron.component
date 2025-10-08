@@ -1,0 +1,8 @@
+type = "Component"
+name = "anacron"
+category = "services"
+display_name.en = "Anacron - anachronistic job scheduler"
+display_name.ru = "Anacron - анахроничный планировщик заданий"
+
+[packages]
+anacron = {}

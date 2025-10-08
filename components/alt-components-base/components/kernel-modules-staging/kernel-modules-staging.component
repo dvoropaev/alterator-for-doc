@@ -1,0 +1,8 @@
+type = "Component"
+name = "kernel-modules-staging"
+category = "kernel"
+display_name.en = "Kernel modules under development"
+display_name.ru = "Модули ядра в стадии разработки"
+
+[packages]
+kernel-modules-staging = { kernel_module = true }

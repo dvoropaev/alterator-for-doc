@@ -1,0 +1,10 @@
+type = "Component"
+name = "fonts-lxgwwenkai"
+category = "fonts"
+display_name.en = "LXGW WenKai"
+display_name.ru = "LXGW WenKai"
+
+[packages]
+fonts-ttf-lxgw-wenkai = {}
+
+

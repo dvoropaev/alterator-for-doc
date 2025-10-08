@@ -1,0 +1,8 @@
+type = "Component"
+name = "alterator-legacy-wifi"
+category = "alterator-legacy-network"
+display_name.en = "WIFI - Alterator (legacy)"
+display_name.ru = "WIFI - Альтератор (legacy)"
+
+[packages]
+alterator-net-wifi = {}

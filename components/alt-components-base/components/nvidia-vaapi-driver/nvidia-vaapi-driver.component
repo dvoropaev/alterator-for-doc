@@ -1,0 +1,8 @@
+type = "Component"
+name = "nvidia-vaapi-driver"
+category = "graphics"
+display_name.en = "NVIDIA VA-API runtime"
+display_name.ru = "NVIDIA VA-API runtime"
+
+[packages]
+nvidia-vaapi-driver = {}

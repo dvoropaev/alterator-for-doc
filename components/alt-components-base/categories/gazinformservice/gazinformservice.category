@@ -1,0 +1,8 @@
+type = "Category"
+name = "gazinformservice"
+category = "vendors"
+display_name.en = "Gazinformservice"
+display_name.ru = "Газинформсервис"
+comment.en = "Gazinformservice"
+comment.ru = "Газинформсервис"
+draft = true

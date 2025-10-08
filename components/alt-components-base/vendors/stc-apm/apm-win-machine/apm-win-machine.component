@@ -1,0 +1,10 @@
+type = "Component"
+name = "apm-win-machine"
+category = "stc-apm"
+display_name.en = "APM WinMachine"
+display_name.ru = "APM WinMachine"
+draft = true
+
+[packages]
+
+

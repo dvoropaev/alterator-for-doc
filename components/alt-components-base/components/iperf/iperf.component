@@ -1,0 +1,9 @@
+type = "Component"
+name = "iperf"
+category = "network"
+display_name.en = "iperf"
+display_name.ru = "iperf"
+
+[packages]
+iperf = {}
+iperf3 = {}

@@ -1,0 +1,8 @@
+type = "Component"
+name = "postgresql-jdbc"
+category = "databases"
+display_name.en = "JDBC driver for PostgreSQL"
+display_name.ru = "Драйвер JDBC для PostgreSQL"
+
+[packages]
+postgresql-jdbc = {}

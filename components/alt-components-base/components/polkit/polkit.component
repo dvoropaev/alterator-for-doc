@@ -1,0 +1,10 @@
+type = "Component"
+name = "polkit"
+category = "services"
+display_name.en = "PolicyKit"
+display_name.ru = "PolicyKit"
+
+[packages]
+polkit = {}
+#polkit-rule-packagekit-allow-remove = {}
+#polkit-rule-udisks2-mount = {}

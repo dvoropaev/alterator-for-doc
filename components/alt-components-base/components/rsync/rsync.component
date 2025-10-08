@@ -1,0 +1,8 @@
+type = "Component"
+name = "rsync"
+category = "network-infra"
+display_name.en = "Rsync Server"
+display_name.ru = "Rsync Server"
+
+[packages]
+rsync-server = {}

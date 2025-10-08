@@ -1,0 +1,10 @@
+type = "Component"
+name = "one-key"
+category = "abp2b"
+display_name.en = "OneKey"
+display_name.ru = "ОдинКлюч"
+draft = true
+
+[packages]
+
+

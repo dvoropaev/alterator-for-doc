@@ -1,0 +1,10 @@
+type = "Component"
+name = "usbguard"
+category = "usb-tools"
+display_name.en = "USBGuard"
+display_name.ru = "USBGuard"
+
+[packages]
+usbguard = {}
+usbguard-notifier = {}
+usbguard-utils = {}

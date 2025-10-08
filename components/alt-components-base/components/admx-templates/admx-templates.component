@@ -1,0 +1,13 @@
+type = "Component"
+name = "admx-templates"
+category = "domain-infra"
+display_name.en = "Group policy templates"
+display_name.ru = "Шаблоны групповых политик"
+
+[packages]
+admx-basealt = {}
+admx-firefox = {}
+admx-chromium = {}
+admx-yandex-browser = {}
+admx-thunderbird = {}
+admx-msi-setup = {}

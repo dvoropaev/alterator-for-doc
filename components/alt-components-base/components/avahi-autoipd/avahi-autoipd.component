@@ -1,0 +1,8 @@
+type = "Component"
+name = "avahi-autoipd"
+category = "network"
+display_name.en = "Avahi - IPv4LL service"
+display_name.ru = "Avahi - служба IPv4LL"
+
+[packages]
+avahi-autoipd = {}

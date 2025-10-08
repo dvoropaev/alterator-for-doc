@@ -1,0 +1,5 @@
+type = "Category"
+name = "usb-tools"
+category = "peripherals"
+display_name.en = "Tools for USB devices"
+display_name.ru = "Инструменты для USB-устройств"

@@ -1,0 +1,1 @@
+Tempora LGC Unicode is a font family suitable for working with texts in languages using the three European alphabets: Latin, Greek and Cyrillic. The fonts support the historical Cyrillic letters available in the Unicode standard. Distributed under the GNU General Public License.

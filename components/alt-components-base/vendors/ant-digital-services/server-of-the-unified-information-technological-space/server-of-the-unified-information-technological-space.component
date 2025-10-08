@@ -1,0 +1,10 @@
+type = "Component"
+name = "server-of-the-unified-information-technological-space"
+category = "ant-digital-services"
+display_name.en = "Server of the unified information-technological space"
+display_name.ru = "Cервер ЕИТП"
+draft = true
+
+[packages]
+
+

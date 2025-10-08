@@ -1,0 +1,7 @@
+type = "Category"
+name = "window-manager"
+category = "graphics"
+display_name.en = "Window manager (WM)"
+display_name.ru = "Оконный менеджер (WM)"
+comment.en = "Window manager (WM)"
+comment.ru = "Оконный менеджер (WM)"

@@ -1,0 +1,8 @@
+type = "Component"
+name = "fonts-mkfontscale"
+category = "fonts"
+display_name.en = "Font generator - X"
+display_name.ru = "Генератор шрифта - X"
+
+[packages]
+mkfontscale = {}

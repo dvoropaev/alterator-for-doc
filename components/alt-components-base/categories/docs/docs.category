@@ -1,0 +1,4 @@
+type = "Category"
+name = "docs"
+display_name.en = "Documentation"
+display_name.ru = "Документация"

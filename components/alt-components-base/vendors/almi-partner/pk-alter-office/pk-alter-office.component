@@ -1,0 +1,10 @@
+type = "Component"
+name = "pk-alter-office"
+category = "almi-partner"
+display_name.en = "PC AlterOffice"
+display_name.ru = "ПК AlterOffice"
+draft = true
+
+[packages]
+
+

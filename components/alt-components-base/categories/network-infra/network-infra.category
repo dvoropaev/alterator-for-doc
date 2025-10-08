@@ -1,0 +1,5 @@
+type = "Category"
+name = "network-infra"
+category = "infra"
+display_name.en = "Network infrastruture"
+display_name.ru = "Сетевая инфраструктура"

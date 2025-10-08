@@ -1,0 +1,8 @@
+type = "Component"
+name = "alterator-legacy-netinst"
+category = "alterator-legacy-services"
+display_name.en = "Network installation - Alterator (legacy)"
+display_name.ru = "Сетевая установка - Альтератор (legacy)"
+
+[packages]
+alterator-netinst = {}

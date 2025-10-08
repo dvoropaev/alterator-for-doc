@@ -1,0 +1,8 @@
+type = "Component"
+name = "alterator-legacy-groups"
+category = "alterator-legacy-system"
+display_name.en = "Groups - Alterator (legacy)"
+display_name.ru = "Группы пользователей - Альтератор (legacy)"
+
+[packages]
+alterator-groups = {}

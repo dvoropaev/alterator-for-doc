@@ -1,0 +1,8 @@
+type = "Component"
+name = "tokens-auth-jacarta"
+category = "tokens"
+display_name.en = "JaCarta - PKCS11 authentication support"
+display_name.ru = "JaCarta - поддержка аутентификации PKCS11"
+
+[packages]
+pkcs11-profiles-jacarta = {}

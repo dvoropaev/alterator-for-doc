@@ -1,0 +1,8 @@
+type = "Component"
+name = "kernel-modules-xtables-addons"
+category = "kernel"
+display_name.en = "Xtables-addons modules"
+display_name.ru = "Модули для Xtables-addons"
+
+[packages]
+kernel-modules-xtables-addons = { kernel_module = true }

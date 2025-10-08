@@ -1,0 +1,8 @@
+type = "Component"
+name = "fonts-noto-color-emoji"
+category = "fonts"
+display_name.en = "Noto Color Emoji"
+display_name.ru = "Noto Color Emoji"
+
+[packages]
+fonts-ttf-google-noto-emoji-color = {}

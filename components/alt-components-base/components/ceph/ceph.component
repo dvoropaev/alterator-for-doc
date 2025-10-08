@@ -1,0 +1,8 @@
+type = "Component"
+name = "ceph"
+category = "clusters"
+display_name.en = "Ceph"
+display_name.ru = "Ceph"
+
+[packages]
+ceph = {}

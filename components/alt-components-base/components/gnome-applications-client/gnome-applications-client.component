@@ -1,0 +1,14 @@
+type = "Component"
+name = "gnome-applications-client"
+category = "gnome"
+display_name.en = "GNOME - client applications"
+display_name.ru = "GNOME - пользовательские приложения"
+
+[packages]
+gnome-calculator = {}
+gnome-calendar = {}
+gnome-characters = {}
+gnome-clocks = {}
+gnome-maps = {}
+gnome-software = {}
+gnome-weather = {}

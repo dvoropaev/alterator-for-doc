@@ -1,0 +1,9 @@
+type = "Component"
+name = "qemu"
+category = "virt-tools"
+display_name.en = "QEMU"
+display_name.ru = "QEMU"
+
+[packages]
+qemu = {}
+qemu-kvm = {}

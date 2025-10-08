@@ -1,0 +1,19 @@
+type = "Component"
+name = "themes-gtk"
+category = "graphics"
+display_name.en = "Themes GTK"
+display_name.ru = "Темы GTK"
+
+[packages]
+gtk2-theme-clearlooks = {}
+gtk2-theme-crux = {}
+gtk2-theme-industrial = {}
+gtk2-theme-mist = {}
+gtk2-theme-thinice = {}
+"gtk+3-themes-incompatible" = {}
+gtk-update-icon-cache = {}
+libgtk2-engine-adwaita = {}
+gtk2-theme-breeze = {}
+gtk3-theme-breeze = {}
+gtk-theme-breeze = {}
+gtk-theme-classiclooks = {}

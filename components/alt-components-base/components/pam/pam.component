@@ -1,0 +1,15 @@
+type = "Component"
+name = "pam"
+category = "core"
+display_name.en = "Linux-PAM"
+display_name.ru = "Linux-PAM"
+
+[packages]
+pam0_mktemp = {}
+pam0_passwdqc = {}
+pam0_userpass = {}
+
+pam-config = {}
+
+##pam_ccreds = {}
+#pam-limits-desktop = {}

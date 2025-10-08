@@ -1,0 +1,9 @@
+type = "Component"
+name = "branding-alt-server-common"
+category = "brandings"
+display_name.en = "ALT Server branding - common"
+display_name.ru = "Альт Сервер брендинг - common"
+
+[packages]
+branding-alt-server-alterator = {}
+branding-alt-server-indexhtml = {}

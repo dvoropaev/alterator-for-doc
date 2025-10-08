@@ -1,0 +1,10 @@
+type = "Component"
+name = "1c-cfg-salary-and-hr-management"
+category = "1c"
+display_name.en = "Сonfiguration «1C:Salary and personnel management»"
+display_name.ru = "Конфигурация «1С:Зарплата и управление персоналом»"
+draft = true
+
+[packages]
+
+

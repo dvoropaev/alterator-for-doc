@@ -1,0 +1,8 @@
+type = "Component"
+name = "kwin"
+category = "window-manager"
+display_name.en = "KWin - KDE"
+display_name.ru = "KWin - KDE"
+
+[packages]
+kwin = {}

@@ -1,0 +1,12 @@
+type = "Component"
+name = "bacula-postgresql"
+category = "network-infra"
+display_name.en = "Bacula - backup service (postgresql)"
+display_name.ru = "Bacula - служба резервного копирования (postgresql)"
+
+[packages]
+# bacula13 = {} <- SQLite3 is no longer supported.
+bacula13-console = {}
+bacula13-director-postgresql = {}
+bacula13-storage = {}
+mt-st = {}

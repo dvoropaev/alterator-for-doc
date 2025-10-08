@@ -1,0 +1,8 @@
+type = "Component"
+name = "pax"
+category = "archiving"
+display_name.en = "pax"
+display_name.ru = "pax"
+
+[packages]
+pax = {}

@@ -1,0 +1,8 @@
+type = "Component"
+name = "make-initrd-plymouth"
+category = "boot"
+display_name.en = "make-initrd - plymouth support"
+display_name.ru = "make-initrd - поддержка plymouth"
+
+[packages]
+make-initrd-plymouth = {}

@@ -1,0 +1,8 @@
+type = "Component"
+name = "fonts-urw"
+category = "fonts"
+display_name.en = "URW++"
+display_name.ru = "URW++"
+
+[packages]
+fonts-type1-urw = {}

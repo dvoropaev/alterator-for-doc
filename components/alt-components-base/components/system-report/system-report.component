@@ -1,0 +1,8 @@
+type = "Component"
+name = "system-report"
+category = "utils"
+display_name.en = "Hardware system reporting utility"
+display_name.ru = "Утилита создания отчётов об оборудовании"
+
+[packages]
+system-report = {}

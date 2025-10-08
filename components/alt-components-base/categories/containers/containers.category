@@ -1,0 +1,5 @@
+type = "Category"
+name = "containers"
+category = "infra"
+display_name.en = "Containerization"
+display_name.ru = "Контейнеризация"

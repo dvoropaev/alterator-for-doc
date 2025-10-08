@@ -1,0 +1,11 @@
+type = "Component"
+name = "libreoffice"
+category = "office-apps"
+display_name.en = "LibreOffice"
+display_name.ru = "LibreOffice"
+
+[packages]
+LibreOffice = {}
+LibreOffice-langpack-ru = { language = "ru" }
+LibreOffice-gtk3 = { desktop = ["MATE", "GNOME"] }
+LibreOffice-kde5 = { desktop = ["KDE5"] }

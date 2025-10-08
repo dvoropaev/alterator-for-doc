@@ -1,0 +1,8 @@
+type = "Category"
+name = "almi-partner"
+category = "vendors"
+display_name.en = "ALMI Partner"
+display_name.ru = "АЛМИ Партнер"
+comment.en = "ALMI Partner"
+comment.ru = "АЛМИ Партнер"
+draft = true

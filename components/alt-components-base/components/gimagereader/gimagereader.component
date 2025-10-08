@@ -1,0 +1,8 @@
+type = "Component"
+name = "gimagereader"
+category = "ocr-apps"
+display_name.en = "gImageReader (GTK-frontend to tesseract)"
+display_name.ru = "gImageReader (GTK-фронтенд для tesseract)"
+
+[packages]
+gimagereader = {}

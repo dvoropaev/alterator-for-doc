@@ -1,0 +1,5 @@
+type = "Category"
+name = "bootable-media-tools"
+category = "admin-apps"
+display_name.en = "Bootable media creation tools"
+display_name.ru = "Инструменты создания загрузочных носителей"

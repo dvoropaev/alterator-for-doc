@@ -1,0 +1,8 @@
+type = "Component"
+name = "genisoimage"
+category = "utils"
+display_name.en = "genisoimage - creating ISO images"
+display_name.ru = "genisoimage - создание ISO образов"
+
+[packages]
+genisoimage = {}

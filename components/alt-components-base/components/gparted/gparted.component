@@ -1,0 +1,8 @@
+type = "Component"
+name = "gparted"
+category = "system-apps"
+display_name.en = "GParted"
+display_name.ru = "GParted"
+
+[packages]
+gparted = {}

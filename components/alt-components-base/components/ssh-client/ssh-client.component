@@ -1,0 +1,9 @@
+type = "Component"
+name = "ssh-client"
+category = "utils"
+display_name.en = "SSH - client"
+display_name.ru = "SSH - клиент"
+
+[packages]
+openssh-clients = {}
+openssh-askpass-common = {}

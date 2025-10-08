@@ -1,0 +1,8 @@
+type = "Component"
+name = "java-runtime-17"
+category = "env"
+display_name.en = "Java-Runtime 1.8.0"
+display_name.ru = "Java-Runtime 17"
+
+[packages]
+java-17-openjdk = {}

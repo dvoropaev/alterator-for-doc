@@ -1,0 +1,8 @@
+type = "Component"
+name = "xfsprogs"
+category = "fs"
+display_name.en = "Xfsprogs"
+display_name.ru = "Xfsprogs"
+
+[packages]
+xfsprogs = {}

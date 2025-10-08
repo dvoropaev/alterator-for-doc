@@ -1,0 +1,9 @@
+type = "Component"
+name = "alt-workstation-defaults"
+category = "core"
+display_name.en = "Default Workstaion Settings"
+display_name.ru = "Настройки Рабочей станции по умолчанию"
+
+[packages]
+alt-issue = {}
+etcnet-defaults-desktop = {}

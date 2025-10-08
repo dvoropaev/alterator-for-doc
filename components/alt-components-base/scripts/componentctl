@@ -1,0 +1,291 @@
+#!/bin/sh -efu
+#
+# Copyright (C) 2024 Evgeny Sinelnikov <sin@altlinux.org>
+#
+# This file is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+#
+
+. shell-args
+. shell-error
+. shell-getopt
+
+VERSION=0.1
+
+verbose=
+force=
+category=
+
+show_help() {
+    cat <<-EOF
+		Usage: $PROG [options] ls <components_directory>
+		Usage: $PROG [options] cp <source_components> <dest_component>
+
+		Options:
+		  -V, --version           print program version and exit;
+		  -f, --force             force copy if component already exists.
+		  -c, --category          show category for component.
+		  -h, --help              show this text and exit.
+
+		Report bugs to http://bugzilla.altlinux.org/
+
+	EOF
+    exit
+}
+
+print_version() {
+    echo "$VERSION"
+    exit
+}
+
+TEMP=$(getopt -n $PROG -o f,c,$getopt_common_opts -l force,category,$getopt_common_longopts -- "$@") ||
+    show_usage
+eval set -- "$TEMP"
+
+while :; do
+    case "$1" in
+    --)
+        shift; break
+        ;;
+    -f | --force)
+        force=1
+        ;;
+    -c | --category)
+        category=1
+        ;;
+    *)
+        parse_common_option "$1"
+        ;;
+    esac
+    shift
+done
+
+#echo "len $#"
+#echo "last $@"
+#echo "force=$force"
+#echo "category=$category"
+
+[ "$#" -gt 0 ] ||
+    show_usage
+
+_check_src_path() {
+    local p="$(realpath -m "$1")"
+    case "$p" in
+        /)
+            echo "root path: '$1' is not permitted"
+            return 1
+            ;;
+        /*)
+            return 0
+            ;;
+    esac
+}
+
+_check_dst_path() {
+    local p="$(realpath -m "$1")"
+    case "$p" in
+        /)
+            echo "root path ('$1') is not permitted"
+            return 1
+            ;;
+        /home/*)
+            return 0
+            ;;
+        /*)
+            echo "system path ('$1') '$p' is not permitted"
+            return 2
+            ;;
+    esac
+}
+
+_check_component() {
+    local d="$1"
+    local c="$2"
+    local e="$d/$c.component"
+
+    if ! test -d "$d"; then
+        echo "directory with component '$d' not exists"
+        return 2
+    fi
+
+    if ! test -f "$e"; then
+        echo "component entity '$e' not exists"
+        return 2
+    fi
+
+    find "$d" -wholename "$d/description*.md" | while read desc; do
+        if ! head -1 "$desc" | grep -q "^#.* $c$"; then
+            echo "WARNING: $desc: component description not finished with component name '$c'"
+            echo "WARNING: $desc: $(head -1 "$desc")"
+        fi
+    done
+
+    alterator-entry validate "$e"
+}
+
+_copy_component() {
+    local src_d="$1"
+    local src_c="$2"
+    local dst_d="$3"
+    local dst_c="$4"
+    local src_e="$src_d/$src_c.component"
+    local dst_e="$dst_d/$dst_c.component"
+
+    if test -d "$dst_d" -o -n "$force"; then
+        echo "destination directory with component '$dst_d' already exist"
+        return 2
+    fi
+
+    if test -f "$dst_e" -o -n "$force"; then
+        echo "destination component entity '$dst_e' already exists"
+        return 2
+    fi
+
+    if test -d "$dst_d" -a -n "$force"; then
+        echo "WARNING: remove directory with component '$dst_d'"
+        rm -rf "$dst_d"
+    fi
+
+    mkdir -p "$dst_d"
+    cp "$src_e" "$dst_e"
+    sed -i "s/^\(name =\).*/\1 \"$dst_c\"/" "$dst_e"
+    find "$src_d" -wholename "$src_d/description*.md" -exec cp -t "$dst_d" {} +
+    find "$dst_d" -wholename "$dst_d/description*.md" -exec sed -i "1 s/^\(# .*\) $src_c/\1 $dst_c/" {} \;
+
+    alterator-entry validate "$dst_e"
+}
+
+_move_component() {
+    local src_d="$1"
+    local src_c="$2"
+    local dst_d="$3"
+    local dst_c="$4"
+    local moved_src_e="$dst_d/$src_c.component"
+    local dst_e="$dst_d/$dst_c.component"
+
+    if test -d "$dst_d" -o -n "$force"; then
+        echo "destination directory with component '$dst_d' already exist"
+        return 2
+    fi
+
+    if test -f "$dst_e" -o -n "$force"; then
+        echo "destination component entity '$dst_e' already exists"
+        return 2
+    fi
+
+    if test -d "$dst_d" -a -n "$force"; then
+        echo "WARNING: remove directory with component '$dst_d'"
+        rm -rf "$dst_d"
+    fi
+
+    mv "$src_d" "$dst_d"
+    mv "$moved_src_e" "$dst_e"
+    sed -i "s/^\(name =\).*/\1 \"$dst_c\"/" "$dst_e"
+    find "$dst_d" -wholename "$dst_d/description*.md" -exec sed -i "1 s/^\(# .*\) $src_c/\1 $dst_c/" {} \;
+
+    alterator-entry validate "$dst_e"
+}
+
+_ls_component()
+{
+    local d="$1"
+    local c="$(basename "$d")"
+    local e="$d/$c.component"
+    local x=
+
+    if test -f "$e"; then
+        [ -n "$category" ] || echo "$d/$c"
+        _check_component "$d" "$c"
+        [ -z "$category" ] || echo "$d/$c: $(alterator-entry get $e category)"
+        return 0
+    fi
+
+    return 1
+}
+
+ls_components()
+{
+    local d="."
+    [ "$#" -lt 1 ] || d="$1"
+
+    if ! test -d "$d"; then
+        echo "directory with component or components '$d' not exists"
+        exit 1
+    fi
+
+    if _ls_component "$d"; then
+        exit 0
+    fi
+
+    find "$d" -type d | sort | while read comp_dir; do
+        _ls_component "$comp_dir" ||:
+    done
+}
+
+check_component()
+{
+    local d="$1"
+    local c="$(basename "$d")"
+
+    _check_src_path "$d"
+    _check_component "$d" "$c"
+}
+
+cp_component()
+{
+    local src_dir="$(realpath "$1")"
+    local dst_dir="$(realpath "$2")"
+    local src="$(basename "$src_dir")"
+    local dst="$(basename "$dst_dir")"
+
+    _check_src_path "$src_dir"
+    _check_dst_path "$dst_dir"
+    _check_component "$src_dir" "$src"
+    _copy_component "$src_dir" "$src" "$dst_dir" "$dst"
+}
+
+mv_component()
+{
+    local src_dir="$(realpath "$1")"
+    local dst_dir="$(realpath "$2")"
+    local src="$(basename "$src_dir")"
+    local dst="$(basename "$dst_dir")"
+
+    _check_src_path "$src_dir"
+    _check_dst_path "$dst_dir"
+    _check_component "$src_dir" "$src"
+    _move_component "$src_dir" "$src" "$dst_dir" "$dst"
+}
+
+command="$1"
+shift
+
+case "$command" in
+ls)
+    ls_components "$@"
+    ;;
+check)
+    check_component "$@"
+    ;;
+cp)
+    cp_component "$@"
+    ;;
+mv)
+    mv_component "$@"
+    ;;
+*)
+    echo "command not found: $command" "$@"
+    show_usage
+    ;;
+esac

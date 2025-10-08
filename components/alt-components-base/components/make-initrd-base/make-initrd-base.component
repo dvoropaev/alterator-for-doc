@@ -1,0 +1,13 @@
+type = "Component"
+name = "make-initrd-base"
+category = "boot"
+display_name.en = "make-initrd - initramfs infrastructure"
+display_name.ru = "make-initrd - инфраструктура initramfs"
+
+[packages]
+make-initrd-devmapper = {}
+make-initrd-luks = {}
+make-initrd-lvm = {}
+make-initrd-mdadm = {}
+make-initrd-multipath = {}
+make-initrd-ucode = { arch = ["x86_64", "i586"] }

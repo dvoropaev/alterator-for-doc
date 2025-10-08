@@ -1,0 +1,5 @@
+type = "Category"
+name = "emulators"
+category = "env"
+display_name.en = "Emulators"
+display_name.ru = "Эмуляторы"

@@ -1,0 +1,9 @@
+type = "Component"
+name = "fonts-cantarell"
+category = "fonts"
+display_name.en = "Cantarell"
+display_name.ru = "Cantarell"
+
+[packages]
+fonts-otf-abattis-cantarell = {}
+

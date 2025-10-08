@@ -1,0 +1,8 @@
+type = "Component"
+name = "sogo"
+category = "network-infra"
+display_name.en = "Sogo - groupware server"
+display_name.ru = "Sogo - система совместной работы"
+
+[packages]
+task-sogo = {}

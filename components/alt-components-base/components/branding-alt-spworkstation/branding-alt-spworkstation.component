@@ -1,0 +1,15 @@
+type = "Component"
+name = "branding-alt-spworkstation"
+category = "brandings"
+display_name.en = "ALT SP Workstation branding"
+display_name.ru = "Альт СП Рабочая станция брендинг"
+
+[packages]
+branding-alt-spworkstation-alterator = {}
+branding-alt-spworkstation-bootloader = {}
+branding-alt-spworkstation-bootsplash = {}
+branding-alt-spworkstation-graphics = {}
+branding-alt-spworkstation-indexhtml = {}
+branding-alt-spworkstation-mate-settings = {}
+branding-alt-spworkstation-notes = {}
+branding-alt-spworkstation-release = {}

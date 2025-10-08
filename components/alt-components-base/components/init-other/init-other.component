@@ -1,0 +1,8 @@
+type = "Component"
+name = "init-other"
+category = "core"
+display_name.en = "Inititalization - other"
+display_name.ru = "Инициализация - прочее"
+
+[packages]
+vconsole-setup-kludge = {}

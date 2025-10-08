@@ -1,0 +1,21 @@
+type = "Component"
+name = "glibc"
+category = "libraries"
+display_name.en = "Glibc"
+display_name.ru = "Glibc"
+
+[packages]
+glibc = {}
+# List of dependent packages:
+# - glibc-locales
+# - glibc-nss
+# - glibc-timezones
+# - glibc-utils
+# - iconv
+
+glibc-core = {}
+glibc-gconv-modules = {}
+glibc-locales = {}
+glibc-nss = {}
+glibc-timezones = {}
+glibc-utils = {}

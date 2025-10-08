@@ -1,0 +1,9 @@
+type = "Component"
+name = "openssl-engines"
+category = "libraries"
+display_name.en = "OpenSSL engines"
+display_name.ru = "OpenSSL модули"
+
+[packages]
+openssl-engines = {}
+openssl-gost-engine = {}

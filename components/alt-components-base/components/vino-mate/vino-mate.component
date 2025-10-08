@@ -1,0 +1,8 @@
+type = "Component"
+name = "vino-mate"
+category = "remote-access-apps"
+display_name.en = "Server - Vino for MATE"
+display_name.ru = "Сервер - Vino для MATE"
+
+[packages]
+vino-mate = {}

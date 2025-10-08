@@ -1,0 +1,10 @@
+type = "Component"
+name = "alterator-legacy-routing"
+category = "alterator-legacy-network"
+display_name.en = "Routing - Alterator (legacy)"
+display_name.ru = "Маршрутизация - Альтератор (legacy)"
+
+[packages]
+alterator-net-routing = {}
+alterator-net-bridge = {}
+alterator-net-iptables = {}

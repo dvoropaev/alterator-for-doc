@@ -1,0 +1,19 @@
+type = "Component"
+name = "branding-simply-linux"
+category = "brandings"
+display_name.en = "Simply Linux branding"
+display_name.ru = "Симпли Линукс брендинг"
+
+[packages]
+branding-simply-linux-alterator = {}
+branding-simply-linux-backgrounds10 = {}
+branding-simply-linux-backgrounds10-vladstudio = {}
+branding-simply-linux-bootloader = {}
+branding-simply-linux-bootsplash = {}
+branding-simply-linux-graphics = {}
+branding-simply-linux-indexhtml = {}
+branding-simply-linux-menu = {}
+branding-simply-linux-notes = {}
+branding-simply-linux-release = {}
+branding-simply-linux-system-settings = {}
+branding-simply-linux-xfce-settings = {}

@@ -1,0 +1,8 @@
+type = "Component"
+name = "proxmox-backup-server"
+category = "network-infra"
+display_name.en = "Proxmox Backup Server"
+display_name.ru = "Proxmox Backup Server"
+
+[packages]
+proxmox-backup-server = { arch = ["x86_64", "aarch64"] }

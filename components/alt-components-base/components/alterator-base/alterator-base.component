@@ -1,0 +1,16 @@
+type = "Component"
+name = "alterator-base"
+category = "alterator"
+display_name.en = "Alterator - base system management"
+display_name.ru = "Альтератор - базовое управление системой"
+
+[packages]
+alteratorctl = {}
+# alterator-backend-packages
+# alterator-backend-component_categories
+# alterator-backend-batch-components
+# alterator-backend-batch-component_categories
+# alterator-backend-systeminfo
+
+alt-components-base = {}
+alterator-backend-edition = {}

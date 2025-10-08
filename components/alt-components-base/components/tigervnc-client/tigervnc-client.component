@@ -1,0 +1,9 @@
+type = "Component"
+name = "tigervnc-client"
+category = "remote-access-apps"
+display_name.en = "Client - TigerVNC"
+display_name.ru = "Клиент - TigerVNC"
+
+[packages]
+tigervnc = {}
+tigervnc-common = {}

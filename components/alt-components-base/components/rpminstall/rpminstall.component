@@ -1,0 +1,8 @@
+type = "Component"
+name = "rpminstall"
+category = "admin-apps"
+display_name.en = "Rpminstall"
+display_name.ru = "Rpminstall"
+
+[packages]
+rpminstall = {}

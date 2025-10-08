@@ -1,0 +1,9 @@
+type = "Component"
+name = "kernel-modules-lkrg"
+category = "kernel"
+display_name.en = "Drivers for LKRG"
+display_name.ru = "Драйверы для LKRG"
+
+[packages]
+kernel-source-bcmwl = { kernel_module = true }
+kernel-modules-lkrg = { kernel_module = true }

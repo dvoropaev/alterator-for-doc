@@ -1,0 +1,10 @@
+type = "Component"
+name = "podman"
+category = "containers"
+display_name.en = "Podman"
+display_name.ru = "Podman"
+
+[packages]
+podman = {}
+buildah = {}
+podman-compose = {}

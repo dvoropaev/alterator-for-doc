@@ -1,0 +1,8 @@
+type = "Component"
+name = "dconf"
+category = "services"
+display_name.en = "dconf settings registry"
+display_name.ru = "Реестр настроек dconf"
+
+[packages]
+dconf = {}

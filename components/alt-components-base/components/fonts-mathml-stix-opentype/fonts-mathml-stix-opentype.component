@@ -1,0 +1,9 @@
+type = "Component"
+name = "fonts-mathml-stix-opentype"
+category = "fonts"
+display_name.en = "MathML STIX OpenType"
+display_name.ru = "MathML STIX OpenType"
+
+[packages]
+fonts-otf-stix = {}
+

@@ -1,0 +1,8 @@
+type = "Component"
+name = "ipp-usb"
+category = "printing"
+display_name.en = "Ipp-usb - HTTP proxy IPP-over-USB"
+display_name.ru = "Ipp-usb - HTTP proxy IPP-over-USB"
+
+[packages]
+ipp-usb = {}

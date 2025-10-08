@@ -1,0 +1,7 @@
+type = "Category"
+name = "admin-apps"
+category = "apps"
+display_name.en = "Administration tools"
+display_name.ru = "Инструменты администрирования"
+comment.en = "System administration applications"
+comment.ru = "Системные приложения для администрирования"

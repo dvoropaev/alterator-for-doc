@@ -1,0 +1,8 @@
+type = "Component"
+name = "cups-kerberos"
+category = "printing"
+display_name.en = "CUPS - backend for printing with Kerberos"
+display_name.ru = "CUPS - бекенд для печати через Kerberos"
+
+[packages]
+samba-krb5-printing = {}

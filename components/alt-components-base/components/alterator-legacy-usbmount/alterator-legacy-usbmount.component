@@ -1,0 +1,8 @@
+type = "Component"
+name = "alterator-legacy-usbmount"
+category = "alterator-legacy-system"
+display_name.en = "USB mount - Alterator (legacy)"
+display_name.ru = "USB mount - Альтератор (legacy)"
+
+[packages]
+alterator-usbmount = {}

@@ -1,0 +1,10 @@
+type = "Component"
+name = "1c-bitrix24dv"
+category = "bitrix"
+display_name.en = "1C-Bitrix24 (desktop version)"
+display_name.ru = "1С-Битрикс24 (десктопная версия)"
+draft = true
+
+[packages]
+
+

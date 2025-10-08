@@ -1,0 +1,10 @@
+type = "Component"
+name = "wireless-base"
+category = "wireless"
+display_name.en = "Basic tools for wireless management"
+display_name.ru = "Базовое управление беспроводными интерфейсами"
+
+[packages]
+iw = {}
+wireless-tools = {}
+rfkill = {}

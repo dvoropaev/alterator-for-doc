@@ -1,0 +1,8 @@
+type = "Component"
+name = "fonts-sans-serif"
+category = "fonts"
+display_name.en = "Sans Serif"
+display_name.ru = "Sans Serif"
+
+[packages]
+fonts-ttf-google-crosextra-carlito = {}

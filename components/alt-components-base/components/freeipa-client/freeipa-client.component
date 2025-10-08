@@ -1,0 +1,11 @@
+type = "Component"
+name = "freeipa-client"
+category = "domain-infra"
+display_name.en = "FreeIPA - client"
+display_name.ru = "FreeIPA - клиент"
+
+[packages]
+task-auth-freeipa = {}
+freeipa-client = {}
+certmonger = {}
+libsss_sudo = {}

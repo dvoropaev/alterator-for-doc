@@ -1,0 +1,10 @@
+type = "Component"
+name = "fonts-ttf-ms"
+category = "fonts"
+display_name.en = "Microsoft Fonts"
+display_name.ru = "Шрифты Microsoft"
+comment.en = "Microsoft Fonts (Times New Roman, Arial)"
+comment.ru = "Шрифты Microsoft (Times New Roman, Arial)"
+
+[packages]
+fonts-ttf-ms = {}

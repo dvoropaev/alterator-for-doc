@@ -1,0 +1,8 @@
+type = "Component"
+name = "alterator-legacy-grub"
+category = "alterator-legacy-system"
+display_name.en = "Grub bootloader - Alterator (legacy)"
+display_name.ru = "Загрузчик Grub - Альтератор (legacy)"
+
+[packages]
+alterator-grub = {}

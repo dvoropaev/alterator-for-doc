@@ -1,0 +1,8 @@
+type = "Component"
+name = "parcellite"
+category = "desktop-apps"
+display_name.en = "parcellite - clipboard manager"
+display_name.ru = "Менеджер буфера обмена - parcellite"
+
+[packages]
+parcellite = {}

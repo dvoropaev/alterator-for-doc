@@ -1,0 +1,8 @@
+type = "Component"
+name = "alterator-legacy-printers"
+category = "alterator-legacy-system"
+display_name.en = "Printing - Alterator (legacy)"
+display_name.ru = "Печать - Альтератор (legacy)"
+
+[packages]
+alterator-printers = {}

@@ -1,0 +1,10 @@
+type = "Component"
+name = "tesseract"
+category = "ocr-apps"
+display_name.en = "OCR engine - tesseract"
+display_name.ru = "OCR движок - tesseract"
+
+[packages]
+tesseract = {}
+tesseract-langpack-ru = { language = "ru" }
+tesseract-langpack-en = {}

@@ -1,0 +1,11 @@
+type = "Component"
+name = "scanning-support"
+category = "scanning"
+display_name.en = "Sane - scanning support"
+display_name.ru = "Sane - поддержка сканирования"
+
+[packages]
+hplip-sane = {}
+sane-airscan = {}
+imagescan-sane = {}
+sane = {}

@@ -1,0 +1,6 @@
+type = "Category"
+name = "simply"
+display_name.en = "Simply Linux"
+display_name.ru = "Simply Linux"
+comment.en = "Simply Linux"
+comment.ru = "Simply Linux"

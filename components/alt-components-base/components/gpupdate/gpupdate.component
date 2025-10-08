@@ -1,0 +1,13 @@
+type = "Component"
+name = "gpupdate"
+category = "agents"
+display_name.en = "Group Policy applier module"
+display_name.ru = "Модуль применения групповых политик"
+
+[packages]
+gpupdate = {}
+gpresult = {}
+
+dconf = {}
+packagekit = {}
+xdg-user-dirs = {}

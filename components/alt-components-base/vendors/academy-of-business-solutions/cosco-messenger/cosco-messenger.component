@@ -1,0 +1,10 @@
+type = "Component"
+name = "cosco-messenger"
+category = "academy-of-business-solutions"
+display_name.en = "COSCO Messengere"
+display_name.ru = "КОСКО Мессенджер"
+draft = true
+
+[packages]
+
+

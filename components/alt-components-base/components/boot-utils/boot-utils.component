@@ -1,0 +1,10 @@
+type = "Component"
+name = "boot-utils"
+category = "boot"
+display_name.en = "Bootloader utils"
+display_name.ru = "Утилиты для загрузки"
+
+[packages]
+bootloader-utils = {}
+shim-signed = { arch = ["x86_64"] }
+"memtest86+" = { arch = ["x86_64", "i586"] }

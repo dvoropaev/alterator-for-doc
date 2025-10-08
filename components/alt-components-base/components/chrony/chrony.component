@@ -1,0 +1,8 @@
+type = "Component"
+name = "chrony"
+category = "time"
+display_name.en = "Chrony"
+display_name.ru = "Chrony"
+
+[packages]
+chrony = {}

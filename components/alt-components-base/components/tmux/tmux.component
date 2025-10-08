@@ -1,0 +1,8 @@
+type = "Component"
+name = "tmux"
+category = "utils"
+display_name.en = "tmux - terminal manager"
+display_name.ru = "Менеджер терминала - tmux"
+
+[packages]
+tmux = {}

@@ -1,0 +1,10 @@
+type = "Component"
+name = "ascon-polinom-mdm-server"
+category = "ascon-business-solutions"
+display_name.en = "POLINOM:MDM (server)"
+display_name.ru = "ПОЛИНОМ:MDM (сервер)"
+draft = true
+
+[packages]
+
+

@@ -1,0 +1,15 @@
+type = "Component"
+name = "branding-alt-education"
+category = "brandings"
+display_name.en = "ALT Education branding "
+display_name.ru = "Альт Образование брендинг"
+
+[packages]
+branding-alt-education-alterator = {}
+branding-alt-education-bootloader = {}
+branding-alt-education-bootsplash = {}
+branding-alt-education-graphics = {}
+branding-alt-education-indexhtml = {}
+branding-alt-education-notes = {}
+branding-alt-education-release = {}
+branding-alt-education-kde-settings = {}

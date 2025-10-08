@@ -1,0 +1,8 @@
+type = "Component"
+name = "scanning-server"
+category = "scanning"
+display_name.en = "Saned - scanning server"
+display_name.ru = "Saned - сервер сканирования"
+
+[packages]
+sane-server = {}

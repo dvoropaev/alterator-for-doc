@@ -1,0 +1,10 @@
+type = "Component"
+name = "fonts-source"
+category = "fonts"
+display_name.en = "Source"
+display_name.ru = "Source"
+
+[packages]
+fonts-otf-adobe-source-code-pro = {}
+fonts-otf-adobe-source-sans-pro = {}
+

@@ -1,0 +1,8 @@
+type = "Component"
+name = "alterator-legacy-kdc"
+category = "alterator-legacy-services"
+display_name.en = "KDC management - Alterator (legacy)"
+display_name.ru = "Управление KDC - Альтератор (legacy)"
+
+[packages]
+alterator-kdc = {}

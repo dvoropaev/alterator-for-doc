@@ -1,0 +1,8 @@
+type = "Component"
+name = "hplip"
+category = "printing"
+display_name.en = "Drivers - HP peripherals"
+display_name.ru = "Драйверы - периферия HP"
+
+[packages]
+hplip = {}

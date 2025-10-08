@@ -1,0 +1,8 @@
+type = "Component"
+name = "document-templates-odf"
+category = "office-apps"
+display_name.en = "Шаблоны документов ODF"
+display_name.ru = "ODF templates"
+
+[packages]
+document-templates-odf = {}

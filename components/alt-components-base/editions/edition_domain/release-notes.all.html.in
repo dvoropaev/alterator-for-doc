@@ -1,0 +1,407 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="ru">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>ALT Domain | Basealt LLC</title>
+    <style type="text/css">
+        body {
+            font-family: fonts-ttf-google-croscore-arimo;
+            line-height: 1.2;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0;
+            color: #333333;
+            background-color: #f9f9f9;
+        }
+		table {
+			width: 100%;
+			border-collapse: collapse;
+        }
+		td {
+            padding: 10px;
+        }
+        h1 {
+            color: #333333;
+            font-size: 2.5em;
+            margin-bottom: 0.5em;
+        }
+        h2, h3 {
+            color: #333333;
+        }
+        .card {
+			padding-left: 1em;
+        }
+		b {
+            color: #f3921a;
+		}
+        ul {
+            padding-left: 1.5em;
+        }
+        li {
+        }
+        a {
+            color: #DA8317;
+            text-decoration: underline;
+            font-weight: 400;
+        }
+        footer {
+            padding: 2em;
+            color: #8a8e8f;
+            font-size: 0.8em;
+        }
+		</style>
+</head>
+<body>
+	<table>
+		<tr>
+			<td>
+                <center>
+                    <img src="/usr/share/icons/hicolor/scalable/apps/basealt.svg" alt="Basealt LLC" class="logo">
+                    <h1>ALT Domain </h1>
+					<h3>ALT Server distribution's edition</h3>
+					<br><br>
+                </center>
+
+            <div>
+            <h2>Content</h2>
+            <ul>
+                <li><a href="#overview">Overview</a></li>
+				<li><a href="#editions">Editions and components</a></li>
+                <li><a href="#version-11.0">11.0</a>
+                    <ul>
+                        <li><a href="#version-11.0-details">Supported architectures</a></li>
+                        <li><a href="#version-11.0-software">Software</a></li>
+                        <li><a href="#version-11.0-notes">Release Notes</a></li>
+                        <li><a href="#version-11.0-changes">Changes</a></li>
+                    </ul>
+                </li>				
+                 <li><a href="#version-11.1">11.1</a>
+                    <ul>
+                        <li><a href="#version-11.1-details">Supported architectures</a></li>
+                        <li><a href="#version-11.1-software">Software</a></li>
+                        <li><a href="#version-11.1-notes">Release Notes</a></li>
+                    </ul>
+				</li>
+				<li><a href="#version-11.2">11.2</a></li>
+                 <li><a href="#support">Support dates</a></li>
+                 <li><a href="#resources">Resources</a></li>
+			</ul>
+            </div>
+
+            <div id="overview">
+            <h2>Overview</h2>
+            <p><strong>ALT Domain</strong> is a distribution providing a suite of services for domain management; developed by <a href="https://www.basealt.ru/en" target="_blank">Basealt LLC</a> based on <a href="https://en.altlinux.org/Eleventh_Platform" target="_blank">the Eleventh Platform</a>.</p>
+           </div>
+        
+            <div id="editions">
+            <h2>Editions and Components</h2>
+            <p>ALT Domain is distributed as part of the ALT Server 11.0 distribution through concept of edition.</p>
+            <p>An edition is a predefined set of components supported within a specific product. Editions can be switched using the alteratorctl console utility for managing modules and <a href="https://www.altlinux.org/Alteratorctl/editions_module" target="_blank">the dedicated edition selection module (RU)</a>. Edition selection is also available in the graphical interface: ACC → System → About System.</p>
+            <p>Components are integrated sets of packages that deliver specific product functionality. Components are managed using the alt-components application (the new Component Management module in ACC) and <a href="https://www.altlinux.org/Alt-components" target="_blank">the components module (RU)</a> within the alteratorctl utility.</p>
+			<h3>Currently, the distribution offers two editions:</h3>
+            <div class="card">
+<table cellspacing="0" cellpadding="0" border="0">
+	<tbody>	
+		<tr>	
+			<td valign="top" nowrap="">
+				<small>
+					<font size="3"><b>ALT Server edition (RU)</b></font>
+					<br>
+					<font>Server operating system</font>
+					<br>
+					<a href="https://www.basealt.ru/alt-server" target="_blank">More</a>
+				</small>
+			</td>
+			
+			<td valign="top" nowrap="">
+				<small>
+				</small>
+			</td>
+			
+			<td valign="top" nowrap="">
+				<small>
+					<font size="3"><b>ALT Domain edition (RU)</b></font>
+					<br>
+					<font>Suite of services for domain management</font>
+					<br>
+					<a href="https://www.basealt.ru/alt-domain" target="_blank">More</a>
+				</small>
+			</td>
+		</tr>		
+	</tbody>
+</table>
+             </div>
+            </div>
+
+			<div id="version-11.0">
+              <h2>11.0</h2>
+                 <div id="version-11.0-details">
+                   <h3>Supported architectures</h3>
+                     <ul>
+                       <li>x86_64</li>
+                       <li>AArch64</li>
+                     </ul>
+                 </div>
+                 <div id="version-11.0-software">
+                <h3>Basic Software</h3>
+                <ul>
+                    <li>Linux Kernel 6.12</li>
+                    <li>Glibc 2.38</li>
+                    <li>systemd 255</li>
+                    <li>OpenSSL 3.3</li>
+                </ul>
+                <h3>Server software</h3>
+				<p>Database management systems</p>
+				<ul>
+                    <li>MariaDB 10.11</li>
+                    <li>PostgreSQL 17.5</li>
+                </ul>
+				<p>Network infrastructure</p>
+				<ul>
+					<li>Apache 2.4</li>
+					<li>Dovecot 2.3</li>
+					<li>Kea 2.7</li>
+                    <li>NGINX 1.26</li>
+					<li>OpenUDS 3.6</li>
+					<li>Proxmox VE Backup Server 3.3</li>
+                    <li>Squid 7.0</li>
+					<li>Zabbix 7.0</li>
+                </ul>
+				<p>Network services</p>
+				<ul>
+                    <li>BIND 9.18</li>
+				</ul>
+				<p>Peripheral devices</p>
+				<ul>
+                    <li>CUPS 2.4</li>
+				</ul>
+				<p>Network services - An Alternator (legacy)</p>
+				<ul>
+                    <li>Postfix 3.8</li>
+				</ul>
+				<p>Domain infrastructure</p>
+				<ul>
+                    <li>Samba AD 4.20</li>
+                    <li>FreeIPA 4.12</li>
+				</ul>
+				<p>Containerization</p>
+				<ul>
+                    <li>Podman 5.4</li>
+                    <li>Docker 27.1</li>
+                    <li>Kubernetes 1.31</li>
+                </ul>
+                <p>Additional Software:</p>
+                <ul>
+                    <li>GNOME 47 working environment</li>
+                    <li>Web Browser Chromium 137.0 (only x86_64)</li>
+                    <li>Web Browser Firefox ESR 128.10 (for AArch64)</li>
+                </ul>
+            </div>
+
+                 <div id="version-11.0-notes">
+                <h3>Release Notes</h3>
+                <ul>
+                    <li>Distribution is based on <a href="https://www.altlinux.org/Альт_Сервер_10" title="ALT Server 10">ALT Server (RU)</a>, but features a different base set of components and is not installed by default. The list of distribution components and their installation become available after switching editions.</li>
+                </ul>
+            </div>
+
+                 <div id="version-11.0-changes">
+                <h3>Changes compared to ALT Server 10</h3>
+                <ul>
+                    <li>Based on <a href="https://www.altlinux.org/Branches/p11" rel="noopener" target="_blank">Platform 11 stable repository branch (RU)</a>.</li>
+                    <li>Rescue mode requires login as root with an empty password.</li>
+                    <li>The system is installed in minimal mode — with or without a graphical interface. ALT Server and ALT Domain editions are available for installation.</li>
+                    <li>New version of Alterator – <a href="https://www.altlinux.org/Alterator_on_D-Bus" rel="noopener" target="_blank">Alterator on D-Bus (RU)</a>.</li>
+                    <li>Client applications include: alterator-explorer, ADT and alteratorctl.</li>
+                    <li>New ACC module <a href="https://www.altlinux.org/Alt-components" rel="noopener" target="_blank">Components Manager (RU)</a> (alt-components application).</li>
+                    <li>The distribution now features GNOME as its desktop environment.</li>
+                    <li>Applications list on the desktop panel: Nautilus, Chromium (x86_64 only) or Firefox (for AArch64), Console, ACC.</li>
+                </ul>
+            </div>
+				
+			            <div id="version-11.1">
+                 <h2>11.1</h2>
+            
+                 <div id="version-11.1-details">
+                <h3>Supported architectures</h3>
+                <ul>
+                    <li>x86_64</li>
+                    <li>AArch64</li>
+                </ul>
+            </div>
+
+                 <div id="version-11.1-software">
+                <h3>Basic Software</h3>
+                <ul>
+                    <li>Linux Kernel 6.12</li>
+                    <li>Glibc 2.38</li>
+                    <li>systemd 255</li>
+                    <li>OpenSSL 3.3</li>
+                </ul>
+                <h3>Server software</h3>
+				<p>Database management systems</p>
+				<ul>
+                    <li>MariaDB 10.11</li>
+                    <li>PostgreSQL 17.5</li>
+                </ul>
+				<p>Network infrastructure</p>
+				<ul>
+					<li>Apache 2.4</li>
+					<li>Dovecot 2.3</li>
+					<li>Kea 2.7</li>
+                    <li>NGINX 1.26</li>
+					<li>OpenUDS 3.6</li>
+					<li>Proxmox VE Backup Server 3.4</li>
+                    <li>Squid 7.0</li>
+					<li>Zabbix 7.0</li>
+                </ul>
+				<p>Network services</p>
+				<ul>
+                    <li>BIND 9.18</li>
+				</ul>
+				<p>Peripheral devices</p>
+				<ul>
+                    <li>CUPS 2.4</li>
+				</ul>
+				<p>Network services - An Alternator (legacy)</p>
+				<ul>
+                    <li>Postfix 3.8</li>
+				</ul>
+				<p>Domain infrastructure</p>
+				<ul>
+                    <li>Samba AD 4.20</li>
+                    <li>FreeIPA 4.12</li>
+				</ul>
+				<p>Containerization</p>
+				<ul>
+                    <li>Podman 5.4</li>
+                    <li>Docker 27.1</li>
+                    <li>Kubernetes 1.31</li>
+                </ul>
+                <p>Additional Software:</p>
+                <ul>
+                    <li>GNOME 47 working environment</li>
+                    <li>Web Browser Chromium 137.0 (only x86_64)</li>
+                    <li>Web Browser Firefox ESR 128.10 (for AArch64)</li>
+                </ul>
+            </div>
+
+                 <div id="version-11.1-notes">
+                <h3>Release Notes</h3>
+                <ul>
+                    <li>Previous version <a href="https://www.altlinux.org/Альт_Домен_11" title="ALT Domain 11.0">ALT Domain 11.0 (RU)</a>.</li>
+                </ul>
+            </div>
+
+                 <div id="version-11.1-changes">
+            </div>
+            </div>
+
+            <div id="version-11.2">
+            <h2>11.2</h2>
+            <p>In development. Expected in 2026.</p>
+        </div>
+
+            <div id="support">
+            <h2>Support dates</h2>
+            <div>
+                <p>Regarding security updates (unless otherwise specified by the supply terms):</p>
+                <ul>
+                    <li>January 1, 2028, for the ALT Domain 11.0 distribution, but not earlier than six months after the release of the new version (12.0).</li>
+                </ul>
+            </div>
+        </div>
+
+            <div id="resources">
+			        <h2>Resources</h2>
+                        <div class="card">
+<table cellspacing="0" cellpadding="0" border="0">
+	<tbody>		
+		<tr>
+			<td valign="top">
+				<small>
+					<font size="3"><b>About ALT Domain (RU)</b></font>
+					<br>
+					<font>Server Distribution Information</font>
+					<br>
+					<a href="https://www.basealt.ru/alt-domain" target="_blank">More</a>
+					<br><br>
+					
+					<font size="3"><b>Platform p11</b></font>
+					<br>
+					<font>About Platform p11</font>
+					<br>
+					<a href="https://en.altlinux.org/Eleventh_Platform" target="_blank">More</a>
+					<br><br>
+					
+					<font size="3"><b>Documentation (RU)</b></font>
+					<br>
+					<font>Guides and Technical Documentation</font>
+					<br>
+					<a href="https://www.basealt.ru/documentation" target="_blank">Open</a>
+
+				</small>
+			 </td>
+			 <td valign="top" nowrap="">
+				<small>
+				</small>
+			</td>
+			 <td valign="top" nowrap="">
+				<small>
+					<font size="3"><b>Report an Issue</b></font>
+					<br>
+					<font>Bugtracker</font>
+					<br>
+					<a href="https://bugzilla.altlinux.org/enter_bug.cgi?product=Альт Сервер" target="_blank">Bugzilla</a>
+					<br><br>
+					
+					<font size="3"><b>FAQ</b></font>
+					<br>
+					<font>Answers to common questions (RU)</font>
+					<br>
+					<a href="https://www.altlinux.org/FAQ" target="_blank">Read</a>
+					<br><br>
+					
+					<font size="3"><b>Feedback (RU)</b></font>
+					<br>
+					<font>Share your feedback</font>
+					<br>
+					<a href="https://www.basealt.ru/product-feedback" target="_blank">Leave a comment</a>
+				</small>
+			</td>
+		</tr>
+	</tbody>
+</table>
+							<br><br>
+<h3>Submit the request to support</h3>
+<table cellspacing="0" cellpadding="0" border="0">
+	<tbody>	
+			<tr valign="top" nowrap="">
+				<small>
+				</small>
+			</tr>
+		<tr>
+			<td>
+				<small>
+				<font size="3" face="arial"><b>Support (RU)</b></font>
+					<br>
+					<font>Complete the request form, specifying the support certificate number</font>
+				    <br>
+				    <a href="https://www.basealt.ru/sr" target="_blank">Support</a>
+				<br><br>
+				</small>
+		    </td>
+		</tr>		
+	</tbody>
+</table>
+                </div>
+                </div>
+                <footer>
+    <p align="center">© Basealt LLC 2016-@YEAR@. All rights reserved.</p>
+    <p align="center"><a href="https://www.basealt.ru/en" target="_blank">basealt.ru/en</a> | <a href="https://en.altlinux.org/Main_Page" target="_blank">en.altlinux.org</a></p>
+</footer>
+			</td>
+		</tr>	
+	</table>				
+</body>
+</html>

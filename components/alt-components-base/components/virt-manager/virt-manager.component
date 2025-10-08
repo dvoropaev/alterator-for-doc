@@ -1,0 +1,8 @@
+type = "Component"
+name = "virt-manager"
+category = "virt-tools"
+display_name.en = "Virt-manager"
+display_name.ru = "Virt-manager"
+
+[packages]
+virt-manager = {}

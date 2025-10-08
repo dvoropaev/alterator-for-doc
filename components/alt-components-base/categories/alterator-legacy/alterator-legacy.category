@@ -1,0 +1,5 @@
+type = "Category"
+name = "alterator-legacy"
+category = "alterator"
+display_name.en = "Alterator (legacy)"
+display_name.ru = "Альтератор (legacy)"

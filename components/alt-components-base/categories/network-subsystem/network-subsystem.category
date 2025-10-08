@@ -1,0 +1,5 @@
+type = "Category"
+name = "network-subsystem"
+category = "system"
+display_name.en = "Network subsystem"
+display_name.ru = "Сетевая подсистема"
