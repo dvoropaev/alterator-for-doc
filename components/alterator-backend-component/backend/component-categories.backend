@@ -1,0 +1,23 @@
+type = "Backend"
+module = "executor"
+name = "global"
+interface = "component_categories1"
+thread_limit = 2048
+
+[methods.Info]
+execute = "/usr/lib/alterator/backends/component info {name} --category"
+stdout_bytes = true
+action_id = "Info"
+thread_limit = 2048
+
+[methods.Description]
+execute = "/usr/lib/alterator/backends/component description {name} --category"
+stdout_bytes = true
+action_id = "Description"
+thread_limit = 2048
+
+[methods.List]
+execute = "/usr/lib/alterator/backends/component list --category"
+stdout_strings = true
+action_id = "List"
+thread_limit = 2048

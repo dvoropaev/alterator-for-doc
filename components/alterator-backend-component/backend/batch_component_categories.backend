@@ -1,0 +1,9 @@
+type      = "Backend"
+module    = "executor"
+name      = "global"
+interface = "batch_component_categories1"
+
+[methods.Info]
+execute             = "/usr/lib/alterator/backends/component info --category --all"
+stdout_string_array = true
+action_id           = "Info"
