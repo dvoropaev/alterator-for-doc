@@ -1,5 +1,5 @@
 type = "Service"
-name = "Chrony service"
+name = "chrony_service"
 category = "X-Alterator-Servers"
 display_name.en = "Chrony service"
 display_name.ru = "Сервис Chrony"
