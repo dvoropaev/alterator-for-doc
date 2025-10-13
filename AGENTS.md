@@ -6,6 +6,13 @@
 ./subprojects - тут лежаn репозитории частей проекта
 ./subprojects/alterator-entry/doc  - актуальная спецификация
 
+вот пример документации для подпроектов с реализацией на русском и английском языках
+./subprojects/alt-components-base/README.md
+./subprojects/alt-components-base/docs/README.ru_RU.md
+
+вот пример документации для подпроектов с реализацией на русском и английском языках
+./subprojects/alt-components-base/README.md
+./subprojects/alt-components-base/docs/README.ru_RU.md
 
 examples.txt - примеры документации. нельзя опираться на этот файл как на истину (там устаревшая информация) просто копируй стиль от туда
 
