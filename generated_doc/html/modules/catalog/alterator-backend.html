@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>что такое alterator-backend</title>
+  <style>
+    body { font-family: sans-serif; line-height: 1.5; margin: 2rem; }
+    h1, h2, h3 { color: #222; }
+    ul { margin: 0 0 1rem 1.5rem; }
+    ol { margin: 0 0 1rem 1.5rem; }
+    pre { background: #f5f5f5; padding: 0.75rem; overflow-x: auto; }
+    code { font-family: monospace; }
+  </style>
+</head>
+<body>
+  <h1>что такое alterator-backend</h1>
+  <p>Alterator backend — сущность формата Alterator Entry, описывающая интерфейс D-Bus и набор методов, которые модуль Alterator регистрирует и выполняет от имени системы. Запись задаёт связь между описанием интерфейса, модулем исполнения и клиентскими приложениями.</p>
+
+  <h2>Назначение</h2>
+  <ul>
+    <li>Определяет объект и интерфейс D-Bus, доступный в дереве <code>/org/altlinux/alterator/</code>.</li>
+    <li>Связывает интерфейс с модулем исполнения (например, <code>executor</code>), который запускает прикладные скрипты или программы.</li>
+    <li>Передаёт alterator-module-executor сведения о методах, параметрах, политике безопасности и ограничениях по потокам.</li>
+  </ul>
+
+  <h2>Структура backend-сущности</h2>
+  <p>Backend описывается файлом с расширением <code>.backend</code> в формате TOML. Корневая таблица содержит обязательные ключи <code>type</code>, <code>module</code>, <code>name</code> и <code>interface</code>, а также опциональные <code>thread_limit</code> и <code>action_id</code>.</p>
+  <pre><code>type = "Backend"
+module = "executor"
+name = "example"
+interface = "some_interface"
+thread_limit = 5
+action_id = "org.altlinux.alterator.some-interface"
+
+[methods.run]
+execute = "command {param}"</code></pre>
+  <ul>
+    <li><code>type</code> фиксирован и равен <code>Backend</code>.</li>
+    <li><code>module</code> — имя модуля Alterator, обрабатывающего вызовы.</li>
+    <li><code>name</code> — узел D-Bus, добавляемый в поддерево Alterator.</li>
+    <li><code>interface</code> — полное либо короткое имя интерфейса; для короткой записи автоматически добавляется префикс <code>org.altlinux.alterator.</code>.</li>
+    <li><code>thread_limit</code> — общий предел параллельных вызовов (по умолчанию 10).</li>
+    <li><code>action_id</code> — идентификатор Polkit для проверки прав.</li>
+  </ul>
+
+  <h2>Методы и параметры</h2>
+  <p>Раздел <code>[methods]</code> содержит подтаблицы с именами методов. Состав полей зависит от используемого модуля. Для <code>executor</code> применяется ключ <code>execute</code> со строкой команды. Параметры метода указываются фигурными скобками и передаются в команду без преобразования.</p>
+
+  <h2>Размещение файлов</h2>
+  <ul>
+    <li>Системные backend-файлы ставятся в <code>/usr/share/alterator/backends/</code> и <code>/usr/share/alterator/backends/system/</code>.</li>
+    <li>Локальные переопределения располагаются в <code>/etc/alterator/backends/</code> и <code>/etc/alterator/backends/system/</code>.</li>
+    <li>Режим <code>--user</code> использует каталоги <code>/usr/share/alterator/backends/user/</code> и <code>/etc/alterator/backends/user/</code>.</li>
+    <li>Порядок чтения фиксирован: сначала каталоги из <code>/usr/share</code>, затем из <code>/etc</code>; пользовательские каталоги обрабатываются аналогично.</li>
+  </ul>
+
+  <h2>Именование и идентификаторы</h2>
+  <ul>
+    <li>Файлы именуются по шаблону <code>&lt;Name&gt;.&lt;Interface&gt;.backend</code>, где <code>&lt;Interface&gt;</code> — короткое или полное имя.</li>
+    <li>Backend-сущности поддерживают режимы <code>system</code> и <code>user</code>; пользовательские записи размещаются в подкаталоге <code>backends/user/</code>.</li>
+    <li>Один файл описывает один интерфейс. При конфликте имён интерфейсов используются первые найденные определения, последующие игнорируются.</li>
+  </ul>
+
+  <h2>Загрузка и регистрация</h2>
+  <ul>
+    <li>alterator-module-executor читает файлы, строит интроспекцию и регистрирует интерфейсы на D-Bus.</li>
+    <li>Для каждого backend формируется структура данных с именем модуля, ссылкой на таблицу методов, ограничениями потоков и объектом интроспекции.</li>
+    <li>Политики Polkit для интерфейсов и методов вычисляются по значению <code>action_id</code> или на основе имени интерфейса.</li>
+  </ul>
+
+  <h2>Выполнение запросов</h2>
+  <ol>
+    <li>Клиент вызывает метод интерфейса через D-Bus.</li>
+    <li>alterator-manager обращается к модулю, указанному в поле <code>module</code>.</li>
+    <li>Модуль подготавливает окружение и запускает команду, описанную в секции метода.</li>
+    <li>Результат команды (stdout, stderr, код возврата) возвращается клиенту в формате, определённом интерфейсом.</li>
+  </ol>
+
+  <h2>Хранение состояния</h2>
+  <p>При загрузке backend-файлов alterator-manager формирует хеш-таблицу <code>backends_data</code>. Ключи верхнего уровня соответствуют узлам D-Bus, значения содержат набор интерфейсов, их методы, параметры и связанные таблицы переменных окружения. Такая структура обеспечивает быстрый доступ при выполнении вызовов и упрощает обновление записей.</p>
+
+  <h2>Проверка корректности</h2>
+  <ul>
+    <li>Интерфейсы сверяются с шаблонами introspection XML из каталога <code>/usr/share/dbus-1/interfaces</code>.</li>
+    <li>Валидация не пройдена, если в backend отсутствуют методы, определённые в шаблоне, или описания не совпадают.</li>
+    <li>Для диагностики можно запустить инструмент <code>am-dev-tool</code> с проверкой файла.</li>
+  </ul>
+
+  <h2>Практическая последовательность</h2>
+  <ol>
+    <li>Создать файл <code>.backend</code> с обязательными ключами и описанием методов.</li>
+    <li>Разместить файл в подходящем каталоге (<code>/usr/share</code> или <code>/etc</code>, при необходимости в подкаталоге <code>user</code>).</li>
+    <li>Перезапустить alterator-manager либо инициировать перечитывание конфигурации.</li>
+    <li>Убедиться, что интерфейс появился на D-Bus и проходит проверку по шаблону introspection XML.</li>
+  </ol>
+</body>
+</html>
