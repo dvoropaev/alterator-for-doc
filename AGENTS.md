@@ -15,6 +15,10 @@
 ./subprojects/alt-components-base/README.md
 ./subprojects/alt-components-base/docs/README.ru_RU.md
 
+в каталоге ./generated_doc/html содержится самоучитель
+./generated_doc/html/index.html - главная страница и содержание
+./generated_doc/html/requirements.txt - требования к самоучителю
+
 в документации не упоминай текущий метарепозиторий
 все подпроекты в ./subprojects считай как отдельные репозитории
 
