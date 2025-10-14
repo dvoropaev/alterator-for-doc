@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>alterator-backend-packages</title>
+  <style>
+    body { font-family: sans-serif; line-height: 1.5; margin: 2rem; }
+    h1, h2, h3 { color: #222; }
+    ul { margin: 0 0 1rem 1.5rem; }
+    ol { margin: 0 0 1rem 1.5rem; }
+    pre { background: #f5f5f5; padding: 0.75rem; overflow-x: auto; }
+    code { font-family: monospace; }
+    table { border-collapse: collapse; margin-bottom: 1.5rem; }
+    th, td { border: 1px solid #ccc; padding: 0.5rem 0.75rem; text-align: left; }
+  </style>
+</head>
+<body>
+  <h1>alterator-backend-packages</h1>
+  <p>alterator-backend-packages — набор backend-модулей Alterator для управления пакетами, репозиториями и локальной базой RPM на узлах ALT Linux. Компонент ориентирован на сервис alterator-module-executor и предоставляет D-Bus интерфейсы apt1, repo1 и rpm1.</p>
+
+  <h2>Назначение</h2>
+  <ul>
+    <li>Обеспечивает выполнение транзакций apt-get (обновление индексов, установка, переустановка, dist-upgrade) с поддержкой асинхронных сигналов прогресса.</li>
+    <li>Предоставляет операции просмотра и управления репозиториями apt-repo.</li>
+    <li>Даёт доступ к сведениям об установленных RPM-пакетах, а также операциям установки и удаления через rpm.</li>
+  </ul>
+
+  <h2>Состав пакета</h2>
+  <ul>
+    <li>Файлы backend-описаний apt.backend, repo.backend и rpm.backend для регистрации объектов в alterator-module-executor.</li>
+    <li>Скрипты-обёртки <code>apt-wrapper</code> и <code>rpm-wrapper</code> в каталоге <code>/usr/lib/alterator-backend-packages/</code>.</li>
+    <li>D-Bus описания интерфейсов (<code>org.altlinux.alterator.apt1.xml</code>, <code>org.altlinux.alterator.repo1.xml</code>, <code>org.altlinux.alterator.rpm1.xml</code>) и политики Polkit.</li>
+    <li>Объекты <code>apt.object</code>, <code>repo.object</code> и <code>rpm.object</code> для alterator-manager.</li>
+    <li>Логгер dist-upgrade для apt (Lua-скрипт, конфигурация apt и logrotate).</li>
+  </ul>
+
+  <h2>D-Bus интерфейсы</h2>
+  <h3>Интерфейс org.altlinux.alterator.apt1</h3>
+  <p>Backend <code>apt.backend</code> использует модуль executor, запускает команды apt-get и обёртку <code>/usr/lib/alterator-backend-packages/apt-wrapper</code>. Методы возвращают коды состояния в стиле alterator (0 — успех, &ne;0 — ошибка). Для асинхронных транзакций определены сигналы с префиксом <code>apt1_</code>.</p>
+  <h4>Методы</h4>
+  <table>
+    <thead>
+      <tr>
+        <th>Метод</th>
+        <th>Назначение</th>
+        <th>Используемая команда</th>
+        <th>Особенности</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>Info()</code></td>
+        <td>Возвращает объектное описание apt.</td>
+        <td><code>cat /usr/share/alterator/objects/apt.object</code></td>
+        <td>stdout_bytes=true.</td>
+      </tr>
+      <tr>
+        <td><code>UpdateAsync()</code></td>
+        <td>Запускает обновление индексов.</td>
+        <td><code>apt-get update -q</code></td>
+        <td>Сигналы <code>apt1_update_stdout_signal</code>/<code>stderr</code>.</td>
+      </tr>
+      <tr>
+        <td><code>ApplyAsync(exclude_pkgnames, pkgnames)</code></td>
+        <td>Выполняет установку/удаление пакетов.</td>
+        <td><code>apt-wrapper apply {exclude} {pkgs}</code></td>
+        <td>Использует pkgpriorities для сохранения ручных установок.</td>
+      </tr>
+      <tr>
+        <td><code>ReinstallAsync(pkgnames)</code></td>
+        <td>Переустанавливает набор пакетов.</td>
+        <td><code>apt-get reinstall -y -q</code></td>
+        <td>Сигналы <code>apt1_reinstall_stdout_signal</code>/<code>stderr</code>.</td>
+      </tr>
+      <tr>
+        <td><code>DistUpgradeAsync()</code></td>
+        <td>Выполняет dist-upgrade.</td>
+        <td><code>apt-get dist-upgrade -y -q</code></td>
+        <td>Сигналы <code>apt1_dist_upgrade_stdout_signal</code>/<code>stderr</code>.</td>
+      </tr>
+      <tr>
+        <td><code>ListAllPackages()</code></td>
+        <td>Выводит список имён всех доступных пакетов.</td>
+        <td><code>apt-wrapper listall</code></td>
+        <td>stdout_strings_limit=10&nbsp;485&nbsp;760 байт.</td>
+      </tr>
+      <tr>
+        <td><code>Search(pattern)</code></td>
+        <td>Ищет пакеты по шаблону.</td>
+        <td><code>apt-wrapper search {pattern}</code></td>
+        <td>Возвращает пары имя/описание без форматирования.</td>
+      </tr>
+      <tr>
+        <td><code>LastUpdate()</code></td>
+        <td>Сообщает время последнего <code>apt-get update</code>.</td>
+        <td><code>apt-wrapper lastupdate</code></td>
+        <td>Формат YYYY-MM-DD HH:MM:SS UTC.</td>
+      </tr>
+      <tr>
+        <td><code>LastDistUpgrade()</code></td>
+        <td>Сообщает отметку последнего dist-upgrade.</td>
+        <td><code>apt-wrapper lastdistupgrade</code></td>
+        <td>Читает <code>/var/log/alterator/apt/dist-upgrades.log</code>.</td>
+      </tr>
+      <tr>
+        <td><code>CheckApply(pkgnames)</code></td>
+        <td>Симулирует транзакцию установки/удаления.</td>
+        <td><code>apt-wrapper check-apply {pkgnames}</code></td>
+        <td>Возвращает JSON со списками install/remove/extra_remove.</td>
+      </tr>
+      <tr>
+        <td><code>CheckReinstall(pkgnames)</code></td>
+        <td>Показывает пакеты для переустановки.</td>
+        <td><code>apt-wrapper check-reinstall {pkgnames}</code></td>
+        <td>stdout — установка, stderr — удаление.</td>
+      </tr>
+      <tr>
+        <td><code>CheckDistUpgrade()</code></td>
+        <td>Симулирует dist-upgrade.</td>
+        <td><code>apt-wrapper check-dist-upgrade</code></td>
+        <td>stdout — установка, stderr — удаление.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>Обёртка apt-wrapper</h4>
+  <ul>
+    <li>Реализует команды <code>listall</code>, <code>search</code>, <code>apply</code>, <code>dist-upgrade</code> и проверки, используя <code>apt-get</code> и <code>apt-cache</code>.</li>
+    <li>Создаёт временный файл pkgpriorities со списком вручную установленных пакетов и исключений, исключая кандидатов на удаление.</li>
+    <li>Команда <code>check-apply</code> запускает <code>apt-get install --just-print</code> и формирует JSON со списками изменений.</li>
+    <li>Команда <code>lastupdate</code> читает метку времени каталога <code>/var/lib/apt/lists</code>, <code>lastdistupgrade</code> — последнюю строку журнала Alterator.</li>
+    <li>При <code>dist-upgrade</code> и <code>apply</code> выводит сообщение о подготовке транзакции.</li>
+  </ul>
+
+  <h4>Сигналы</h4>
+  <p>Интерфейс определяет сигналы прогресса для Update, Apply, Reinstall, Remove и DistUpgrade. Каждая асинхронная операция публикует stdout и stderr в отдельных событиях.</p>
+
+  <h3>Интерфейс org.altlinux.alterator.repo1</h3>
+  <p>Backend <code>repo.backend</code> обеспечивает работу с <code>apt-repo</code>. Методы синхронные, возвращают строки stdout/stderr.</p>
+  <ul>
+    <li><code>Info()</code> — отдаёт <code>/usr/share/alterator/objects/repo.object</code>.</li>
+    <li><code>List()</code> — выполняет <code>apt-repo list</code> и возвращает список источников.</li>
+    <li><code>Add(source)</code> — добавляет источник через <code>apt-repo add</code>.</li>
+    <li><code>Remove(source)</code> — удаляет источник через <code>apt-repo rm</code>.</li>
+  </ul>
+
+  <h3>Интерфейс org.altlinux.alterator.rpm1</h3>
+  <p>Backend <code>rpm.backend</code> обеспечивает доступ к rpm. Методы работают синхронно.</p>
+  <ul>
+    <li><code>Info()</code> — отдаёт <code>/usr/share/alterator/objects/rpm.object</code>.</li>
+    <li><code>List()</code> — вызывает <code>rpm-wrapper list</code> (вывод: имя, версия, релиз, архитектура, группа).</li>
+    <li><code>Install(pkgpath)</code> — запускает <code>rpm -U</code> с путём к файлу.</li>
+    <li><code>Remove(pkgname)</code> — выполняет <code>rpm -e</code>.</li>
+    <li><code>PackageInfo(pkgname)</code> — возвращает результат <code>rpm -qi</code>.</li>
+    <li><code>Files(pkgname)</code> — возвращает список файлов из <code>rpm -ql</code>.</li>
+  </ul>
+
+  <h2>Политики доступа</h2>
+  <p>Для методов просмотра (Info, List, Search) установлены политики Polkit с автоматическим разрешением без аутентификации. Операции изменения (установка, удаление, добавление репозитория) требуют подтверждения администратора и используют правила <code>auth_admin_keep</code>.</p>
+
+  <h2>Журналы и вспомогательные файлы</h2>
+  <ul>
+    <li>Каталог <code>/var/log/alterator/apt</code> создаётся при установке; файл <code>dist-upgrades.log</code> получает отметки времени через Lua-скрипт <code>alterator-logger.lua</code>, подключённый к сценарию <code>Scripts::AptGet::DistUpgrade</code>.</li>
+    <li>Конфигурация logrotate <code>alterator-logger.logrotate</code> обеспечивает ежемесячное сжатие журнала.</li>
+    <li>Файл <code>alterator-logger.conf</code> размещает сценарии в <code>/etc/apt/apt.conf.d</code> и задаёт каталог логов.</li>
+  </ul>
+
+  <h2>Установка и развёртывание</h2>
+  <p>Цель <code>make install</code> создаёт каталоги данных Alterator, копирует backend-файлы и обёртки, устанавливает D-Bus описания и политики, подготавливает лог-файлы и запускает установку локализаций.</p>
+
+  <h2>Порядок проверки</h2>
+  <ol>
+    <li>Выполнить <code>busctl call org.altlinux.alterator /org/altlinux/alterator/apt org.altlinux.alterator.apt1 CheckApply s "pkgname"</code> и убедиться, что JSON содержит ожидаемые списки.</li>
+    <li>Запустить <code>busctl call … DistUpgradeAsync</code> и проследить появление сигналов stdout/stderr.</li>
+    <li>После завершения dist-upgrade проверить обновление метки времени в <code>/var/log/alterator/apt/dist-upgrades.log</code>.</li>
+    <li>Проверить <code>busctl call … rpm1 List</code> для получения списка установленных пакетов.</li>
+    <li>Убедиться, что <code>apt-repo list</code> отражает изменения после вызовов <code>Add</code> и <code>Remove</code>.</li>
+  </ol>
+</body>
+</html>
