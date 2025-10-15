@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-PREFIX_BASE="${PREFIX_BASE:-components}"
+PREFIX_BASE="${PREFIX_BASE:-subprojects}"
 
 need() { command -v "$1" >/dev/null 2>&1 || { echo "❌ Нужна утилита: $1"; exit 1; }; }
 need git
