@@ -3,7 +3,7 @@ set -euo pipefail
 
 # === Настройки ===
 # Путь-префикс для компонентов внутри монорепы
-PREFIX_BASE="${PREFIX_BASE:-components}"
+PREFIX_BASE="${PREFIX_BASE:-subprojects}"
 # Необязательный origin для монорепы (например, приватный GitHub-репозиторий)
 MONO_ORIGIN="${MONO_ORIGIN:-}"  # пример: git@github.com:your-org/alterator-monorepo.git
 
