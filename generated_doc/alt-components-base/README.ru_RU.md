@@ -22,44 +22,6 @@ alterator-manager загружает `.backend`-описания из `/usr/shar
 
 Обработка запросов реализуется обёртками (`apt-wrapper`, `rpm-wrapper`) и системными инструментами `apt-get`, `apt-repo`, `rpm`. Бекенды задают идентификаторы действий (`action_id`) для журналирования и сопоставления с политиками polkit, что позволяет клиентам получать права через polkit-агента.
 
-# Установка
-Выполнить установку из исходного дерева:
-1. Подготовить целевой путь (опционально задать `DESTDIR`).
-2. Запустить установку бекендов и интерфейсов:
-
-```
-make -C subprojects/alterator-backend-packages install DESTDIR="<каталог>"
-```
-
-В результате:
-- XML-описания интерфейсов помещаются в `/usr/share/dbus-1/interfaces`.
-- Политики polkit устанавливаются в `/usr/share/polkit-1/actions`.
-- Бекенд-файлы и объекты копируются в `/usr/share/alterator/backends` и `/usr/share/alterator/objects`.
-- Скрипты `apt-wrapper` и `rpm-wrapper` размещаются в `/usr/lib/alterator-backend-packages`.
-- Логи APT записываются в `/var/log/alterator/apt`, конфигурация logrotate и apt-scripts копируются в системные каталоги.
-
-# Проверка корректности
-Рекомендуется выполнить:
-- Проверить наличие установленных бекендов:
-
-```
-ls /usr/share/alterator/backends | grep -E 'apt.backend|rpm.backend|repo.backend'
-```
-
-- Убедиться в регистрации объектов D-Bus после запуска alterator-manager:
-
-```
-busctl tree org.altlinux.alterator
-```
-
-- Запросить описание интерфейса для проверки методов и сигналов:
-
-```
-busctl introspect org.altlinux.alterator /org/altlinux/alterator/apt org.altlinux.alterator.apt1
-```
-
-- Просмотреть журнал `/var/log/alterator/apt/dist-upgrades.log`, чтобы подтвердить регистрацию logrotate и записей `apt-wrapper`.
-
 # Интерфейсы D-Bus
 ## org.altlinux.alterator.apt1
 ## Общие сведения
