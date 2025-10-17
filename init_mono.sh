@@ -67,53 +67,9 @@ default_branch_for_url() {
   if [[ -n "${head:-}" ]]; then
     echo "$head"; return
   fi
-  if git ls-remote --heads "$url" main   >/dev/null 2>&1; then echo "main";   return; fi
+  if git ls-remote --heads "$url" main >/dev/null 2>&1; then echo "main"; return; fi
   if git ls-remote --heads "$url" master >/dev/null 2>&1; then echo "master"; return; fi
   git ls-remote --heads "$url" | awk '{print $2}' | sed 's@refs/heads/@@' | head -n1
-}
-
-has_subtree() {
-  # Проверяем, что в истории есть метка git-subtree-dir для данного префикса
-  local p="$1"
-  git log -1 --grep="^git-subtree-dir: $p$" --pretty=%H >/dev/null 2>&1
-}
-
-ensure_gitignore_backup() {
-  # Гарантируем, что .subtree_backups/ игнорируется
-  if [[ ! -f .gitignore ]] || ! grep -qxF ".subtree_backups/" .gitignore; then
-    echo ".subtree_backups/" >> .gitignore
-    git add .gitignore
-    git commit -m "chore: ignore subtree backups" >/dev/null 2>&1 || true
-  fi
-}
-
-backup_existing_dir() {
-  local prefix="$1"
-  local ts
-  ts="$(date +%Y%m%d%H%M%S)"
-  ensure_gitignore_backup
-  mkdir -p .subtree_backups
-  local target=".subtree_backups/$(basename "$prefix")-$ts"
-  echo "🧳 Найден каталог без метаданных subtree: $prefix"
-  echo "   Перемещаю в бэкап: $target"
-  mv "$prefix" "$target"
-}
-
-ensure_remote() {
-  local remote="$1"
-  local url="$2"
-  if git remote get-url "$remote" >/dev/null 2>&1; then
-    git remote set-url "$remote" "$url"
-  else
-    git remote add "$remote" "$url"
-  fi
-}
-
-add_subtree_fresh() {
-  local remote="$1" branch="$2" prefix="$3"
-  echo "➕ Добавляю subtree: $remote/$branch → $prefix"
-  git fetch "$remote" "$branch"
-  git subtree add --prefix="$prefix" "$remote" "$branch" --squash
 }
 
 # --- проверки ---
@@ -140,31 +96,30 @@ if [[ -n "${MONO_ORIGIN}" ]]; then
   fi
 fi
 
-# --- добавляем/исправляем upstream-репозитории как subtree ---
+# --- добавляем upstream-репозитории как subtree ---
 for url in "${REPOS[@]}"; do
   name="$(repo_name_from_url "$url")"
   remote="$name"
   prefix="${PREFIX_BASE}/${name}"
   branch="$(default_branch_for_url "$url")"
 
-  ensure_remote "$remote" "$url"
+  # добавляем/обновляем remote
+  if git remote get-url "$remote" >/dev/null 2>&1; then
+    git remote set-url "$remote" "$url"
+  else
+    git remote add "$remote" "$url"
+  fi
 
-  if has_subtree "$prefix"; then
-    echo "↪️  [$name] уже добавлен как subtree — пропускаю."
+  # если каталог уже есть — пропускаем
+  if [[ -d "$prefix" ]]; then
+    echo "↪️  [$name] уже добавлен — пропускаю."
     continue
   fi
 
-  # Если каталога нет — обычное добавление
-  if [[ ! -d "$prefix" ]]; then
-    add_subtree_fresh "$remote" "$branch" "$prefix"
-    continue
-  fi
-
-  # Каталог есть, но это не subtree — автоматический бэкап и «чистое» добавление
-  backup_existing_dir "$prefix"
-  add_subtree_fresh "$remote" "$branch" "$prefix"
+  echo "➕ Добавляю $name → $prefix (ветка: $branch)"
+  git fetch "$remote" "$branch"
+  git subtree add --prefix="$prefix" "$remote" "$branch" --squash
 done
 
-echo "✅ Все компоненты приведены в состояние subtree в $(pwd)"
-echo "💡 Резервные копии прежних каталогов лежат в .subtree_backups/ (игнорируются Git)."
+echo "✅ Все компоненты добавлены в $(pwd)"
 echo "💡 Для обновлений позже запусти: ./pull_updates.sh"
