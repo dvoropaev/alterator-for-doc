@@ -33,4 +33,4 @@
 4. Запросить метод `List` интерфейса через `dbus-send` и убедиться в получении объединённого списка.
 
 # Документация по интерфейсам
-- [Интерфейс `categories1`](./categories1.md)
+- `categories1` — выдаёт список категорий Alterator и описания отдельных элементов через скрипты `category-info` и `list-categories`. См. [categories1.md](./categories1.md).

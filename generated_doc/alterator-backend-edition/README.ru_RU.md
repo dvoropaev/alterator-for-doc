@@ -41,4 +41,4 @@
 4. При нарушении данных выполнить `edition recover` и перепроверить `edition info`.
 
 # Документация по интерфейсам
-- [Интерфейс `current_edition1`](./current_edition1.md)
+- `current_edition1` — предоставляет методы получения сведений о редакции и переключения активного выпуска. См. [current_edition1.md](./current_edition1.md).

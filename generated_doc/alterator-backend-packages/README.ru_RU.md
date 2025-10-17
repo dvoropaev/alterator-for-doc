@@ -33,42 +33,6 @@
 - Асинхронные методы `UpdateAsync`, `ApplyAsync`, `ReinstallAsync`, `DistUpgradeAsync` назначают сигналы stdout/stderr для потоковой передачи вывода клиентам.
 - APT-обработчик `alterator-logger.lua` подключается через `apt.conf.d` и пишет метки времени в журнал `dist-upgrades.log` для последующего чтения методами backend.
 
-# Методы интерфейса `apt1`
-| Метод | Выполняемая команда | Назначение |
-| ----- | ------------------- | ---------- |
-| `Info` | `cat /usr/share/alterator/objects/apt.object` | Возвращает описание объекта Alterator с локализацией. |
-| `UpdateAsync` | `apt-get update -q` | Обновляет индексы пакетов и транслирует ход выполнения по сигнальным каналам. |
-| `ApplyAsync` | `apt-wrapper apply {exclude_pkgnames} {pkgnames}` | Запускает транзакцию установки/удаления с учётом списка исключений и временного `pkgpriorities`. |
-| `ReinstallAsync` | `apt-get reinstall -y -q {pkgnames}` | Переустанавливает выбранные пакеты в фоновом режиме. |
-| `DistUpgradeAsync` | `apt-get dist-upgrade -y -q` | Выполняет обновление дистрибутива с выводом прогресса. |
-| `ListAllPackages` | `apt-wrapper listall` | Выдаёт полный список доступных пакетов (до 10 МБ данных). |
-| `Search` | `apt-wrapper search {pattern}` | Выполняет поиск пакетов по регулярному выражению. |
-| `LastUpdate` | `apt-wrapper lastupdate` | Сообщает время последнего обновления индекса (`stat` каталога списков). |
-| `LastDistUpgrade` | `apt-wrapper lastdistupgrade` | Сообщает время последнего `dist-upgrade` из журнала. |
-| `CheckApply` | `apt-wrapper check-apply {pkgnames}` | Проводит симуляцию транзакции и возвращает JSON со списками установки и удаления. |
-| `CheckReinstall` | `apt-wrapper check-reinstall {pkgnames}` | Проверяет возможность переустановки и возвращает диагностический вывод. |
-| `CheckDistUpgrade` | `apt-wrapper check-dist-upgrade` | Выполняет проверку сценария `dist-upgrade` без изменения системы. |
-
-Примечание: вспомогательные команды `check-install` и `check-remove` доступны напрямую в `apt-wrapper` и используются клиентами для расширенной диагностики.
-
-# Методы интерфейса `repo1`
-| Метод | Выполняемая команда | Назначение |
-| ----- | ------------------- | ---------- |
-| `Info` | `cat /usr/share/alterator/objects/repo.object` | Возвращает описание объекта «Источники пакетов». |
-| `List` | `apt-repo list` | Перечисляет доступные репозитории apt. |
-| `Add` | `apt-repo add {source}` | Добавляет новый источник репозитория. |
-| `Remove` | `apt-repo rm {source}` | Удаляет источник из конфигурации. |
-
-# Методы интерфейса `rpm1`
-| Метод | Выполняемая команда | Назначение |
-| ----- | ------------------- | ---------- |
-| `Info` | `cat /usr/share/alterator/objects/rpm.object` | Возвращает описание объекта RPM. |
-| `List` | `rpm-wrapper list` | Даёт список установленных пакетов с версией, релизом, архитектурой и группой. |
-| `Install` | `rpm -U {pkgpath}` | Устанавливает или обновляет пакет из указанного файла. |
-| `Remove` | `rpm -e {pkgname}` | Удаляет установленный пакет по имени. |
-| `PackageInfo` | `rpm -qi {pkgname}` | Выводит сведения об установленном пакете. |
-| `Files` | `rpm -ql {pkgname}` | Перечисляет файлы, входящие в пакет. |
-
 # Порядок проверки
 1. Установить пакет `alterator-backend-packages` и убедиться, что файлы backend и объекты размещены в каталоге `/usr/share/alterator/`.
 2. Через `dbus-send` вызвать `org.altlinux.alterator.apt1.Info` и проверить, что описание объекта получено без ошибок.
@@ -77,6 +41,6 @@
 5. Проверить `org.altlinux.alterator.rpm1.PackageInfo` для известного пакета и сопоставить вывод с `rpm -qi`.
 
 # Документация по интерфейсам
-- [Интерфейс `apt1`](./apt1.md)
-- [Интерфейс `repo1`](./repo1.md)
-- [Интерфейс `rpm1`](./rpm1.md)
+- `apt1` — управляет операциями `apt-get` и `apt-wrapper`, включая обновления индекса, транзакции и проверки сценариев. См. [apt1.md](./apt1.md).
+- `repo1` — обращается к `apt-repo` для перечисления, добавления и удаления источников пакетов. См. [repo1.md](./repo1.md).
+- `rpm1` — выполняет операции `rpm` и `rpm-wrapper` над локальными пакетами: перечень, установка, удаление, инспекция. См. [rpm1.md](./rpm1.md).
