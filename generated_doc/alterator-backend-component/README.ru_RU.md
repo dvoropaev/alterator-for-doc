@@ -42,6 +42,6 @@
 4. Для D-Bus проверить наличие объектов `org.altlinux.alterator.component1` через `busctl tree org.altlinux.alterator`.
 
 # Документация по интерфейсам
-- [Интерфейс `batch_component_categories1`](./batch_component_categories1.md)
-- [Интерфейс `batch_components1`](./batch_components1.md)
-- [Интерфейс `component_categories1`](./component_categories1.md)
+- `batch_component_categories1` — передаёт клиенту Alterator содержимое всех файлов `.category` одним запросом. См. [batch_component_categories1.md](./batch_component_categories1.md).
+- `batch_components1` — выдаёт сведения обо всех компонентах и их статусе установки. См. [batch_components1.md](./batch_components1.md).
+- `component_categories1` — обеспечивает чтение, описание и перечисление категорий компонентов. См. [component_categories1.md](./component_categories1.md).
