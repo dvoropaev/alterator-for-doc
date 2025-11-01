@@ -33,14 +33,7 @@
 - Асинхронные методы `UpdateAsync`, `ApplyAsync`, `ReinstallAsync`, `DistUpgradeAsync` назначают сигналы stdout/stderr для потоковой передачи вывода клиентам.
 - APT-обработчик `alterator-logger.lua` подключается через `apt.conf.d` и пишет метки времени в журнал `dist-upgrades.log` для последующего чтения методами backend.
 
-# Порядок проверки
-1. Установить пакет `alterator-backend-packages` и убедиться, что файлы backend и объекты размещены в каталоге `/usr/share/alterator/`.
-2. Через `dbus-send` вызвать `org.altlinux.alterator.apt1.Info` и проверить, что описание объекта получено без ошибок.
-3. Выполнить `dbus-send` метода `org.altlinux.alterator.apt1.CheckApply` с тестовым списком и убедиться, что возвращается корректный JSON.
-4. Вызвать `org.altlinux.alterator.repo1.List` и убедиться, что вывод совпадает с результатом `apt-repo list`.
-5. Проверить `org.altlinux.alterator.rpm1.PackageInfo` для известного пакета и сопоставить вывод с `rpm -qi`.
-
-# Документация по интерфейсам
+# Интерфейсы
 - `apt1` — управляет операциями `apt-get` и `apt-wrapper`, включая обновления индекса, транзакции и проверки сценариев. См. [apt1.md](./apt1.md).
 - `repo1` — обращается к `apt-repo` для перечисления, добавления и удаления источников пакетов. См. [repo1.md](./repo1.md).
 - `rpm1` — выполняет операции `rpm` и `rpm-wrapper` над локальными пакетами: перечень, установка, удаление, инспекция. См. [rpm1.md](./rpm1.md).
