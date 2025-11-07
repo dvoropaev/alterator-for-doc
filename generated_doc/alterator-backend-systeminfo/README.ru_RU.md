@@ -10,9 +10,9 @@
 | Компонент | Расположение | Назначение |
 | --------- | ------------ | ---------- |
 | Скрипт `systeminfo` | `/usr/lib/alterator/backends/systeminfo` | Выполняет команды выборки сведений об установленной системе. |
-| Файл `systeminfo.backend` | `/etc/alterator/backends/systeminfo.backend` | Описывает backend с методами интерфейса `org.altlinux.alterator.systeminfo1`. |
+| Файл `systeminfo.backend` | `/usr/share/alterator/backends/systeminfo.backend` | Описывает backend с методами интерфейса `org.altlinux.alterator.systeminfo1`. |
 | Файл `systeminfo.object` | `/usr/share/alterator/objects/systeminfo.object` | Регистрирует объект Alterator «О системе» для клиентов. |
-| Каталог `systeminfo.d/notes` | `/usr/lib/alterator/backends/systeminfo.d/notes` | Предоставляет вспомогательные функции поиска лицензий и заметок релиза. |
+| Скрипт `systeminfo.d/notes` | `/usr/lib/alterator/backends/systeminfo.d/notes` | Предоставляет вспомогательные функции поиска лицензий, заметок релиза и записей информации о дистрибутиве. |
 
 # Возможности
 - Получение текстовых характеристик системы: имя хоста, ветка репозитория, версия ядра, локаль.
@@ -23,8 +23,9 @@
 
 # Интеграция с другими компонентами
 - Backend использует интерфейс `org.altlinux.alterator.systeminfo1` и отдаёт данные клиентам через D-Bus.
+- Интерфейс регистрируется модулем alterator-manager (`alterator-module-executor`) по описанию `/usr/share/alterator/backends/systeminfo.backend`.
 - Метод `GetLicense` и связанные команды делегируют поиск файлов модулю `systeminfo.d/notes`, который при наличии вызывает `/usr/lib/alterator/backends/edition` для получения данных текущей редакции.
-- Файл `systeminfo.object` включает объект категории `X-Alterator-System`, что позволяет отображать модуль в `alterator-manager`.
+- Файл `systeminfo.object` включает объект категории `X-Alterator-System`, что позволяет отображать модуль в `alterator-explorer`.
 
 # Команды `systeminfo`
 | Команда | Выходные данные | Источники |
@@ -38,3 +39,32 @@
 
 # Документация по интерфейсам
 - `systeminfo1` — предоставляет сведения об установленной системе, включая характеристики оборудования и служебные заметки. См. [systeminfo1.md](./systeminfo1.md).
+
+## GetAll
+- Назначение: вызывает `/usr/lib/alterator/backends/systeminfo --all` и возвращает агрегированный набор значений `HOSTNAME`, `OS_NAME`, `BRANCH`, `KERNEL`, `CPU`, `ARCH`, `GPU`, `MEMORY`, `DRIVE`, `MOTHERBOARD`, `MONITOR`.
+- Формат вывода: каждая строка имеет вид `КЛЮЧ="значение"`; ключи перечисляются в указанном порядке.
+- Коды возврата: `0` — успех; `!= 0` — ошибка выборки любой составляющей.
+
+## GetCPU
+- Назначение: выполняет `systeminfo cpu`, который извлекает модель CPU, количество логических ядер и максимальную частоту из `/proc/cpuinfo` и sysfs.
+- Параметры: аргументы отсутствуют; возвращает `stdout_strings` и `response`.
+- Формат `stdout_strings`: строго упорядоченные строки `[0]` — модель CPU, `[1]` — количество логических ядер, `[2]` — частота в мегагерцах.
+- Коды возврата: `0` — успех; `!= 0` — ошибка выборки.
+
+## GetMotherboard
+- Назначение: вызывает `systeminfo motherboard`, объединяя содержимое `/sys/devices/virtual/dmi/id/board_{vendor,name,version}`.
+- Параметры: аргументы отсутствуют; возвращает `stdout_strings` и `response`.
+- Формат `stdout_strings`: строго упорядоченные строки `[0]` — производитель платы, `[1]` — модель, `[2]` — ревизия.
+- Коды возврата: `0` — успех; `!= 0` — ошибка считывания DMI.
+
+## GetLocale
+- Назначение: запускает `systeminfo locale`, который считывает ключ `LANG` из `/etc/locale.conf`.
+- Параметры: аргументы отсутствуют; возвращает `stdout_strings` и `response`.
+- Формат `stdout_strings`: строка локали в виде `<язык>_<регион>.<кодировка>` (например, `ru_RU.UTF-8`).
+- Коды возврата: `0` — успех; `!= 0` — ошибка чтения конфигурации.
+
+## ListDesktopEnvironments
+- Назначение: выполняет `systeminfo list-desktop-environments`, перебирая `.desktop` файлы окружений рабочего стола.
+- Параметры: аргументы отсутствуют; возвращает `stdout_strings` и `response`.
+- Формат `stdout_strings`: список установленных окружений, каждое значение в отдельной строке. Возможные элементы — `CINNAMON`, `GNOME`, `KDE<номер_версии>`, `MATE`, `XFCE`.
+- Коды возврата: `0` — успех; `!= 0` — ошибка обхода файловой системы.
