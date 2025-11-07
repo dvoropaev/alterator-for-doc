@@ -10,9 +10,9 @@
 | Компонент | Расположение | Назначение |
 | --------- | ------------ | ---------- |
 | Скрипт `systeminfo` | `/usr/lib/alterator/backends/systeminfo` | Выполняет команды выборки сведений об установленной системе. |
-| Файл `systeminfo.backend` | `/etc/alterator/backends/systeminfo.backend` | Описывает backend с методами интерфейса `org.altlinux.alterator.systeminfo1`. |
+| Файл `systeminfo.backend` | `/usr/share/alterator/backends/systeminfo.backend` | Описывает backend с методами интерфейса `org.altlinux.alterator.systeminfo1`. |
 | Файл `systeminfo.object` | `/usr/share/alterator/objects/systeminfo.object` | Регистрирует объект Alterator «О системе» для клиентов. |
-| Каталог `systeminfo.d/notes` | `/usr/lib/alterator/backends/systeminfo.d/notes` | Предоставляет вспомогательные функции поиска лицензий и заметок релиза. |
+| Скрипт `systeminfo.d/notes` | `/usr/lib/alterator/backends/systeminfo.d/notes` | Предоставляет вспомогательные функции поиска лицензий, заметок релиза и записей информации о дистрибутиве. |
 
 # Возможности
 - Получение текстовых характеристик системы: имя хоста, ветка репозитория, версия ядра, локаль.
@@ -23,8 +23,9 @@
 
 # Интеграция с другими компонентами
 - Backend использует интерфейс `org.altlinux.alterator.systeminfo1` и отдаёт данные клиентам через D-Bus.
+- Интерфейс регистрирует модуль `alterator-manager` (подсистема `alterator-module-executor`) на основании `/usr/share/alterator/backends/systeminfo.backend`.
 - Метод `GetLicense` и связанные команды делегируют поиск файлов модулю `systeminfo.d/notes`, который при наличии вызывает `/usr/lib/alterator/backends/edition` для получения данных текущей редакции.
-- Файл `systeminfo.object` включает объект категории `X-Alterator-System`, что позволяет отображать модуль в `alterator-manager`.
+- Файл `systeminfo.object` включает объект категории `X-Alterator-System`, что позволяет отображать модуль в `alterator-explorer`.
 
 # Команды `systeminfo`
 | Команда | Выходные данные | Источники |

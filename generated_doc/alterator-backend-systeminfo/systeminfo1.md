@@ -1,6 +1,6 @@
 ## Общие сведения
 
-Интерфейс org.altlinux.alterator.systeminfo1 предоставляет доступ к сведениям о системе через скрипт `/usr/lib/alterator/backends/systeminfo`. Методы возвращают код response запущенной команды (0 — успех, != 0 — ошибка).
+Интерфейс org.altlinux.alterator.systeminfo1 предоставляет доступ к сведениям о системе через скрипт `/usr/lib/alterator/backends/systeminfo`. Регистрацию на шине выполняет `alterator-manager` (подсистема `alterator-module-executor`) по описанию `/usr/share/alterator/backends/systeminfo.backend`. Методы возвращают код response запущенной команды (0 — успех, != 0 — ошибка).
 
 ## Info
 
@@ -10,9 +10,10 @@
 
 ## GetAll
 
-- Назначение: вызывает `/usr/lib/alterator/backends/systeminfo --all` для вывода агрегированного набора переменных HOSTNAME/OS_NAME/BRANCH и др.
+- Назначение: вызывает `/usr/lib/alterator/backends/systeminfo --all` и собирает агрегированный набор характеристик.
 - Параметры: не принимает аргументов; возвращает stdout_bytes и response.
-- Ожидаемое поведение (пример): stdout_bytes содержит набор строк `KEY="value"` для хоста, версии ОС, ядра, CPU, архитектуры, GPU, памяти, накопителей, платы и мониторов; response = 0.
+- Формат stdout_bytes: строки вида `KEY="value"` с ключами `HOSTNAME`, `OS_NAME`, `BRANCH`, `KERNEL`, `CPU`, `ARCH`, `GPU`, `MEMORY`, `DRIVE`, `MOTHERBOARD`, `MONITOR` в указанном порядке.
+- Ожидаемое поведение (пример): response = 0, вывод содержит все перечисленные пары ключ-значение.
 
 ## GetHostName
 
@@ -66,7 +67,8 @@
 
 - Назначение: выполняет `systeminfo cpu`, который извлекает модель, число логических ядер и частоту из `/proc/cpuinfo` и sysfs.
 - Параметры: аргументов нет; возвращает stdout_strings и response.
-- Ожидаемое поведение (пример): stdout_strings содержит три строки (название CPU, количество ядер, частоту в МГц); response = 0.
+- Формат stdout_strings: `[0]` — название CPU, `[1]` — количество логических ядер, `[2]` — частота в МГц.
+- Ожидаемое поведение (пример): response = 0, все три строки присутствуют.
 
 ## GetGPU
 
@@ -96,16 +98,18 @@
 
 - Назначение: вызывает `systeminfo motherboard`, объединяя содержимое `/sys/devices/virtual/dmi/id/board_{vendor,name,version}`.
 - Параметры: входных аргументов нет; возвращает stdout_strings и response.
-- Ожидаемое поведение (пример): stdout_strings включает сведения о производителе и модели системной платы, response = 0.
+- Формат stdout_strings: `[0]` — производитель платы, `[1]` — модель, `[2]` — версия.
+- Ожидаемое поведение (пример): response = 0, вывод содержит все три строки.
 
 ## GetLocale
 
 - Назначение: запускает `systeminfo locale`, который считывает `LANG` из `/etc/locale.conf`.
 - Параметры: аргументов нет; возвращает stdout_strings и response.
-- Ожидаемое поведение (пример): stdout_strings содержит строку локали в формате `ru_RU.UTF-8`, response = 0.
+- Формат stdout_strings: значение локали в виде `<язык>_<регион>.<кодировка>` (например, `ru_RU.UTF-8`).
+- Ожидаемое поведение (пример): response = 0, строка локали присутствует.
 
 ## ListDesktopEnvironments
 
 - Назначение: выполняет `systeminfo list-desktop-environments`, перебирая десктопные `.desktop` файлы (plasma, gnome, mate, cinnamon, xfce).
 - Параметры: аргументов нет; возвращает stdout_strings и response.
-- Ожидаемое поведение (пример): stdout_strings содержит названия установленных окружений (GNOME, KDE, XFCE и т. п.) по одному в строке, response = 0.
+- Ожидаемое поведение (пример): stdout_strings содержит по одному значению в строке из множества `CINNAMON`, `GNOME`, `KDE<номер>`, `MATE`, `XFCE`; response = 0.
