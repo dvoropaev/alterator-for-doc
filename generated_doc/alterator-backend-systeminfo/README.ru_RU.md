@@ -23,7 +23,7 @@
 
 # Интеграция с другими компонентами
 - Backend использует интерфейс `org.altlinux.alterator.systeminfo1` и отдаёт данные клиентам через D-Bus.
-- Интерфейс регистрирует модуль `alterator-manager` (подсистема `alterator-module-executor`) на основании `/usr/share/alterator/backends/systeminfo.backend`.
+- Регистрацию backend выполняет `alterator-module-executor` в составе `alterator-manager` на основании `/usr/share/alterator/backends/systeminfo.backend`.
 - Метод `GetLicense` и связанные команды делегируют поиск файлов модулю `systeminfo.d/notes`, который при наличии вызывает `/usr/lib/alterator/backends/edition` для получения данных текущей редакции.
 - Файл `systeminfo.object` включает объект категории `X-Alterator-System`, что позволяет отображать модуль в `alterator-explorer`.
 
