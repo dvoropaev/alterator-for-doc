@@ -1,3 +1,5 @@
+[English](systeminfo1.md) | [Русский](systeminfo1.ru_RU.md)
+
 ## Overview
 
 The `org.altlinux.alterator.systeminfo1` interface exposes system data through `/usr/lib/alterator/backends/systeminfo`. Registration on the bus is handled by the `alterator-module-executor` subsystem of `alterator-manager` as described in `/usr/share/alterator/backends/systeminfo.backend`. Methods return the response code of the command they run (`0` — success, `!= 0` — failure).

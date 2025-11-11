@@ -1,6 +1,6 @@
 **alterator-backend-systeminfo**
 
-[Русский](README.ru_RU.md)
+[English](README.md) | [Русский](README.ru_RU.md)
 
 Предназначен для предоставления клиентам Alterator сведений о системе через интерфейс D-Bus.
 
