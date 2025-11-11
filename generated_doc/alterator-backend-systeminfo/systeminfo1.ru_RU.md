@@ -1,3 +1,5 @@
+[English](systeminfo1.md) | [Русский](systeminfo1.ru_RU.md)
+
 ## Общие сведения
 
 Интерфейс org.altlinux.alterator.systeminfo1 предоставляет доступ к сведениям о системе через скрипт `/usr/lib/alterator/backends/systeminfo`. Регистрацию на шине выполняет подсистема `alterator-module-executor` менеджера `alterator-manager` по описанию `/usr/share/alterator/backends/systeminfo.backend`. Методы возвращают код response запущенной команды (0 — успех, != 0 — ошибка).
