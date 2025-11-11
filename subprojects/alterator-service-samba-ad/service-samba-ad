@@ -132,38 +132,6 @@ while :; do
     shift
 done
 
-validate_json() {
-    local input_json="$1"
-    local mode_value="$2"
-    local retval=0
-    local path_to_schema=
-    path_to_schema="/usr/share/alterator-service-samba-ad/samba-ad/$mode_value-parameters.schema.json"
-
-    jsonschema "$path_to_schema" <<<$input_json &>/dev/null || retval=1
-
-    return $retval
-}
-
-set_cache_name() {
-    TMP_KRB_CCACHE_NAME="$(mktemp)"
-    export KRB5CCNAME="$TMP_KRB_CCACHE_NAME"
-}
-
-administrator_kinit() {
-    local admin_login="$1"
-    local admin_password="$2"
-
-    result="$( echo "$admin_password" | kinit "$admin_login" 2>&1 )" || \
-        (echo "ERROR: Failed to authenticate with KDC. Please check your credentials and network connectivity." && \
-        echo "$result" && return 1)
-}
-
-destroy_credentials() {
-    kdestroy -A > /dev/null 2>&1
-    rm -f "$TMP_KRB_CCACHE_NAME"
-    unset KRB5CCNAME
-}
-
 get_json_value() {
     local json="$1"
     local key="$2"
@@ -206,30 +174,33 @@ reset_to_default() {
     rm -rf /var/lib/samba
     rm -rf /var/cache/samba
 
-    mv -u $backup_dir/smb.conf.original /etc/samba/smb.conf
-    mv -u $backup_dir/krb5.conf.original /etc/krb5.conf
-    mv -u $backup_dir/resolv.conf.original /etc/resolv.conf
+    local smb_backup="$backup_dir/smb.conf.original"
+    local krb5_backup="$backup_dir/krb5.conf.original"
+    local resolv_backup="$backup_dir/resolv.conf.original"
+
+    if [ -f "$smb_backup" ]; then
+        mv -u "$smb_backup" /etc/samba/smb.conf
+    else
+        echo "Backup $smb_backup not found, skipping restore of /etc/samba/smb.conf."
+    fi
+
+    if [ -f "$krb5_backup" ]; then
+        mv -u "$krb5_backup" /etc/krb5.conf
+    else
+        echo "Backup $krb5_backup not found, skipping restore of /etc/krb5.conf."
+    fi
+
+    if [ -f "$resolv_backup" ]; then
+        mv -u "$resolv_backup" /etc/resolv.conf
+    else
+        echo "Backup $resolv_backup not found, skipping restore of /etc/resolv.conf."
+    fi
     mkdir -p /var/lib/samba
 
     chmod 644 /etc/samba/smb.conf
     chmod 644 /etc/krb5.conf
     chmod 644 /etc/resolv.conf
     return 0
-}
-
-force_deploy() {
-
-    echo "Force deploy mode enabled, all previous configurations and data will be removed."
-    backup_config /etc/samba/smb.conf "old_config"
-    backup_config /etc/krb5.conf "old_config"
-    backup_config /etc/resolv.conf "old_config"
-
-    rm -rf /var/lib/samba
-    rm -rf /var/cache/samba
-    mkdir -p /var/lib/samba/sysvol
-
-    return 0
-
 }
 
 read_stdin() {
@@ -250,6 +221,13 @@ read_stdin() {
     return $retval
 }
 
+bind_is_installed() {
+    if rpm -q bind > /dev/null 2>&1; then
+        return 0
+    else
+        return 1
+    fi
+}
 
 upper() {
     echo -n "$1" | tr '[:lower:]' '[:upper:]'
@@ -321,6 +299,7 @@ call_domain_provision() {
     local dns_backend=
     local forwarders=
     local backend_store_size=
+
     keys=$(echo "$input_json" | jq -r 'keys[]')
 
     for key in $keys; do
@@ -334,7 +313,7 @@ call_domain_provision() {
                 [ "$value" = "true" ] && args+=(--use-rfc2307)
                 ;;
             backendStore)
-                value=$(get_json_value "$input_json" "$key" ".")
+                value=$(echo "$input_json" | jq -r --arg k "$key" '.[$k] | if . != null then (keys_unsorted[0]) else empty end')
                 if [ "$value" = "mdb" ]; then
                     args+=(--backend-store mdb)
                     backend_store_size=$(echo "$input_json" | jq -r '.backendStoreSize // empty')
@@ -344,7 +323,7 @@ call_domain_provision() {
                 fi
                 ;;
             functionalLevel)
-                value=$(get_json_value "$input_json" "$key" ".")
+                value=$(echo "$input_json" | jq -r --arg k "$key" '.[$k] | if . != null then (keys_unsorted[0]) else empty end')
                 [ -n "$value" ] && args+=(--function-level "$value")
                 if [ "$value" = "2016" ]; then
                     args+=(--option="ad dc functional level=2016")
@@ -359,7 +338,7 @@ call_domain_provision() {
                 [ -n "$value" ] && args+=(--domain "$value")
                 ;;
             serverRole)
-                value=$(get_json_value "$input_json" "$key" ".")
+                value=$(echo "$input_json" | jq -r --arg k "$key" '.[$k] | if . != null then (keys_unsorted[0]) else empty end')
                 [ -n "$value" ] && args+=(--server-role "$value")
                 ;;
             realm)
@@ -377,7 +356,7 @@ call_domain_provision() {
     for dns_key in $dns_keys; do
         case "$dns_key" in
             dnsBackend)
-                value=$(get_json_value "$input_json" "$dns_key" ".dnsSettings")
+                value=$(echo "$input_json" | jq -r '.dnsSettings.dnsBackend | if . != null then (keys_unsorted[0]) else empty end')
                 dns_backend=$(echo "$value" | tr -d '[]\n ')
                 [ -n "$value" ] && args+=(--dns-backend "$value")
                 ;;
@@ -393,6 +372,13 @@ call_domain_provision() {
                 ;;
         esac
     done
+
+    if [ $dns_backend = "BIND9_DLZ" ]; then
+        if ! bind_is_installed; then
+            echo "ERROR: BIND9_DLZ backend selected, but BIND package is not installed."
+            return 1
+        fi
+    fi
 
     backup_config /etc/samba/smb.conf "original"
     backup_config /etc/krb5.conf "original"
@@ -432,6 +418,10 @@ call_domain_provision() {
         echo "ERROR: Failed to provision domain."
     fi
 
+    if systemctl is-active --quiet samba.service; then
+        call_restart || retval=1
+    fi
+
     return $retval
 }
 
@@ -454,7 +444,7 @@ call_dc_join() {
     for key in $keys; do
         case "$key" in
             serverRole)
-                value=$(get_json_value "$input_json" "$key" ".")
+                value=$(echo "$input_json" | jq -r --arg k "$key" '.[$k] | if . != null then (keys_unsorted[0]) else empty end')
                 [ -n "$value" ] && server_role="$value"
                 ;;
             adminPassword)
@@ -466,7 +456,7 @@ call_dc_join() {
                 admin_login="$value"
                 ;;
             backendStore)
-                value=$(get_json_value "$input_json" "$key" ".")
+                value=$(echo "$input_json" | jq -r --arg k "$key" '.[$k] | if . != null then (keys_unsorted[0]) else empty end')
                 if [ "$value" = "mdb" ]; then
                     args+=(--backend-store mdb)
                     backend_store_size=$(echo "$input_json" | jq -r '.backendStoreSize // empty')
@@ -485,13 +475,13 @@ call_dc_join() {
                 domain_realm="$value"
                 ;;
             functionalLevel)
-                value=$(get_json_value "$input_json" "$key" ".")
+                value=$(echo "$input_json" | jq -r --arg k "$key" '.[$k] | if . != null then (keys_unsorted[0]) else empty end')
                 if [ "$value" = "2016" ]; then
                     args+=(--option="ad dc functional level=2016")
                 fi
                 ;;
             dnsBackend)
-                value=$(get_json_value "$input_json" "$key" ".")
+                value=$(echo "$input_json" | jq -r --arg k "$key" '.[$k] | if . != null then (keys_unsorted[0]) else empty end')
                 [ -n "$value" ] && args+=(--dns-backend "$value")
                 ;;
             dnsForwarder)
@@ -511,7 +501,7 @@ call_dc_join() {
     for dns_key in $dns_keys; do
         case "$dns_key" in
             dnsBackend)
-                value=$(get_json_value "$input_json" "$dns_key" ".dnsSettings")
+                value=$(echo "$input_json" | jq -r '.dnsSettings.dnsBackend | if . != null then (keys_unsorted[0]) else empty end')
                 dns_backend=$(echo "$value" | tr -d '[]\n ')
                 [ -n "$value" ] && args+=(--dns-backend "$value")
                 ;;
@@ -527,7 +517,15 @@ call_dc_join() {
                 ;;
         esac
     done
-     if [ -z "$admin_password" ] || [ -z "$admin_login" ]; then
+
+    if [ $dns_backend = "BIND9_DLZ" ]; then
+        if ! bind_is_installed; then
+            echo "ERROR: BIND9_DLZ backend selected, but BIND package is not installed."
+            return 1
+        fi
+    fi
+
+    if [ -z "$admin_password" ] || [ -z "$admin_login" ]; then
         echo "ERROR: 'Admin password' and 'Admin Login' is required for joining a domain."
         retval=1
     else
@@ -570,6 +568,11 @@ call_dc_join() {
             fi
         fi
     fi
+
+    if systemctl is-active --quiet samba.service; then
+        call_restart || retval=1
+    fi
+
     return $retval
 }
 
@@ -584,13 +587,12 @@ call_provision() {
     for key in $keys; do
         case "$key" in
             mode)
-                mode_value=$(echo "$input_json" | jq -r --arg k "$key" '.[$k]')
+                mode_value=$(echo "$input_json" | jq -r --arg k "$key" '.[$k] | if . != null then (keys_unsorted[0]) else empty end')
                 ;;
             *)
                 false
                 ;;
         esac
-        echo "$key"
     done
 
     if [ "$mode_value" = "create" ]; then
@@ -659,34 +661,23 @@ call_dc_demote() {
             args+=(--remove-other-dead-server="$dc_name")
             echo "$admin_password" | samba-tool domain demote "${args[@]}" -U"$admin_login" || retval=1
         else
-            set_cache_name
-            administrator_kinit "$admin_login" "$admin_password" || retval=1
-            if [ $retval -ne 0 ]; then
-                echo "Kredential initialization failed. Aborting demotion."
-                retval=1
-            else
-                echo "Kredential initialization successful."
-                out="$(echo "$admin_password" | samba-tool domain demote "${args[@]}" -U"$admin_login")" || retval=1
-                if ! grep -q "You are the last server in the domain" <<< "$out"; then
-                    echo "ERROR: Cannot demote the last domain controller in the domain."
-                    if [ "$reset_to_default_flag" = "true" ]; then
-                        retval=0
-                        echo "This is the last DC in the domain, but 'Reset to defaults' option is enabled."
-                        echo "Proceeding with reset to default configuration."
-                        reset_to_default || retval=1
-                        echo $retval
-                    else
-                        echo "Use the 'Reset to defaults' option to ignore this error and reset the system to its default state."
-                    fi
+            echo "Kredential initialization successful."
+            out="$(echo "$admin_password" | samba-tool domain demote "${args[@]}" -U"$admin_login")" || retval=1
+            if ! grep -q "You are the last server in the domain" <<< "$out"; then
+                echo "ERROR: Cannot demote the last domain controller in the domain."
+                if [ "$reset_to_default_flag" = "true" ]; then
+                    retval=0
+                    echo "This is the last DC in the domain, but 'Reset to defaults' option is enabled."
+                    echo "Proceeding with reset to default configuration."
+                    reset_to_default || retval=1
+                    echo $retval
                 else
-                    echo "$out"
+                    echo "Use the 'Reset to defaults' option to ignore this error and reset the system to its default state."
                 fi
+            else
+                echo "$out"
             fi
         fi
-    fi
-
-    if [ "$retval" -eq 0 ]; then
-        destroy_credentials
     fi
 
     return $retval
@@ -706,7 +697,7 @@ call_restore() {
 
 call_start() {
     local retval=0
-    local deployment_config_file="/var/lib/alterator/service/samba-ad/deployment-config.json"
+    local deployment_config_file="/var/lib/alterator/service/samba-ad/status.json"
     deployment_config="$(cat "$deployment_config_file")"
     dns_backend=$(get_json_value "$deployment_config" "dnsBackend" ".dnsSettings")
     if [ "$dns_backend" = "BIND9_DLZ" ]; then
@@ -724,7 +715,7 @@ call_start() {
 
 call_stop() {
     local retval=0
-    local deployment_config_file="/var/lib/alterator/service/samba-ad/deployment-config.json"
+    local deployment_config_file="/var/lib/alterator/service/samba-ad/status.json"
     systemctl disable --now samba.service || retval=1
 
     deployment_config="$(cat "$deployment_config_file")"
@@ -736,6 +727,18 @@ call_stop() {
     return $retval
 }
 
+call_restart() {
+    local retval=0
+    local deployment_config_file="/var/lib/alterator/service/samba-ad/status.json"
+    systemctl restart samba.service || retval=1
+
+    deployment_config="$(cat "$deployment_config_file")"
+    dns_backend=$(get_json_value "$deployment_config" "dnsBackend" ".dnsSettings")
+    if [ "$dns_backend" = "BIND9_DLZ" ]; then
+        systemctl restart bind.service || retval=1
+    fi
+    return $retval
+}
 case "$MODE" in
     provision)
         call_provision || GLOBAL_EXIT=1

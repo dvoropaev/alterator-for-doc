@@ -57,6 +57,7 @@ set(HEADERS
     alteratorctldiagmodule.h
     alteratorctlsysteminfomodule.h
     alteratorctlremotemodule.h
+    alteratorctlservicesmodule.h
 )
 set(SOURCES
     alteratorctlmoduleinterface.c
@@ -72,6 +73,7 @@ set(SOURCES
     alteratorctldiagmodule.c
     alteratorctlsysteminfomodule.c
     alteratorctlremotemodule.c
+    alteratorctlservicesmodule.c
 
     main.c
 )

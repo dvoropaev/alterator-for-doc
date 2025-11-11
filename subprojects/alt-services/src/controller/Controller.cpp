@@ -95,30 +95,42 @@ static void showLogError(QWidget* parent, const QString& title, const QString& s
 }
 } // namespace
 
-Controller::Controller(QObject* parent, QWidget* window)
-    : QObject{parent}
-    , d { new Private(this, window) }
+Controller::Controller()
+    : d { new Private(this) }
 {
     connect(&d->m_datasource, &DBusProxy::stdout, this, &Controller::stdout);
     connect(&d->m_datasource, &DBusProxy::stderr, this, &Controller::stderr);
 
-    d->m_compact.setText(tr("&Compact"));
-    d->m_detailed.setText(tr("&Detailed"));
+    {
+        auto* section = new QAction{tr("Tables style"), this};
+        section->setSeparator(true);
+        auto* compact = new QAction{tr("&Compact"), this};
+        auto* detailed = new QAction{tr("&Detailed"), this};
+        auto* detailed_multiline = new QAction{tr("&Word wrap"), this};
 
-    d->m_compact.setCheckable(true);
-    d->m_detailed.setCheckable(true);
+        d->m_table_actions << section
+                           << compact
+                           << detailed
+                           << detailed_multiline;
 
-    d->m_detailed.setChecked(true);
-    d->m_group.setExclusive(true);
-    d->m_group.addAction(&d->m_compact);
-    d->m_group.addAction(&d->m_detailed);
+        compact->setCheckable(true);
+        detailed->setCheckable(true);
 
-    ( ServicesApp::instance()->settings()->tablesDetailed()
-            ? &d->m_detailed
-            : &d->m_compact )->setChecked(true);
-    connect(&d->m_detailed, &QAction::toggled, ServicesApp::instance()->settings(), &AppSettings::set_tablesDetailed);
+        detailed->setChecked(true);
+        d->m_table_mode_group.setExclusive(true);
+        d->m_table_mode_group.addAction(compact);
+        d->m_table_mode_group.addAction(detailed);
 
-    d->m_wizard.initMenu();
+        ( ServicesApp::instance()->settings()->tablesDetailed()
+                ? detailed
+                : compact )->setChecked(true);
+        connect(detailed, &QAction::toggled, ServicesApp::instance()->settings(), &AppSettings::set_tablesDetailed);
+
+        detailed_multiline->setCheckable(true);
+        detailed_multiline->setChecked(ServicesApp::instance()->settings()->tablesDetailedMultiline());
+        connect(detailed, &QAction::toggled, detailed_multiline, &QAction::setEnabled);
+        connect(detailed_multiline, &QAction::toggled, ServicesApp::instance()->settings(), &AppSettings::set_tablesDetailedMultiline);
+    }
 }
 
 Controller::~Controller() { delete d; }
@@ -154,31 +166,27 @@ void Controller::selectByPath(const QString& path)
         qWarning() << "object" << path << "not found";
 }
 
-void Controller::importParameters(const ServicesApp::ParsedParameters& parameters){
-    auto it = std::find_if(d->m_services.cbegin(), d->m_services.cend(),
-        [&parameters](auto& service){ return service.get() == parameters.service; }
-    );
-
-    if ( it != d->m_services.cend() ) {
-        emit select(std::distance(d->m_services.cbegin(), it));
-        d->m_wizard.readParameters(parameters);
-    } else
-        qWarning() << "service with name" << parameters.service << "not found";
-}
 
 QAbstractItemModel* Controller::model() { return &d->m_model; }
 
-void Controller::addTableActions(QMenu* menu)
-{
-    menu->addSection(tr("Tables style"));
-    menu->addAction(&d->m_detailed);
-    menu->addAction(&d->m_compact);
-}
+QList<QAction*> Controller::tableActions() { return d->m_table_actions; }
 
-int Controller::status(Service* service, QByteArray& data)
+bool Controller::updateStatus(Service* service)
 {
+    emit beginRefresh();
+
+    QByteArray data;
     int code = d->m_datasource.status(service->dbusPath(), data);
     qDebug() << service->name() << "status:" << data;
+
+    if ( code )
+    {
+        qDebug() << "non-zero" << service->name() << "Status() exit code!";
+        emit endRefresh();
+        return false;
+    }
+
+    service->setStatus(data);
 
     auto index = std::find_if(
         d->m_services.begin(),
@@ -191,37 +199,13 @@ int Controller::status(Service* service, QByteArray& data)
         emit d->m_model.dataChanged(modelIndex, modelIndex);
     }
 
-    return code;
-}
-
-void Controller::prepareAction(Parameter::Context ctx, Service* service)
-{
-    d->m_wizard.open(ctx, service);
+    emit endRefresh();
+    return true;
 }
 
 
 bool Controller::call(Service* service, Parameter::Context ctx)
 {
-    if ( ctx & (Parameter::Context::Deploy | Parameter::Context::Configure) ) {
-        Service*  conflictingService    = nullptr;
-        Resource* ourResource           = nullptr;
-        Resource* conflictingResource   = nullptr;
-
-        if ( findConflict(service, &ourResource, &conflictingService, &conflictingResource ) ) {
-
-            QMessageBox::critical(QApplication::activeWindow(), tr("Conflict detected"),
-                tr( "A previously deployed service \"%0\" owns a resource \"%1\", "
-                    "which conflicts with \"%2\". "
-                    "You should either undeploy it, or modify that resource, if possible.")
-                    .arg(conflictingService->displayName())
-                    .arg(conflictingResource->displayName())
-                    .arg(ourResource->displayName())
-            );
-
-            return false;
-        }
-    }
-
     QJsonObject parameters = service->getParameters(ctx);
 
     if ( service->forceDeploy() )
@@ -271,21 +255,35 @@ bool Controller::call(Service* service, Parameter::Context ctx)
         }
     }
 
+    updateStatus(service);
+
     return success;
 }
 
 void Controller::start(Service* service)
 {
     ScopedLogCapture capture(this);
+
+    emit beginRefresh();
     if ( !d->m_datasource.start(service->dbusPath()) )
         showLogError(QApplication::activeWindow(), tr("Error"), tr("Failed to start service"), capture.logs());
+
+    emit endRefresh();
+
+    updateStatus(service);
 }
 
 void Controller::stop(Service* service)
 {
     ScopedLogCapture capture(this);
+
+    emit beginRefresh();
     if ( !d->m_datasource.stop(service->dbusPath()) )
         showLogError(QApplication::activeWindow(), tr("Error"), tr("Failed to stop service"), capture.logs());
+
+    emit endRefresh();
+
+    updateStatus(service);
 }
 
 bool Controller::diag(Service* service, bool post)
@@ -296,12 +294,11 @@ bool Controller::diag(Service* service, bool post)
 
     for ( const auto& parameter : service->parameters() ) {
         if ( parameter->contexts() & Parameter::Context::Diag ) {
-            auto value = parameter->isConstant()
-                ? parameter->defaultValue()
-                : ( service->isDeployed()
-                        ? parameter->currentValue()
-                        : parameter->editValue()
-                    );
+            auto value = parameter->value(
+                parameter->isConstant()
+                    ? Parameter::ValueScope::Default
+                    : Parameter::ValueScope::Edit
+                );
             QString env;
 
             switch ( parameter->valueType() ) {
@@ -311,14 +308,16 @@ bool Controller::diag(Service* service, bool post)
                     env = doc.toJson(QJsonDocument::Compact);
                     break;
                 }
+
+                case Property::Type::Enum:
                 case Property::Type::Composite:{
                     QJsonDocument doc;
                     doc.setObject(value->serialize().toObject());
                     env = doc.toJson(QJsonDocument::Compact);
                     break;
                 }
+
                 case Property::Type::Bool:
-                case Property::Type::Enum:
                 case Property::Type::String:
                 case Property::Type::Int:
                     env = value->get().toString();
@@ -347,8 +346,7 @@ bool Controller::diag(Service* service, bool post)
     return success;
 }
 
-
-bool Controller::findConflict(Service* deployService, Resource** deployResource, Service** other, Resource** conflicting)
+bool Controller::findConflict(Service* deployService, Resource* deployResource, Service** other, Resource** conflicting)
 {
     for ( auto& service : d->m_services ) {
         if ( bool conflict = service->hasConflict(deployService, deployResource, conflicting) ){
@@ -390,6 +388,7 @@ const QIcon& Controller::actionIcon(Parameter::Context context)
 void Controller::refresh(){
     emit beginRefresh();
 
+    d->m_model.setItems({});
     d->m_services.clear();
 
     auto paths = d->m_datasource.getServicePaths();
@@ -403,7 +402,9 @@ void Controller::refresh(){
             qWarning() << "failed to build" << path;
     }
 
-    d->m_model.refresh();
+    d->m_model.setItems(d->m_services);
+    for ( const auto& s : d->m_services )
+        updateStatus(s.get());
 
     emit endRefresh();
 }

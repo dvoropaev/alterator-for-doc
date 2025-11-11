@@ -1,6 +1,6 @@
 %define _unpackaged_files_terminate_build 1
 Name: alterator-test-services
-Version: 0.1.2
+Version: 0.1.1
 Release: alt1
 
 Summary: Test services for alterator
@@ -14,7 +14,7 @@ Source: %name-%version.tar
 
 BuildRequires(pre): rpm-macros-alterator
 
-BuildRequires: jq
+BuildRequires: jq taplo
 Requires: alterator-module-executor >= 0.1.14
 Requires: alterator-interface-service >= 0.2.1
 Requires: alterator-entry
@@ -70,10 +70,6 @@ done
 
 
 %changelog
-* Thu Mar 13 2025 Andrey Alekseev <parovoz@altlinux.org> 0.1.2-alt1
-- update to latest dbus interface changes
-- use schema generator
-
 * Tue Mar 11 2025 Aleksey Saprunov <sav@altlinux.org> 0.1.1-alt1
 - Add CHANGELOG.md
 

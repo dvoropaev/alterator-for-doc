@@ -22,7 +22,6 @@ installed-db-office-server-mediawiki = {}
 installed-db-office-server-nextcloud = {}
 installed-db-office-server-moodle = {}
 moodle-qtype_coderunner = {}
-alt-domain-server = {}
 alterator-fbi = {}
 alterator-ca = {}
 alterator-bind = {}

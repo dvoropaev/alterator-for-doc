@@ -9,6 +9,11 @@ namespace alt
 Application::Application(int &argc, char **argv)
     : QApplication(argc, argv)
 {
+    QMetaType::registerConverter<Component *, Object *>();
+    QMetaType::registerConverter<Category *, Object *>();
+    QMetaType::registerConverter<Section *, Object *>();
+    QMetaType::registerConverter<Tag *, Object *>();
+
     setupTranslator();
 }
 

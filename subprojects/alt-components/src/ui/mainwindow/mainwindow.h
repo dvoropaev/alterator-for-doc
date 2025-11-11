@@ -2,11 +2,10 @@
 #define MAIN_WINDOW_H
 
 #include "mainwindowsettings.h"
-#include "model/model.h"
-#include "model/proxymodel.h"
 #include "ui/componentswidget/componentswidget.h"
 #include "ui/statusbar/mainstatusbar.h"
 
+#include <QLocale>
 #include <QMainWindow>
 
 namespace alt::Ui
@@ -39,21 +38,13 @@ public:
         IDsOnly,
     };
 
-    MainWindow(Model *model, ProxyModel *proxyModel, QWidget *parent = nullptr);
+    MainWindow(QAbstractItemModel *model, QWidget *parent = nullptr);
     ~MainWindow() override;
 
 public:
     void setupTranslator();
 
     void closeEvent(QCloseEvent *event) override;
-
-    void setDescription(const QModelIndex &index,
-                        alt::ModelItem::Type type,
-                        const QString &displayName,
-                        const QString &description);
-    void setDescription(const QString &description);
-    void setContentList(const std::vector<std::shared_ptr<Package>> &packages);
-    void setContentList(QAbstractItemModel *model, const QModelIndex &index);
 
     void setEnabledApplyButton(bool isEnabled);
     void setEnabledResetButton(bool isEnabled);
@@ -63,7 +54,7 @@ public:
     void setViewModeBySectionsActionEnabled(bool enabled);
 
     void showDisableRemoveBaseComponent(bool show);
-    void showActionOtherComponents(bool show);
+    void showActionNonEditionComponents(bool show);
 
     MainStatusBar *getStatusBar();
     ComponentsWidget *getComponentWidget();
@@ -89,7 +80,9 @@ private slots:
     void on_applyPushButton_clicked();
     void on_updatePushButton_clicked();
 
-    void onItemChanged(QStandardItem *item);
+    void onDataChanged(const QModelIndex &topLeft,
+                       const QModelIndex &bottomRight,
+                       const QList<int> &roles = QList<int>());
 
     void on_manualAction_triggered();
     void on_aboutAction_triggered();
@@ -99,7 +92,7 @@ private slots:
     void on_actionDisable_deletion_base_components_toggled(bool);
     void on_actionDisable_the_removal_of_packages_installed_manually_toggled(bool);
     void on_actionContent_toggled(bool);
-    void on_actionOther_toggled(bool);
+    void on_actionShowNonEditionComponents_toggled(bool);
     void on_actionBySections_triggered();
     void on_actionByTags_triggered();
     void on_actionPlain_triggered();
@@ -113,8 +106,7 @@ private:
     std::unique_ptr<Ui::MainWindow> ui;
     std::unique_ptr<MainWindowSettings> settings;
 
-    Model *model = nullptr;
-    ProxyModel *proxyModel = nullptr;
+    QAbstractItemModel *model = nullptr;
 };
 } // namespace alt
 

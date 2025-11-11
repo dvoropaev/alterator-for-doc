@@ -2,16 +2,21 @@
 
 #include <QIcon>
 
-ServiceModel::ServiceModel(PtrVector<Service>& services)
-    : m_services{services}
-{}
-
-void ServiceModel::refresh(){
+void ServiceModel::setItems(const PtrVector<Service>& items)
+{
     beginResetModel();
+    m_services.clear();
     endResetModel();
 
-    beginInsertRows({}, 0, m_services.size()-1);
-    endInsertRows();
+    if ( items.size() )
+        beginInsertRows({}, 0, items.size()-1);
+
+    m_services.reserve(items.size());
+    for ( const auto& service : items )
+        m_services.push_back(service.get());
+
+    if ( items.size() )
+        endInsertRows();
 }
 
 int ServiceModel::rowCount(const QModelIndex& parent) const {return m_services.size();}
@@ -19,7 +24,7 @@ int ServiceModel::rowCount(const QModelIndex& parent) const {return m_services.s
 QVariant ServiceModel::data(const QModelIndex& index, int role) const
 {
     if ( index.row() >= m_services.size() ) return {};
-    auto service = m_services[index.row()].get();
+    auto service = m_services[index.row()];
 
     if ( role == Qt::DisplayRole && index.column() == 0 )
         return service->displayName();

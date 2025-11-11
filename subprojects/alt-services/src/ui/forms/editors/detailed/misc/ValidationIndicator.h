@@ -1,17 +1,14 @@
 #pragma once
 
-#include <QLabel>
+#include <KMessageWidget>
 
 class Editor;
 
-namespace Ui { class ValidationIndicator; }
-
-class ValidationIndicator : public QWidget
+class ValidationIndicator : public KMessageWidget
 {
     Q_OBJECT
 public:
-    ValidationIndicator(QWidget* parent);
-    ~ValidationIndicator();
+    ValidationIndicator(QWidget* parent = nullptr);
 
     void setEditor(Editor* e);
 
@@ -20,5 +17,4 @@ private slots:
 
 private:
     Editor* m_editor{nullptr};
-    Ui::ValidationIndicator* ui;
 };

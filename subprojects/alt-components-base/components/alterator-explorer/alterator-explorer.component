@@ -6,5 +6,6 @@ display_name.ru = "Альтератор - графический обозрев�
 
 [packages]
 alterator-explorer = {}
-alterator-application-components = {}
-alterator-application-systeminfo = {}
+alt-components = {}
+alt-services = {}
+alt-systeminfo = {}

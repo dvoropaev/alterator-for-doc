@@ -72,6 +72,8 @@ static gboolean session_bus                   = FALSE;
 static gboolean both_buses                    = FALSE;
 static gboolean is_dbus_call_error            = FALSE;
 
+static gboolean is_disable_bus_type_printing = TRUE; // disable bus tyle printing in diag run
+
 static void diag_module_class_init(AlteratorCtlDiagModuleClass *klass);
 static void diag_ctl_class_finalize(GObject *klass);
 
@@ -416,7 +418,7 @@ static int diag_module_get_test_display_name(AlteratorGDBusSource *gdbus_source,
 
 end:
     if (parsed_tool_alterator_entry)
-        info_parser->alterator_ctl_module_info_parser_result_tree_free(info_parser, parsed_tool_alterator_entry);
+        alterator_ctl_module_info_parser_result_tree_free(parsed_tool_alterator_entry);
 
     return ret;
 }
@@ -508,6 +510,8 @@ static int diag_module_parse_arguments(AlteratorCtlDiagModule *module, int argc,
     if (diag_module_parse_options(module, &argc, argv, selected_subcommand) < 0)
         ERR_EXIT();
 
+    is_disable_bus_type_printing = FALSE;
+
     if ((argc < 2) || (argc > 5))
     {
         g_printerr(_("Wrong arguments in diag module.\n"));
@@ -595,6 +599,9 @@ int diag_module_run(gpointer self, gpointer data)
         g_printerr(_("The launch of the diag module has failed. Module doesn't exist.\n"));
         ERR_EXIT();
     }
+
+    if (!system_bus && !session_bus && !both_buses || system_bus && session_bus)
+        both_buses = TRUE; // --all - default option for run subcommand
 
     if (module->alterator_ctl_app->arguments->module_help)
         goto end;
@@ -1085,8 +1092,8 @@ static int diag_module_run_tool_test_subcommand(AlteratorCtlDiagModule *module, 
     gchar *current_bus_prefix            = NULL;
     gboolean object_exist_on_system_bus  = FALSE;
     gboolean object_exist_on_session_bus = FALSE;
-    AlteratorGDBusSource *source         = NULL;
-    gboolean is_root                     = alterator_ctl_is_root();
+    AlteratorGDBusSource *source = (*ctx)->additional_data ? (AlteratorGDBusSource *) (*ctx)->additional_data : NULL;
+    gboolean is_root             = alterator_ctl_is_root();
 
     if (!module)
     {
@@ -1148,7 +1155,7 @@ static int diag_module_run_tool_test_subcommand(AlteratorCtlDiagModule *module, 
 
         if (!is_root && object_exist_on_session_bus)
         {
-            if (object_exist_on_system_bus)
+            if (object_exist_on_system_bus && !is_disable_bus_type_printing)
                 g_print("\n");
 
             g_print("%s", session_bus_prefix);
@@ -1160,12 +1167,12 @@ static int diag_module_run_tool_test_subcommand(AlteratorCtlDiagModule *module, 
     }
     else if (system_bus)
     {
-        source             = module->gdbus_system_source;
+        source             = source ? source : module->gdbus_system_source;
         current_bus_prefix = system_bus_prefix;
     }
     else if (!is_root)
     {
-        source             = module->gdbus_session_source;
+        source             = source ? source : module->gdbus_session_source;
         current_bus_prefix = session_bus_prefix;
     }
 
@@ -1589,12 +1596,10 @@ end:
         g_ptr_array_unref(session_bus_result);
 
     if (system_diag_tool_object)
-        system_info_parser->alterator_ctl_module_info_parser_result_tree_free(system_info_parser,
-                                                                              system_diag_tool_object);
+        alterator_ctl_module_info_parser_result_tree_free(system_diag_tool_object);
 
     if (session_diag_tool_object)
-        session_info_parser->alterator_ctl_module_info_parser_result_tree_free(session_info_parser,
-                                                                               session_diag_tool_object);
+        alterator_ctl_module_info_parser_result_tree_free(session_diag_tool_object);
 
     g_free(diag_tool_str_id);
 
@@ -1722,14 +1727,10 @@ end:
         g_ptr_array_unref(session_bus_result);
 
     if (system_diag_tools_objects)
-        system_info_parser->alterator_ctl_module_info_parser_result_trees_free(system_info_parser,
-                                                                               system_diag_tools_objects,
-                                                                               system_diag_tools_amount);
+        alterator_ctl_module_info_parser_result_trees_free(system_diag_tools_objects, system_diag_tools_amount);
 
     if (session_diag_tools_objects)
-        system_info_parser->alterator_ctl_module_info_parser_result_trees_free(session_info_parser,
-                                                                               session_diag_tools_objects,
-                                                                               session_diag_tools_amount);
+        alterator_ctl_module_info_parser_result_trees_free(session_diag_tools_objects, session_diag_tools_amount);
 
     return ret;
 }
@@ -1944,9 +1945,6 @@ static int diag_module_parse_options(AlteratorCtlDiagModule *module,
         ERR_EXIT();
     }
 
-    if (!system_bus && !session_bus && !both_buses || system_bus && session_bus)
-        both_buses = TRUE; // --all - default option for run subcommand
-
     // Prohibit crossing of opposite options
     if (name_only & path_only)
     {
@@ -2020,7 +2018,7 @@ static int diag_module_print_list_with_filters(AlteratorCtlDiagModule *module, d
         if (!no_display_name)
             g_print("%s (%s : %s)\n", diag_data->display_name, diag_data->name, diag_data->path);
         else
-            g_print("%s : %s\n", diag_data->display_name, diag_data->name, diag_data->path);
+            g_print("%s : %s\n", diag_data->name, diag_data->path);
     }
     else if (path_only && diag_data->type == TOOL)
         g_print("%s\n", diag_data->path);
@@ -2335,8 +2333,6 @@ static int diag_module_run_test(
     }
 
     const gchar *output_name = NULL;
-    test_result test_result  = *result;
-
     diag_module_get_test_display_name(source, path, test, &test_display_name);
 
     gboolean should_use_real_name = (name_only || no_display_name);
@@ -2367,7 +2363,7 @@ static int diag_module_run_test(
     }
 
     g_variant_get(d_ctx->result, "(i)", result);
-
+    test_result test_result     = *result;
     const gchar *status_message = test_result == PASS ? _("[PASS]") : (test_result == FAIL ? _("[FAIL]") : _("[WARN]"));
     text_color status_color     = test_result == PASS ? GREEN : (test_result == FAIL ? RED : YELLOW);
     colored_status              = colorize_text(status_message, status_color);
@@ -2444,8 +2440,7 @@ static int diag_module_get_file_suffix(AlteratorGDBusSource *source, const gchar
 
 end:
     if (parsed_tool_alterator_entry)
-        source->info_parser->alterator_ctl_module_info_parser_result_tree_free(source->info_parser,
-                                                                               parsed_tool_alterator_entry);
+        alterator_ctl_module_info_parser_result_tree_free(parsed_tool_alterator_entry);
 
     return ret;
 }

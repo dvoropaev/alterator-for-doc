@@ -663,7 +663,7 @@ static int components_module_list_subcommand(AlteratorCtlComponentsModule *modul
         {
             g_printerr(_("Printing list of components with categories failed. Can't parse categories data.\n"));
             if (category_parsed_data)
-                info_parser->alterator_ctl_module_info_parser_result_tree_free(info_parser, category_parsed_data);
+                alterator_ctl_module_info_parser_result_tree_free(category_parsed_data);
             ERR_EXIT();
         }
 
@@ -674,7 +674,7 @@ static int components_module_list_subcommand(AlteratorCtlComponentsModule *modul
                                               : NULL;
         if (draft_status && draft_status->bool_value)
         {
-            info_parser->alterator_ctl_module_info_parser_result_tree_free(info_parser, category_parsed_data);
+            alterator_ctl_module_info_parser_result_tree_free(category_parsed_data);
             continue;
         }
 
@@ -687,7 +687,7 @@ static int components_module_list_subcommand(AlteratorCtlComponentsModule *modul
             && components_module_get_display_name(module, category_name, CATEGORY, category_parsed_data, &display_name)
                    < 0)
         {
-            info_parser->alterator_ctl_module_info_parser_result_tree_free(info_parser, category_parsed_data);
+            alterator_ctl_module_info_parser_result_tree_free(category_parsed_data);
             ERR_EXIT();
         }
 
@@ -707,7 +707,7 @@ static int components_module_list_subcommand(AlteratorCtlComponentsModule *modul
             g_node_append(result, category_tree_node);
 
         g_hash_table_insert(categories_nodes_table, g_strdup(category_name), category_tree_node);
-        info_parser->alterator_ctl_module_info_parser_result_tree_free(info_parser, category_parsed_data);
+        alterator_ctl_module_info_parser_result_tree_free(category_parsed_data);
         g_free(display_name);
     }
 
@@ -741,7 +741,7 @@ static int components_module_list_subcommand(AlteratorCtlComponentsModule *modul
         {
             g_printerr(_("Printing list of components with categories failed. Can't parse components data.\n"));
             if (component_parsed_data)
-                info_parser->alterator_ctl_module_info_parser_result_tree_free(info_parser, component_parsed_data);
+                alterator_ctl_module_info_parser_result_tree_free(component_parsed_data);
             ERR_EXIT();
         }
 
@@ -757,7 +757,7 @@ static int components_module_list_subcommand(AlteratorCtlComponentsModule *modul
                                                                                 &status)
             < 0)
         {
-            info_parser->alterator_ctl_module_info_parser_result_tree_free(info_parser, component_parsed_data);
+            alterator_ctl_module_info_parser_result_tree_free(component_parsed_data);
             ERR_EXIT();
         }
 
@@ -767,7 +767,7 @@ static int components_module_list_subcommand(AlteratorCtlComponentsModule *modul
                                                  : NULL;
         if (draft_status && draft_status->bool_value)
         {
-            info_parser->alterator_ctl_module_info_parser_result_tree_free(info_parser, component_parsed_data);
+            alterator_ctl_module_info_parser_result_tree_free(component_parsed_data);
             continue;
         }
 
@@ -794,7 +794,7 @@ static int components_module_list_subcommand(AlteratorCtlComponentsModule *modul
                    < 0)
         {
             g_free(component_path);
-            info_parser->alterator_ctl_module_info_parser_result_tree_free(info_parser, component_parsed_data);
+            alterator_ctl_module_info_parser_result_tree_free(component_parsed_data);
             ERR_EXIT();
         }
 
@@ -810,7 +810,7 @@ static int components_module_list_subcommand(AlteratorCtlComponentsModule *modul
         GNode *component_tree_node = g_node_new(elem);
         g_hash_table_insert(components_nodes_table, g_strdup(component_name_toml_value->str_value), component_tree_node);
 
-        info_parser->alterator_ctl_module_info_parser_result_tree_free(info_parser, component_parsed_data);
+        alterator_ctl_module_info_parser_result_tree_free(component_parsed_data);
 
         g_free(component_path);
         g_free(display_name);
@@ -927,7 +927,7 @@ static int components_module_list_subcommand(AlteratorCtlComponentsModule *modul
             g_free(locale_display_name);
 
             if (section_result->data)
-                info_parser->alterator_ctl_module_info_parser_result_tree_free(info_parser, section_result);
+                alterator_ctl_module_info_parser_result_tree_free(section_result);
             else
                 g_free(section_result);
         }
@@ -959,7 +959,7 @@ end:
         g_hash_table_destroy(uninstalled_packages);
 
     if (sections)
-        info_parser->alterator_ctl_module_info_parser_result_trees_free(info_parser, sections, amount_of_sections);
+        alterator_ctl_module_info_parser_result_trees_free(sections, amount_of_sections);
 
     g_free(current_arch);
 
@@ -1384,7 +1384,7 @@ end:
         g_hash_table_destroy(component_installed_packages_names);
 
     if (component_parse_info)
-        info_parser->alterator_ctl_module_info_parser_result_tree_free(info_parser, component_parse_info);
+        alterator_ctl_module_info_parser_result_tree_free(component_parse_info);
 
     g_free(component_str_id);
 
@@ -2052,8 +2052,7 @@ end:
 
     g_free(component_path);
 
-    source->info_parser->alterator_ctl_module_info_parser_result_tree_free(source->info_parser,
-                                                                           parsed_component_alterator_entry);
+    alterator_ctl_module_info_parser_result_tree_free(parsed_component_alterator_entry);
 
     return ret;
 }
@@ -2320,14 +2319,14 @@ static GNode **components_module_get_section_nodes(AlteratorCtlComponentsModule 
                                                                               COMPONENTS_EDITION_SECTION_TABLE_NAME);
     if (!sections)
     {
-        info_parser->alterator_ctl_module_info_parser_result_tree_free(info_parser, parsed_edition_info);
+        alterator_ctl_module_info_parser_result_tree_free(parsed_edition_info);
         goto end;
     }
 
     (*amount_of_sections) = g_node_n_children(sections);
     if (!(*amount_of_sections))
     {
-        info_parser->alterator_ctl_module_info_parser_result_tree_free(info_parser, parsed_edition_info);
+        alterator_ctl_module_info_parser_result_tree_free(parsed_edition_info);
         goto end;
     }
 
@@ -2343,7 +2342,7 @@ static GNode **components_module_get_section_nodes(AlteratorCtlComponentsModule 
 end:
 
     if (parsed_edition_info)
-        info_parser->alterator_ctl_module_info_parser_result_tree_free(info_parser, parsed_edition_info);
+        alterator_ctl_module_info_parser_result_tree_free(parsed_edition_info);
 
     g_free(alterator_entry);
 
@@ -3458,7 +3457,7 @@ static gboolean components_module_get_tree_elem_by_name_traverse_func(GNode *nod
         return FALSE;
 
     gchar *current_node_name = ((components_module_tree_elem_t *) node->data)->name;
-    if (strcmp(*target_node_name, current_node_name) == 0)
+    if (g_strcmp0(*target_node_name, current_node_name) == 0)
     {
         (*result) = node;
         return TRUE;
@@ -3933,7 +3932,7 @@ static int components_module_get_display_name(AlteratorCtlComponentsModule *modu
 
 end:
     if (elem_data && !data)
-        info_parser->alterator_ctl_module_info_parser_result_tree_free(info_parser, elem_data);
+        alterator_ctl_module_info_parser_result_tree_free(elem_data);
 
     g_free(locale);
 
@@ -4968,7 +4967,7 @@ end:
         g_hash_table_destroy(component_uninstalled_packages_names);
 
     if (parsed_component)
-        info_parser->alterator_ctl_module_info_parser_result_tree_free(info_parser, parsed_component);
+        alterator_ctl_module_info_parser_result_tree_free(parsed_component);
 
     g_free(component_path);
 
@@ -5217,7 +5216,7 @@ static int components_module_calculate_affected_components(AlteratorCtlComponent
                                                    COMPONENT_ALTERATOR_ENTRY_COMPONENT_DRAFT_KEY_NAME);
         if (is_draft && is_draft->bool_value)
         {
-            info_parser->alterator_ctl_module_info_parser_result_tree_free(info_parser, component_info);
+            alterator_ctl_module_info_parser_result_tree_free(component_info);
             continue;
         }
 
@@ -5293,7 +5292,7 @@ static int components_module_calculate_affected_components(AlteratorCtlComponent
                 g_hash_table_add(components_names, g_strdup(component_name));
         }
 
-        info_parser->alterator_ctl_module_info_parser_result_tree_free(info_parser, component_info);
+        alterator_ctl_module_info_parser_result_tree_free(component_info);
     }
 
     *result = g_hash_table_new_full(g_str_hash, g_str_equal, (GDestroyNotify) g_free, NULL);
@@ -5607,7 +5606,7 @@ static int components_module_get_base_section_packages(AlteratorCtlComponentsMod
 
         if (!g_hash_table_contains(base_components, component_name->str_value))
         {
-            info_parser->alterator_ctl_module_info_parser_result_tree_free(info_parser, component_info);
+            alterator_ctl_module_info_parser_result_tree_free(component_info);
             continue;
         }
 
@@ -5685,12 +5684,10 @@ static int components_module_get_base_section_packages(AlteratorCtlComponentsMod
 
 end:
     if (edition_sections)
-        info_parser->alterator_ctl_module_info_parser_result_trees_free(info_parser,
-                                                                        edition_sections,
-                                                                        amounth_of_sections);
+        alterator_ctl_module_info_parser_result_trees_free(edition_sections, amounth_of_sections);
 
     if (components_info)
-        info_parser->alterator_ctl_module_info_parser_result_tree_free(info_parser, components_info);
+        alterator_ctl_module_info_parser_result_tree_free(components_info);
 
     if (base_components)
         g_hash_table_unref(base_components);

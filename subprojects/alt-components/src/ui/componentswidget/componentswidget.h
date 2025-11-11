@@ -1,10 +1,9 @@
 #ifndef COMPONENTSWIDGET_H
 #define COMPONENTSWIDGET_H
 
-#include "model/objects/package.h"
-#include "model/proxymodel.h"
 #include <memory>
 
+#include <QItemSelection>
 #include <QMenu>
 #include <QShortcut>
 #include <QStandardItemModel>
@@ -27,11 +26,9 @@ public:
     explicit ComponentsWidget(QWidget *parent = nullptr);
     ~ComponentsWidget() override;
 
-    void setComponentsModel(alt::ProxyModel *model);
-    void setDescription(const QString &description);
-    void setContentList(const std::vector<std::shared_ptr<Package>> &packages);
-    void setContentList(QAbstractItemModel *model, const QModelIndex &index);
+    void setComponentsModel(QAbstractItemModel *model);
     void expandTopLevel();
+    void updateDescription();
 
 public:
     ComponentsWidget(const ComponentsWidget &) = delete;
@@ -59,7 +56,6 @@ private slots:
 
 private:
     std::unique_ptr<Ui::ComponentsWidget> ui;
-    std::unique_ptr<QStandardItemModel> packagesListModel;
     std::unique_ptr<QMenu> treeContextMenu;
     std::unique_ptr<QMenu> packagesContextMenu;
     std::unique_ptr<QShortcut> findShortcut;

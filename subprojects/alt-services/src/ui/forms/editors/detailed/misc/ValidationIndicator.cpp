@@ -1,16 +1,13 @@
 #include "ValidationIndicator.h"
-#include "ui_ValidationIndicator.h"
 #include "../../Editor.h"
 
 ValidationIndicator::ValidationIndicator(QWidget* parent)
-    : QWidget{parent}
-    , ui { new Ui::ValidationIndicator }
+    : KMessageWidget{parent}
 {
-    ui->setupUi(this);
-    ui->iconLabel->setPixmap(QIcon::fromTheme("dialog-warning").pixmap({24,24}).scaled(24,24));
+    setMessageType(KMessageWidget::MessageType::Error);
+    setCloseButtonVisible(false);
+    setIcon(QIcon::fromTheme("dialog-error"));
 }
-
-ValidationIndicator::~ValidationIndicator() { delete ui; }
 
 void ValidationIndicator::setEditor(Editor *e)
 {
@@ -21,9 +18,8 @@ void ValidationIndicator::setEditor(Editor *e)
 
 void ValidationIndicator::validate(){
     if ( auto info = m_editor->value()->isInvalid() ) {
-        ui->textLabel->setText(info->message);
-        show();
-    } else {
-        hide();
-    }
+        setText(info->message);
+        animatedShow();
+    } else
+        animatedHide();
 }

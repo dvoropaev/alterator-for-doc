@@ -16,6 +16,11 @@ namespace alt
 {
 bool Transaction::add(std::reference_wrapper<Component> component)
 {
+    if (m_components.contains(component.get().name))
+    {
+        return false;
+    }
+
     setStatus(Status::New);
     cacheResolved.reset();
 

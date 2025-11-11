@@ -1,12 +1,15 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
+#include <tl/expected.hpp>
+
+#include "model/componentfilterproxymodel.h"
+#include "model/ensembleproxymodel.h"
 #include "model/item.h"
 #include "model/model.h"
 #include "model/modelbuilder.h"
-#include "model/objects/component.h"
 #include "model/proxymodel.h"
-#include "service/transactionservice.h"
+#include "model/transactionfilterproxymodel.h"
 #include "ui/applydialog/transactionwizard.h"
 #include "ui/applydialog/updatingsourceswizard.h"
 #include "ui/errordialog/errordialog.h"
@@ -28,19 +31,21 @@ public:
     static Controller &instance();
 
     void init();
-    void selectObject(QModelIndex index);
-    void itemChanged(ModelItem *item);
     void changeLocale(const QLocale &locale);
+
+    QString getDescription(const QModelIndex &index) const;
+    std::pair<ModelItem::Type, QAbstractItemModel *> getContent(const QModelIndex &index) const;
 
     void apply();
     void reset();
     tl::expected<void, DBusError> update();
     void updateSources();
+    void updateCurrentTransaction(const QModelIndex &index);
 
     void showError(int code, const QString &text);
     void showWarnings();
-    void showDrafts(bool showDrafts);
     void showContent(bool showContent);
+    void setFilterDrafts(bool showDrafts);
     void setFilterNonEditionComponents(bool show);
     void setViewMode(MainWindow::ViewMode viewMode);
     void setNameViewMode(MainWindow::NameViewMode viewMode);
@@ -65,31 +70,32 @@ public:
     Controller &operator=(Controller &&) = delete;
 
 private:
+    static QString getObjectDescription(const Object *object);
+    QString getDescriptionPrefixWithStats(const QModelIndex &index, const Object *object, ModelItem::Type type) const;
     bool isStatusEquivalent();
     void setButtonsStatus(bool status);
     void showWaitingDialog();
+    void setFilter(ComponentFilterProxyModel::FilterOptions option, bool value);
 
     bool checkDate(std::optional<QDate> backendResult, int interval, const QString &warningMessage);
 
     void updateViewMode();
 
     void issueLog(const QList<QStandardItem *> &items);
-    void updateParentCategoryBackground(ModelItem *parentItem);
 
     QString toLocalizedString(const QtMsgType &level);
     void retranslateWarningsModel();
-
-    void setEnableBaseComponents(bool isEnable);
-    void resetBaseComponentState(QStandardItem *parent,
-                                 const QSet<QString> &baseComponents,
-                                 QList<ModelItem *> &installedBaseComponents);
 
     QBrush initMixedStateBackgroundBrush();
 
 private:
     std::unique_ptr<Model> model;
+    std::unique_ptr<ComponentFilterProxyModel> filterProxyModel;
+    std::unique_ptr<TransactionFilterProxyModel> transactionProxyModel;
     std::unique_ptr<ProxyModel> proxyModel;
+    std::unique_ptr<EnsembleProxyModel> ensemble;
     std::unique_ptr<ModelBuilder> modelBuilder;
+    mutable std::unique_ptr<QStandardItemModel> packagesListModel;
     std::unique_ptr<alt::MainWindow> mainWindow;
     std::unique_ptr<TransactionWizard> transactionWizard;
     std::unique_ptr<UpdatingSourcesWizard> updatingWizard;

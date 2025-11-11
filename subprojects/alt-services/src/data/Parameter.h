@@ -2,7 +2,7 @@
 
 #include "Property.h"
 class Resource;
-
+class Service;
 
 /*
  *  Parameter is a top-level configuration Property of a Service.
@@ -54,6 +54,12 @@ public:
     };
     Q_DECLARE_FLAGS(Contexts, Context)
 
+    enum class ValueScope {
+        Default,
+        Current,
+        Edit
+    };
+
     inline Parameter(PropertyPtr& base, Contexts contexts, Contexts contexts_required)
         : Property{*base.get()}
         , m_contexts{contexts}
@@ -65,11 +71,13 @@ public:
     inline Contexts contexts() const { return m_contexts; }
     inline Contexts required() const { return m_contexts_required; }
 
-
-    inline void fill(QJsonValue& v){ m_current->fill(v); }
-
-    inline Value* currentValue() const { return m_current.get(); }
-    inline Value*    editValue() const { return m_edit.get(); }
+    inline Value* value(ValueScope scope) const { switch (scope) {
+        case ValueScope::Default: return defaultValue();
+        case ValueScope::Edit:    return m_edit.get();
+        case ValueScope::Current:
+        default:
+            return m_current.get();
+    }}
 
     inline void fillFromValue(bool current){
         m_edit = (current ? m_current : m_value)->clone();
@@ -81,8 +89,12 @@ public:
     inline void setResource(Resource* resource) { m_resource = resource; }
     inline Resource* resource() const { return m_resource; }
 
+    inline Service* service() const { return m_service; }
 
 protected:
+    Service* m_service{};
+    friend class Service;
+
     const Contexts m_contexts;
     const Contexts m_contexts_required;
     Resource* m_resource{nullptr};

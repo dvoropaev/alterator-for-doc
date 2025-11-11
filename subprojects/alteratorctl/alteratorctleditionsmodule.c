@@ -473,9 +473,7 @@ static int editions_module_list_subcommand(AlteratorCtlEditionsModule *module, a
 
 end:
     if (editions_parsed_objects)
-        info_parser->alterator_ctl_module_info_parser_result_trees_free(info_parser,
-                                                                        editions_parsed_objects,
-                                                                        editions_amount);
+        alterator_ctl_module_info_parser_result_trees_free(editions_parsed_objects, editions_amount);
 
     if (result)
         g_ptr_array_unref(result);

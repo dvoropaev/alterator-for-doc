@@ -7,12 +7,12 @@
 
 class ServiceModel : public QAbstractTableModel {
     Q_OBJECT
-    PtrVector<Service>& m_services;
+    std::vector<Service*> m_services;
 
 public:
-    ServiceModel(PtrVector<Service>& services);
+    ServiceModel() = default;
 
-    void refresh();
+    void setItems(const PtrVector<Service>&);
 
     int rowCount(const QModelIndex& parent = {}) const override;
 

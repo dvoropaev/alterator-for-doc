@@ -1,2 +1,2 @@
 tar: .
-spec: .gear/alterator-application-control.spec
+spec: .gear/alt-control.spec

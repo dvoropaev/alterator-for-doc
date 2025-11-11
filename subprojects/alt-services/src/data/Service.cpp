@@ -5,9 +5,6 @@
 #include <QJsonDocument>
 #include <QIcon>
 
-#include "models/ParameterStatusModel.h"
-#include "models/ResourceModel.h"
-
 class Service::Private {
 public:
     Private(PtrVector<Parameter>&& parameters,
@@ -15,9 +12,7 @@ public:
             PtrVector<DiagTool>&& tools,
             const QString& iconName)
         : m_parameters{std::move(parameters)}
-        , m_parameter_model{parameters}
         , m_resources{std::move(resources)}
-        , m_resource_model{resources}
         , m_diag_tools{std::move(tools)}
         , m_icon{ QIcon::fromTheme(iconName) }
     {
@@ -37,14 +32,13 @@ public:
                 return res;
             });
         }
-
     }
 
-    void fill(QJsonObject o){
+    void fill(QJsonObject o, Parameter::Context ctx){
         for ( auto& param : m_parameters ) {
             auto obj = o[param->name()];
-            if ( !obj.isUndefined() )
-                param->currentValue()->fill(obj);
+            if ( !obj.isUndefined() && !obj.isNull() )
+                param->value(Parameter::ValueScope::Current)->fill(obj, param->required().testFlag(ctx));
         }
     }
 
@@ -58,14 +52,12 @@ public:
             if ( it == m_parameters.cend() )
                 return false;
 
-            it->get()->editValue()->fill(o.value(name));
+            it->get()->value(Parameter::ValueScope::Edit)->fill(o.value(name), ctx);
         }
         return true;
     }
 
     const QIcon m_icon;
-    ParameterStatusModel m_parameter_model;
-    ResourceModel        m_resource_model;
     PtrVector<Property>  m_prototypes;
     PtrVector<Parameter> m_parameters;
     PtrVector<Resource>  m_resources;
@@ -86,12 +78,15 @@ Service::Service(const QString& name,
     , m_dbusPath{path}
     , m_force_deployable{force_deployable}
     , m_diagNotFound{diagMissing}
-{}
+{
+    for ( auto& parameter : d->m_parameters )
+        parameter->m_service = this;
+
+    for ( auto& resource : d->m_resources )
+        resource->m_service = this;
+}
 
 Service::~Service() { delete d; }
-
-ParameterModel* Service::parameterModel() { return &d->m_parameter_model; }
-ResourceModel* Service::resourceModel()  { return &d->m_resource_model; }
 
 void Service::setLocale(const QLocale& locale) const {
     TranslatableObject::setLocale(locale);
@@ -112,17 +107,15 @@ const PtrVector<Parameter>& Service::parameters()
     return d->m_parameters;
 }
 
+const PtrVector<Resource>& Service::resources()
+{
+    return d->m_resources;
+}
+
 const PtrVector<DiagTool>& Service::diagTools()
 {
     return d->m_diag_tools;
 }
-
-
-void Service::showDefault(bool how)
-{
-    d->m_parameter_model.showDefault(how);
-}
-
 
 
 QJsonObject Service::getParameters(Parameter::Contexts ctx, bool excludePasswords)
@@ -130,22 +123,21 @@ QJsonObject Service::getParameters(Parameter::Contexts ctx, bool excludePassword
     QJsonObject parameters;
 
     for ( auto& parameter : d->m_parameters ) {
-        if ( ! (parameter->contexts() & ctx) || ( !(parameter->required() & ctx) & !parameter->editValue()->isEnabled() ) )
+        if ( ! (parameter->contexts() & ctx) || ( !(parameter->required() & ctx) & !parameter->value(Parameter::ValueScope::Edit)->isEnabled() ) )
             continue;
 
-        parameters[parameter->name()] = ( parameter->isConstant()
-                                          ? parameter->defaultValue()
-                                          : parameter->editValue() )->serialize(excludePasswords);
+        parameters[parameter->name()] = parameter->value(parameter->isConstant() ? Parameter::ValueScope::Default : Parameter::ValueScope::Edit)->serialize(excludePasswords);
     }
 
     return parameters;
 }
 
 
-void Service::setStatus(int code, const QByteArray& data)
+void Service::setStatus(const QByteArray& data)
 {
     for ( const auto& param : d->m_parameters )
-        param->currentValue()->resetEnabledState();
+        if ( param->contexts().testFlag(Parameter::Context::Status) )
+            param->value(Parameter::ValueScope::Current)->resetEnabledState();
 
     auto parameters = QJsonDocument::fromJson(data);
     if ( parameters.isNull() )
@@ -157,24 +149,35 @@ void Service::setStatus(int code, const QByteArray& data)
     if ( m_deployed ) {
         auto current = parameters.object();
         if ( ! current.empty() )
-            d->fill(current);
+            d->fill(current, Parameter::Context::Status);
     }
 }
 
 bool Service::tryFill(QJsonObject o, Parameter::Contexts ctx) { return d->tryFill(o, ctx); }
 
-bool Service::hasConflict(Service* toDeploy, Resource** ours, Resource** theirs)
+bool Service::hasPreDiag() const {
+    using namespace std::placeholders;
+    return !forceDeploy() && !isDeployed() &&
+           std::any_of( d->m_diag_tools.cbegin(), d->m_diag_tools.cend(),
+                        std::bind(&DiagTool::hasTests, _1, DiagTool::Test::Mode::PreDeploy) );
+}
+
+bool Service::hasPostDiag() const {
+    using namespace std::placeholders;
+    return std::any_of(d->m_diag_tools.cbegin(), d->m_diag_tools.cend(),
+                       std::bind(&DiagTool::hasTests, _1, DiagTool::Test::Mode::PostDeploy));
+}
+
+bool Service::hasConflict(Service* toDeploy, Resource* theirs, Resource** ours)
 {
-    if ( m_deployed || this == toDeploy )
-        for ( auto& our_resource : d->m_resources )
-            for ( auto& their_resource : toDeploy->d->m_resources ) {
-                if ( our_resource == their_resource ) continue;
-                if ( our_resource->conflicts(their_resource.get()) ){
-                    *ours   = our_resource.get();
-                    *theirs = their_resource.get();
-                    return true;
-                }
+    if ( m_deployed && this != toDeploy )
+        for ( auto& our_resource : d->m_resources ) {
+            if ( our_resource.get() == theirs ) continue;
+            if ( our_resource->conflicts(theirs) ){
+                *ours   = our_resource.get();
+                return true;
             }
+        }
 
     return false;
 }

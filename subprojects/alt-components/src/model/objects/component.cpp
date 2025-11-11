@@ -61,16 +61,11 @@ Component::Component(const Component &component)
 {
     this->name = component.name;
     this->type = component.type;
-    this->displayName = component.displayName;
-    this->description = component.description;
-    this->comment = component.comment;
+    this->displayNameStorage = component.displayNameStorage;
+    this->commentStorage = component.commentStorage;
     this->category = component.category;
     this->icon = component.icon;
     this->dbusPath = component.dbusPath;
-
-    this->displayNameLocaleStorage = component.displayNameLocaleStorage;
-    this->descriptionLocaleStorage = component.descriptionLocaleStorage;
-    this->commentLocaleStorage = component.commentLocaleStorage;
 
     std::copy(component.packages.begin(), component.packages.end(), std::inserter(this->packages, packages.begin()));
 }

@@ -93,6 +93,7 @@ components = [
     "gpupdate",
 # apps/alterator:
     "alterator-base",
+    "alterator-service-samba-ad",
 # domain-infra:
     "admx-templates",
     "samba-ad-admin-tools",

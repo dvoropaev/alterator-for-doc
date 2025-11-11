@@ -18,6 +18,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - missing icon on the start page of wizard
 - highlighting of disabled parameters
 - incorrect application name & icon in Gnome
+- incorrect text/background colors in some table cells
+- disabled checkboxes were drawn as active in "compact mode
+- "word wrap" option did not affect some table cells
+- "select all" & "clear" buttons were not working
+- diagnostic tools selection was not possible in keyboard-only naviggation
+- incorrect enum parameters processing
 
 ### Changed
 - updated to latest alterator-entry changes
@@ -25,16 +31,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - text is no more elided inside table 
 - error messages are now tracked for all actions
 - unified look and behaviour of all selectable items inside tables
+- important messages now have background color depending on message type
+- "force deploy" now allowes to ignore resource conflicts
+- "refresh all" option position in services table context menu
+- start & stop actions are now blocked until prefious call is finished
 
 ### Added
 - an option to put non-required parameters at the end of the list
+- an option to configure word wrap in tables
 - service's Status() debug output
 - service, diagnostic tools and test icons
 - overridable resource highlighting
 - array item prefixes
+- a table of resources with current owners on the start wizard page
+- check for unresolvable resource conflicts on the start wizard page
+- check for resource conflicts while validating parameters that are linked to resources
 
 ### Removed
 - Start() & Stop() calls during Configure()
+- old resource conflict message
 
 ## 0.1.5-alt1
 

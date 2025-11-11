@@ -4,24 +4,15 @@
 #include "data/Service.h"
 #include "app/ServicesApp.h"
 
-class Controller;
-
 class ActionWizard : public QWizard
 {
     Q_OBJECT
 
 public:
-    explicit ActionWizard(Controller* controller, QWidget *parent = nullptr);
+    explicit ActionWizard(QWidget *parent = nullptr);
     ~ActionWizard();
-    void initMenu();
 
     void open(Parameter::Context context, Service* service);
-    Parameter::Context context() const;
-    Service* service() const;
-    bool     preDiag() const;
-    bool    postDiag() const;
-    bool   autoStart() const;
-    bool forceDeploy() const;
 
 public slots:
     void readParameters(const ServicesApp::ParsedParameters& parameters);
@@ -32,8 +23,8 @@ private slots:
     void fillCurrentParameters();
     void onModeChanged();
     void exportParameters();
-    void on_invalidParameterWarningText_linkActivated(const QString &link);
-    void on_invalidParameterWarningText_linkHovered(const QString &link);
+    void on_invalidParameterWarning_linkActivated(const QString &link);
+    void on_invalidParameterWarning_linkHovered(const QString &link);
     void on_forceDeployCheckBox_toggled(bool checked);
     void on_finishPageCheckBox_clicked(bool checked);
     void on_ActionWizard_currentIdChanged(int id);

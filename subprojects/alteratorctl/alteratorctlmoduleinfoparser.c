@@ -43,10 +43,6 @@ static gboolean alterator_ctl_module_info_parser_find_table_callback(GNode *node
 
 static gboolean alterator_ctl_module_info_parser_find_value_callback(GNode *node, gpointer data);
 
-static void alterator_ctl_module_info_parser_result_tree_free(gpointer self, GNode *root);
-
-static void alterator_ctl_module_info_parser_result_trees_free(gpointer self, GNode **roots, gsize amount_of_trees);
-
 static int alterator_ctl_module_info_parser_recursive_nodes_parse(toml_table_t *table,
                                                                   gchar *table_name,
                                                                   GNode **result);
@@ -65,11 +61,93 @@ static int alterator_ctl_module_info_parser_get_objects_names_callback(gpointer 
 
 static gboolean alterator_ctl_module_info_parser_node_free(GNode *node, gpointer data);
 
+static gpointer alterator_ctl_module_info_parser_tree_data_copy(gconstpointer data, gpointer additional_data);
+
 typedef struct
 {
     gchar *key;
     toml_value *value;
 } toml_value_traverse_ctx;
+
+gboolean alterator_ctl_compare_toml_values(toml_value *first, toml_value *second, GError **error)
+{
+    if (!first)
+    {
+        if (error)
+            g_set_error(error,
+                        g_quark_from_static_string("alteratorctl toml comparison"),
+                        -1,
+                        "Can't compare toml values: first value is empty");
+        return FALSE;
+    }
+
+    if (!second)
+    {
+        if (error)
+            g_set_error(error,
+                        g_quark_from_static_string("alteratorctl toml comparison"),
+                        -1,
+                        "Can't compare toml values: first value is empty");
+        return FALSE;
+    }
+
+    if (first->type != second->type)
+        return FALSE;
+
+    switch (first->type)
+    {
+    case TOML_DATA_STRING:
+        return g_strcmp0(first->str_value, second->str_value) == 0;
+        break;
+
+    case TOML_DATA_DOUBLE:
+        return first->double_value == second->double_value;
+        break;
+
+    case TOML_DATA_BOOL:
+        return first->bool_value == second->bool_value;
+        break;
+
+    case TOML_DATA_ARRAY_OF_INT:
+        for (gsize i = 0; i < first->array_length; i++)
+            if (((gint *) first->array)[i] != ((gint *) second->array)[i])
+                return FALSE;
+        return TRUE;
+        break;
+
+    case TOML_DATA_ARRAY_OF_DOUBLE:
+        for (gsize i = 0; i < first->array_length; i++)
+            if (((gdouble *) first->array)[i] != ((gdouble *) second->array)[i])
+                return FALSE;
+        return TRUE;
+        break;
+
+    case TOML_DATA_ARRAY_OF_BOOL:
+        for (gsize i = 0; i < first->array_length; i++)
+            if (((gint *) first->array)[i] != ((gint *) second->array)[i])
+                return FALSE;
+        return TRUE;
+        break;
+
+    case TOML_DATA_ARRAY_OF_STRING:
+        for (gsize i = 0; i < first->array_length; i++)
+            if (g_strcmp0(((gchar **) first->array)[i], ((gchar **) second->array)[i]) != 0)
+                return FALSE;
+        return TRUE;
+        break;
+
+    default:
+        if (error)
+            g_set_error(error,
+                        g_quark_from_static_string("alteratorctl toml comparison"),
+                        -1,
+                        "Can't compare toml values: unsupported types");
+        return FALSE;
+        break;
+    }
+
+    return FALSE;
+}
 
 static void alterator_entry_info_toml_value_free(toml_value *value)
 {
@@ -171,10 +249,6 @@ AlteratorCtlModuleInfoParser *alterator_module_info_parser_new()
 
     object->alterator_ctl_module_info_parser_find_value = &alterator_ctl_module_info_parser_find_value;
 
-    object->alterator_ctl_module_info_parser_result_tree_free = &alterator_ctl_module_info_parser_result_tree_free;
-
-    object->alterator_ctl_module_info_parser_result_trees_free = &alterator_ctl_module_info_parser_result_trees_free;
-
     return object;
 }
 
@@ -218,7 +292,7 @@ static int alterator_ctl_module_info_parser_create_names_by_dbus_paths_table(gpo
 
 end:
     if (result)
-        alterator_ctl_module_info_parser_result_trees_free(self, result, amount_of_objects);
+        alterator_ctl_module_info_parser_result_trees_free(result, amount_of_objects);
 
     return ret;
 }
@@ -229,6 +303,18 @@ static GNode *alterator_ctl_module_info_parser_get_node_by_name(gpointer self, G
     if (!self)
     {
         g_printerr(_("Module info parser object wasn't created.\n"));
+        return NULL;
+    }
+
+    if (!root)
+    {
+        g_printerr(_("Can't get child node of empty root.\n"));
+        return NULL;
+    }
+
+    if (!name || !strlen(name))
+    {
+        g_printerr(_("Can't get child node by empty name.\n"));
         return NULL;
     }
 
@@ -655,7 +741,7 @@ end:
     return ret;
 }
 
-static void alterator_ctl_module_info_parser_result_tree_free(gpointer self, GNode *root)
+void alterator_ctl_module_info_parser_result_tree_free(GNode *root)
 {
     if (!root)
         return;
@@ -669,15 +755,20 @@ static void alterator_ctl_module_info_parser_result_tree_free(gpointer self, GNo
     g_node_destroy(root);
 }
 
-static void alterator_ctl_module_info_parser_result_trees_free(gpointer self, GNode **roots, gsize amount_of_trees)
+void alterator_ctl_module_info_parser_result_trees_free(GNode **roots, gsize amount_of_trees)
 {
     if (!roots)
         return;
 
     for (gsize i = 0; i < amount_of_trees; i++)
-        alterator_ctl_module_info_parser_result_tree_free(self, roots[i]);
+        alterator_ctl_module_info_parser_result_tree_free(roots[i]);
 
     g_free(roots);
+}
+
+GNode *alterator_ctl_module_info_parser_tree_deep_copy(GNode *tree)
+{
+    return g_node_copy_deep(tree, alterator_ctl_module_info_parser_tree_data_copy, NULL);
 }
 
 static gboolean alterator_ctl_module_info_parser_find_node_callback(GNode *node, gpointer data)
@@ -803,7 +894,7 @@ static int alterator_ctl_module_info_parser_get_objects_names_callback(gpointer 
                        (const gchar *) path,
                        iface);
 
-            alterator_ctl_module_info_parser_result_trees_free(self, parsed_data, node_index + 1);
+            alterator_ctl_module_info_parser_result_trees_free(parsed_data, node_index + 1);
             g_hash_table_destroy(info_parser->names_by_dbus_paths);
             ERR_EXIT();
         }
@@ -826,4 +917,61 @@ static gboolean alterator_ctl_module_info_parser_node_free(GNode *node, gpointer
         g_free(node->data);
     }
     return FALSE;
+}
+
+static gpointer alterator_ctl_module_info_parser_tree_data_copy(gconstpointer data, gpointer additional_data)
+{
+    alterator_entry_node *result    = g_new0(alterator_entry_node, 1);
+    alterator_entry_node *node_data = (alterator_entry_node *) data;
+
+    result->node_name  = g_strdup(node_data->node_name);
+    result->toml_pairs = g_hash_table_new_similar(node_data->toml_pairs);
+
+    GHashTableIter iter;
+    g_hash_table_iter_init(&iter, node_data->toml_pairs);
+    gpointer key = NULL, value = NULL;
+    while (g_hash_table_iter_next(&iter, &key, &value))
+    {
+        toml_value *original_value = (toml_value *) value;
+        toml_value *copyed_value   = g_new0(toml_value, 1);
+        copyed_value->type         = original_value->type;
+        copyed_value->array_length = original_value->array_length;
+
+        switch (copyed_value->type)
+        {
+        case TOML_DATA_STRING:
+            copyed_value->str_value = g_strdup(original_value->str_value);
+            break;
+        case TOML_DATA_DOUBLE:
+            copyed_value->double_value = original_value->double_value;
+            break;
+        case TOML_DATA_BOOL:
+            copyed_value->bool_value = original_value->bool_value;
+            break;
+        case TOML_DATA_ARRAY_OF_INT:
+            copyed_value->array = (gpointer *) g_new0(int, copyed_value->array_length);
+            for (gsize i = 0; i < copyed_value->array_length; i++)
+                ((int *) copyed_value->array)[i] = ((int *) original_value->array)[i];
+            break;
+        case TOML_DATA_ARRAY_OF_DOUBLE:
+            copyed_value->array = (gpointer *) g_new0(double, copyed_value->array_length);
+            for (gsize i = 0; i < copyed_value->array_length; i++)
+                ((double *) copyed_value->array)[i] = ((double *) original_value->array)[i];
+            break;
+        case TOML_DATA_ARRAY_OF_BOOL:
+            copyed_value->array = (gpointer *) g_new0(int, copyed_value->array_length);
+            for (gsize i = 0; i < copyed_value->array_length; i++)
+                ((int *) copyed_value->array)[i] = ((int *) original_value->array)[i];
+            break;
+        case TOML_DATA_ARRAY_OF_STRING:
+            copyed_value->array = (gpointer *) g_new0(gchar *, copyed_value->array_length);
+            for (gsize i = 0; i < copyed_value->array_length; i++)
+                ((gchar **) copyed_value->array)[i] = ((gchar **) original_value->array)[i];
+            break;
+        }
+
+        g_hash_table_insert(result->toml_pairs, g_strdup((gchar *) key), copyed_value);
+    }
+
+    return (gpointer) result;
 }

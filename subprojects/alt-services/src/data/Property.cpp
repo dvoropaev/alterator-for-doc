@@ -1,10 +1,14 @@
 #include "Property.h"
+#include "Parameter.h"
 
 #include <QRegularExpression>
 #include <QJsonValue>
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QSize>
+
+#include "app/ServicesApp.h"
+#include "controller/Controller.h"
 
 Property::Property(Property& other) noexcept
     : TranslatableObject{other}
@@ -83,9 +87,9 @@ std::unique_ptr<Property::Value::ValidationInfo> Property::Value::isInvalid() co
 {
     using ValidationInfo = Property::Value::ValidationInfo;
 
-    if ( m_property->isConstant() || !m_enabled ) return {};
+    if ( m_property->isConstant() ) return {};
 
-    switch ( m_property->m_type ) {
+    if (m_enabled) switch ( m_property->m_type ) {
         case Property::Type::Array: {
             auto size = m_children.size();
             auto [min,max] = m_property->m_allowed_values.toSize();
@@ -100,7 +104,7 @@ std::unique_ptr<Property::Value::ValidationInfo> Property::Value::isInvalid() co
                 if ( auto childInfo = child->isInvalid() )
                     return std::unique_ptr<ValidationInfo>{new ValidationInfo{this, QObject::tr("Some of the items are invalid"), std::move(childInfo)}};
 
-            return {};
+            break;
         }
 
         case Property::Type::Enum: {
@@ -114,19 +118,19 @@ std::unique_ptr<Property::Value::ValidationInfo> Property::Value::isInvalid() co
                 return std::unique_ptr<ValidationInfo>{new ValidationInfo{this, QObject::tr("Additional data for the selected variant is not valid"), std::move(childInfo)}};
 
             if ( ++currentIt == m_children.cend() )
-                return {};
+                break;
 
             if ( std::any_of(currentIt, m_children.cend(), [](const auto& child){return child->isEnabled();}) )
                 return std::unique_ptr<ValidationInfo>{new ValidationInfo{this, QObject::tr("More than one items are selected. This is an internal error. Please re-select an item.")}};
 
-            return {};
+            break;
         }
 
         case Property::Type::Composite:
             for ( const auto& child : m_children )
                 if ( auto childInfo = child->isInvalid() )
                     return std::unique_ptr<ValidationInfo>{new ValidationInfo{this, QObject::tr("Some of the items are invalid"), std::move(childInfo)}};
-            return {};
+            break;
 
 
         case Property::Type::String: {
@@ -139,7 +143,7 @@ std::unique_ptr<Property::Value::ValidationInfo> Property::Value::isInvalid() co
             if ( !regexp.isEmpty() && !QRegularExpression{regexp}.match(string).hasMatch() )
                 return std::unique_ptr<ValidationInfo>{new ValidationInfo{this, QObject::tr("Invalid input")}};
 
-            return {};
+            break;
         }
 
         case Property::Type::Int: {
@@ -149,11 +153,48 @@ std::unique_ptr<Property::Value::ValidationInfo> Property::Value::isInvalid() co
             if ( val < min || val > max )
                 std::unique_ptr<ValidationInfo>{new ValidationInfo{this, QObject::tr("The number should be between %1 and %2").arg(min).arg(max)}};
 
-            return {};
+            break;
         }
 
-        default: return {};
+        default: break;
     }
+
+    if ( Parameter* parameter = dynamic_cast<Parameter*>(property()) ) {
+        if ( !parameter->service()->forceDeploy() ) {
+            if ( Resource* resource = parameter->resource() ) {
+                auto it = std::find_if(
+                    parameter->service()->resources().cbegin(),
+                    parameter->service()->resources().cend(),
+                    [resource](const auto& otherResource){
+                        return resource->conflicts(otherResource.get());
+                    }
+                );
+
+                if ( it != parameter->service()->resources().cend() )
+                {
+                    return std::unique_ptr<ValidationInfo>{new ValidationInfo{this,
+                        QObject::tr("Resource '%0' conflicts with '%1'")
+                            .arg(resource->displayName())
+                            .arg(it->get()->displayName())
+                    }};
+                }
+
+
+                Service* otherService{};
+                Resource* otherResource{};
+                if ( ServicesApp::instance()->controller()->findConflict(parameter->service(), parameter->resource(),
+                                                                         &otherService, &otherResource) )
+                    return std::unique_ptr<ValidationInfo>{new ValidationInfo{this,
+                        QObject::tr("Resource '%0' conflicts with '%1' of an already deployed service '%2'")
+                            .arg(resource->displayName())
+                            .arg(otherResource->displayName())
+                            .arg(otherService->displayName())
+                    }};
+            }
+        }
+    }
+
+    return {};
 }
 
 void Property::Value::resetEnabledState()
@@ -203,22 +244,41 @@ QJsonValue Property::Value::serialize(bool excludePasswords) const
     }
 }
 
-void Property::Value::fill(const QJsonValue& value)
+void Property::Value::fill(const QJsonValue& value, bool required)
 {
     if ( value.isUndefined() || value.isNull() ) {
-        setEnabled(false);
+        setEnabled(required);
         return;
     }
 
     switch ( m_property->m_type ) {
         case Type::Enum:
+        {
+            QJsonObject object = value.toObject();
+            QString key;
+            QJsonValue value;
+
+            if ( !object.empty() ) {
+                key   = object.begin().key();
+                value = object.begin().value();
+            }
+
             for ( const auto& child : m_children )
-                child->setEnabled(false);
+            {
+                if ( child->property()->name() == key ) {
+                    child->setEnabled(true);
+                    child->fill(value, true);
+                }
+                else
+                    child->setEnabled(false);
+            }
+        } break;
+
         case Type::Composite: {
             QJsonObject object = value.toObject();
 
             for ( const auto& child : m_children )
-                child->fill(object[child->m_property->name()]);
+                child->fill(object[child->m_property->name()], child->property()->isRequired());
 
         } break;
 
@@ -228,7 +288,7 @@ void Property::Value::fill(const QJsonValue& value)
             if ( m_property->m_prototype )
                 for ( const auto& item : array ) {
                     auto child = m_property->m_prototype->defaultValue()->clone();
-                    child->fill(item);
+                    child->fill(item, true);
                     addChild(std::move(child));
                 }
         } break;

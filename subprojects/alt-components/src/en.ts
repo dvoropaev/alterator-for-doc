@@ -81,32 +81,32 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="model/item.cpp" line="176"/>
+        <location filename="model/item.cpp" line="106"/>
         <source>Component</source>
         <translation>Component</translation>
     </message>
     <message>
-        <location filename="model/item.cpp" line="174"/>
+        <location filename="model/item.cpp" line="104"/>
         <source>Category</source>
         <translation>Category</translation>
     </message>
     <message>
-        <location filename="model/item.cpp" line="172"/>
+        <location filename="model/item.cpp" line="102"/>
         <source>Section</source>
         <translation>Section</translation>
     </message>
     <message>
-        <location filename="model/item.cpp" line="180"/>
+        <location filename="model/item.cpp" line="110"/>
         <source>Unknowns type</source>
         <translation>Unknowns type</translation>
     </message>
     <message>
-        <location filename="model/item.cpp" line="178"/>
+        <location filename="model/item.cpp" line="108"/>
         <source>Tag</source>
         <translation>Tag</translation>
     </message>
     <message>
-        <location filename="dbus/dbusproxy.cpp" line="80"/>
+        <location filename="dbus/dbusproxy.cpp" line="82"/>
         <source>Backend error: &quot;%1&quot;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -125,21 +125,25 @@
     <name>alt::AboutDialog</name>
     <message>
         <location filename="ui/aboutdialog/aboutdialog.ui" line="14"/>
+        <location filename="../build/src/ui_aboutdialog.h" line="85"/>
         <source>About Components</source>
         <translation>About Components</translation>
     </message>
     <message>
         <location filename="ui/aboutdialog/aboutdialog.ui" line="66"/>
+        <location filename="../build/src/ui_aboutdialog.h" line="88"/>
         <source>Version </source>
         <translation>Version </translation>
     </message>
     <message>
         <location filename="ui/aboutdialog/aboutdialog.ui" line="27"/>
+        <location filename="../build/src/ui_aboutdialog.h" line="86"/>
         <source>ALT Components</source>
         <translation>ALT Components</translation>
     </message>
     <message>
         <location filename="ui/aboutdialog/aboutdialog.ui" line="50"/>
+        <location filename="../build/src/ui_aboutdialog.h" line="87"/>
         <source>&lt;a href=&quot;https://bugzilla.altlinux.org&quot;&gt;Report a problem&lt;/a&gt;</source>
         <translation>&lt;a href=&quot;https://bugzilla.altlinux.org&quot;&gt;Report a problem&lt;/a&gt;</translation>
     </message>
@@ -178,12 +182,14 @@
     <name>alt::ComponentsWidget</name>
     <message>
         <location filename="ui/componentswidget/componentswidget.ui" line="20"/>
+        <location filename="../build/src/ui_componentswidget.h" line="197"/>
         <source>Components</source>
         <translation>Components</translation>
     </message>
     <message>
         <location filename="ui/componentswidget/componentswidget.ui" line="229"/>
-        <location filename="ui/componentswidget/componentswidget.cpp" line="172"/>
+        <location filename="../build/src/ui_componentswidget.h" line="200"/>
+        <location filename="ui/componentswidget/componentswidget.cpp" line="161"/>
         <source>Content:</source>
         <translation></translation>
     </message>
@@ -193,16 +199,18 @@
     </message>
     <message>
         <location filename="ui/componentswidget/componentswidget.ui" line="141"/>
+        <location filename="../build/src/ui_componentswidget.h" line="199"/>
         <source>Description:</source>
         <translation>Description:</translation>
     </message>
     <message>
         <location filename="ui/componentswidget/componentswidget.ui" line="115"/>
+        <location filename="../build/src/ui_componentswidget.h" line="198"/>
         <source>Search...</source>
         <translation>Search...</translation>
     </message>
     <message>
-        <location filename="ui/componentswidget/componentswidget.cpp" line="153"/>
+        <location filename="ui/componentswidget/componentswidget.cpp" line="156"/>
         <source>Packages:</source>
         <translation>Packages:</translation>
     </message>
@@ -225,18 +233,18 @@
 <context>
     <name>alt::Controller</name>
     <message>
-        <location filename="controller/controller.cpp" line="625"/>
+        <location filename="controller/controller.cpp" line="573"/>
         <source>Error</source>
         <translation>Error</translation>
     </message>
     <message>
-        <location filename="controller/controller.cpp" line="88"/>
-        <location filename="controller/controller.cpp" line="627"/>
+        <location filename="controller/controller.cpp" line="94"/>
+        <location filename="controller/controller.cpp" line="575"/>
         <source>Warning</source>
         <translation>Warning</translation>
     </message>
     <message>
-        <location filename="controller/controller.cpp" line="89"/>
+        <location filename="controller/controller.cpp" line="95"/>
         <source>The system&apos;s list of software sources has not been updated%1.
 This may cause errors in the application..
 
@@ -251,22 +259,37 @@ This may cause errors in the application..
 Do you want to update your sources?</translation>
     </message>
     <message>
-        <location filename="controller/controller.cpp" line="91"/>
+        <location filename="controller/controller.cpp" line="97"/>
         <source> since %1</source>
         <translation> since %1</translation>
     </message>
     <message>
-        <location filename="controller/controller.cpp" line="629"/>
+        <location filename="controller/controller.cpp" line="266"/>
+        <source>Tags</source>
+        <translation>Tags</translation>
+    </message>
+    <message>
+        <location filename="controller/controller.cpp" line="275"/>
+        <source>Total components</source>
+        <translation>Total components</translation>
+    </message>
+    <message>
+        <location filename="controller/controller.cpp" line="277"/>
+        <source>Installed components</source>
+        <translation>Installed components</translation>
+    </message>
+    <message>
+        <location filename="controller/controller.cpp" line="577"/>
         <source>Info</source>
         <translation>Info</translation>
     </message>
     <message>
-        <location filename="controller/controller.cpp" line="518"/>
+        <location filename="controller/controller.cpp" line="468"/>
         <source>Confirmation</source>
         <translation>Confirmation</translation>
     </message>
     <message>
-        <location filename="controller/controller.cpp" line="519"/>
+        <location filename="controller/controller.cpp" line="469"/>
         <source>Disabling this option may lead to the removal of packages required for proper system operation.
 
 Confirm the action?</source>
@@ -275,12 +298,12 @@ Confirm the action?</source>
 Confirm the action?</translation>
     </message>
     <message>
-        <location filename="controller/controller.cpp" line="84"/>
+        <location filename="controller/controller.cpp" line="90"/>
         <source>It seems your apt package lists weren&apos;t updated since %1</source>
         <translation>It seems your apt package lists weren&apos;t updated since %1</translation>
     </message>
     <message>
-        <location filename="controller/controller.cpp" line="103"/>
+        <location filename="controller/controller.cpp" line="109"/>
         <source>It seems your system wasn&apos;t upgraded since %1</source>
         <translation>It seems your system wasn&apos;t upgraded since %1</translation>
     </message>
@@ -289,16 +312,19 @@ Confirm the action?</translation>
     <name>alt::ErrorDialog</name>
     <message>
         <location filename="ui/errordialog/errordialog.ui" line="14"/>
+        <location filename="../build/src/ui_errordialog.h" line="76"/>
         <source>Error</source>
         <translation>Error</translation>
     </message>
     <message>
         <location filename="ui/errordialog/errordialog.ui" line="26"/>
+        <location filename="../build/src/ui_errordialog.h" line="77"/>
         <source>Close</source>
         <translation>Close</translation>
     </message>
     <message>
         <location filename="ui/errordialog/errordialog.ui" line="62"/>
+        <location filename="../build/src/ui_errordialog.h" line="78"/>
         <location filename="ui/errordialog/errordialog.cpp" line="20"/>
         <source>Operation is exited with code %1:</source>
         <oldsource>Operation exited with code %1:</oldsource>
@@ -308,26 +334,26 @@ Confirm the action?</translation>
 <context>
     <name>alt::MainStatusBar</name>
     <message>
-        <location filename="ui/statusbar/mainstatusbar.cpp" line="28"/>
+        <location filename="ui/statusbar/mainstatusbar.cpp" line="27"/>
         <source>Updating components from system state...</source>
         <translation>Updating components from system state...</translation>
     </message>
     <message>
-        <location filename="ui/statusbar/mainstatusbar.cpp" line="39"/>
-        <location filename="ui/statusbar/mainstatusbar.cpp" line="47"/>
-        <location filename="ui/statusbar/mainstatusbar.cpp" line="75"/>
-        <location filename="ui/statusbar/mainstatusbar.cpp" line="80"/>
+        <location filename="ui/statusbar/mainstatusbar.cpp" line="38"/>
+        <location filename="ui/statusbar/mainstatusbar.cpp" line="44"/>
+        <location filename="ui/statusbar/mainstatusbar.cpp" line="72"/>
+        <location filename="ui/statusbar/mainstatusbar.cpp" line="77"/>
         <source>Components found: </source>
         <translation>Components found: </translation>
     </message>
     <message>
-        <location filename="ui/statusbar/mainstatusbar.cpp" line="39"/>
-        <location filename="ui/statusbar/mainstatusbar.cpp" line="75"/>
+        <location filename="ui/statusbar/mainstatusbar.cpp" line="38"/>
+        <location filename="ui/statusbar/mainstatusbar.cpp" line="72"/>
         <source>, from edition: </source>
         <translation>, from edition: </translation>
     </message>
     <message>
-        <location filename="ui/statusbar/mainstatusbar.cpp" line="54"/>
+        <location filename="ui/statusbar/mainstatusbar.cpp" line="51"/>
         <source>Edition:</source>
         <translation>Edition:</translation>
     </message>
@@ -336,26 +362,31 @@ Confirm the action?</translation>
     <name>alt::MainWindow</name>
     <message>
         <location filename="ui/mainwindow/mainwindow.ui" line="26"/>
+        <location filename="../build/src/ui_mainwindow.h" line="232"/>
         <source>ALT Components</source>
         <translation>ALT Components</translation>
     </message>
     <message>
         <location filename="ui/mainwindow/mainwindow.ui" line="101"/>
+        <location filename="../build/src/ui_mainwindow.h" line="257"/>
         <source>Apply</source>
         <translation>Apply</translation>
     </message>
     <message>
         <location filename="ui/mainwindow/mainwindow.ui" line="91"/>
+        <location filename="../build/src/ui_mainwindow.h" line="256"/>
         <source>Reset</source>
         <translation>Reset</translation>
     </message>
     <message>
         <location filename="ui/mainwindow/mainwindow.ui" line="123"/>
+        <location filename="../build/src/ui_mainwindow.h" line="258"/>
         <source>&amp;View</source>
         <translation>&amp;View</translation>
     </message>
     <message>
         <location filename="ui/mainwindow/mainwindow.ui" line="127"/>
+        <location filename="../build/src/ui_mainwindow.h" line="259"/>
         <source>&amp;Language</source>
         <translation>&amp;Language</translation>
     </message>
@@ -365,164 +396,190 @@ Confirm the action?</translation>
     </message>
     <message>
         <location filename="ui/mainwindow/mainwindow.ui" line="154"/>
+        <location filename="../build/src/ui_mainwindow.h" line="262"/>
         <source>&amp;Help</source>
         <translation>&amp;Help</translation>
     </message>
     <message>
         <location filename="ui/mainwindow/mainwindow.ui" line="190"/>
+        <location filename="../build/src/ui_mainwindow.h" line="233"/>
         <source>&amp;Manual</source>
         <translation>&amp;Manual</translation>
     </message>
     <message>
         <location filename="ui/mainwindow/mainwindow.ui" line="195"/>
+        <location filename="../build/src/ui_mainwindow.h" line="234"/>
         <source>&amp;About</source>
         <translation>&amp;About</translation>
     </message>
     <message>
-        <location filename="ui/mainwindow/mainwindow.cpp" line="65"/>
+        <location filename="ui/mainwindow/mainwindow.cpp" line="59"/>
         <source>English</source>
         <translation>English</translation>
     </message>
     <message>
-        <location filename="ui/mainwindow/mainwindow.cpp" line="67"/>
+        <location filename="ui/mainwindow/mainwindow.cpp" line="61"/>
         <source>Russian</source>
         <translation>Russian</translation>
     </message>
     <message>
         <location filename="ui/mainwindow/mainwindow.ui" line="177"/>
+        <location filename="../build/src/ui_mainwindow.h" line="265"/>
         <source>&amp;File</source>
         <translation>&amp;File</translation>
     </message>
     <message>
         <location filename="ui/mainwindow/mainwindow.ui" line="205"/>
+        <location filename="../build/src/ui_mainwindow.h" line="236"/>
         <source>&amp;Reload components</source>
         <translation>&amp;Reload components</translation>
     </message>
     <message>
         <location filename="ui/mainwindow/mainwindow.ui" line="221"/>
+        <location filename="../build/src/ui_mainwindow.h" line="241"/>
         <source>&amp;Quit</source>
         <translation>&amp;Quit</translation>
     </message>
     <message>
         <location filename="ui/mainwindow/mainwindow.ui" line="161"/>
+        <location filename="../build/src/ui_mainwindow.h" line="263"/>
         <source>&amp;Tools</source>
         <translation>&amp;Tools</translation>
     </message>
     <message>
         <location filename="ui/mainwindow/mainwindow.ui" line="200"/>
+        <location filename="../build/src/ui_mainwindow.h" line="235"/>
         <source>&amp;Show logs</source>
         <translation>&amp;Show logs</translation>
     </message>
     <message>
         <location filename="ui/mainwindow/mainwindow.ui" line="216"/>
+        <location filename="../build/src/ui_mainwindow.h" line="240"/>
         <source>&amp;Show drafts</source>
         <translation>&amp;Show drafts</translation>
     </message>
     <message>
         <location filename="ui/mainwindow/mainwindow.ui" line="132"/>
+        <location filename="../build/src/ui_mainwindow.h" line="260"/>
         <source>&amp;View mode</source>
         <translation>&amp;View mode</translation>
     </message>
     <message>
         <location filename="ui/mainwindow/mainwindow.ui" line="81"/>
+        <location filename="../build/src/ui_mainwindow.h" line="255"/>
         <source>Update sources</source>
         <translation>Update sources</translation>
     </message>
     <message>
         <location filename="ui/mainwindow/mainwindow.ui" line="165"/>
+        <location filename="../build/src/ui_mainwindow.h" line="264"/>
         <source>&amp;System</source>
         <translation></translation>
     </message>
     <message>
         <location filename="ui/mainwindow/mainwindow.ui" line="208"/>
+        <location filename="../build/src/ui_mainwindow.h" line="238"/>
         <source>Ctrl+R</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="ui/mainwindow/mainwindow.ui" line="224"/>
+        <location filename="../build/src/ui_mainwindow.h" line="243"/>
         <source>Ctrl+Q</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="ui/mainwindow/mainwindow.ui" line="232"/>
+        <location filename="../build/src/ui_mainwindow.h" line="245"/>
         <source>&amp;By sections</source>
         <translation>&amp;By sections</translation>
     </message>
     <message>
         <location filename="ui/mainwindow/mainwindow.ui" line="240"/>
+        <location filename="../build/src/ui_mainwindow.h" line="246"/>
         <source>&amp;By tags</source>
         <translation>&amp;By tags</translation>
     </message>
     <message>
         <location filename="ui/mainwindow/mainwindow.ui" line="248"/>
+        <location filename="../build/src/ui_mainwindow.h" line="247"/>
         <source>&amp;Plain</source>
         <translation>&amp;Plain</translation>
     </message>
     <message>
         <location filename="ui/mainwindow/mainwindow.ui" line="273"/>
+        <location filename="../build/src/ui_mainwindow.h" line="249"/>
         <source>Disable the removal of basic components</source>
         <oldsource>Disable the removal of critical dependencies</oldsource>
         <translation>Disable the removal of basic components</translation>
     </message>
     <message>
         <location filename="ui/mainwindow/mainwindow.ui" line="284"/>
+        <location filename="../build/src/ui_mainwindow.h" line="250"/>
         <source>Disable the removal of packages installed manually</source>
         <translation>Disable the removal of packages installed manually</translation>
     </message>
     <message>
         <location filename="ui/mainwindow/mainwindow.ui" line="292"/>
+        <location filename="../build/src/ui_mainwindow.h" line="251"/>
         <source>&amp;Names and IDs</source>
         <translation>&amp;Names and IDs</translation>
     </message>
     <message>
         <location filename="ui/mainwindow/mainwindow.ui" line="300"/>
+        <location filename="../build/src/ui_mainwindow.h" line="252"/>
         <source>&amp;Names only</source>
         <translation>&amp;Names only</translation>
     </message>
     <message>
         <location filename="ui/mainwindow/mainwindow.ui" line="308"/>
+        <location filename="../build/src/ui_mainwindow.h" line="253"/>
         <source>&amp;IDs only</source>
         <translation>&amp;IDs only</translation>
     </message>
     <message>
         <location filename="ui/mainwindow/mainwindow.ui" line="316"/>
+        <source>&amp;Show components that are not included in the edition</source>
+        <translation>&amp;Show components that are not included in the edition</translation>
+    </message>
+    <message>
+        <location filename="../build/src/ui_mainwindow.h" line="254"/>
         <source>&amp;Show the &quot;Other Components&quot; section</source>
         <translation>&amp;Show the &quot;Other Components&quot; section</translation>
     </message>
     <message>
-        <location filename="ui/mainwindow/mainwindow.cpp" line="418"/>
-        <location filename="ui/mainwindow/mainwindow.cpp" line="426"/>
-        <location filename="ui/mainwindow/mainwindow.cpp" line="434"/>
+        <location filename="ui/mainwindow/mainwindow.cpp" line="296"/>
+        <location filename="ui/mainwindow/mainwindow.cpp" line="304"/>
+        <location filename="ui/mainwindow/mainwindow.cpp" line="312"/>
         <source>Components</source>
         <translation>Components</translation>
     </message>
     <message>
-        <location filename="ui/mainwindow/mainwindow.cpp" line="435"/>
+        <location filename="ui/mainwindow/mainwindow.cpp" line="313"/>
         <source>Quit</source>
         <translation>Quit</translation>
     </message>
     <message>
-        <location filename="ui/mainwindow/mainwindow.cpp" line="190"/>
         <source>Total components</source>
-        <translation>Total components</translation>
+        <translation type="vanished">Total components</translation>
     </message>
     <message>
-        <location filename="ui/mainwindow/mainwindow.cpp" line="192"/>
         <source>Installed components</source>
-        <translation>Installed components</translation>
+        <translation type="vanished">Installed components</translation>
     </message>
     <message>
-        <location filename="ui/mainwindow/mainwindow.cpp" line="210"/>
         <source>Tags</source>
-        <translation>Tags</translation>
+        <translation type="vanished">Tags</translation>
     </message>
     <message>
         <location filename="ui/mainwindow/mainwindow.ui" line="144"/>
+        <location filename="../build/src/ui_mainwindow.h" line="261"/>
         <source>&amp;Editor layout</source>
         <translation>&amp;Editor layout</translation>
     </message>
     <message>
         <location filename="ui/mainwindow/mainwindow.ui" line="262"/>
+        <location filename="../build/src/ui_mainwindow.h" line="248"/>
         <source>Content panel</source>
         <translation>Content panel</translation>
     </message>
@@ -610,6 +667,7 @@ Confirm the action?</translation>
     </message>
     <message>
         <location filename="ui/statusbar/statusbar.ui" line="14"/>
+        <location filename="../build/src/ui_statusbar.h" line="77"/>
         <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
@@ -618,12 +676,15 @@ Confirm the action?</translation>
     <name>alt::TransactionTabWidget</name>
     <message>
         <location filename="ui/applydialog/transactiontabwidget.ui" line="14"/>
+        <location filename="../build/src/alt-components_autogen/include/ui_transactiontabwidget.h" line="140"/>
         <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="ui/applydialog/transactiontabwidget.ui" line="47"/>
         <location filename="ui/applydialog/transactiontabwidget.ui" line="96"/>
+        <location filename="../build/src/alt-components_autogen/include/ui_transactiontabwidget.h" line="141"/>
+        <location filename="../build/src/alt-components_autogen/include/ui_transactiontabwidget.h" line="145"/>
         <location filename="ui/applydialog/transactiontabwidget.cpp" line="120"/>
         <location filename="ui/applydialog/transactiontabwidget.cpp" line="122"/>
         <source>For removal (%1):</source>
@@ -632,6 +693,8 @@ Confirm the action?</translation>
     <message>
         <location filename="ui/applydialog/transactiontabwidget.ui" line="61"/>
         <location filename="ui/applydialog/transactiontabwidget.ui" line="82"/>
+        <location filename="../build/src/alt-components_autogen/include/ui_transactiontabwidget.h" line="142"/>
+        <location filename="../build/src/alt-components_autogen/include/ui_transactiontabwidget.h" line="144"/>
         <location filename="ui/applydialog/transactiontabwidget.cpp" line="119"/>
         <location filename="ui/applydialog/transactiontabwidget.cpp" line="121"/>
         <source>For installation (%1):</source>
@@ -639,11 +702,13 @@ Confirm the action?</translation>
     </message>
     <message>
         <location filename="ui/applydialog/transactiontabwidget.ui" line="39"/>
+        <location filename="../build/src/alt-components_autogen/include/ui_transactiontabwidget.h" line="143"/>
         <source>Components</source>
         <translation>Components</translation>
     </message>
     <message>
         <location filename="ui/applydialog/transactiontabwidget.ui" line="74"/>
+        <location filename="../build/src/alt-components_autogen/include/ui_transactiontabwidget.h" line="146"/>
         <source>Packages</source>
         <translation>Packages</translation>
     </message>
@@ -761,22 +826,26 @@ Confirm the action?</translation>
     <name>alt::WarningsDialog</name>
     <message>
         <location filename="ui/warnings/warningsdialog.ui" line="34"/>
+        <location filename="../build/src/ui_warningsdialog.h" line="119"/>
         <location filename="ui/warnings/warningsdialog.cpp" line="26"/>
         <source>&amp;All</source>
         <translation>&amp;All</translation>
     </message>
     <message>
         <location filename="ui/warnings/warningsdialog.ui" line="98"/>
+        <location filename="../build/src/ui_warningsdialog.h" line="120"/>
         <source>Copy selected</source>
         <translation>Copy selected</translation>
     </message>
     <message>
         <location filename="ui/warnings/warningsdialog.ui" line="105"/>
+        <location filename="../build/src/ui_warningsdialog.h" line="121"/>
         <source>Copy all</source>
         <translation>Copy all</translation>
     </message>
     <message>
         <location filename="ui/warnings/warningsdialog.ui" line="125"/>
+        <location filename="../build/src/ui_warningsdialog.h" line="122"/>
         <source>Clear</source>
         <translation>Clear</translation>
     </message>
@@ -812,6 +881,7 @@ Confirm the action?</translation>
     </message>
     <message>
         <location filename="ui/warnings/warningsdialog.ui" line="20"/>
+        <location filename="../build/src/ui_warningsdialog.h" line="118"/>
         <source>Components</source>
         <translation>Components</translation>
     </message>
@@ -824,31 +894,37 @@ Confirm the action?</translation>
     </message>
     <message>
         <location filename="ui/applydialog/wizard.ui" line="60"/>
+        <location filename="../build/src/ui_wizard.h" line="118"/>
         <source>&lt; &amp;Back</source>
         <translation>&lt; &amp;Back</translation>
     </message>
     <message>
         <location filename="ui/applydialog/wizard.ui" line="67"/>
+        <location filename="../build/src/ui_wizard.h" line="119"/>
         <source>&amp;Next &gt;</source>
         <translation>&amp;Next &gt;</translation>
     </message>
     <message>
         <location filename="ui/applydialog/wizard.ui" line="74"/>
+        <location filename="../build/src/ui_wizard.h" line="120"/>
         <source>&amp;Apply</source>
         <translation>&amp;Apply</translation>
     </message>
     <message>
         <location filename="ui/applydialog/wizard.ui" line="84"/>
+        <location filename="../build/src/ui_wizard.h" line="121"/>
         <source>&amp;Finish</source>
         <translation>&amp;Finish</translation>
     </message>
     <message>
         <location filename="ui/applydialog/wizard.ui" line="94"/>
+        <location filename="../build/src/ui_wizard.h" line="122"/>
         <source>&amp;Retry</source>
         <translation>&amp;Retry</translation>
     </message>
     <message>
         <location filename="ui/applydialog/wizard.ui" line="101"/>
+        <location filename="../build/src/ui_wizard.h" line="123"/>
         <source>Cancel</source>
         <translation>Cancel</translation>
     </message>
@@ -865,6 +941,7 @@ Confirm the action?</translation>
     <name>alt::WizardPage</name>
     <message>
         <location filename="ui/applydialog/wizardpage.ui" line="14"/>
+        <location filename="../build/src/ui_wizardpage.h" line="96"/>
         <source>Form</source>
         <translation type="unfinished"></translation>
     </message>

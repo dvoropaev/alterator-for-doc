@@ -5,9 +5,9 @@
 #error __FILE__ should only be included from transaction.h.
 #endif // TRANSACTION_H
 
-#include <QString>
-#include <set>
 #include <map>
+#include <set>
+#include <QString>
 
 namespace alt
 {

@@ -8,13 +8,18 @@ class ParameterModel : public QAbstractItemModel
     Q_OBJECT
 
 public:
-    ParameterModel(const PtrVector<Parameter>& data);
     inline ParameterModel(const std::vector<Parameter*>& data = {}) { setItems(data); }
 
     void setItems(const std::vector<Parameter*>& items);
+    void setScope(Parameter::ValueScope scope);
 
     int indexOf(const Parameter* param) const;
     QModelIndex indexOf(const Property::Value*) const;
+
+    inline void refresh(){
+        beginResetModel();
+        endResetModel();
+    }
 
     // QAbstractItemModel interface
 public:
@@ -28,7 +33,8 @@ public:
     QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
 
 protected:
-    virtual Property::Value* getValue(Parameter*) const = 0;
+    Property::Value* getValue(Parameter*) const;
 
     std::vector<Parameter*> m_items;
+    Parameter::ValueScope m_scope{Parameter::ValueScope::Current};
 };

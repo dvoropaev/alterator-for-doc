@@ -1,9 +1,13 @@
-#!/bin/fish
+#!/usr/bin/fish
 
 function _completion_actl
     set app_name alteratorctl
     set options ""
     set tokens (commandline -opc)
+
+    if [ $(count $tokens) -ge 2 ] && [ $tokens[2] = services ]
+        return
+    end
 
     if [ $tokens[-1] = $app_name ] || [ $tokens[-1] = actl ]
         set options "$($app_name --help |
@@ -25,5 +29,6 @@ function _completion_actl
         echo "$options"
     end
 end
+
 complete -f -a "(_completion_actl)" -c alteratorctl
 complete -f -a "(_completion_actl)" -c actl

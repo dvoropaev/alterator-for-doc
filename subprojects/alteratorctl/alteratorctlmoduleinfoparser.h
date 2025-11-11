@@ -41,6 +41,8 @@ typedef struct
     gsize array_length;
 } toml_value;
 
+gboolean alterator_ctl_compare_toml_values(toml_value *first, toml_value *second, GError **error);
+
 typedef struct
 {
     gchar *node_name;
@@ -85,14 +87,16 @@ typedef struct
     gboolean (*alterator_ctl_module_info_parser_find_value)(
         gpointer self, GNode *root, toml_value **result, const gchar *value_key, const gchar *first_table_name, ...);
 
-    void (*alterator_ctl_module_info_parser_result_tree_free)(gpointer self, GNode *root);
-
-    void (*alterator_ctl_module_info_parser_result_trees_free)(gpointer self, GNode **roots, gsize amount_of_trees);
-
 } AlteratorCtlModuleInfoParser;
 
 AlteratorCtlModuleInfoParser *alterator_module_info_parser_new();
 
 void alterator_module_info_parser_free(AlteratorCtlModuleInfoParser *info_parser);
+
+void alterator_ctl_module_info_parser_result_tree_free(GNode *root);
+
+void alterator_ctl_module_info_parser_result_trees_free(GNode **roots, gsize amount_of_trees);
+
+GNode *alterator_ctl_module_info_parser_tree_deep_copy(GNode *tree);
 
 #endif //MODULEINFOPARSER_H

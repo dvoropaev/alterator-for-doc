@@ -1,5 +1,5 @@
 #include "model/modelbuilder.h"
-#include "application.h"
+
 #include "constants.h"
 #include "controller/controller.h"
 #include "dbus/dbusproxy.h"
@@ -43,26 +43,16 @@ ModelItem *buildCategory(const QString &categoryName,
 {
     auto category = ComponentRepository::get<Category>(categoryName);
     auto *item = new ModelItem(&category.value().get());
-    bool hasCheckableChildren = false;
 
     for (const auto &childCategoryName : sectionCategories[categoryName])
     {
-        auto *childCategoryItem = buildCategory(childCategoryName, sectionCategories, sectionComponents);
-        hasCheckableChildren |= childCategoryItem->isCheckable();
-        item->appendRow(childCategoryItem);
+        item->appendRow(buildCategory(childCategoryName, sectionCategories, sectionComponents));
     }
 
     for (const auto &childComponentName : sectionComponents[categoryName])
     {
         auto component = ComponentRepository::get<Component>(childComponentName);
-        auto *childComponentItem = new ModelItem(&component.value().get());
-        hasCheckableChildren |= childComponentItem->isCheckable();
-        item->appendRow(childComponentItem);
-    }
-
-    if (hasCheckableChildren)
-    {
-        item->setCheckable(true);
+        item->appendRow(new ModelItem(&component.value().get()));
     }
 
     return item;
@@ -110,10 +100,6 @@ ModelItem *buildSectionItem(Section &section)
 {
     auto *sectionItem = new ModelItem(&section);
     buildItemTree(sectionItem, section.components);
-
-    int componentCount = sectionItem->countComponentsRecursive();
-    sectionItem->setText(QString("%1 (%2)").arg(section.displayName).arg(componentCount));
-
     return sectionItem;
 }
 
@@ -130,9 +116,6 @@ ModelItem *buildTagItem(Tag &tag)
         }
     }
     buildItemTree(tagItem, tagComponents);
-
-    int componentCount = tagItem->countComponentsRecursive();
-    tagItem->setText(QString("%1 (%2)").arg(tag.displayName).arg(componentCount));
     return tagItem;
 }
 
@@ -141,14 +124,10 @@ ModelItem *buildDefaultSectionItem(const QList<Section> &sections)
     auto *defaultSection = new Section();
     defaultSection->sort_weight = DEFAULT_SECTION_WEIGHT;
     defaultSection->name = DEFAULT_SECTION_NAME;
-    defaultSection->displayNameLocaleStorage = {
+    defaultSection->displayNameStorage = {
         {"ru", "Другие компоненты"},
         {"en", "Other components"},
     };
-    const auto lang = alt::Application::getLocale().name().split("_")[0];
-    defaultSection->displayName = defaultSection->displayNameLocaleStorage.contains(lang)
-                                      ? defaultSection->displayNameLocaleStorage[lang]
-                                      : defaultSection->displayNameLocaleStorage[SECTION_DEFAULT_LANUAGE];
     auto *sectionItem = new ModelItem(defaultSection);
 
     QSet<QString> componentsInSections;
@@ -168,18 +147,11 @@ ModelItem *buildDefaultSectionItem(const QList<Section> &sections)
 
     buildItemTree(sectionItem, defaultComponents);
 
-    int componentCount = sectionItem->countComponentsRecursive();
-    sectionItem->setText(QString("%1 (%2)").arg(defaultSection->displayName).arg(componentCount));
-
     return sectionItem;
 }
 } // namespace
 
-ModelBuilder::ModelBuilder(Controller *ctrl)
-    : controller(ctrl)
-{
-    connect(&DBusProxy::get(), &DBusProxy::errorOccured, controller, &Controller::issueMessage);
-}
+ModelBuilder::ModelBuilder() = default;
 
 void ModelBuilder::setEditionRelationshipForAllComponents()
 {
@@ -206,8 +178,6 @@ void ModelBuilder::setEditionRelationshipForAllComponents()
 
 void ModelBuilder::buildBySections(Model *model, bool hard)
 {
-    emit buildStarted();
-
     model->clear();
 
     if (hard)
@@ -224,16 +194,10 @@ void ModelBuilder::buildBySections(Model *model, bool hard)
         model->appendRow(buildSectionItem(section));
     }
     model->appendRow(buildDefaultSectionItem(sections));
-
-    model->correctCheckItemStates();
-
-    emit buildDone(alt::Model::current_edition.get(), model->countComponents().total, model->countEditionComponents());
 }
 
 void ModelBuilder::buildPlain(Model *model, bool hard)
 {
-    emit buildStarted();
-
     model->clear();
 
     if (hard)
@@ -247,16 +211,10 @@ void ModelBuilder::buildPlain(Model *model, bool hard)
 
     // NOTE(chernigin): we need to copy map here as it is being consume while building
     buildItemTree(model, components);
-
-    model->correctCheckItemStates();
-
-    emit buildDone(alt::Model::current_edition.get(), model->countComponents().total, model->countEditionComponents());
 }
 
 void ModelBuilder::buildByTags(Model *model, bool hard)
 {
-    emit buildStarted();
-
     model->clear();
 
     if (hard)
@@ -268,10 +226,6 @@ void ModelBuilder::buildByTags(Model *model, bool hard)
     {
         model->appendRow(buildTagItem(tag));
     }
-
-    model->correctCheckItemStates();
-
-    emit buildDone(alt::Model::current_edition.get(), model->countComponents().total, model->countEditionComponents());
 }
 
 std::unique_ptr<Edition> ModelBuilder::buildEdition()

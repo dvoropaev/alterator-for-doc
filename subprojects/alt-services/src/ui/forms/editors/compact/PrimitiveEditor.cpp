@@ -70,15 +70,11 @@ template<> void PrimitiveEditor<QComboBox>::init(QWidget* parent)
 template<> void PrimitiveEditor<QComboBox>::load() {
     auto cb = (QComboBox*)m_widget;
     int i = -1;
-    if ( m_value->property()->valueType() == Property::Type::Enum ) {
-        auto it = std::find_if(m_value->children().cbegin(),
-                               m_value->children().cend(),
-                               [](const auto& child){ return child->isEnabled(); });
-        if ( it != m_value->children().cend() )
-            i = cb->findData( it->get()->property()->name() );
-    } else {
-        i = cb->findData(m_value->get().toString());
-    }
+    auto it = std::find_if(m_value->children().cbegin(),
+                           m_value->children().cend(),
+                           [](const auto& child){ return child->isEnabled(); });
+    if ( it != m_value->children().cend() )
+        i = cb->findData( it->get()->property()->name() );
 
     cb->setCurrentIndex( i >= 0 ? i : 0 );
 }

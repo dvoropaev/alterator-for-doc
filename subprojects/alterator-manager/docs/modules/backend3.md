@@ -22,10 +22,13 @@ action_id = "org.freedesktop.test"
 
 [methods.method_name]
 backend3 = "menu"
-_objects = "avail_modules"
-language = "ru_RU"
-action = "list"
 action_id = "test1"
+[methods.method_name.environment._objects]
+default = "avail_modules"
+[methods.method_name.environment.language]
+default = "ru_RU"
+[methods.method_name.environment.action]
+default = "list"
 ```
 
 The `backend3` field is required. Other fields are optional.
@@ -33,22 +36,30 @@ The `backend3` field is required. Other fields are optional.
 - The `backend3` field specifies the name of the backend from the
   `/usr/lib/alterator/backend3/` directory.
 
-- The `_objects` field contains the same as the variable of the same name in
-  backend3 backends.
-
-  You might also encounter the name `path`, for example, in our case this path
-  would be `/menu/avail_modules`, but the first part is not written in
-  `_objects`.
-
-- The `language` field specifies the locale.
-
-- The `action` field specifies the action:\
-  `list`, `write`, `read`, etc.
-
 - About `action_id` you can read in the documentation for the
   [executor](./executor.md) module.
 
 Methods have one parameter of type `a{ss}`, and a return value of type `a{ss}`.\
 The parameter passes data in the form of key-value pairs. For the example above,
-this could be `{"ui":"qt", "expert_mode":"0"}`. All method output is packaged
-into the `a{ss}` type.
+this could be `{"ui":"qt", "expert_mode":"0"}`. The data from the input
+parameter can be supplemented using variables described in the `environment`
+subtable in the method's description. These variables are assigned values
+through the `org.altlinux.alterator.manager` interface in the root object, and
+can also be assigned a default value using the `default` field.\
+
+In the example above:\
+- The `_objects` variable contains the same values as the variable of the same
+  name in the backends from backend3.
+
+  You may also encounter the name `path`; for example, in our case, this `path`
+  would be `/menu/avail_modules`, but the first part is not written to
+  `_objects`.
+
+- The `language` variable specifies the locale.
+
+- The `action` variable specifies the action - `list`.
+
+  Usually, the action is `list`, `write`, or `read`, but others can also be
+  used.
+
+All method output is packaged into the `a{ss}` type.

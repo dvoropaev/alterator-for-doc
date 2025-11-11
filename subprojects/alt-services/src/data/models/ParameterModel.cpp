@@ -6,16 +6,16 @@
 #include <QFont>
 #include <QPalette>
 
-ParameterModel::ParameterModel(const PtrVector<Parameter>& data)
-{
-    for ( auto& param : data )
-        if ( !param->isConstant() && ( param->contexts() & Parameter::Context::Status ) )
-            m_items.push_back(param.get());
-}
-
 void ParameterModel::setItems(const std::vector<Parameter*>& items) {
     beginResetModel();
     m_items = items;
+    endResetModel();
+}
+
+void ParameterModel::setScope(Parameter::ValueScope scope)
+{
+    beginResetModel();
+    m_scope = scope;
     endResetModel();
 }
 
@@ -214,4 +214,6 @@ QVariant ParameterModel::headerData(int section, Qt::Orientation orientation, in
 
     return {};
 }
+
+inline Property::Value* ParameterModel::getValue(Parameter* p) const { return p->value(m_scope); }
 

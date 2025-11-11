@@ -7,3 +7,4 @@ build
 *.qm
 *.tr.qrc
 *.user
+*~

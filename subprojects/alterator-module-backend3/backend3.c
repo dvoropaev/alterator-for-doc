@@ -29,6 +29,9 @@ static const gchar xml_args[] =
 static GHashTable *methods_table = NULL;
 static PolkitAuthority *polkit_authority = NULL;
 static AlteratorManagerInterface *manager_interface = NULL;
+/* sender -> environment_variables_table
+   environment_variables_table: key -> value */
+static GHashTable *sender_environment_data = NULL;
 /* backend3 name -> ChildData */
 static GHashTable *backend3_table = NULL;
 static GMutex backend3_table_mutex;
@@ -745,6 +748,65 @@ static gpointer run_method(gpointer data) {
     return NULL;
 }
 
+/* Add pairs from the sender's environment table to the stdin.
+   You can only add variables whose names are specified in the environment
+   subtable of a method. If the variable is not in the sender's environment
+   table, the default value from environment subtable of a method is used. */
+static void add_env_to_stdin(const gchar *sender,
+                             GVariant *param_array,
+                             MethodInfo *method_info,
+                             GString *to_stdin)
+{
+    GHashTable *sender_envp;
+    gchar *var_name;
+    gchar *value;
+    EnvironmentObjectInfo *envr_info;
+    GHashTableIter iter_hash;
+    GVariant *gvar = NULL;
+
+    if (sender_environment_data) {
+        sender_envp = (GHashTable *)
+                      g_hash_table_lookup(sender_environment_data, sender);
+    } else {
+        sender_envp = NULL;
+    }
+
+    if (method_info->environment) {
+        g_hash_table_iter_init(&iter_hash, method_info->environment);
+        while (g_hash_table_iter_next(&iter_hash,
+                                      (gpointer *) &var_name,
+                                      (gpointer *) &envr_info))
+        {
+            /* If the parameters already contain a pair with this key, then we
+               skip this variable. */
+            gvar = g_variant_lookup_value(param_array,
+                                          var_name,
+                                          G_VARIANT_TYPE_STRING);
+
+            if (gvar) {
+                g_variant_unref(gvar);
+                continue;
+            }
+
+            if (sender_envp) {
+                value = g_hash_table_lookup(sender_envp, var_name);
+            } else {
+                value = NULL;
+            }
+
+            if (!value && envr_info && envr_info->default_value) {
+                value = envr_info->default_value;
+            }
+
+            if (value) {
+                g_string_append_printf(to_stdin,
+                                       MESSAGE_TEMPLATE,
+                                       var_name, value);
+            }
+        }
+    }
+}
+
 static void handle_method_call(GDBusConnection *connection,
                                const gchar *sender,
                                const gchar *object_path,
@@ -811,33 +873,19 @@ static void handle_method_call(GDBusConnection *connection,
     /* _message:begin */
     g_string_append(to_stdin, MESSAGE_BEGIN);
 
-    /* _objects: */
-    if (method_info->_objects) {
-        g_string_append_printf(to_stdin,
-                               MESSAGE_OBJECTS,
-                               method_info->_objects);
-    }
-
-    /* action */
-    if (method_info->action) {
-        g_string_append_printf(to_stdin, MESSAGE_ACTION, method_info->action);
-    }
-
-    /* language */
-    if (method_info->language) {
-        g_string_append_printf(to_stdin,
-                               MESSAGE_LANGUAGE,
-                               method_info->language);
-    }
-
     /* parameters */
     g_variant_get(parameters, "(@a{ss})", &param_array);
+
     g_variant_iter_init(&iter, param_array);
     while (g_variant_iter_loop(&iter, "{ss}", &key, &value)) {
         g_string_append_printf(to_stdin,
                                MESSAGE_TEMPLATE,
                                key, value);
     }
+
+    /* Add pairs from the sender's environment table to the stdin. */
+    add_env_to_stdin(sender, param_array, method_info, to_stdin);
+
     g_variant_unref(param_array);
 
     /* _message:end */
@@ -955,9 +1003,6 @@ static void method_info_free(void *method_info) {
     g_free(info->method_name);
     g_free(info->backend3);
     g_free(info->action_id);
-    g_free(info->_objects);
-    g_free(info->action);
-    g_free(info->language);
 
     if (info->environment) {
         g_hash_table_destroy(info->environment);
@@ -1216,30 +1261,6 @@ static gboolean make_and_save_introspection(gchar *node_name,
             }
         }
 
-        /* _objects */
-        raw = g_hash_table_lookup(method_data, INFO__OBJECTS);
-        additional_val = toml_raw_to_string(raw);
-        if (additional_val) {
-            method_info->_objects = g_strdup(additional_val);
-        }
-        g_free(additional_val);
-
-        /* action */
-        raw = g_hash_table_lookup(method_data, INFO_ACTION);
-        additional_val = toml_raw_to_string(raw);
-        if (additional_val) {
-            method_info->action = g_strdup(additional_val);
-        }
-        g_free(additional_val);
-
-        /* language */
-        raw = g_hash_table_lookup(method_data, INFO_LANGUAGE);
-        additional_val = toml_raw_to_string(raw);
-        if (additional_val) {
-            method_info->language = g_strdup(additional_val);
-        }
-        g_free(additional_val);
-
         copy_environment(method_info, method_object_info->environment);
 
         add_method_to_table(node_name, interface_name, method_name,
@@ -1383,7 +1404,7 @@ static gboolean module_init(ManagerData *manager_data) {
         polkit_authority = manager_data->authority;
     }
 
-//    sender_environment_data = manager_data->sender_environment_data;
+    sender_environment_data = manager_data->sender_environment_data;
     backend3_table = g_hash_table_new_full(g_str_hash,
                                            g_str_equal,
                                            g_free,

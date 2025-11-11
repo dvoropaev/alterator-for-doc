@@ -202,7 +202,7 @@ context = [
 constant = true
 [parameters.bindSettings.properties.allowQuery]
 display_name.en = "Allowed subnets"
-display_name.ru = " Разрешённые подсети"
+display_name.ru = "Разрешённые подсети"
 comment.en = "List of allowed subnets for DNS queries"
 comment.ru = "Список разрешённых подсетей для DNS запросов"
 type = "array"
@@ -282,7 +282,7 @@ comment.en = "DNS backend for Samba AD"
 comment.ru = "Бэкенд DNS для Samba AD"
 type = "enum"
 required = true
-default = "sambaInternal"
+default = "SAMBA_INTERNAL"
 [parameters.dnsSettings.properties.dnsBackend.values.BIND9_DLZ]
 display_name.en = "BIND9"
 display_name.ru = "BIND9"

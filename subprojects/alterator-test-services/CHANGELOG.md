@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Diagnostic tooling, new parameters (backup, restore, undeploy), composite arrays,
+  and translated enums
+
+### Changed
+
+- Updated to the latest D-Bus interface changes and switched to the schema generator
+- Status and list operations now use internal data correctly
+
+### Fixed
+
+- JSON/schema issues, start/stop state checks, and `force_deploy` handling
+
 ## 0.1.1-alt1
 
 ### Added

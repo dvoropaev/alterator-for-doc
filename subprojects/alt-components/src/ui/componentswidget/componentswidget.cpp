@@ -1,12 +1,12 @@
 #include "componentswidget.h"
 #include "application.h"
+#include "controller/controller.h"
 #include "ui_componentswidget.h"
-#include <memory>
 
+#include <memory>
 #include <QAbstractItemModel>
 #include <QClipboard>
 #include <QFile>
-#include <QFontDatabase>
 #include <QMenu>
 #include <QTextDocument>
 
@@ -15,7 +15,6 @@ namespace alt
 ComponentsWidget::ComponentsWidget(QWidget *parent)
     : QWidget(parent)
     , ui(std::make_unique<Ui::ComponentsWidget>())
-    , packagesListModel(std::make_unique<QStandardItemModel>(this))
     , treeContextMenu(std::make_unique<QMenu>(this))
     , packagesContextMenu(std::make_unique<QMenu>(this))
     , findShortcut(std::make_unique<QShortcut>(QKeySequence::Find, this))
@@ -39,6 +38,7 @@ ComponentsWidget::ComponentsWidget(QWidget *parent)
     setupTreeCustomContextMenu();
     setupPackagesContextMenu();
     setDefaultDescription();
+    ui->contentListView->setFont(QFont());
 }
 
 ComponentsWidget::~ComponentsWidget() = default;
@@ -112,69 +112,23 @@ void ComponentsWidget::onCopyAllPackages()
     Application::clipboard()->setText(packages.join(" "));
 }
 
-void ComponentsWidget::setComponentsModel(alt::ProxyModel *proxyModel)
+void ComponentsWidget::setComponentsModel(QAbstractItemModel *model)
 {
-    ui->componentsTreeView->setModel(proxyModel);
+    ui->componentsTreeView->setModel(model);
     ui->componentsTreeView->setSortingEnabled(true);
 
     connect(ui->componentsTreeView->selectionModel(),
             &QItemSelectionModel::selectionChanged,
             this,
             &ComponentsWidget::onSelectionChanged);
-    connect(ui->contentListView, &QAbstractItemView::clicked, [this](const QModelIndex &index) {
-        if (ui->contentListView->model() == packagesListModel.get())
+    connect(ui->contentListView, &QAbstractItemView::clicked, [this, model](const QModelIndex &index) {
+        if (index.model() == model)
         {
-            return;
+            ui->componentsTreeView->selectionModel()->select(index, QItemSelectionModel::SelectionFlag::ClearAndSelect);
         }
-        ui->componentsTreeView->selectionModel()->select(index, QItemSelectionModel::SelectionFlag::ClearAndSelect);
     });
 
     connect(ui->searchEdit, &QLineEdit::textChanged, this, &ComponentsWidget::onSearchTextChanged);
-}
-
-void ComponentsWidget::setDescription(const QString &description)
-{
-    // Convert plain text to HTML if it's not already HTML
-    QString htmlContent = description;
-
-    // Check if the content is already HTML (contains HTML tags)
-    if (!description.contains('<') || !description.contains('>'))
-    {
-        // Convert plain text to HTML
-        htmlContent = QString("<html><body>%1</body></html>").arg(description.toHtmlEscaped());
-    }
-
-    ui->descriptionTextBrowser->setHtml(htmlContent);
-}
-
-void ComponentsWidget::setContentList(const std::vector<std::shared_ptr<Package>> &packages)
-{
-    this->packagesListModel->clear();
-    ui->packagesLabel->setText(tr("Packages:"));
-
-    for (const auto &package : packages)
-    {
-        auto *item = new QStandardItem(package->getPackageName());
-        item->setCheckState(package->installed ? Qt::CheckState::Checked : Qt::CheckState::Unchecked);
-        item->setCheckable(false);
-        item->setEnabled(false);
-        this->packagesListModel->insertRow(this->packagesListModel->rowCount(), item);
-    }
-
-    this->ui->contentListView->setModel(this->packagesListModel.get());
-
-    // NOTE(chernigin): we want to have packages in monospaced font
-    ui->contentListView->setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
-}
-
-void ComponentsWidget::setContentList(QAbstractItemModel *model, const QModelIndex &index)
-{
-    ui->packagesLabel->setText(tr("Content:"));
-    ui->contentListView->setModel(model);
-    ui->contentListView->setRootIndex(index);
-
-    // NOTE(chernigin): we want to have other components and categories in normal font
-    ui->contentListView->setFont(QFont());
 }
 
 void ComponentsWidget::setVisibleContent(bool visible)
@@ -194,7 +148,18 @@ void ComponentsWidget::onSelectionChanged(const QItemSelection &newSelection,
     }
 
     QModelIndex index = newSelection.indexes().at(0);
-    Controller::instance().selectObject(index);
+    ui->descriptionTextBrowser->setHtml(Controller::instance().getDescription(index));
+    const auto &[type, model] = Controller::instance().getContent(index);
+    ui->contentListView->setModel(model);
+    if (type == ModelItem::Type::Component)
+    {
+        ui->packagesLabel->setText(tr("Packages:"));
+    }
+    else
+    {
+        ui->packagesLabel->setText(tr("Content:"));
+        ui->contentListView->setRootIndex(index);
+    }
 
     for (auto it = index.parent(); it.isValid(); it = it.parent())
     {
@@ -207,23 +172,26 @@ void ComponentsWidget::onSearchTextChanged(const QString &query)
     Controller::instance().setTextFilter(query);
 }
 
+void ComponentsWidget::updateDescription()
+{
+    const auto &selectedIndexes = ui->componentsTreeView->selectionModel()->selectedIndexes();
+    if (selectedIndexes.size() != 0)
+    {
+        onSelectionChanged(ui->componentsTreeView->selectionModel()->selection(), {});
+    }
+    else
+    {
+        setDefaultDescription();
+    }
+}
+
 void ComponentsWidget::changeEvent(QEvent *event)
 {
     if (event->type() == QEvent::LanguageChange)
     {
         ui->retranslateUi(this);
         retranslateContextMenus();
-
-        const auto &selectedIndexes = ui->componentsTreeView->selectionModel()->selectedIndexes();
-
-        if (selectedIndexes.size() != 0)
-        {
-            Controller::instance().selectObject(selectedIndexes.at(0));
-        }
-        else
-        {
-            setDefaultDescription();
-        }
+        updateDescription();
     }
 
     QWidget::changeEvent(event);

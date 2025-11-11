@@ -2376,7 +2376,7 @@ static int systeminfo_module_get_cpu_handle_result(AlteratorCtlSystemInfoModule 
         if (answer_dictionary)
             goto end;
 
-        g_printerr(_("Unvalid amount of CPU data.\n"));
+        g_printerr(_("Invalid amount of CPU data.\n"));
         ERR_EXIT();
     }
 

@@ -764,7 +764,7 @@ static int packages_module_apt_subcommand(AlteratorCtlPackagesModule *module, al
         }
 
         check_apply_result *result = NULL;
-        if (get_check_apply_result(module, parameter1, &result) < 0)
+        if (get_check_apply_result(module, parameter1, &result) != 0)
             ERR_EXIT();
 
         GVariant *pack_result[]
@@ -806,9 +806,9 @@ static int packages_module_apt_subcommand(AlteratorCtlPackagesModule *module, al
         if (additional_data && !g_variant_is_of_type(additional_data, G_VARIANT_TYPE("(masmasmasbb)")))
         {
             if (subcommand_id == (APT_APPLY_ASYNC | APT_REMOVE))
-                g_printerr(_("Unvalid type of additional data for packages apt remove subcommand.\n"));
+                g_printerr(_("Invalid type of additional data for packages apt remove subcommand.\n"));
             else if (subcommand_id == (APT_APPLY_ASYNC | APT_REMOVE))
-                g_printerr(_("Unvalid type of additional data for packages apt install subcommand.\n"));
+                g_printerr(_("Invalid type of additional data for packages apt install subcommand.\n"));
             if (additional_data)
                 g_variant_unref(additional_data);
             ERR_EXIT();
@@ -1780,19 +1780,19 @@ static int get_check_apply_result(AlteratorCtlPackagesModule *module, const gcha
     g_strfreev(stdout_answer_strv);
 
     GError *regex_error                   = NULL;
-    GRegex *unvalid_packages_string_regex = g_regex_new("(\"\\(.*?\\)\",)", 0, 0, &regex_error);
+    GRegex *invalid_packages_string_regex = g_regex_new("(\"\\(.*?\\)\",)", 0, 0, &regex_error);
     gchar *stdout_result_tmp              = stdout_json_answer;
-    stdout_json_answer = g_regex_replace(unvalid_packages_string_regex, stdout_result_tmp, -1, 0, "", 0, &regex_error);
+    stdout_json_answer = g_regex_replace(invalid_packages_string_regex, stdout_result_tmp, -1, 0, "", 0, &regex_error);
     if (regex_error)
     {
         g_printerr("%s\n", regex_error->message);
-        g_regex_unref(unvalid_packages_string_regex);
+        g_regex_unref(invalid_packages_string_regex);
         g_free(stdout_json_answer);
         g_free(stdout_result_tmp);
         ERR_EXIT();
     }
     g_free(stdout_result_tmp);
-    g_regex_unref(unvalid_packages_string_regex);
+    g_regex_unref(invalid_packages_string_regex);
 
     JsonParser *parser = json_parser_new();
     if (!json_parser_load_from_data(parser, stdout_json_answer, -1, NULL))
@@ -1916,7 +1916,7 @@ static int packages_module_apt_check_apply_package_info(AlteratorCtlPackagesModu
     if (!optional_calculated_packages_to_install && !optional_calculated_packages_to_remove
         && !optional_calculated_packages_extra_remove)
     {
-        if (get_check_apply_result(module, packages, &check_apply_info) < 0)
+        if (get_check_apply_result(module, packages, &check_apply_info) != 0)
             ERR_EXIT();
 
         if (!check_apply_info)

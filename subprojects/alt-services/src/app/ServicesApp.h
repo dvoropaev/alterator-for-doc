@@ -7,6 +7,7 @@
 #include "QJsonObject"
 
 class Service;
+class Controller;
 
 class ServicesApp : public QtSingleApplication
 {
@@ -18,6 +19,7 @@ public:
     int run();
 
     AppSettings* settings();
+    Controller* controller();
 
     inline static ServicesApp* instance() {
         return (ServicesApp*)QApplication::instance();
@@ -38,3 +40,7 @@ private:
 
 };
 
+#if defined(qApp)
+#undef qApp
+#endif
+#define qApp (static_cast<ServicesApp *>(QCoreApplication::instance()))

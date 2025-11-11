@@ -17,9 +17,6 @@ G_BEGIN_DECLS
 #define NODE_BACKEND3 "backend3"
 //#define INTERFACE_BACKEND3 "org.altlinux.alterator.backend3"
 #define INFO_BACKEND3 "backend3"
-#define INFO__OBJECTS "_objects"
-#define INFO_ACTION "action"
-#define INFO_LANGUAGE "language"
 #define INFO_ACTION_ID "action_id"
 #define INFO_THREAD_LIMIT "thread_limit"
 #define INFO_TIMEOUT "timeout"
@@ -30,9 +27,6 @@ G_BEGIN_DECLS
 #define CHILD_TIMEOUT 600
 #define MESSAGE_BEGIN "_message:begin\n"
 #define MESSAGE_END "_message:end\n"
-#define MESSAGE_OBJECTS "_objects:%s\n"
-#define MESSAGE_ACTION "action:%s\n"
-#define MESSAGE_LANGUAGE "language:%s\n"
 #define MESSAGE_TEMPLATE "%s:%s\n"
 #define KEY_OBJECTS "_objects"
 #define KEY_ACTION "action"
@@ -46,9 +40,6 @@ typedef struct {
     gchar       *action_id;
     /* In the protocol it is used with underscore. Here the underscore is
        preserved to avoid confusion. */
-    gchar       *_objects;
-    gchar       *action;
-    gchar       *language;
     GHashTable  *environment;
     gint         thread_limit;
     gint         stdout_byte_limit;

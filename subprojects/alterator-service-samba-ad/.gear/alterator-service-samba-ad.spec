@@ -55,11 +55,17 @@ install -p -D -m644 status.json %buildroot%_localstatedir/alterator/service/samb
 %_localstatedir/alterator/service/samba-ad/status.json
 
 %changelog
-* Tue Sep 30 2025 Evgenii Sozonov <arzdez@altlinux.org> 0.5-alt1
-- Add enternal parameters. Fix status function
+* Tue Nov 11 2025 Evgenii Sozonov <arzdez@altlinux.org> 0.5-alt1
+- Fix start and stop methods. Add restart samba and bind if they
+  was started before deploy
+- Set samba internal dns as default
+- fix demote when dc is dead
+- Add signals for start and stop methods
+- Fix parsing of enum parameters
+- Add internal parameters. Fix status function
 - Fix starting service when bind not installed
 - Remove unused function
-- Add dinamic status
+- Add dynamic status
 - Edit name in .service file
 - fix: improve help text for NetBIOS name and backend store
   parameters (thx Oleg Chagaev)

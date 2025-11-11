@@ -170,7 +170,7 @@
     <addaction name="menu_System"/>
     <addaction name="action_Show_logs"/>
     <addaction name="actionShow_drafts"/>
-    <addaction name="actionOther"/>
+    <addaction name="actionShowNonEditionComponents"/>
    </widget>
    <widget class="QMenu" name="menuFile">
     <property name="title">
@@ -308,12 +308,12 @@
     <string>&amp;IDs only</string>
    </property>
   </action>
-  <action name="actionOther">
+  <action name="actionShowNonEditionComponents">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>&amp;Show the &quot;Other Components&quot; section</string>
+    <string>&amp;Show components that are not included in the edition</string>
    </property>
   </action>
  </widget>

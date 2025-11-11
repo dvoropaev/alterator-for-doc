@@ -14,7 +14,8 @@ EOF
 
 generate_pot_file()
 {
-    find . -path ./build -prune -o -regex ".*\.\(c\|h\)$" -exec xgettext --keyword=_ -o po/alteratorctl.pot {} +
+    find . -path ./build -prune -o -regex ".*\.\(c\|h\)$" \
+        -exec xgettext --keyword=_ --keyword=N_ -o po/alteratorctl.pot {} +
 }
 
 # Parse args

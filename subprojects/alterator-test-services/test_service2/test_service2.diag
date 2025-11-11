@@ -1,12 +1,12 @@
-name = "test_service1"
+name = "test_service2"
 type = "Diag"
 category = "adtCategory"
 icon = "system-run"
 report_suffix = "zip"
-display_name.en = "Test service 1 diagnostic tool"
-display_name.ru = "диагностический инструмент тестового сервиса 1"
-comment.en = "Test service 1 diagnostic tool description"
-comment.ru = "описание диагностического инструмента тестового сервиса 1"
+display_name.en = "Test service 2 diagnostic tool"
+display_name.ru = "диагностический инструмент тестового сервиса 2"
+comment.en = "Test service 2 diagnostic tool description"
+comment.ru = "описание диагностического инструмента тестового сервиса 2"
 
 
 [parameters.deploy_mode]

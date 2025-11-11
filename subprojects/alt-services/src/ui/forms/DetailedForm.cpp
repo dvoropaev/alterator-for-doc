@@ -71,7 +71,7 @@ void DetailedForm::setParametersImpl(Parameter::Contexts contexts)
 
     for ( auto* param : m_parameters ) {
 
-        auto editor = createEditor( param->editValue(), d->ui->content, contexts );
+        auto editor = createEditor( param->value(Parameter::ValueScope::Edit), d->ui->content, contexts );
         editor->fill();
 
         d->ui->content->layout()->addWidget(editor->widget());

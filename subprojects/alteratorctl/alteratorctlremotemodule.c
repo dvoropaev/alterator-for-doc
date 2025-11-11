@@ -699,20 +699,20 @@ static int remote_module_validation_connection_address(const gchar *connection_a
 
     if (!g_strrstr(connection_address, NAME_IP_ADDRESS_DELIM))
     {
-        g_printerr(_("Unvalid connection address: an '@' delimiter between name and IP is required.\n"));
+        g_printerr(_("Invalid connection address: an '@' delimiter between name and IP is required.\n"));
         ERR_EXIT();
     }
 
     connection_address_parts = g_strsplit(connection_address, NAME_IP_ADDRESS_DELIM, 2);
     if (!connection_address_parts)
     {
-        g_printerr(_("Unvalid connection address: can't split connection address to username and IP.\n"));
+        g_printerr(_("Invalid connection address: can't split connection address to username and IP.\n"));
         ERR_EXIT();
     }
 
     if (!strlen(connection_address_parts[0]))
     {
-        g_printerr(_("Unvalid connection address: username is empty.\n"));
+        g_printerr(_("Invalid connection address: username is empty.\n"));
         ERR_EXIT();
     }
 
@@ -725,7 +725,7 @@ static int remote_module_validation_connection_address(const gchar *connection_a
     g_regex_match(ipv4_regex, connection_address_parts[1], 0, &ipv4_match_info);
     if (!g_match_info_matches(ipv4_match_info))
     {
-        g_printerr(_("Unvalid connection address: unvalid IP.\n"));
+        g_printerr(_("Invalid connection address: invalid IP.\n"));
         ERR_EXIT();
     }
 

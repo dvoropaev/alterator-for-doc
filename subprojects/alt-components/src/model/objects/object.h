@@ -12,6 +12,10 @@ namespace alt
 class Object
 {
 public:
+    QString displayName() const;
+    QString comment() const;
+
+public:
     Object() = default;
     Object(const toml::table &data);
     Object(const Object &) = default;
@@ -20,27 +24,25 @@ public:
     Object &operator=(Object &&object) = default;
 
     virtual ~Object() = 0;
-    virtual void setLocale(const QString &locale);
 
 public:
     QString name{};
     QString type{};
     QString category{}; // TODO(cherniginma): make it optional
-    QString displayName{};
-    QString description{};
-    QString comment{};
     QString dbusPath{};
     QString icon{};
 
+    QMap<QString, QString> displayNameStorage{};
+    QMap<QString, QString> descriptionStorage{};
+    QMap<QString, QString> commentStorage{};
+
     bool isDraft = false;
 
-    QMap<QString, QString> displayNameLocaleStorage{};
-    QMap<QString, QString> descriptionLocaleStorage{};
-    QMap<QString, QString> commentLocaleStorage{};
-
 protected:
-    static QString findLocale(const QString &locale, QMap<QString, QString> &localeStorage);
-    static void setFieldLocale(const QString &locale, QMap<QString, QString> &storage, QString &field);
+    static QString localizedString(const QMap<QString, QString> &storage);
+
+private:
+    static QHash<QLocale, QString> cachedLangs;
 };
 } // namespace alt
 

@@ -1,11 +1,13 @@
 #include "dbus/dbusproxy.h"
-#include "application.h"
-#include "constants.h"
 
-#include "nlohmann/json.hpp"
+#include <nlohmann/json.hpp>
 
+#include <QRegularExpression>
 #include <QSet>
 #include <QTimeZone>
+
+#include "application.h"
+#include "constants.h"
 
 namespace alt
 {
@@ -23,14 +25,12 @@ std::optional<QDate> DBusProxy::getDateResult(const QString &methodName)
         return std::nullopt;
     }
 
-    const QDate &lastUpdateDate = QDate::fromString(result.value().split(" ")[0], "yyyy-MM-dd");
-    const QTime &lastUpdateTime = QTime::fromString(result.value().split(" ")[1], "hh:mm:ss");
-    QDateTime lastUpdateDateTime(lastUpdateDate, lastUpdateTime, QTimeZone::utc());
-
-    lastUpdateDateTime.setTimeZone(QTimeZone::systemTimeZone());
-    lastUpdateDateTime = lastUpdateDateTime.addSecs(QTimeZone::systemTimeZone().offsetFromUtc(lastUpdateDateTime));
-
-    return lastUpdateDateTime.date();
+    QDateTime lastUpdateDateTime = QDateTime::fromString(result.value(), "yyyy-MM-dd HH:mm:ss 'UTC'");
+    if (!lastUpdateDateTime.isValid())
+    {
+        return std::nullopt;
+    }
+    return lastUpdateDateTime.toLocalTime().date();
 }
 
 std::optional<QString> DBusProxy::checkSuccess(const QVariantList &args, const QString &methodName)

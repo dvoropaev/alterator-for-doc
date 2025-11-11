@@ -1,32 +1,8 @@
 #!/bin/bash -e
 
 _completion_actl() {
-    local app_name="alteratorctl"
-    local options=""
-
-    if [ "$3" == "$app_name" ] || [ "$3" == "actl" ]; then
-        options="$(${app_name} --modules | sort)"
-        options="${options} $(${app_name} --help |
-            grep -o -- "--[a-zA-Z0-9\-]*" |
-            sort)"
-        mapfile -t COMPREPLY < <(compgen -W "${options}" -- "$2")
-    else
-        local help_output
-        help_output="$("${COMP_WORDS[@]:0:${COMP_CWORD}}" --help)"
-        options=$(
-            echo "$help_output" |
-                sed '/alteratorctl/d' |
-                awk '/^ /' |
-                sed '/^  -/d' |
-                grep -Eo "^.{30}" |
-                awk '{ print $1 }' |
-                sort
-        )
-        options="${options} $(echo "$help_output" |
-            grep -o -- "--[a-zA-Z0-9\-]*" |
-            sort)"
-        mapfile -t COMPREPLY < <(compgen -W "${options}" -- "$2")
-    fi
+    mapfile -t COMPREPLY < <(compgen -W "$(COMP_CWORD="${COMP_CWORD}" COMP_WORDS="${COMP_WORDS[@]:0:${COMP_CWORD}}" /usr/share/alteratorctl/scripts/completion_wrapper "${1}" "${2}" "${3}")" -- "$2")
 }
+
 complete -o nosort -F _completion_actl alteratorctl
 complete -o nosort -F _completion_actl actl

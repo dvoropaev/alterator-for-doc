@@ -18,7 +18,6 @@ components = [
 	"nextcloud",
 	"mediawiki",
 	"yandex",
-	"fonts-ttf-ms",
 ]
 
 [sections.education]

@@ -12,28 +12,26 @@ class Controller : public QObject
 {
     Q_OBJECT
 public:
-    Controller(QObject* parent = nullptr, QWidget* window = nullptr);
+    Controller();
     ~Controller();
 
     Service* getByIndex(const QModelIndex&);
     Service* findByName(const QString& name);
     void selectByPath(const QString& path);
-    void importParameters(const ServicesApp::ParsedParameters& parameters);
 
     QAbstractItemModel* model();
-    void addTableActions(QMenu*);
+    QList<QAction*> tableActions();
 
-    int  status(Service* service, QByteArray& data);
 
-    void prepareAction(Parameter::Context ctx, Service* service);
     bool call(Service* service, Parameter::Context ctx);
+    bool updateStatus(Service* service);
 
     void start(Service* service);
     void stop(Service* service);
 
     bool diag(Service* service, bool post);
 
-    bool findConflict(Service* deployService, Resource** deployResource, Service** other, Resource** conflicting);
+    bool findConflict(Service* deployService, Resource* deployResource, Service** other, Resource** conflicting);
 
     static const QString& actionName(Parameter::Context context);
     static const QIcon& actionIcon(Parameter::Context context);

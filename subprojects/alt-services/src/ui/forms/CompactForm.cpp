@@ -23,7 +23,9 @@ class EditModel : public ParameterModel {
     Q_OBJECT
     friend class EditDelegate;
 public:
-    using ParameterModel::ParameterModel;
+    inline EditModel(){
+        setScope(Parameter::ValueScope::Edit);
+    }
 
     Parameter::Contexts contexts{};
 
@@ -123,7 +125,7 @@ public:
 
             propertyValue->setEnabled(!propertyValue->isEnabled());
             emit dataChanged(idx, idx, {Qt::CheckStateRole});
-            if ( int count = propertyValue->children().size() )
+            if ( int count = rowCount(idx) )
                 emit dataChanged(index(0,0,idx), index(count-1, 0, idx), {Qt::CheckStateRole});
         }
     }
@@ -132,7 +134,6 @@ public slots:
     void onChange(const QModelIndex& index) { emit dataChanged(index,index); }
 
 protected:
-    Property::Value* getValue(Parameter* p) const override { return p->editValue(); }
     int m_context;
 };
 

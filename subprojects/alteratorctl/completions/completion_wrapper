@@ -1,0 +1,33 @@
+#!/bin/bash -e
+
+app_name="alteratorctl"
+options=""
+
+COMP_WORDS=($COMP_WORDS)
+
+if [ "${COMP_CWORD}" -ge 2 ] && [ "${COMP_WORDS[1]}" == "services" ]; then
+    exit 0
+fi
+
+if [ "$3" = "$app_name" ] || [[ "$3" == "actl" ]]; then
+    options="$(${app_name} --modules | sort)"
+    options="${options} $(${app_name} --help |
+        grep -o -- "--[a-zA-Z0-9\-]*" |
+        sort)"
+else
+    help_output="$("${COMP_WORDS[@]:0:${COMP_CWORD}}" --help)"
+    options=$(
+        echo "$help_output" |
+            sed '/alteratorctl/d' |
+            awk '/^ /' |
+            sed '/^  -/d' |
+            grep -Eo "^.{30}" |
+            awk '{ print $1 }' |
+            sort
+    )
+    options="${options} $(echo "$help_output" |
+        grep -o -- "--[a-zA-Z0-9\-]*" |
+        sort)"
+fi
+
+echo "$options"

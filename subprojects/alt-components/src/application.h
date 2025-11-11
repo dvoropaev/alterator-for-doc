@@ -1,10 +1,6 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
 
-#include "controller/controller.h"
-#include "ui/mainwindow/mainwindow.h"
-#include <memory>
-
 #include <QApplication>
 
 namespace alt

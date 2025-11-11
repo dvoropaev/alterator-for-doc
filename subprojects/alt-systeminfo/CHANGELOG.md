@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.6] - 2025-10-14
+
+### Fixed
+
+- Crash after launch and after date of last update checking in some cases.
+
 ## [0.4.5] - 2025-04-19
 
 ### Changed
@@ -86,7 +92,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Useful shortcuts:
   CTRL + Q for quitting everywhere,
-  CTRL + Left / CTRL + Right for edition wizard, 
+  CTRL + Left / CTRL + Right for edition wizard,
   CTRL + L for open license in About System tab.
 - New tab Local Settings for ACC and DE settings launching.
 - Icons for tabs and buttons.
@@ -194,7 +200,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Russian internationalization.
 - ALT Linux logo.
 
-[unreleased]: https://altlinux.space/alterator/alt-systeminfo/compare/v0.4.5...master
+[unreleased]: https://altlinux.space/alterator/alt-systeminfo/compare/0.4.6-alt1...master
+[0.4.6]: https://altlinux.space/alterator/alt-systeminfo/src/tag/0.4.6-alt1
 [0.4.5]: https://altlinux.space/alterator/alt-systeminfo/src/tag/v0.4.5
 [0.4.4]: https://altlinux.space/alterator/alt-systeminfo/src/tag/v0.4.4
 [0.4.3]: https://altlinux.space/alterator/alt-systeminfo/src/tag/v0.4.3

@@ -31,7 +31,7 @@ void TransactionTabWidget::setComponentList(const Transaction &transaction)
     QIcon icon = QIcon::fromTheme("dialog-warning", QIcon(":warning"));
     for (const auto &[name, component] : transaction.components())
     {
-        QListWidgetItem *item = new QListWidgetItem(component.get().displayName);
+        QListWidgetItem *item = new QListWidgetItem(component.get().displayName());
         if (transaction.action(component) == Transaction::Action::Install)
         {
             ui->installComponents->addItem(item);
@@ -85,7 +85,7 @@ void TransactionTabWidget::setPackageList(const Transaction &transaction)
                     {
                         continue;
                     }
-                    displayNames.push_back(optionalComponent->get().displayName);
+                    displayNames.push_back(optionalComponent->get().displayName());
                 }
                 QString message = tr("The package belongs to the basic components: %1").arg(displayNames.join(", "));
                 item->setIcon(icon);

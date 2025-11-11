@@ -2,11 +2,10 @@
 #include "application.h"
 #include "constants.h"
 #include "dbus/dbusproxy.h"
+#include "model/componentfilterproxymodel.h"
 #include "model/item.h"
 #include "model/model.h"
 #include "model/modelbuilder.h"
-#include "model/objects/category.h"
-#include "model/objects/component.h"
 #include "repository/componentrepository.h"
 #include "service/transaction.h"
 #include "service/transactionservice.h"
@@ -19,27 +18,39 @@
 
 #include <QColor>
 #include <QDebug>
+#include <QFontDatabase>
 #include <QMessageBox>
 #include <QtConcurrent/QtConcurrent>
-#include <qnamespace.h>
 
 namespace alt
 {
+const size_t COMPONENT_FILTER_WEIGHT = 10;
+const size_t TRANSACTION_FILTER_WEIGHT = 50;
+const size_t SORT_FILTER_WEIGHT = 100;
+
 Controller::Controller()
     : model(std::make_unique<Model>())
+    , filterProxyModel(std::make_unique<ComponentFilterProxyModel>())
+    , transactionProxyModel(std::make_unique<TransactionFilterProxyModel>())
     , proxyModel(std::make_unique<ProxyModel>())
+    , ensemble(std::make_unique<EnsembleProxyModel>())
+    , packagesListModel(std::make_unique<QStandardItemModel>())
     , warningsModel(std::make_unique<QStandardItemModel>(0, 2))
 {
     DBusProxy::get().resetManagerLocale();
-    modelBuilder = std::make_unique<ModelBuilder>(this);
+    modelBuilder = std::make_unique<ModelBuilder>();
 
-    this->proxyModel->setSourceModel(this->model.get());
-    mainWindow = std::make_unique<MainWindow>(this->model.get(), this->proxyModel.get());
+    filterProxyModel->setFilter(ComponentFilterProxyModel::FilterOptions::Draft, true);
+    filterProxyModel->setFilter(ComponentFilterProxyModel::FilterOptions::NonEdition, true);
+
+    ensemble->setRootModel(model.get());
+    ensemble->insert(COMPONENT_FILTER_WEIGHT, filterProxyModel.get());
+    ensemble->insert(TRANSACTION_FILTER_WEIGHT, transactionProxyModel.get());
+    ensemble->insert(SORT_FILTER_WEIGHT, proxyModel.get());
+
+    mainWindow = std::make_unique<MainWindow>(this->ensemble.get());
     transactionWizard = std::make_unique<TransactionWizard>(this->mainWindow.get());
     updatingWizard = std::make_unique<UpdatingSourcesWizard>(this->mainWindow.get());
-
-    connect(modelBuilder.get(), &ModelBuilder::buildStarted, mainWindow->getStatusBar(), &MainStatusBar::onStarted);
-    connect(modelBuilder.get(), &ModelBuilder::buildDone, mainWindow->getStatusBar(), &MainStatusBar::onDone);
 
     auto signalSuffix = DBusProxy::rawConnection().baseService();
     signalSuffix.replace(':', '_');
@@ -59,6 +70,8 @@ Controller::Controller()
                                            this,
                                            SLOT(onAptUpdateNewLine(const QString &)));
     }
+
+    connect(&DBusProxy::get(), &DBusProxy::errorOccured, this, &Controller::issueMessage);
 }
 
 Controller::~Controller() = default;
@@ -75,7 +88,7 @@ void Controller::init()
 {
     rebuildModel();
 
-    mainWindow->showActionOtherComponents(Model::current_edition != nullptr);
+    mainWindow->showActionNonEditionComponents(Model::current_edition != nullptr);
 
     this->setButtonsStatus(false);
     this->mainWindow->show();
@@ -105,12 +118,14 @@ void Controller::init()
 
 void Controller::rebuildModel()
 {
+    auto *mainStatusBar = mainWindow->getStatusBar();
+    mainStatusBar->resetProgressBarValue();
+    mainStatusBar->onStarted();
+
     TransactionService::create();
 
-    mainWindow->getStatusBar()->resetProgressBarValue();
-
     // Temporarily disconnect the proxy model
-    proxyModel->setSourceModel(nullptr);
+    ensemble->setRootModel(nullptr);
 
     Model::current_edition = modelBuilder->buildEdition();
 
@@ -129,16 +144,18 @@ void Controller::rebuildModel()
         modelBuilder->buildPlain(model.get());
     }
 
-    model->translate(Application::getLocale().name());
-
     if (Model::current_edition != nullptr)
     {
         modelBuilder->setEditionRelationshipForAllComponents();
     }
 
     // Reconnect and reset the proxy model
-    proxyModel->setSourceModel(model.get());
-    proxyModel->invalidate();
+    ensemble->setRootModel(model.get());
+    filterProxyModel->invalidate();
+
+    const int totalCount = filterProxyModel->countComponents().total;
+    const int editionCount = model->countEditionComponents();
+    mainStatusBar->onDone(Model::current_edition.get(), totalCount, editionCount);
 
     if (Model::current_edition == nullptr)
     {
@@ -151,7 +168,8 @@ void Controller::rebuildModel()
         mainWindow->setViewModeByTagsActionEnabled(!Model::current_edition->tags.empty());
         mainWindow->setViewModeBySectionsActionEnabled(true);
         mainWindow->showDisableRemoveBaseComponent(true);
-        setEnableBaseComponents(!TransactionService::safeMode().test(TransactionService::SafeMode::Base));
+        transactionProxyModel->setDisabledBaseComponents(
+            TransactionService::safeMode().test(TransactionService::SafeMode::Base));
     }
 
     mainWindow->setViewModeActionStatus(viewMode);
@@ -188,134 +206,109 @@ void Controller::updateViewMode()
     }
 }
 
-void Controller::selectObject(QModelIndex index)
+QString Controller::getDescription(const QModelIndex &index) const
+{
+    const auto *object = index.data(CustomRoles::ObjectRole).value<Object *>();
+    const auto type = index.data(CustomRoles::TypeRole).value<ModelItem::Type>();
+    return getDescriptionPrefixWithStats(index, object, type) + getObjectDescription(object);
+}
+
+QString Controller::getObjectDescription(const Object *object)
+{
+    if (const auto *component = dynamic_cast<const Component *>(object))
+    {
+        return DBusProxy::get().getComponentDescription(component->dbusPath);
+    }
+
+    return {};
+}
+
+std::pair<ModelItem::Type, QAbstractItemModel *> Controller::getContent(const QModelIndex &index) const
+{
+    if (const auto *component = index.data(CustomRoles::ObjectRole).value<Component *>())
+    {
+        this->packagesListModel->clear();
+        for (const auto &package : component->packages)
+        {
+            auto *item = new QStandardItem(package->getPackageName());
+            item->setCheckState(package->installed ? Qt::CheckState::Checked : Qt::CheckState::Unchecked);
+            item->setCheckable(false);
+            item->setEnabled(false);
+            item->setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
+            this->packagesListModel->insertRow(this->packagesListModel->rowCount(), item);
+        }
+        return std::make_pair(ModelItem::Type::Component, packagesListModel.get());
+    }
+    return std::make_pair(ModelItem::Type::Category, ensemble.get());
+}
+
+QString Controller::getDescriptionPrefixWithStats(const QModelIndex &index,
+                                                  const Object *object,
+                                                  ModelItem::Type type) const
+{
+    QString quotedDisplayName = Application::getLocale().quoteString(object != nullptr ? object->displayName() : "");
+    QString prefix = QString("<h2>%1 %2</h2>\n").arg(ModelItem::typeToString(type), quotedDisplayName);
+
+    if (type == ModelItem::Type::Component && Model::current_edition)
+    {
+        const auto *component = dynamic_cast<const Component *>(object);
+        if (component != nullptr && !component->tags.empty())
+        {
+            QStringList tagsNames;
+            for (const auto &tag : alt::Model::current_edition->tags)
+            {
+                if (component->tags.contains(tag.name))
+                {
+                    const QString tagHtml = QString("<span class=\"tag\">%1</span>").arg(tag.displayName());
+                    tagsNames.append(tagHtml);
+                }
+            }
+
+            prefix += QString("<ul>\n  <li>%1: %2</li>\n</ul>").arg(tr("Tags")).arg(tagsNames.join(", "));
+        }
+    }
+    else if (type != ModelItem::Type::Component)
+    {
+        const auto filterIndex = ensemble->mapToMember(index, filterProxyModel.get());
+        const auto componentsCount = this->filterProxyModel->countComponents(filterIndex);
+        prefix += QString("<ul>\n  <li>%1: %2</li>\n  <li>%3: %4</li>\n</ul>")
+                      .arg(tr("Total components"))
+                      .arg(componentsCount.total)
+                      .arg(tr("Installed components"))
+                      .arg(componentsCount.installed);
+    }
+
+    return prefix;
+}
+
+void Controller::updateCurrentTransaction(const QModelIndex &index)
 {
     if (!index.isValid())
     {
-        qWarning() << "Selection index is invalid";
         return;
     }
 
-    if (const auto *component = index.data(alt::ObjectRole).value<Component *>())
-    {
-        const QString &description = DBusProxy::get().getComponentDescription(component->dbusPath);
-        this->mainWindow->setDescription(index, alt::ModelItem::Type::Component, component->displayName, description);
-        // TODO(chernigin): maybe we don't need to convert std::set into std::vector
-        this->mainWindow->setContentList({component->packages.begin(), component->packages.end()});
-    }
-    else if (const auto *category = index.data(alt::ObjectRole).value<Category *>())
-    {
-        const QString &description = DBusProxy::get().getCategoryDescription(category->name);
-        this->mainWindow->setDescription(index, alt::ModelItem::Type::Category, category->displayName, description);
-        this->mainWindow->setContentList(this->proxyModel.get(), index);
-    }
-    else if (const auto *section = index.data(alt::ObjectRole).value<Section *>())
-    {
-        const QString &description = ""; // TODO(chernigin): implement description
-        this->mainWindow->setDescription(index, alt::ModelItem::Type::Section, section->displayName, description);
-        this->mainWindow->setContentList(this->proxyModel.get(), index);
-    }
-    else if (const auto *tag = index.data(alt::ObjectRole).value<Tag *>())
-    {
-        const QString &description = ""; // TODO(chernigin): implement description
-        this->mainWindow->setDescription(index, alt::ModelItem::Type::Tag, tag->displayName, description);
-        this->mainWindow->setContentList(this->proxyModel.get(), index);
-    }
-    else
-    {
-        this->mainWindow->setDescription("");
-        this->mainWindow->setContentList(this->proxyModel.get(), index);
-    }
-}
-
-void Controller::itemChanged(ModelItem *item)
-{
-    if (!item)
+    const auto *object = index.data(CustomRoles::ObjectRole).value<Component *>();
+    if (object == nullptr)
     {
         return;
     }
 
-    if (auto *component = item->data().value<Component *>())
+    auto component = ComponentRepository::get<Component>(object->name);
+    if (component.has_value())
     {
-        auto systemState = component->state;
-        auto checkState = item->checkState();
-
-        auto comp = ComponentRepository::get<Component>(component->name);
+        auto systemState = component->get().state;
+        auto checkState = index.data(Qt::CheckStateRole).value<Qt::CheckState>();
         if (systemState != static_cast<ComponentState>(checkState))
         {
-            TransactionService::current().add(comp.value());
-            item->setBackground(checkState == Qt::Checked ? Model::CHECKED_BACKGROUND_BRUSH
-                                                          : Model::UNCHECKED_BACKGROUND_BRUSH);
+            TransactionService::current().add(component.value());
         }
         else
         {
-            TransactionService::current().discard(comp.value());
-            item->setBackground(Application::palette().color(QPalette::Base));
+            TransactionService::current().discard(component.value());
         }
 
         setButtonsStatus(!isStatusEquivalent());
-        updateParentCategoryBackground(static_cast<ModelItem *>(item->parent()));
-    }
-    else if (item->data().value<Category *>())
-    {
-        updateParentCategoryBackground(item);
-    }
-    model->correctCheckItemStates();
-}
-
-void Controller::updateParentCategoryBackground(ModelItem *parentItem)
-{
-    if (!parentItem || !parentItem->data().value<Category *>())
-    {
-        return;
-    }
-
-    bool hasGreenChild = false;
-    bool hasRedChild = false;
-
-    for (int i = 0; i < parentItem->rowCount(); ++i)
-    {
-        QBrush childBgBrush = parentItem->child(i)->background();
-        if (childBgBrush == Model::CHECKED_BACKGROUND_BRUSH)
-        {
-            hasGreenChild = true;
-        }
-        else if (childBgBrush == Model::UNCHECKED_BACKGROUND_BRUSH)
-        {
-            hasRedChild = true;
-        }
-        else if (childBgBrush == Model::MIXED_STATE_BACKGROUND_BRUSH)
-        {
-            hasGreenChild = true;
-            hasRedChild = true;
-        }
-        if (hasGreenChild && hasRedChild)
-        {
-            break;
-        }
-    }
-
-    QBrush newBackgroundBrush = Application::palette().color(QPalette::Base);
-    if (hasGreenChild && hasRedChild)
-    {
-        newBackgroundBrush = Model::MIXED_STATE_BACKGROUND_BRUSH;
-    }
-    else if (hasGreenChild)
-    {
-        newBackgroundBrush = Model::CHECKED_BACKGROUND_BRUSH;
-    }
-    else if (hasRedChild)
-    {
-        newBackgroundBrush = Model::UNCHECKED_BACKGROUND_BRUSH;
-    }
-
-    if (parentItem->background() != newBackgroundBrush)
-    {
-        parentItem->setBackground(newBackgroundBrush);
-        if (auto *grandParentItem = dynamic_cast<ModelItem *>(parentItem->parent()))
-        {
-            updateParentCategoryBackground(grandParentItem);
-        }
     }
 }
 
@@ -331,7 +324,7 @@ void Controller::apply()
 
 void Controller::reset()
 {
-    this->model->resetCurrentState();
+    this->transactionProxyModel->reset();
     TransactionService::create();
     setButtonsStatus(false);
 }
@@ -380,8 +373,8 @@ void Controller::setButtonsStatus(bool status)
 void Controller::changeLocale(const QLocale &locale)
 {
     DBusProxy::get().resetManagerLocale();
-    this->model->translate(locale.name());
     retranslateWarningsModel();
+    this->proxyModel->invalidate();
 }
 
 bool Controller::checkDate(std::optional<QDate> backendResult, int interval, const QString &warningMessage)
@@ -416,66 +409,29 @@ MainWindow::ViewMode Controller::getViewMode() const
     return viewMode;
 }
 
-void Controller::showDrafts(bool showDrafts)
+void Controller::setFilterDrafts(bool showDrafts)
 {
-    proxyModel->setShowDrafts(showDrafts);
-    proxyModel->invalidate();
+    setFilter(ComponentFilterProxyModel::FilterOptions::Draft, !showDrafts);
 }
 
 void Controller::setFilterNonEditionComponents(bool show)
 {
-    proxyModel->setFilterNonEditionComponents(show);
-    proxyModel->invalidate();
-
+    setFilter(ComponentFilterProxyModel::FilterOptions::NonEdition, !show);
     if (viewMode != MainWindow::ViewMode::Plain)
     {
         mainWindow->getComponentWidget()->expandTopLevel();
     }
 }
 
-void Controller::resetBaseComponentState(QStandardItem *parent,
-                                         const QSet<QString> &baseComponents,
-                                         QList<ModelItem *> &installedBaseComponents)
+void Controller::setFilter(ComponentFilterProxyModel::FilterOptions option, bool value)
 {
-    if (!parent)
-        return;
+    filterProxyModel->setFilter(option, value);
+    filterProxyModel->invalidate();
+    setButtonsStatus(!isStatusEquivalent());
 
-    if (auto *modelItem = dynamic_cast<ModelItem *>(parent))
-    {
-        if (auto *component = modelItem->data(CustomRoles::ObjectRole).value<Component *>())
-        {
-            if (baseComponents.contains(component->name) && component->state == ComponentState::installed)
-            {
-                installedBaseComponents.append(modelItem);
-                modelItem->setCheckState(static_cast<Qt::CheckState>(ComponentState::installed));
-                return;
-            }
-        }
-    }
-    for (int i = 0; i < parent->rowCount(); ++i)
-    {
-        resetBaseComponentState(parent->child(i), baseComponents, installedBaseComponents);
-    }
-}
-
-void Controller::setEnableBaseComponents(bool isEnable)
-{
-    QList<ModelItem *> installedBaseComponents;
-
-    auto &sections = alt::Model::current_edition->sections;
-    auto it = std::find_if(sections.begin(), sections.end(), [](const auto &section) { return section.name == "base"; });
-
-    if (it != sections.end())
-    {
-        auto baseComponents = it->components;
-
-        QStandardItem *rootItem = this->model->invisibleRootItem();
-        resetBaseComponentState(rootItem, baseComponents, installedBaseComponents);
-        for (auto *item : installedBaseComponents)
-        {
-            this->model->itemSetEnable(item, isEnable);
-        }
-    }
+    const int totalCount = filterProxyModel->countComponents().total;
+    const int editionCount = model->countEditionComponents();
+    mainWindow->getStatusBar()->onDone(Model::current_edition.get(), totalCount, editionCount);
 }
 
 void Controller::showContent(bool showContent)
@@ -496,8 +452,10 @@ void Controller::setSafeModeForBaseComponents(bool value)
     TransactionService::setSafeMode(newMode);
     if (alt::Model::current_edition != nullptr)
     {
-        setEnableBaseComponents(!value);
+        transactionProxyModel->setDisabledBaseComponents(
+            TransactionService::safeMode().test(TransactionService::SafeMode::Base));
     }
+    setButtonsStatus(!isStatusEquivalent());
 }
 
 bool Controller::setSafeMode(bool value)
@@ -535,8 +493,6 @@ void Controller::onAptUpdateNewLine(const QString &line)
 
 void Controller::setViewMode(MainWindow::ViewMode viewMode)
 {
-    reset();
-
     this->viewMode = viewMode;
     if (viewMode == MainWindow::ViewMode::BySections)
     {
@@ -553,12 +509,13 @@ void Controller::setViewMode(MainWindow::ViewMode viewMode)
         this->modelBuilder->buildPlain(this->model.get(), false);
     }
 
-    model->translate(Application::getLocale().name());
-    model->resetCurrentState();
     if (Model::current_edition != nullptr)
     {
-        setEnableBaseComponents(!TransactionService::safeMode().test(TransactionService::SafeMode::Base));
+        transactionProxyModel->setDisabledBaseComponents(
+            TransactionService::safeMode().test(TransactionService::SafeMode::Base));
     }
+
+    reset();
 }
 
 void Controller::setTextFilter(const QString &query)
@@ -590,8 +547,7 @@ void Controller::setNameViewMode(MainWindow::NameViewMode viewMode)
     {
         this->model->setTextMode(Model::TextMode::IDsOnly);
     }
-
-    model->translate(Application::getLocale().name());
+    this->proxyModel->invalidate();
 }
 
 void Controller::showWarnings()

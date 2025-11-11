@@ -384,7 +384,7 @@ QList<QStandardItem *> DataBuilder::buildPropertyUpdatedOn()
     items << buildPropertyName(QObject::tr("Updated on"));
 
     auto reply = AptInterface::lastDistUpgrade();
-    if (!reply.has_value())
+    if (!reply.has_value() || reply.value().size() < 1)
     {
         qWarning() << "Last update not found: try to update the system to receive information";
 
@@ -392,15 +392,17 @@ QList<QStandardItem *> DataBuilder::buildPropertyUpdatedOn()
     }
     else
     {
-        const auto &splittedDateTime = reply.value()[0].split(" ");
-        const QDate &lastUpdateDate = QDate::fromString(splittedDateTime[0], "yyyy-MM-dd");
-        const QTime &lastUpdateTime = QTime::fromString(splittedDateTime[1], "hh:mm:ss");
-        QDateTime lastUpdateDateTime(lastUpdateDate, lastUpdateTime, QTimeZone::utc());
-        lastUpdateDateTime.setTimeZone(QTimeZone::systemTimeZone());
-        lastUpdateDateTime = lastUpdateDateTime.addSecs(QTimeZone::systemTimeZone().offsetFromUtc(lastUpdateDateTime));
-
-        items << buildPropertyValue(QLocale::system().toString(lastUpdateDateTime, QLocale::FormatType::NarrowFormat),
-                                    false);
+        QDateTime lastUpdateDateTime = QDateTime::fromString(reply.value().first(), "yyyy-MM-dd HH:mm:ss 'UTC'");
+        if (!lastUpdateDateTime.isValid())
+        {
+            items << buildPropertyValue(ErrorMessage::notFound(), false);
+        }
+        else
+        {
+            items << buildPropertyValue(QLocale::system().toString(lastUpdateDateTime.toLocalTime(),
+                                                                   QLocale::FormatType::NarrowFormat),
+                                        false);
+        }
     }
 
     return items;

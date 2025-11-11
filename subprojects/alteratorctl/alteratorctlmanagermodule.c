@@ -295,7 +295,7 @@ int manager_module_run_subcommand_getobjects(AlteratorCtlManagerModule *module, 
     else
     {
         //Call system bus
-        if (strcmp(bus, ALTERATOR_MANAGER_SYSTEM_BUS_PARAMETER) == 0)
+        if (g_strcmp0(bus, ALTERATOR_MANAGER_SYSTEM_BUS_PARAMETER) == 0)
         {
             if (interface)
             {
@@ -315,7 +315,7 @@ int manager_module_run_subcommand_getobjects(AlteratorCtlManagerModule *module, 
         }
 
         //Call session bus
-        if (strcmp(bus, ALTERATOR_MANAGER_SESSION_BUS_PARAMETER) == 0)
+        if (g_strcmp0(bus, ALTERATOR_MANAGER_SESSION_BUS_PARAMETER) == 0)
         {
             if (interface)
             {
@@ -457,7 +457,7 @@ int manager_module_run_subcommand_getifaces(AlteratorCtlManagerModule *module, a
     }
     else
     {
-        if (strcmp(bus, ALTERATOR_MANAGER_SYSTEM_BUS_PARAMETER) == 0)
+        if (g_strcmp0(bus, ALTERATOR_MANAGER_SYSTEM_BUS_PARAMETER) == 0)
         {
             if (object)
             {
@@ -597,7 +597,7 @@ int manager_module_run_subcommand_getsignals(AlteratorCtlManagerModule *module, 
         ERR_EXIT();
     }
 
-    if (strcmp(bus, ALTERATOR_MANAGER_SYSTEM_BUS_PARAMETER) == 0)
+    if (g_strcmp0(bus, ALTERATOR_MANAGER_SYSTEM_BUS_PARAMETER) == 0)
         source = module->gdbus_system_bus_source;
     else
         source = module->gdbus_session_bus_source;
@@ -970,8 +970,8 @@ static int manager_module_initialize_getobject_ctx(alteratorctl_ctx_t **ctx, int
     //validate the bus
     if (bus)
     {
-        if (strcmp(bus, ALTERATOR_MANAGER_SYSTEM_BUS_PARAMETER) != 0
-            && strcmp(bus, ALTERATOR_MANAGER_SESSION_BUS_PARAMETER) != 0)
+        if (g_strcmp0(bus, ALTERATOR_MANAGER_SYSTEM_BUS_PARAMETER) != 0
+            && g_strcmp0(bus, ALTERATOR_MANAGER_SESSION_BUS_PARAMETER) != 0)
         {
             g_printerr(_("Wrong bus type in getobjects manager module subcommand.\n"));
             ERR_EXIT();
@@ -1016,8 +1016,8 @@ static int manager_module_initialize_getiface_ctx(alteratorctl_ctx_t **ctx, int 
     //validate the bus
     if (bus)
     {
-        if (strcmp(bus, ALTERATOR_MANAGER_SYSTEM_BUS_PARAMETER) != 0
-            && strcmp(bus, ALTERATOR_MANAGER_SESSION_BUS_PARAMETER) != 0)
+        if (g_strcmp0(bus, ALTERATOR_MANAGER_SYSTEM_BUS_PARAMETER) != 0
+            && g_strcmp0(bus, ALTERATOR_MANAGER_SESSION_BUS_PARAMETER) != 0)
         {
             g_printerr(_("Wrong bus type in getifaces manager module subcommand.\n"));
             ERR_EXIT();
@@ -1056,8 +1056,8 @@ static int manager_module_initialize_getsignals_ctx(alteratorctl_ctx_t **ctx, in
     //validate the bus
     if (bus)
     {
-        if (strcmp(bus, ALTERATOR_MANAGER_SYSTEM_BUS_PARAMETER) != 0
-            && strcmp(bus, ALTERATOR_MANAGER_SESSION_BUS_PARAMETER) != 0)
+        if (g_strcmp0(bus, ALTERATOR_MANAGER_SYSTEM_BUS_PARAMETER) != 0
+            && g_strcmp0(bus, ALTERATOR_MANAGER_SESSION_BUS_PARAMETER) != 0)
         {
             g_printerr(_("Wrong bus type in getifaces manager module subcommand.\n"));
             ERR_EXIT();

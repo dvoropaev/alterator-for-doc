@@ -215,10 +215,18 @@ call_status() {
         fi
     fi
 
-    cat "$conf" |
-        sed 's/^$/{}/' |
-        filter status  |
-        jq "setpath([\"deployed\"]; $deployed) | setpath([\"started\"]; $started)" -c
+    if [ -f "$conf" ]
+    then
+        cat "$conf" |
+            sed 's/^$/{}/' |
+            filter status  |
+            jq "setpath([\"deployed\"]; $deployed) | setpath([\"started\"]; $started)" -c
+    else
+        cat << EOF
+{ "deployed": $deployed, "started": $started }
+EOF
+    fi
+
 }
 
 call_backup() {

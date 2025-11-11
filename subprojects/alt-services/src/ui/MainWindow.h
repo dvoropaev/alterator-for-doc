@@ -13,7 +13,6 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    void setControler(Controller* c);
     void addWidget(int index, QWidget* w);
 
 protected:
@@ -26,12 +25,13 @@ public slots:
     void onStatusChanged();
 
 private slots:
-    void on_tableView_activated(const QModelIndex &index);
+    void on_treeView_activated(const QModelIndex &index);
     void on_searchBar_textChanged(const QString &arg1);
     void on_actionImport_triggered();
     void on_actionRefreshCurrent_triggered();
     void on_actionStart_triggered();
     void on_actionStop_triggered();
+    void onContextActionTriggered();
 
 private:
     class Private;

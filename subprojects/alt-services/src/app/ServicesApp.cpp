@@ -2,6 +2,7 @@
 
 #include "controller/Controller.h"
 #include "ui/MainWindow.h"
+#include "ui/ActionWizard.h"
 
 #include <QEvent>
 #include <QDragEnterEvent>
@@ -33,13 +34,12 @@ ServicesApp::~ServicesApp() { delete d; }
 
 int ServicesApp::run()
 {
+    Controller controller;
+    d->m_controller = &controller;
+
     MainWindow window;
     window.show();
 
-    Controller controller{this, &window};
-    d->m_controller = &controller;
-
-    window.setControler(d->m_controller);
     controller.refresh();
 
     auto args = arguments();
@@ -50,6 +50,7 @@ int ServicesApp::run()
 }
 
 AppSettings* ServicesApp::settings() { return &d->m_settings; }
+Controller* ServicesApp::controller() { return d->m_controller; }
 
 
 

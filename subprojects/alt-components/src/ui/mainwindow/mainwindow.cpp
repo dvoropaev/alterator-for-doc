@@ -1,8 +1,7 @@
 #include "mainwindow.h"
+
 #include "application.h"
 #include "controller/controller.h"
-#include "model/item.h"
-#include "model/objects/component.h"
 #include "ui/aboutdialog/aboutdialog.h"
 #include "ui/componentswidget/componentswidget.h"
 #include "ui_mainwindow.h"
@@ -21,20 +20,19 @@
 
 namespace alt
 {
-MainWindow::MainWindow(Model *model, ProxyModel *proxyModel, QWidget *parent)
+MainWindow::MainWindow(QAbstractItemModel *model, QWidget *parent)
     : QMainWindow(parent)
     , ui(std::make_unique<Ui::MainWindow>())
     , settings(std::make_unique<MainWindowSettings>(this))
     , model(model)
-    , proxyModel(proxyModel)
 {
     this->ui->setupUi(this);
     this->settings->restoreSettings();
     this->setWindowIcon(QIcon(":logo.png"));
 
-    this->ui->componentsWidget->setComponentsModel(this->proxyModel);
+    this->ui->componentsWidget->setComponentsModel(this->model);
 
-    connect(this->model, &Model::itemChanged, this, &MainWindow::onItemChanged);
+    connect(this->model, &QAbstractItemModel::dataChanged, this, &MainWindow::onDataChanged);
     connect(this->ui->languageMenu, &QMenu::triggered, this, &MainWindow::onLanguageChanged);
 
     initializeLanguageMenu();
@@ -119,72 +117,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
     QMainWindow::closeEvent(event);
 }
 
-void MainWindow::setDescription(const QModelIndex &proxyIndex,
-                                alt::ModelItem::Type type,
-                                const QString &displayName,
-                                const QString &description)
-{
-    QString quotedDisplayName;
-    if (alt::Application::getLocale().language() == QLocale::Russian)
-    {
-        quotedDisplayName = QString::fromUtf8("«%1»").arg(displayName);
-    }
-    else
-    {
-        quotedDisplayName = QString("\"%1\"").arg(displayName);
-    }
-
-    QString prefix = QString("<h2>%1 %2</h2>\n").arg(alt::ModelItem::typeToString(type), quotedDisplayName);
-
-    if (type == alt::ModelItem::Type::Category || type == alt::ModelItem::Type::Section
-        || type == alt::ModelItem::Type::Tag)
-    {
-        const auto index = this->proxyModel->mapToSource(proxyIndex);
-        const auto componentsCount = this->model->countComponents(this->model->itemFromIndex(index));
-
-        prefix += QString("<ul>\n  <li>%1: %2</li>\n  <li>%3: %4</li>\n</ul>")
-                      .arg(tr("Total components"))
-                      .arg(componentsCount.total)
-                      .arg(tr("Installed components"))
-                      .arg(componentsCount.installed);
-    }
-    else if (type == alt::ModelItem::Type::Component)
-    {
-        const auto *component = proxyIndex.data(alt::ObjectRole).value<Component *>();
-        if (component && !component->tags.empty() && alt::Model::current_edition)
-        {
-            QStringList tagsNames;
-            for (const auto &tag : alt::Model::current_edition->tags)
-            {
-                if (component->tags.contains(tag.name))
-                {
-                    const QString tagHtml = QString("<span class=\"tag\">%1</span>").arg(tag.displayName);
-                    tagsNames.append(tagHtml);
-                }
-            }
-
-            prefix += QString("<ul>\n  <li>%1: %2</li>\n</ul>").arg(tr("Tags")).arg(tagsNames.join(", "));
-        }
-    }
-
-    this->ui->componentsWidget->setDescription(prefix + description);
-}
-
-void MainWindow::setDescription(const QString &description)
-{
-    this->ui->componentsWidget->setDescription(description);
-}
-
-void MainWindow::setContentList(const std::vector<std::shared_ptr<Package>> &packages)
-{
-    this->ui->componentsWidget->setContentList(packages);
-}
-
-void MainWindow::setContentList(QAbstractItemModel *model, const QModelIndex &index)
-{
-    this->ui->componentsWidget->setContentList(model, index);
-}
-
 void MainWindow::setEnabledApplyButton(bool isEnabled)
 {
     this->ui->applyPushButton->setEnabled(isEnabled);
@@ -217,9 +149,9 @@ void MainWindow::showDisableRemoveBaseComponent(bool show)
     this->ui->actionDisable_deletion_base_components->setVisible(show);
 }
 
-void MainWindow::showActionOtherComponents(bool show)
+void MainWindow::showActionNonEditionComponents(bool show)
 {
-    this->ui->actionOther->setVisible(show);
+    this->ui->actionShowNonEditionComponents->setVisible(show);
 }
 
 void MainWindow::on_resetPushButton_clicked()
@@ -237,9 +169,9 @@ void MainWindow::on_updatePushButton_clicked()
     Controller::instance().updateSources();
 }
 
-void MainWindow::onItemChanged(QStandardItem *item)
+void MainWindow::onDataChanged(const QModelIndex &topLeft, const QModelIndex &, const QList<int> &)
 {
-    Controller::instance().itemChanged(dynamic_cast<ModelItem *>(item));
+    Controller::instance().updateCurrentTransaction(topLeft);
 }
 
 void MainWindow::on_action_Show_logs_triggered()
@@ -262,21 +194,15 @@ void MainWindow::on_aboutAction_triggered()
 void MainWindow::on_actionReload_components_triggered()
 {
     Controller::instance().rebuildModel();
-    if (Controller::instance().getViewMode() == MainWindow::ViewMode::BySections)
-    {
-        showActionOtherComponents(true);
-        Controller::instance().setFilterNonEditionComponents(this->ui->actionOther->isChecked());
-    }
-    else
-    {
-        showActionOtherComponents(false);
-        Controller::instance().setFilterNonEditionComponents(true);
-    }
 }
 
 void MainWindow::on_actionShow_drafts_toggled(bool isChecked)
 {
-    Controller::instance().showDrafts(isChecked);
+    Controller::instance().setFilterDrafts(isChecked);
+    if (auto *widget = getComponentWidget())
+    {
+        widget->updateDescription();
+    }
 }
 
 void MainWindow::on_actionDisable_deletion_base_components_toggled(bool isChecked)
@@ -300,30 +226,28 @@ void MainWindow::on_actionContent_toggled(bool isChecked)
     Controller::instance().showContent(isChecked);
 }
 
-void MainWindow::on_actionOther_toggled(bool isChecked)
+void MainWindow::on_actionShowNonEditionComponents_toggled(bool isChecked)
 {
     Controller::instance().setFilterNonEditionComponents(isChecked);
+    if (auto *widget = getComponentWidget())
+    {
+        widget->updateDescription();
+    }
 }
 
 void MainWindow::on_actionBySections_triggered()
 {
-    this->showActionOtherComponents(true);
     Controller::instance().setViewMode(ViewMode::BySections);
-    Controller::instance().setFilterNonEditionComponents(this->ui->actionOther->isChecked());
 }
 
 void MainWindow::on_actionPlain_triggered()
 {
-    this->showActionOtherComponents(false);
     Controller::instance().setViewMode(ViewMode::Plain);
-    Controller::instance().setFilterNonEditionComponents(true);
 }
 
 void MainWindow::on_actionByTags_triggered()
 {
-    this->showActionOtherComponents(false);
     Controller::instance().setViewMode(ViewMode::ByTags);
-    Controller::instance().setFilterNonEditionComponents(true);
 }
 
 void MainWindow::on_actionQuit_triggered()

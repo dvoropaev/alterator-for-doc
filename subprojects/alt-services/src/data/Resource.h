@@ -45,16 +45,11 @@ public:
     }
 
     inline Type     type()  const { return m_type;  }
-    inline QVariant defaultValue() const { return m_value; }
-    inline QVariant currentValue() const {
-        return m_override
-                ? m_override->currentValue()->get()
-                : m_value;
-    }
-    inline QVariant editValue() const {
-        return m_override
-                ? m_override->editValue()->get()
-                : m_value;
+
+    inline QVariant value(Parameter::ValueScope scope) const {
+        return m_override && m_override->value(scope)->isEnabled()
+                   ? m_override->value(scope)->get()
+                   : m_value;
     }
 
     inline int portProtocol(){ return m_port_protocol; }
@@ -62,11 +57,15 @@ public:
     bool conflicts(const Resource* toDeploy) const;
     inline Parameter* override() const {return m_override;}
 
+    inline Service* service() const {return m_service;}
+
 protected:
     Type m_type;
     QVariant m_value;
     Parameter* m_override;
     int m_port_protocol{NONE};
+    Service* m_service{};
+    friend class Service;
 };
 Q_DECLARE_METATYPE(Resource*)
 

@@ -6,10 +6,13 @@
 #include <QIcon>
 #include <QPalette>
 
-ResourceModel::ResourceModel(const PtrVector<Resource>& data)
+void ResourceModel::setItems(const PtrVector<Resource>& items)
 {
-    for ( const auto& r : data )
-        m_resources[r->type()].push_back(r.get());
+    beginResetModel();
+    m_resources.clear();
+    for ( const auto& resource : items )
+        m_resources[resource->type()].push_back(resource.get());
+    endResetModel();
 }
 
 int ResourceModel::rowCount(const QModelIndex& parent) const {
@@ -101,7 +104,7 @@ QVariant ResourceModel::data(const QModelIndex& index, int role) const
     if ( role == Qt::DisplayRole ) switch ( index.column() ) {
         case 0: return resource->displayName();
         case 1: {
-            auto value = resource->defaultValue().toString();
+            auto value = resource->value(m_scope).toString();
             if ( resource->type() == Resource::Type::Port )
                 return value.rightJustified(5, ' ').append(' ')
                     .append(protoNames.at(resource->portProtocol()));
@@ -184,4 +187,20 @@ QModelIndex ResourceModel::indexOf(Resource* resource)
     }
 
     return createIndex(std::distance(it->second.begin(), resourceIt), 0, row);
+}
+
+Resource* ResourceModel::resource(const QModelIndex& index) const
+{
+    if ( index.internalId() == ULONG_LONG_MAX  )
+        return nullptr;
+
+    auto typeIt = m_resources.begin();
+    std::advance( typeIt, index.internalId() );
+
+    if ( typeIt == m_resources.end() )
+        return nullptr;
+
+    auto& [type,resources] = *typeIt;
+
+    return resources.at( index.row() );
 }

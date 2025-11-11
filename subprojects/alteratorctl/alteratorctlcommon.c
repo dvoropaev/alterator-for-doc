@@ -7,6 +7,7 @@
 #include <string.h>
 #include <sys/ioctl.h>
 #include <sys/wait.h>
+#include <termios.h>
 #include <unistd.h>
 
 static int stdout_backup, stderr_backup;
@@ -73,7 +74,7 @@ int dbus_ctx_set_timeout(dbus_ctx_t *ctx, gint milliseconds)
     int ret = 0;
     if (milliseconds < -1)
     {
-        g_printerr(_("Unvalid D-Bus connection timeout value.\n"));
+        g_printerr(_("Invalid D-Bus connection timeout value.\n"));
         ERR_EXIT();
     }
     ctx->timeout_msec = milliseconds;
@@ -247,6 +248,25 @@ alteratorctl_ctx_t *alteratorctl_ctx_init_remote(gint subcommand_id,
     return ctx;
 }
 
+alteratorctl_ctx_t *alteratorctl_ctx_init_services(gint subcommand_id,
+                                                   const gchar *param1,
+                                                   const gchar *param2,
+                                                   void (*free_results)(gpointer results),
+                                                   void *additional_data)
+{
+    GVariant *ids        = g_variant_new("i", subcommand_id);
+    GVariant *parameters = g_variant_new("(msms)", param1, param2);
+
+    alteratorctl_ctx_t *ctx = alteratorctl_context_init(ids, parameters, free_results, additional_data);
+    if (!ctx)
+    {
+        g_printerr(_("Error of creating alteratorctl_ctx_t to services module.\n"));
+        return NULL;
+    }
+
+    return ctx;
+}
+
 void alteratorctl_ctx_free(alteratorctl_ctx_t *ctx)
 {
     if (ctx->subcommands_ids)
@@ -299,6 +319,32 @@ void print_hash_table(GHashTable *table, gboolean with_values)
 
 end:
     return;
+}
+
+gchar *read_file(gchar *filepath)
+{
+    gchar *result = NULL;
+    if (!filepath)
+    {
+        g_printerr(_("Can't read unspecified file.\n"));
+        return NULL;
+    }
+
+    if (!g_file_test(filepath, G_FILE_TEST_EXISTS))
+    {
+        g_printerr(_("File %s doesn't exist.\n"), filepath);
+        return NULL;
+    }
+
+    GError *error = NULL;
+    if (!g_file_get_contents(filepath, &result, NULL, &error))
+    {
+        g_printerr(_("Error of reading file %s: %s\n"), filepath, error->message);
+        g_error_free(error);
+        return NULL;
+    }
+
+    return result;
 }
 
 static int redirecting_stream(uint32_t target_id, uint32_t stream_id)
@@ -434,15 +480,19 @@ gchar *alterator_ctl_get_locale()
     if (!full_locale_name || (full_locale_name && !strlen(full_locale_name)))
         full_locale_name = getenv("LC_MESSAGES");
 
-    if (!full_locale_name || (full_locale_name && !strlen(full_locale_name)) || 0 == strcmp(full_locale_name, "C")
-        || 0 == strcmp(full_locale_name, "C.utf-8") || 0 == strcmp(full_locale_name, "C.UTF-8")
-        || 0 == strcmp(full_locale_name, "POSIX"))
+    // clang-format off
+    if (!full_locale_name || (full_locale_name && !strlen(full_locale_name)) ||
+        0 == g_strcmp0(full_locale_name, "C") ||
+        0 == g_strcmp0(full_locale_name, "C.utf-8") ||
+        0 == g_strcmp0(full_locale_name, "C.UTF-8") ||
+        0 == g_strcmp0(full_locale_name, "POSIX"))
     {
         //g_printerr(_("System locale data is empty.\n"));
         locale = g_strdup(LOCALE_FALLBACK);
     }
     else
         locale = full_locale_name;
+    // clang-format on
 
     return locale;
 }
@@ -604,15 +654,18 @@ int print_with_pager(const gchar *text)
         /* Child: exec pager */
         dup2(fileno(tmpf), STDIN_FILENO);
         fclose(tmpf);
-        execlp(pager, pager, NULL);
+        execlp("sh", "sh", "-c", pager, NULL);
         /* If exec fails, fallback */
-        _exit(127);
+        _exit(errno);
     }
     else if (pid > 0)
     {
         /* Parent: wait for pager */
         fclose(tmpf);
-        waitpid(pid, NULL, 0);
+        int child_exit_code = 0;
+        waitpid(pid, &child_exit_code, 0);
+        if (WEXITSTATUS(child_exit_code))
+            fputs(text, stdout);
     }
     else
     {
@@ -698,4 +751,137 @@ gchar *columnize_text(gchar **text)
     g_free(col_widths);
 
     return result;
+}
+
+static void invert_pair(gpointer key, gpointer value, gpointer user_data)
+{
+    GHashTable *rev = user_data;
+    g_hash_table_insert(rev, g_strdup((gchar *) value), g_strdup((gchar *) key));
+}
+
+GHashTable *hash_table_str2str_invert(GHashTable *original_table)
+{
+    GHashTable *reversed_table = g_hash_table_new_full(g_str_hash,
+                                                       g_str_equal,
+                                                       (GDestroyNotify) g_free,
+                                                       (GDestroyNotify) g_free);
+    g_hash_table_foreach(original_table, invert_pair, reversed_table);
+    return reversed_table;
+}
+
+GQuark alterator_ctl_secret_error_quark(void)
+{
+    return g_quark_from_static_string("alterator-ctl-secret-error-quark");
+}
+
+GHashTable *g_hash_table_copy_table(GHashTable *orig,
+                                    GCopyFunc key_copy_func,
+                                    gpointer key_user_data,
+                                    GCopyFunc value_copy_func,
+                                    gpointer value_user_data)
+{
+    if (!orig || (!key_copy_func && !value_copy_func))
+        return NULL;
+
+    GHashTable *result = g_hash_table_new_similar(orig);
+
+    GHashTableIter iter;
+    g_hash_table_iter_init(&iter, orig);
+    gpointer key = NULL, value = NULL;
+    while (g_hash_table_iter_next(&iter, &key, &value))
+        g_hash_table_insert(result,
+                            key_copy_func ? key_copy_func(key, key_user_data) : NULL,
+                            value_copy_func ? value_copy_func(value, value_user_data) : NULL);
+
+    return result;
+}
+
+gboolean alterator_ctl_read_secret(const gchar *label, gchar **out_secret, GError **error)
+{
+    g_return_val_if_fail(label != NULL, FALSE);
+    g_return_val_if_fail(out_secret != NULL, FALSE);
+
+    gboolean success = FALSE;
+    FILE *tty        = fopen("/dev/tty", "r+");
+    int fd           = tty ? fileno(tty) : -1;
+    struct termios oldt, newt;
+
+    if (!tty || fd < 0)
+    {
+        g_set_error(error, ALTERATOR_CTL_SECRET_ERROR, ALTERATOR_CTL_SECRET_ERROR_IO, "Failed to open /dev/tty");
+        goto end;
+    }
+
+    if (tcgetattr(fd, &oldt) == -1)
+    {
+        g_set_error(error,
+                    ALTERATOR_CTL_SECRET_ERROR,
+                    ALTERATOR_CTL_SECRET_ERROR_IO,
+                    "Failed to get terminal attributes");
+        goto end;
+    }
+
+    newt = oldt;
+    newt.c_lflag &= ~(ECHO);
+    (void) tcsetattr(fd, TCSANOW, &newt);
+
+    fprintf(tty, "Enter password for '%s': ", label);
+    fflush(tty);
+
+    char buf1[1024];
+    memset(buf1, 0, sizeof(buf1));
+    if (!fgets(buf1, sizeof(buf1), tty))
+    {
+        fprintf(tty, "\n");
+        (void) tcsetattr(fd, TCSANOW, &oldt);
+        g_set_error(error, ALTERATOR_CTL_SECRET_ERROR, ALTERATOR_CTL_SECRET_ERROR_IO, "Failed to read password input");
+        goto end;
+    }
+    fprintf(tty, "\n");
+
+    fprintf(tty, "Re-enter password for '%s': ", label);
+    fflush(tty);
+
+    char buf2[1024];
+    memset(buf2, 0, sizeof(buf2));
+    if (!fgets(buf2, sizeof(buf2), tty))
+    {
+        fprintf(tty, "\n");
+        (void) tcsetattr(fd, TCSANOW, &oldt);
+        g_set_error(error,
+                    ALTERATOR_CTL_SECRET_ERROR,
+                    ALTERATOR_CTL_SECRET_ERROR_IO,
+                    "Failed to read password confirmation");
+        goto end;
+    }
+    fprintf(tty, "\n");
+    (void) tcsetattr(fd, TCSANOW, &oldt);
+
+    size_t len1 = strlen(buf1);
+    while (len1 && (buf1[len1 - 1] == '\n' || buf1[len1 - 1] == '\r'))
+        buf1[--len1] = '\0';
+
+    size_t len2 = strlen(buf2);
+    while (len2 && (buf2[len2 - 1] == '\n' || buf2[len2 - 1] == '\r'))
+        buf2[--len2] = '\0';
+
+    if (!len1 || !len2)
+    {
+        g_set_error(error, ALTERATOR_CTL_SECRET_ERROR, ALTERATOR_CTL_SECRET_ERROR_EMPTY, "Password cannot be empty");
+        goto end;
+    }
+
+    if (strcmp(buf1, buf2) != 0)
+    {
+        g_set_error(error, ALTERATOR_CTL_SECRET_ERROR, ALTERATOR_CTL_SECRET_ERROR_MISMATCH, "Passwords do not match");
+        goto end;
+    }
+
+    *out_secret = g_strdup(buf1);
+    success     = TRUE;
+
+end:
+    if (tty)
+        fclose(tty);
+    return success;
 }

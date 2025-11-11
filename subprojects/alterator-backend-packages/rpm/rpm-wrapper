@@ -1,4 +1,4 @@
-#!/bin/sh -fu
+#!/bin/sh -efu
 #
 # Copyright (C) 2023 Evgeny Sinelnikov <sin@altlinux.org>
 #
@@ -52,12 +52,12 @@ eval set -- "$TEMP"
 while :; do
   case "$1" in
   --)
-    shift
-    break
-    ;;
+	shift
+	break
+	;;
   *)
-    parse_common_option "$1"
-    ;;
+	parse_common_option "$1"
+	;;
   esac
   shift
 done

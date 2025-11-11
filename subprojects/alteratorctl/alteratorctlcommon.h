@@ -56,6 +56,7 @@ typedef enum is_tty_status
 #define ALTERATOR_CTL_DIAG_MODULE_NAME "diag"
 #define ALTERATOR_CTL_SYSTEMINFO_MODULE_NAME "systeminfo"
 #define ALTERATOR_CTL_REMOTE_MODULE_NAME "remote"
+#define ALTERATOR_CTL_SERVICES_MODULE_NAME "services"
 
 #define ALTERATOR_SERVICE_NAME "org.altlinux.alterator"
 #define ALTERATOR_MANAGER_PATH "/org/altlinux/alterator"
@@ -68,6 +69,17 @@ typedef enum is_tty_status
 #define TOML_ERROR_BUFFER_SIZE 512
 
 #define LOCALE_FALLBACK "en_US.UTF-8"
+
+#define ALTERATOR_CTL_SECRET_ERROR (alterator_ctl_secret_error_quark())
+
+GQuark alterator_ctl_secret_error_quark(void);
+
+typedef enum
+{
+    ALTERATOR_CTL_SECRET_ERROR_EMPTY,
+    ALTERATOR_CTL_SECRET_ERROR_MISMATCH,
+    ALTERATOR_CTL_SECRET_ERROR_IO
+} AlteratorCtlSecretError;
 
 enum alteratorctl_commands
 {
@@ -177,6 +189,12 @@ alteratorctl_ctx_t *alteratorctl_ctx_init_remote(gint subcommand_id,
                                                  void (*free_results)(gpointer results),
                                                  void *additional_data);
 
+alteratorctl_ctx_t *alteratorctl_ctx_init_services(gint subcommand_id,
+                                                   const gchar *param1,
+                                                   const gchar *param2,
+                                                   void (*free_results)(gpointer results),
+                                                   void *additional_data);
+
 void alteratorctl_ctx_free(alteratorctl_ctx_t *ctx);
 
 int alterator_ctl_print_html(const gchar *html);
@@ -197,6 +215,8 @@ gchar *alterator_ctl_get_effective_language();
 
 void print_hash_table(GHashTable *table, gboolean with_values);
 
+gchar *read_file(gchar *filepath);
+
 int disable_output();
 
 int enable_output();
@@ -212,5 +232,20 @@ is_tty_status isatty_safe(guint fd);
 gchar *columnize_text(gchar **text);
 
 int print_with_pager(const gchar *text);
+
+GHashTable *hash_table_invert(GHashTable *original_table);
+
+GHashTable *hash_table_str2str_invert(GHashTable *original_table);
+
+GHashTable *g_hash_table_copy_table(GHashTable *orig,
+                                    GCopyFunc key_copy_func,
+                                    gpointer key_user_data,
+                                    GCopyFunc value_copy_func,
+                                    gpointer value_user_data);
+
+// Read a secret from /dev/tty with echo disabled and confirm it.
+// Returns TRUE on success with secret in *out_secret (caller must g_free()).
+// Returns FALSE on failure with error set (empty, mismatch, or I/O error).
+gboolean alterator_ctl_read_secret(const gchar *label, gchar **out_secret, GError **error);
 
 #endif // ALTERATORCTL_COMMON_H

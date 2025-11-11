@@ -1,2 +1,2 @@
 spec: .gear/alt-systeminfo.spec
-tar: v@version@:.
+tar: .

@@ -1,4 +1,4 @@
-#!/bin/sh -fu
+#!/bin/sh -efu
 #
 # Copyright (C) 2023 Evgeny Sinelnikov <sin@altlinux.org>
 #
@@ -42,10 +42,10 @@ show_help() {
 		  check-apply             check the execution of the installation and removal transaction
 		  check-install           check packages list on installation and installation status
 		  check-reinstall         check packages list on reinstallation
-		  check-remove		  check packages list on removal
-		  check-dist-upgrade	  check packages list on removal and installation for upgrade
+		  check-remove            check packages list on removal
+		  check-dist-upgrade      check packages list on removal and installation for upgrade
 		  apply                   run an install/remove transaction using an exclude list of packages for pkgpriorities
-		  dist-upgrade		  upgrade for each installed packages
+		  dist-upgrade            upgrade for each installed packages
 		  listall                 list all available packages
 		  search <pattern>        search through all packages
 		  lastupdate              shows time of last update in format YYYY.MM.DD HH:MM:SS UTC
@@ -79,7 +79,7 @@ get_last_update_date() {
 	if [[ -z "${date_result}"  ]]; then
 		exit 1
 	fi
-		
+
 	local parse_result="$(echo "${date_result}" | cut -d '.' -f1)"
 	echo "${parse_result} UTC"
 }
@@ -102,13 +102,13 @@ create_pkgpriorities() {
 		exit 1
 	}
 
+	local -i exit_code=0
 	{
 		echo "Required:"
 		# get manually installed packages, filter out those to be removed
 		apt-mark showmanual | sed '1,2d' | grep -vFxf <(printf "%s" "${exclude_pkgs}") | sed -e 's/^/  /'
-	} > "$pkgpriorities"
+	} > "$pkgpriorities" || exit_code=${?}
 
-	local -i exit_code=${?}
 	if [[ ${exit_code} -ne 0 ]]; then
 		rm -f "$pkgpriorities"
 		echo $"Failed to populate the pkgpriorities file with data" 1>&2
@@ -137,9 +137,9 @@ apply() {
 	exclude_pkgs="$to_remove$exclude_pkgs"
 
 	# сreate pkgpriorities with manually installed packages
-	pkgpriorities=$(create_pkgpriorities "$exclude_pkgs")
+	local -i exit_code=0
+	pkgpriorities=$(create_pkgpriorities "$exclude_pkgs") || exit_code=${?}
 
-	local -i exit_code=${?}
 	if [[ ${exit_code} -ne 0 ]]; then
 		echo "${pkgpriorities}" 1>&2
 		exit ${exit_code}
@@ -162,9 +162,9 @@ check_apply() {
 	to_remove="${to_remove%$'\n'}"
 
 	# сreate pkgpriorities with manually installed packages
-	pkgpriorities=$(create_pkgpriorities "$to_remove")
+	local -i exit_code=0
+	pkgpriorities=$(create_pkgpriorities "$to_remove") || exit_code=${?}
 
-	local -i exit_code=${?}
 	if [[ ${exit_code} -ne 0 ]]; then
 		echo "${pkgpriorities}" 1>&2
 		exit ${exit_code}
@@ -172,9 +172,8 @@ check_apply() {
 
 	temp_files+=("$pkgpriorities")
 
-	reply="$(LANG=en apt-get install --just-print -q "${@}" -o Dir::Etc::pkgpriorities="$pkgpriorities")"
+	reply="$(LANG=en apt-get install --just-print -q "${@}" -o Dir::Etc::pkgpriorities="$pkgpriorities")" || exit_code=${?}
 
-	local -i exit_code=${?}
 	if [[ ${exit_code} -ne 0 ]]; then
 		echo "${reply}" 1>&2
 		exit ${exit_code}
@@ -201,20 +200,22 @@ check_apply() {
 }
 
 check_reinstall() {
-	reply="$(apt-get reinstall -s -q ${@})"
-	local -i exit_code=${?}
+	local reply
+	local -i exit_code=0
+	reply="$(apt-get reinstall -s -q ${@})" || exit_code=${?}
 	if [[ ${exit_code} -ne 0 ]]; then
 		echo "${reply}" 1>&2
 		exit ${exit_code}
 	fi
 
-        echo "${reply}" | awk '/Inst/ { print $2 }'
-        echo "${reply}" | awk '/Remv/ { print $2 }' 1>&2
+	echo "${reply}" | awk '/Inst/ { print $2 }'
+	echo "${reply}" | awk '/Remv/ { print $2 }' 1>&2
 }
 
 check_dist_upgrade() {
-	reply="$(apt-get dist-upgrade -s -q)"
-	local -i exit_code=${?}
+	local reply
+	local -i exit_code=0
+	reply="$(apt-get dist-upgrade -s -q)" || exit_code=${?}
 	if [[ ${exit_code} -ne 0 ]]; then
 		echo "${reply}" 1>&2
 		exit ${exit_code}
@@ -226,8 +227,9 @@ check_dist_upgrade() {
 
 dist_upgrade() {
 	transaction_start_signal
-	reply="$(apt-get dist-upgrade --assume-yes -q)"
-	local -i exit_code=${?}
+	local reply
+	local -i exit_code=0
+	reply="$(apt-get dist-upgrade --assume-yes -q)" || exit_code=${?}
 	if [[ ${exit_code} -ne 0 ]]; then
 		echo "${reply}" 1>&2
 		exit ${exit_code}

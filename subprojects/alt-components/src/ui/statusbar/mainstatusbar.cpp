@@ -1,5 +1,4 @@
 #include "mainstatusbar.h"
-#include "application.h"
 #include "model/objects/edition.h"
 
 #include "ui_statusbar.h"
@@ -38,9 +37,7 @@ void MainStatusBar::onDone(Edition *current_edition, int numberOfComponentsBuilt
     {
         StatusBar::onDone(tr("Components found: ") + QString::number(numberOfComponentsBuilt) + tr(", from edition: ")
                           + QString::number(m_editionComponentsCount));
-        current_edition->displayName
-            = current_edition->displayNameLocaleStorage[Application::getLocale().name().split('_').first()];
-        showEdition(current_edition->displayName);
+        showEdition(current_edition->displayName());
     }
     else
     {
@@ -83,9 +80,7 @@ void MainStatusBar::changeEvent(QEvent *event)
 
         if (m_currentEdition != nullptr)
         {
-            m_currentEdition->displayName
-                = m_currentEdition->displayNameLocaleStorage[Application::getLocale().name().split('_').first()];
-            showEdition(m_currentEdition->displayName);
+            showEdition(m_currentEdition->displayName());
         }
     }
 

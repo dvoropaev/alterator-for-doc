@@ -61,14 +61,17 @@ set(PROJECT_SOURCES
     src/data/models/ParameterModel.h
     src/data/models/ParameterModel.cpp
 
-    src/data/models/ParameterStatusModel.h
-    src/data/models/ParameterStatusModel.cpp
-
     src/data/models/ServiceModel.h
     src/data/models/ServiceModel.cpp
 
     src/data/models/ResourceModel.h
     src/data/models/ResourceModel.cpp
+
+    src/data/models/ResourceOwnersModel.h
+    src/data/models/ResourceOwnersModel.cpp
+
+    src/data/models/DiagModel.h
+    src/data/models/DiagModel.cpp
 
 # MAIN WIDGETS
     src/ui/MainWindow.cpp
@@ -90,6 +93,7 @@ set(PROJECT_SOURCES
     src/ui/DiagSelectionForm.h
     src/ui/DiagSelectionForm.cpp
     src/ui/DiagSelectionForm.ui
+
 
 # MISC WIDGETS
     src/ui/ObjectInfoWidget.h
@@ -146,7 +150,6 @@ set(PROJECT_SOURCES
 
     src/ui/forms/editors/detailed/misc/ValidationIndicator.h
     src/ui/forms/editors/detailed/misc/ValidationIndicator.cpp
-    src/ui/forms/editors/detailed/misc/ValidationIndicator.ui
 
     src/ui/forms/editors/detailed/DetailedEditor.h
     src/ui/forms/editors/detailed/wrappers/EditorWrapper.h

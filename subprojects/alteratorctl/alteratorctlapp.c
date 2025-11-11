@@ -375,9 +375,15 @@ static void alterator_ctl_print_help()
     return;
 }
 
+static gint alterator_ctl_app_sort_modules_list(gconstpointer a, gconstpointer b)
+{
+    return g_utf8_collate((const gchar *) ((GPtrArray *) a)->pdata, (const gchar *) ((GPtrArray *) b)->pdata);
+}
+
 static int alterator_ctl_app_list_modules(AlteratorCtlApp *app)
 {
-    int ret = 0;
+    int ret                = 0;
+    GPtrArray *sorted_list = NULL;
 
     if (!app)
     {
@@ -385,16 +391,15 @@ static int alterator_ctl_app_list_modules(AlteratorCtlApp *app)
         ERR_EXIT();
     }
 
-    GHashTableIter iter;
-    gpointer key, value;
-
-    g_hash_table_iter_init(&iter, app->modules);
-    while (g_hash_table_iter_next(&iter, &key, &value))
-    {
-        g_print("%s\n", (gchar *) key);
-    }
+    sorted_list = g_hash_table_get_keys_as_ptr_array(app->modules);
+    g_ptr_array_sort(sorted_list, alterator_ctl_app_sort_modules_list);
+    for (gsize i = 0; i < sorted_list->len; i++)
+        g_print("%s\n", ((gchar **) sorted_list->pdata)[i]);
 
 end:
+    if (sorted_list)
+        g_ptr_array_unref(sorted_list);
+
     return ret;
 }
 

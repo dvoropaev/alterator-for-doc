@@ -35,11 +35,15 @@ timeout = 600
 [methods.Start]
 execute = "service-samba-ad --start"
 action_id = "Start"
+stdout_signal_name = "service_stdout_signal"
+stderr_signal_name = "service_stderr_signal"
 timeout = 600
 
 [methods.Stop]
 execute = "service-samba-ad --stop"
 action_id = "Stop"
+stdout_signal_name = "service_stdout_signal"
+stderr_signal_name = "service_stderr_signal"
 timeout = 600
 
 [methods.Backup]

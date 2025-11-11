@@ -2,17 +2,25 @@
 
 #include <QTimer>
 #include <QHeaderView>
+#include <QKeyEvent>
 #include "ObjectInfoDelegate.h"
+#include "app/ServicesApp.h"
+#include "controller/Controller.h"
 
 CustomTreeView::CustomTreeView(QWidget* parent)
     : QTreeView{parent}
 {
     setSelectionMode(QAbstractItemView::NoSelection);
     setAnimated(true);
+    setTabKeyNavigation(true);
 
     header()->setStretchLastSection(true);
     setUniformRowHeights(false);
-    setWordWrap(true);
+
+    connect(ServicesApp::instance()->settings(), &AppSettings::tablesDetailedMultilineChanged, this, [this]{
+        setWordWrap(ServicesApp::instance()->settings()->tablesDetailedMultiline());
+    });
+    setWordWrap(ServicesApp::instance()->settings()->tablesDetailedMultiline());
 
     setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
 
@@ -20,13 +28,16 @@ CustomTreeView::CustomTreeView(QWidget* parent)
         if ( auto d = qobject_cast<ObjectInfoDelegate*>(itemDelegateForColumn(index)) )
             d->setColumnSize(newSize);
     });
+
+    setContextMenuPolicy(Qt::ActionsContextMenu);
+    addActions(ServicesApp::instance()->controller()->tableActions());
 }
 
 void CustomTreeView::setModel(QAbstractItemModel* model)
 {
     QTreeView::setModel(model);
     for (int i = 0; i < model->columnCount(); ++i)
-        setItemDelegateForColumn(i, new ObjectInfoDelegate{this});
+        QTreeView::setItemDelegateForColumn(i, new ObjectInfoDelegate{this});
 
     connect(model, &QAbstractItemModel::dataChanged,
             [this](const QModelIndex &tl, const QModelIndex &br, const QList<int> &roles){
@@ -35,6 +46,20 @@ void CustomTreeView::setModel(QAbstractItemModel* model)
                 if ( auto d = qobject_cast<ObjectInfoDelegate*>(itemDelegateForColumn(i)) )
                     emit d->sizeHintChanged({});
     });
+}
+
+void CustomTreeView::setColumnNeverDetailed(int column, bool restrict)
+{
+    if ( auto* d = dynamic_cast<ObjectInfoDelegate*>(itemDelegateForColumn(column)) )
+        d->setNeverDetailed(restrict);
+}
+
+void CustomTreeView::insertAction(int index, QAction* action)
+{
+    if ( index >= actions().size() )
+        QTreeView::addAction(action);
+    else
+        QTreeView::insertAction(actions().at(index), action);
 }
 
 void CustomTreeView::highlight(const QModelIndex& index)
@@ -49,4 +74,12 @@ void CustomTreeView::highlight(const QModelIndex& index)
             QTimer::singleShot(500, this, &QAbstractItemView::clearSelection);
         });
     } else qWarning() << "incorrect index";
+}
+
+void CustomTreeView::keyPressEvent(QKeyEvent* event)
+{
+    auto index = currentIndex();
+    if ( event->key() == Qt::Key_Space && index.isValid() )
+        emit clicked(index);
+    QTreeView::keyPressEvent(event);
 }

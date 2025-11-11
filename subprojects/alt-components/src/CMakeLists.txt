@@ -60,7 +60,10 @@ set(HEADERS
 	model/objects/package.h
 	model/objects/tag.h
 	model/model.h
+	model/componentfilterproxymodel.h
 	model/proxymodel.h
+	model/transactionfilterproxymodel.h
+	model/ensembleproxymodel.h
 	model/item.h
 	model/modelbuilder.h
 
@@ -105,7 +108,10 @@ set(SOURCES
 	model/objects/package.cpp
 	model/objects/tag.cpp
 	model/model.cpp
+	model/componentfilterproxymodel.cpp
 	model/proxymodel.cpp
+	model/transactionfilterproxymodel.cpp
+	model/ensembleproxymodel.cpp
 	model/item.cpp
 	model/modelbuilder.cpp
 

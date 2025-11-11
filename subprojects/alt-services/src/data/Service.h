@@ -26,9 +26,6 @@ public:
             PtrVector<DiagTool>&& tools, bool diagMissing);
     ~Service();
 
-    ParameterModel* parameterModel();
-     ResourceModel*  resourceModel();
-
     void setLocale(const QLocale& locale) const override;
 
     inline const QString& dbusPath(){ return m_dbusPath; }
@@ -37,25 +34,28 @@ public:
 
     inline bool isDiagMissing() {return m_diagNotFound;}
 
-    inline bool isForceDeployable(){return m_force_deployable;}
-    inline bool forceDeploy(){return m_force_deploy;}
-    inline void setForceDeploy(bool how){m_force_deploy = how;}
+    inline bool isForceDeployable() const {return m_force_deployable;}
+    inline bool forceDeploy() const {return m_force_deploy;}
+    inline void setForceDeploy(bool how) {m_force_deploy = how;}
 
-    inline bool isDeployed(){return m_deployed;}
-    inline bool isStarted(){return m_started;}
+    inline bool isDeployed() const {return m_deployed;}
+    inline bool isStarted() const {return m_started;}
 
     const PtrVector<Parameter>& parameters();
+    const PtrVector<Resource>& resources();
     const PtrVector<DiagTool>& diagTools();
 
     QJsonObject getParameters(Parameter::Contexts ctx, bool excludePasswords = false);
 
-    void showDefault(bool how = true);
-
-    bool hasConflict(Service* another, Resource** ours, Resource** theirs);
-
-    void setStatus(int code, const QByteArray& data);
+    bool hasConflict(Service* another, Resource* theirs, Resource** ours);
     bool tryFill(QJsonObject o, Parameter::Contexts ctx);
 
+    bool hasPreDiag() const;
+    bool hasPostDiag() const;
+
+protected:
+    friend class Controller;
+    void setStatus(const QByteArray& data);
 private:
     QString m_dbusPath;
     const bool m_force_deployable;

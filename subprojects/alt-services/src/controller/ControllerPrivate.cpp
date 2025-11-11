@@ -394,9 +394,12 @@ PropertyPtr buildProperty(const QString& name, const toml::ordered_table& propDa
     if ( !buildAllowed(name, propData, result.get()) )
         return {};
 
-    if ( valType == Property::Type::Composite || valType == Property::Type::Enum )
+    if ( valType == Property::Type::Composite || valType == Property::Type::Enum ) {
         for ( auto& child : prototype->defaultValue()->children() )
             result->defaultValue()->addChild(child->clone());
+        if (valType == Property::Type::Enum)
+            result->defaultValue()->children().at(0)->setEnabled(true);
+    }
 
     try {
         buildDefault(propData.at(keys::param::key_default), result->defaultValue());
@@ -618,12 +621,8 @@ std::unique_ptr<DiagTool> buildDiagTool(const QString& path, bool session, const
                                       path, iconName, session, std::move(tests), std::move(diagParameters));
 }
 
-Controller::Private::Private(Controller* self, QWidget* window)
-    : m_model{m_services}
-    , m_group{self}
-    , m_detailed{self}
-    , m_compact{self}
-    , m_wizard{self, window}
+Controller::Private::Private(Controller* self)
+    : m_table_mode_group{self}
 {}
 
 std::unique_ptr<Service> Controller::Private::buildService(const QString& path, const QString& data) noexcept

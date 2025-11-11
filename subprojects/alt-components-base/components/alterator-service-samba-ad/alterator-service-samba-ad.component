@@ -1,0 +1,8 @@
+type = "Component"
+name = "alterator-service-samba-ad"
+category = "alterator"
+display_name.en = "Alterator - Service for Samba AD management"
+display_name.ru = "Альтератор - Служба управления Samba AD"
+
+[packages]
+alterator-service-samba-ad = {}

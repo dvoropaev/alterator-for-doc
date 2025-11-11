@@ -199,7 +199,7 @@ public:
      *  For Property::Type::Composite, Property::Type::Array and Property::Type::Enum
      *  this functions called recursively on its children.
      */
-    void fill(const QJsonValue& value);
+    void fill(const QJsonValue& value, bool required);
 
 
     /*

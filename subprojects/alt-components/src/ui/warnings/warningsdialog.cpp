@@ -1,9 +1,9 @@
 #include "warningsdialog.h"
-#include "controller/controller.h"
 #include "ui_warningsdialog.h"
 
 #include <QClipboard>
 #include <QMenu>
+#include <QSortFilterProxyModel>
 
 namespace alt
 {

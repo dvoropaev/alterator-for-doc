@@ -68,9 +68,10 @@ get_constraints(){
     case $type in
         array)
             array_type=`parse "$table.$name.array_type"`
-            [ "$array_type" == "enum" ] && array_type='string'
+            schema_type="$array_type"
+            [[ "$array_type" == 'enum' ]] && schema_type='object'
 
-            constraints=', "items": { "type": "'$array_type'"'
+            constraints=', "items": { "type": "'$schema_type'"'
             constraints+=`get_constraints $name $table $array_type false`
             constraints+='}'
 

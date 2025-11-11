@@ -4,6 +4,7 @@
 #include "alteratorctleditionsmodule.h"
 #include "alteratorctlmanagermodule.h"
 #include "alteratorctlpackagesmodule.h"
+#include "alteratorctlservicesmodule.h"
 #include "alteratorctlsysteminfomodule.h"
 
 #include "alteratorctlcommon.h"
@@ -40,12 +41,15 @@ int main(int argc, char **argv)
 
     alterator_ctl_module_t *systeminfo_module = get_systeminfo_module();
 
+    alterator_ctl_module_t *services_module = get_services_module();
+
     alterator_ctl_register_module(app, manager_module);
     alterator_ctl_register_module(app, packages_module);
     alterator_ctl_register_module(app, components_module);
     alterator_ctl_register_module(app, editions_module);
     alterator_ctl_register_module(app, diag_module);
     alterator_ctl_register_module(app, systeminfo_module);
+    alterator_ctl_register_module(app, services_module);
 
     ret = alterator_ctl_app_run(app, argc, argv);
 

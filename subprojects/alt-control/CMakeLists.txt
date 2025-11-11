@@ -17,20 +17,54 @@ set(TS_FILES
     ts/ru_RU.ts
 )
 
-include_directories("src")
+include_directories("src" ${CMAKE_CURRENT_BINARY_DIR})
 
 set(PROJECT_SOURCES
-    src/ControlForm.cpp
-    src/ControlForm.ui
-    src/Controller.h
-    src/DBusDataSource.h
-    src/MainWindow.cpp
-    src/MainWindow.ui
-    src/ControlForm.h
-    src/Controller.cpp
-    src/DBusDataSource.cpp
     src/main.cpp
-    src/MainWindow.h
+
+    # app
+    src/app/ControlApp.h
+    src/app/ControlApp.cpp
+
+    src/app/AppSettings.h
+    src/app/AppSettings.cpp
+
+    # controller
+    src/controller/Controller.h
+    src/controller/Controller.cpp
+
+    src/controller/DBusDataSource.h
+    src/controller/DBusDataSource.cpp
+
+    # data
+    src/data/TranslatableObject.h
+    src/data/TranslatableObject.cpp
+
+    src/data/Facilty.h
+    src/data/Facilty.cpp
+
+    src/data/FacilityModel.h
+    src/data/FacilityModel.cpp
+
+    # ui
+    src/ui/MainWindow.h
+    src/ui/MainWindow.cpp
+    src/ui/MainWindow.ui
+
+    src/ui/AboutDialog.h
+    src/ui/AboutDialog.cpp
+    src/ui/AboutDialog.ui
+
+    src/ui/ObjectInfoWidget.h
+    src/ui/ObjectInfoWidget.cpp
+    src/ui/ObjectInfoWidget.ui
+
+    src/ui/ObjectInfoDelegate.h
+    src/ui/ObjectInfoDelegate.cpp
+
+    src/ui/StateForm.h
+    src/ui/StateForm.cpp
+    src/ui/StateForm.ui
 )
 
 add_custom_target(app_ts
@@ -42,6 +76,7 @@ set_source_files_properties(${TS_FILES} PROPERTIES OUTPUT_LOCATION ${CMAKE_CURRE
 
 
 include(cmake/TranslationUtils.cmake)
+include(cmake/Version.cmake)
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_translation(QM_FILES ${TS_FILES})
@@ -51,10 +86,14 @@ endif()
 
 add_translation_resource(RESOURCES_SRC ${PROJECT_NAME} ${QM_FILES})
 
+find_package(Qt6 REQUIRED COMPONENTS Core)
+
 add_executable(${PROJECT_NAME}
     ${PROJECT_SOURCES}
     ${RESOURCES_SRC}
 )
+
+target_link_libraries(alt-control PRIVATE Qt6::Core)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt${QT_VERSION_MAJOR}::Widgets

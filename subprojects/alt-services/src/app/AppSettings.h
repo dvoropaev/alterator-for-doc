@@ -15,6 +15,7 @@ class AppSettings : public QObject
 public:
     PROPERTY(bool, editorTableMode)
     PROPERTY(bool, tablesDetailed)
+    PROPERTY(bool, tablesDetailedMultiline)
     PROPERTY(bool, lowerUnrequired)
     PROPERTY(QByteArray, mainWindowState)
     PROPERTY(Qt::ToolButtonStyle, toolButtonStyle)

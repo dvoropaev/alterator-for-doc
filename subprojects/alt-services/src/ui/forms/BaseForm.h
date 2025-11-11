@@ -16,7 +16,7 @@ public:
 
     inline std::unique_ptr<Property::Value::ValidationInfo> findInvalidValue() {
         for ( auto* param : m_parameters )
-            if ( auto info = param->editValue()->isInvalid() )
+            if ( auto info = param->value(Parameter::ValueScope::Edit)->isInvalid() )
                 return info;
 
         return {};

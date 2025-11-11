@@ -35,9 +35,6 @@ public:
     explicit ModelItem(Tag *tag);
     ~ModelItem() override = default;
 
-    void translateItem(const QString &locale);
-    int countComponentsRecursive() const;
-
     static QString typeToString(Type type);
 
 public:
