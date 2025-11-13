@@ -193,13 +193,7 @@ context = [
 display_name.en = "BIND settings"
 display_name.ru = "Настройки BIND"
 type = "object"
-context = [
-    "deploy",
-    "status",
-    "diag",
-    "configure"
-]
-constant = true
+context = []
 [parameters.bindSettings.properties.allowQuery]
 display_name.en = "Allowed subnets"
 display_name.ru = "Разрешённые подсети"
