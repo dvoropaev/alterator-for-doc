@@ -808,7 +808,7 @@ gboolean alterator_ctl_read_secret(const gchar *label, gchar **out_secret, GErro
 
     if (!tty || fd < 0)
     {
-        g_set_error(error, ALTERATOR_CTL_SECRET_ERROR, ALTERATOR_CTL_SECRET_ERROR_IO, "Failed to open /dev/tty");
+        g_set_error(error, ALTERATOR_CTL_SECRET_ERROR, ALTERATOR_CTL_SECRET_ERROR_IO, _("Failed to open /dev/tty"));
         goto end;
     }
 
@@ -817,7 +817,7 @@ gboolean alterator_ctl_read_secret(const gchar *label, gchar **out_secret, GErro
         g_set_error(error,
                     ALTERATOR_CTL_SECRET_ERROR,
                     ALTERATOR_CTL_SECRET_ERROR_IO,
-                    "Failed to get terminal attributes");
+                    _("Failed to get terminal attributes"));
         goto end;
     }
 
@@ -825,7 +825,7 @@ gboolean alterator_ctl_read_secret(const gchar *label, gchar **out_secret, GErro
     newt.c_lflag &= ~(ECHO);
     (void) tcsetattr(fd, TCSANOW, &newt);
 
-    fprintf(tty, "Enter password for '%s': ", label);
+    fprintf(tty, _("Enter password for '%s': "), label);
     fflush(tty);
 
     char buf1[1024];
@@ -834,12 +834,15 @@ gboolean alterator_ctl_read_secret(const gchar *label, gchar **out_secret, GErro
     {
         fprintf(tty, "\n");
         (void) tcsetattr(fd, TCSANOW, &oldt);
-        g_set_error(error, ALTERATOR_CTL_SECRET_ERROR, ALTERATOR_CTL_SECRET_ERROR_IO, "Failed to read password input");
+        g_set_error(error,
+                    ALTERATOR_CTL_SECRET_ERROR,
+                    ALTERATOR_CTL_SECRET_ERROR_IO,
+                    _("Failed to read password input"));
         goto end;
     }
     fprintf(tty, "\n");
 
-    fprintf(tty, "Re-enter password for '%s': ", label);
+    fprintf(tty, _("Re-enter password for '%s': "), label);
     fflush(tty);
 
     char buf2[1024];
@@ -851,7 +854,7 @@ gboolean alterator_ctl_read_secret(const gchar *label, gchar **out_secret, GErro
         g_set_error(error,
                     ALTERATOR_CTL_SECRET_ERROR,
                     ALTERATOR_CTL_SECRET_ERROR_IO,
-                    "Failed to read password confirmation");
+                    _("Failed to read password confirmation"));
         goto end;
     }
     fprintf(tty, "\n");
@@ -867,13 +870,13 @@ gboolean alterator_ctl_read_secret(const gchar *label, gchar **out_secret, GErro
 
     if (!len1 || !len2)
     {
-        g_set_error(error, ALTERATOR_CTL_SECRET_ERROR, ALTERATOR_CTL_SECRET_ERROR_EMPTY, "Password cannot be empty");
+        g_set_error(error, ALTERATOR_CTL_SECRET_ERROR, ALTERATOR_CTL_SECRET_ERROR_EMPTY, _("Password cannot be empty"));
         goto end;
     }
 
     if (strcmp(buf1, buf2) != 0)
     {
-        g_set_error(error, ALTERATOR_CTL_SECRET_ERROR, ALTERATOR_CTL_SECRET_ERROR_MISMATCH, "Passwords do not match");
+        g_set_error(error, ALTERATOR_CTL_SECRET_ERROR, ALTERATOR_CTL_SECRET_ERROR_MISMATCH, _("Passwords do not match"));
         goto end;
     }
 

@@ -200,7 +200,7 @@ display_name.en = "Assume time from this source is always true."
 display_name.ru = "Время из этого источника всегда истинно"
 type = "boolean"
 required = false
-[parameters.ntpPool.properties.required]
+[parameters.ntpPool.properties.require]
 display_name.en = "Require that server"
 display_name.ru = "Сделать этот пул обязательным"
 type = "boolean"
@@ -286,7 +286,7 @@ display_name.en = "Assume time from this source is always true."
 display_name.ru = "Время из этого источника всегда истинно"
 type = "boolean"
 required = false
-[parameters.ntpDefaultPool.properties.required]
+[parameters.ntpDefaultPool.properties.require]
 display_name.en = "Require that server"
 display_name.ru = "Сделать этот пул обязательным"
 type = "boolean"

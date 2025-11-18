@@ -97,7 +97,7 @@ create_pkgpriorities() {
 	fi
 
 	local pkgpriorities
-	pkgpriorities=$(mktemp "${TMPDIR:-/tmp/}alt-packages-pkgpriorities.XXXXXXXXXXXX") || {
+	pkgpriorities=$(mktemp "${TMPDIR:-/tmp}/alterator-pkgpriorities.XXXXXXXXXXXX") || {
 		echo $"Error creating temporary pkgpriorities file" 1>&2
 		exit 1
 	}

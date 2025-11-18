@@ -2,7 +2,7 @@
 %define short_name actl
 
 Name: alteratorctl
-Version: 0.2.0
+Version: 0.1.15
 Release: alt1
 
 Summary: CLI for alterator-explorer
@@ -55,10 +55,6 @@ ln -s %_bindir/%name %buildroot%_bindir/%short_name
 %_datadir/fish/vendor_completions.d/%short_name.fish
 
 %changelog
-* Tue Nov 11 2025 Pavel Khromov <hromovpi@altlinux.org> 0.2.0-alt1
-- Services module implementation (thx Andrey Alekseev and Oleg Chagaev).
-- Fix completions (thx Kozyrev Yuri).
-
 * Tue Sep 16 2025 Pavel Khromov <hromovpi@altlinux.org> 0.1.15-alt1
 - Fixed printing of components of selected editions.
 - Fix of confirmation message for packages apt operations.
@@ -77,7 +73,7 @@ ln -s %_bindir/%name %buildroot%_bindir/%short_name
 - Increased the version of a required dependency from alterator-backend-packages
 - Moved completions setup logic to completions/CMakeLists
 
-* Fri Jul 18 2025 Pavel Khromov <hromovpi@altlinux.org> 0.1.11-alt1
+* Mon Jul 18 2025 Pavel Khromov <hromovpi@altlinux.org> 0.1.11-alt1
 - Fix working bash-completions with actl symlink to alteratorctl.
 
 * Tue Jul 01 2025 Andrey Limachko <liannnix@altlinux.org> 0.1.10-alt1
@@ -124,7 +120,7 @@ ln -s %_bindir/%name %buildroot%_bindir/%short_name
 - New version
 
 * Thu Mar 06 2025 Pavel Khromov <hromovpi@altlinux.org> 0.0.10-alt1
-- Adding dependencies on backends of alteratorctl modules
+- Adding dependencies on backends of alteratorctl modules 
 
 * Tue Feb 25 2025 Pavel Khromov <hromovpi@altlinux.org> 0.0.9-alt2
 - Adding html parser library libgumbo-devel to build requires

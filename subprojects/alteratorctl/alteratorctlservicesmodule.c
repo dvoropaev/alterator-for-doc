@@ -283,9 +283,14 @@ static void fill_command_hash_table(GHashTable *command);
 
 typedef struct
 {
+    gchar *default_value_str;
+    gsize min_array_size; // default 0
+    gsize max_array_size; // default 0
     GOptionEntry option_entry;
     gboolean is_constant;
+    gboolean is_array;
 } ParamEntry;
+static void services_module_parameter_entry_clear(ParamEntry *e);
 
 static int services_module_parse_options(AlteratorCtlServicesModule *module, int *argc, char **argv);
 static gchar *services_module_get_parameters(gboolean disable_fallback);
@@ -1968,6 +1973,7 @@ static int services_module_build_contextual_arguments_recursive(AlteratorCtlServ
                                                                 gchar *context,
                                                                 gchar *prefix,
                                                                 gchar *description_prefix,
+                                                                ParamEntry *parent_array_entry,
                                                                 gboolean is_array_item,
                                                                 gboolean is_enum_subparameter,
                                                                 gboolean constant_parent)
@@ -1977,6 +1983,9 @@ static int services_module_build_contextual_arguments_recursive(AlteratorCtlServ
 
     AlteratorCtlModuleInfoParser *info_parser = module->gdbus_source->info_parser;
     alterator_entry_node *param_data          = parameter->data;
+
+    ParamEntry param_entry;
+    memset(&param_entry, 0, sizeof(param_entry));
 
     if (!option_array)
     {
@@ -2086,6 +2095,7 @@ static int services_module_build_contextual_arguments_recursive(AlteratorCtlServ
                                                                      context,
                                                                      path,
                                                                      description,
+                                                                     NULL,
                                                                      FALSE,
                                                                      FALSE,
                                                                      constant && constant->bool_value || constant_parent)
@@ -2111,33 +2121,22 @@ static int services_module_build_contextual_arguments_recursive(AlteratorCtlServ
         gchar *path_with_suffix = g_strdup_printf("%s.<%i-%s>", path, 0, max_str);
         g_free(max_str);
 
-        if (min_node && min_node->double_value != 0)
-            description = g_strdup_printf(_("Minimum number of array elements: %i\n"), min);
+        param_entry.is_array       = TRUE;
+        param_entry.min_array_size = min;
+        param_entry.max_array_size = max;
 
-        if (max_node && max_node->double_value != 0 && max_node->double_value != INT_MAX)
-        {
-            if (description && g_utf8_strlen(description, -1))
-            {
-                gchar *appended = g_strdup_printf(_("Maximum number of array elements: %i\n"), max);
-                gchar *tmp      = description;
-                description     = g_strconcat(tmp, appended, NULL);
-                g_free(tmp);
-                g_free(appended);
-            }
-            else
-                description = g_strdup_printf(_("Maximum number of array elements: %i\n"), max);
-        }
-
-        { // Add default values info into description
+        { // Pack default values into ParamEntry
             if (default_value)
             {
                 toml_value *default_values_type
                     = g_hash_table_lookup(param_data->toml_pairs,
                                           SERVICES_ALTERATOR_ENTRY_SERVICE_DEFAULT_PARAM_ARRAY_TYPE_KEY_NAME);
 
-                GString *default_value_str = g_string_new(default_value->array_length ? "[" : "");
+                GString *default_value_str = g_string_new(NULL);
                 for (gsize i = 0; i < default_value->array_length; i++)
                 {
+                    if (i == 0)
+                        g_string_append(default_value_str, default_value->array_length ? "[" : "");
                     if (!default_values_type->str_value || !strlen(default_values_type->str_value))
                         break;
 
@@ -2147,7 +2146,7 @@ static int services_module_build_contextual_arguments_recursive(AlteratorCtlServ
                         g_string_append_printf(default_value_str,
                                                "%i%s",
                                                array[i],
-                                               i != default_value->array_length - 1 ? ", " : "]\n");
+                                               i != default_value->array_length - 1 ? ", " : "]");
                     }
                     else if (streq(default_values_type->str_value, "boolean"))
                     {
@@ -2155,7 +2154,7 @@ static int services_module_build_contextual_arguments_recursive(AlteratorCtlServ
                         g_string_append_printf(default_value_str,
                                                "%s%s",
                                                array[i] ? "true" : "false",
-                                               i != default_value->array_length - 1 ? ",\n" : "]\n");
+                                               i != default_value->array_length - 1 ? ",\n" : "]");
                     }
                     else if (streq(default_values_type->str_value, "string")
                              || streq(default_values_type->str_value, "enum"))
@@ -2164,19 +2163,10 @@ static int services_module_build_contextual_arguments_recursive(AlteratorCtlServ
                         g_string_append_printf(default_value_str,
                                                "\"%s\"%s",
                                                array[i],
-                                               i != default_value->array_length - 1 ? ", " : "]\n");
+                                               i != default_value->array_length - 1 ? ", " : "]");
                     }
                 }
-                if (description && g_utf8_strlen(description, -1) && default_value_str->len)
-                {
-                    gchar *appended = g_strdup_printf("%s: %s", _("Default value"), default_value_str->str);
-                    gchar *tmp      = description;
-                    description     = g_strconcat(tmp, appended, NULL);
-                    g_free(tmp);
-                    g_free(appended);
-                }
-
-                g_string_free(default_value_str, TRUE);
+                param_entry.default_value_str = g_string_free(default_value_str, FALSE);
             }
         }
 
@@ -2187,6 +2177,7 @@ static int services_module_build_contextual_arguments_recursive(AlteratorCtlServ
                                                              context,
                                                              path_with_suffix,
                                                              description,
+                                                             &param_entry,
                                                              TRUE,
                                                              FALSE,
                                                              constant && constant->bool_value || constant_parent);
@@ -2217,18 +2208,23 @@ static int services_module_build_contextual_arguments_recursive(AlteratorCtlServ
             g_free(max_str);
         }
 
-        if (default_value && default_value->type == TOML_DATA_DOUBLE)
-            description = g_strdup_printf("%s: %i\n", _("Default value"), (gint) default_value->double_value);
-        arg_description = g_strdup("<number>");
+        param_entry.is_array          = FALSE;
+        param_entry.default_value_str = default_value && default_value->type == TOML_DATA_DOUBLE
+                                            ? g_strdup_printf("%i", (gint) default_value->double_value)
+                                            : NULL;
+        arg_description               = g_strdup("<number>");
     }
     else if (streq(type_str, "string"))
     {
-        if (default_value && default_value->type == TOML_DATA_STRING)
-            description = g_strdup_printf("%s: \"%s\"\n", _("Default value"), default_value->str_value);
-        arg_description = g_strdup("<string>");
+        param_entry.is_array          = FALSE;
+        param_entry.default_value_str = default_value && default_value->type == TOML_DATA_STRING
+                                            ? g_strdup(default_value->str_value)
+                                            : NULL;
+        arg_description               = g_strdup("<string>");
     }
     else if (streq(type_str, "enum"))
     {
+        param_entry.is_array = FALSE;
         GArray *values_array = g_array_new(TRUE, FALSE, sizeof(gchar *));
         GNode *values = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser, parameter, "values");
 
@@ -2246,6 +2242,7 @@ static int services_module_build_contextual_arguments_recursive(AlteratorCtlServ
                                                                      context,
                                                                      path,
                                                                      description,
+                                                                     NULL,
                                                                      FALSE,
                                                                      TRUE,
                                                                      constant && constant->bool_value || constant_parent)
@@ -2259,14 +2256,17 @@ static int services_module_build_contextual_arguments_recursive(AlteratorCtlServ
 
         g_array_free(values_array, TRUE);
 
-        if (default_value && default_value->type == TOML_DATA_STRING)
-            description = g_strdup_printf("%s: %s\n", _("Default value"), default_value->str_value);
+        param_entry.default_value_str = default_value && default_value->type == TOML_DATA_STRING
+                                            ? g_strdup(default_value->str_value)
+                                            : NULL;
     }
     else if (streq(type_str, "boolean"))
     {
-        arg_description = g_strdup("<true|false>");
-        if (default_value && default_value->type == TOML_DATA_BOOL)
-            description = g_strdup_printf("%s: %s\n", _("Default value"), default_value->bool_value ? "true" : "false");
+        param_entry.is_array          = FALSE;
+        param_entry.default_value_str = default_value && default_value->type == TOML_DATA_BOOL
+                                            ? g_strdup_printf("%s", default_value->bool_value ? "true" : "false")
+                                            : NULL;
+        arg_description               = g_strdup("<true|false>");
     }
     else
     {
@@ -2331,7 +2331,16 @@ static int services_module_build_contextual_arguments_recursive(AlteratorCtlServ
 
     GOptionEntry option_entry
         = {g_strdup(path), 0, G_OPTION_FLAG_NONE, G_OPTION_ARG_NONE, NULL, description, arg_description};
-    ParamEntry param_entry = {option_entry, constant && constant->bool_value || constant_parent};
+
+    if (parent_array_entry)
+    {
+        param_entry.default_value_str = g_strdup(parent_array_entry->default_value_str);
+        param_entry.min_array_size    = parent_array_entry->min_array_size;
+        param_entry.max_array_size    = parent_array_entry->max_array_size;
+        services_module_parameter_entry_clear(parent_array_entry);
+    }
+    param_entry.option_entry = option_entry;
+    param_entry.is_constant  = constant && constant->bool_value || constant_parent;
 
     if (streq(type_str, "enum"))
         g_array_insert_val(*option_array, enum_subparameters_len, param_entry);
@@ -2356,6 +2365,7 @@ end:
 
 static void services_module_parameter_entry_clear(ParamEntry *e)
 {
+    g_free(e->default_value_str);
     g_free((gchar *) e->option_entry.long_name);
     g_free((gchar *) e->option_entry.arg_description);
     g_free((gchar *) e->option_entry.description);
@@ -2454,14 +2464,14 @@ static int services_module_parse_contextual_arguments(AlteratorCtlServicesModule
         if (force_deploy_allowed && force_deploy_allowed->bool_value)
         {
             // Allocating memory on the heap for services_module_parameter_entry_clear
-            GOptionEntry force_e = {g_strdup("force-deploy"),
+            GOptionEntry force_e = {g_strdup("force-deploy"), // Move to option from parameter section!!!!
                                     'f',
                                     G_OPTION_FLAG_NONE,
                                     G_OPTION_ARG_NONE,
                                     &force_deploy,
-                                    g_strdup("Force deploy"),
-                                    g_strdup("FORCE_DEPLOY")};
-            ParamEntry force     = {force_e, FALSE};
+                                    g_strdup("Force deploy"),  // rewrite description
+                                    g_strdup("FORCE_DEPLOY")}; // rewrite arg-description
+            ParamEntry force     = {NULL, 0, 0, force_e, FALSE, FALSE};
 
             g_array_append_val(*result, force);
         }
@@ -2469,7 +2479,7 @@ static int services_module_parse_contextual_arguments(AlteratorCtlServicesModule
 
     for (GNode *parameter = parameters->children; parameter != NULL; parameter = parameter->next)
         services_module_build_contextual_arguments_recursive(
-            module, result, parameters, parameter, context, NULL, NULL, FALSE, FALSE, FALSE);
+            module, result, parameters, parameter, context, NULL, NULL, NULL, FALSE, FALSE, FALSE);
 
     option_context = g_option_context_new(context);
     g_option_context_set_ignore_unknown_options(option_context, TRUE);
@@ -2788,10 +2798,32 @@ static int services_module_create_command_usage_help(const gchar *service_name,
         if (param_entry.is_constant)
             continue;
 
+        if (streq(param_entry.option_entry.long_name, "force-deploy"))
+            continue;
+
         GOptionEntry entry           = param_entry.option_entry;
         const gchar *path            = entry.long_name;
         const gchar *arg_description = entry.arg_description;
-        const gchar *description     = entry.description;
+        const gchar *description     = g_strdup(entry.description);
+
+        { // Append new data in description
+            const gchar *default_value_str = param_entry.default_value_str;
+            gsize min_size                 = param_entry.min_array_size;
+            gsize max_size                 = param_entry.max_array_size;
+            GString *new_description       = g_string_new(NULL);
+
+            if (min_size > 0)
+                g_string_append_printf(new_description, _("Minimum number of array elements: %lu\n"), min_size);
+
+            if (max_size != 0 && max_size != INT_MAX)
+                g_string_append_printf(new_description, _("Maximum number of array elements: %lu\n"), max_size);
+
+            if (default_value_str && g_utf8_strlen(default_value_str, -1))
+                g_string_append_printf(new_description, _("Default value: %s\n"), default_value_str);
+            g_string_append(new_description, description);
+            g_free((gchar *) description);
+            description = g_string_free(new_description, FALSE);
+        }
 
         gchar *header       = g_strdup_printf("  --%s=%s", path, arg_description);
         gsize header_length = g_utf8_strlen(header, -1);
@@ -5293,7 +5325,7 @@ static int services_module_status_params_build_path(AlteratorCtlServicesModule *
         int length       = json_array_get_length(array);
         if (!length)
         {
-            g_hash_table_insert(*result, g_strdup(key), g_strdup("empty array"));
+            g_hash_table_insert(*result, g_strconcat(prefix->str, ".", key, NULL), g_strdup("empty array"));
             break;
         }
 
@@ -5505,6 +5537,11 @@ static int services_module_status_params_build_output(AlteratorCtlServicesModule
                                                    SERVICES_ALTERATOR_ENTRY_SERVICE_PARAM_CONSTANT_KEY_NAME);
         if (constant && constant->bool_value)
             continue;
+
+        toml_value *context = g_hash_table_lookup(parameter_data->toml_pairs,
+                                                  SERVICES_ALTERATOR_ENTRY_SERVICE_PARAM_CONTEXT_KEY_NAME);
+        if (context && !context->array_length)
+            continue; // For example, object prototypes
 
         if (services_module_status_params_build_path(module, service_str_id, key, value, parameter, FALSE, prefix, result)
             < 0)
@@ -6796,9 +6833,9 @@ static gint services_module_sort_result(gconstpointer a, gconstpointer b)
 
 static gint services_module_sort_options(gconstpointer a, gconstpointer b)
 {
-    const GOptionEntry *ea = a;
-    const GOptionEntry *eb = b;
-    return g_utf8_collate(ea->long_name, eb->long_name);
+    const ParamEntry *pa = a;
+    const ParamEntry *pb = b;
+    return g_utf8_collate(pa->option_entry.long_name, pb->option_entry.long_name);
 }
 
 static service_display_entry *service_display_entry_new(gchar *label, deployment_status status)
