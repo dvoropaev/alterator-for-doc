@@ -2,15 +2,15 @@
 
 #include <QHBoxLayout>
 
-CompactArrayFace::CompactArrayFace(Property::Value* value, QWidget* parent)
-    : Editor{value}
+CompactArrayFace::CompactArrayFace(const BaseForm& form, Property::Value* value, QWidget* parent)
+    : Editor{form, value}
 {
     m_widget = new QWidget{parent};
-    auto layout = new QHBoxLayout{};
+    auto layout = new QHBoxLayout{m_widget};
     m_widget->setLayout(layout);
 
-    label  = new QLabel(tr("%n items", nullptr, value->children().size()), parent);
-    addBtn = new QPushButton(QIcon::fromTheme("list-add"), {}, parent);
+    addBtn = new QPushButton(QIcon::fromTheme("list-add"), {}, m_widget);
+    label  = new QLabel(tr("%n items", nullptr, value->children().size()), m_widget);
     if ( addBtn->icon().isNull() )
         addBtn->setText(tr("Add"));
 
@@ -26,8 +26,9 @@ CompactArrayFace::CompactArrayFace(Property::Value* value, QWidget* parent)
         emit changed();
     });
 
-    layout->addWidget(label);
     layout->addWidget(addBtn);
+    layout->addWidget(label);
+    addBtn->setFocusPolicy(Qt::StrongFocus);
     layout->addSpacerItem(new QSpacerItem{0,0, QSizePolicy::Expanding});
 }
 

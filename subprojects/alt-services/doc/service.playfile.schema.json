@@ -1,0 +1,121 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Alterator Services Playfile format",
+    "type": "object",
+    "propertyNames": {
+        "enum": [
+            "version",
+            "service",
+            "action",
+            "options",
+            "parameters"
+        ]
+    },
+    "additionalProperties": false,
+    "required": [
+        "version",
+        "service",
+        "action",
+
+        "parameters"
+    ],
+    "properties": {
+        "version": {
+            "type": "integer",
+            "const": 1
+        },
+        "service": { "type": "string" },
+        "action": {
+            "type": "string",
+            "enum":  [
+                "deploy",
+                "configure",
+                "backup",
+                "restore",
+                "diag",
+                "undeploy"
+            ]
+        },
+        "options":    { "type": "object" },
+        "parameters": { "type": "object" }
+    },
+
+    "allOf": [
+        {
+            "$comment": "for action=diag options are not required, but should match 'diag_options' definition",
+            "if":   { "properties": { "action":  {"const": "diag"}} },
+            "then": { "properties": { "options": {"$ref": "#/definitions/diag_options"}}}
+        },
+        {
+            "$comment": "for action=deploy options are not required, but should match 'deploy_options' definition",
+            "if":   { "properties": { "action":  {"const": "deploy"}}},
+            "then": { "properties": { "options": {"$ref": "#/definitions/deploy_options"}}}
+        },
+        {
+            "$comment": "for action=configure options are not required, but should match 'configure_options' definition",
+            "if":   { "properties": { "action":  {"const": "configure"}}},
+            "then": { "properties": { "options": {"$ref": "#/definitions/configure_options"}}}
+        }
+    ],
+
+    "definitions": {
+        "diag_options": {
+            "$comment": "each {key,value} pair is a tool name and a corresponding array of tests",
+            "type": "object",
+            "additionalProperties": {
+                "type": "array",
+                "items": { "type": "string" }
+            }
+        },
+        "configure_options": {
+            "$comment": "post-diagnostics available after configure",
+            "type": "object",
+            "propertyNames": { "enum": ["postdiag"] },
+            "additionalProperties": false,
+            "properties": {
+                "postdiag": { "$ref": "#/definitions/deploy_diag_suboption" }
+            }
+        },
+        "deploy_options": {
+            "$comment": "deploy may include premilinary and/or post-diagnostics, also 'force-deploy' and 'auto-start' options available",
+            "type": "object",
+            "propertyNames": { "enum": [
+                "force",
+                "autostart",
+                "prediag",
+                "postdiag"
+            ]},
+            "additionalProperties": false,
+            "properties": {
+                "force":      { "type": "boolean" },
+                "autostart":  { "type": "boolean" },
+                "prediag":    { "$ref": "#/definitions/deploy_diag_suboption" },
+                "postdiag":   { "$ref": "#/definitions/deploy_diag_suboption" }
+            },
+            "allOf": [
+                {
+                    "$comment": "if force==true, then prediag cannot be used",
+                    "if": {
+                        "properties": {"force": { "const": true } },
+                        "required": ["force"]
+                    },
+                    "then": { "not": {
+                        "properties": {"prediag": { "properties": {"enable": {"const": true} } } } ,
+                        "required": ["prediag"]
+                    } }
+                }
+            ]
+        },
+        "deploy_diag_suboption": {
+            "$comment": "prediag/postdiag option contains tool-tests pairs",
+            "type": "object",
+            "propertyNames": {"enum": ["enable","options"]},
+            "required": ["enable"],
+            "additionalProperties": false,
+            "properties": {
+                "enable":  { "type": "boolean" },
+                "options": { "$ref": "#/definitions/diag_options" }
+            }
+        }
+    }
+}

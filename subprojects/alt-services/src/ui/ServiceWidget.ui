@@ -30,6 +30,25 @@
     <widget class="ObjectInfoWidget" name="objectInfoWidget" native="true"/>
    </item>
    <item>
+    <widget class="KMessageWidget" name="statusErrorMessage">
+     <property name="text">
+      <string>Got error code %1 while requesting service status</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+     <property name="closeButtonVisible">
+      <bool>false</bool>
+     </property>
+     <property name="messageType">
+      <enum>KMessageWidget::MessageType::Error</enum>
+     </property>
+     <property name="icon">
+      <iconset theme="QIcon::ThemeIcon::DialogError"/>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
       <number>0</number>
@@ -149,6 +168,11 @@
   </layout>
  </widget>
  <customwidgets>
+  <customwidget>
+   <class>KMessageWidget</class>
+   <extends>QFrame</extends>
+   <header>kmessagewidget.h</header>
+  </customwidget>
   <customwidget>
    <class>CustomTreeView</class>
    <extends>QTreeView</extends>

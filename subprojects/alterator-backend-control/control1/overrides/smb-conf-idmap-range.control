@@ -1,0 +1,15 @@
+type = "Control"
+name = "smb-conf-idmap-range"
+display_name.en = "smb-conf-idmap-range"
+comment.en = "Samba winbind idmap configuration range for all domains"
+
+[states.disabled]
+type = "state"
+display_name.en = "disabled"
+comment.en = "Samba winbind idmap range not configured for all domains"
+
+[states.range]
+type = "string"
+pattern = "^[0-9]+-[0-9]+$"
+display_name.en = "range"
+comment.en = "Samba winbind used 'LOW-HIGH' idmap range for all domains (for example, sssd-ad default is '200000-2000200000')"

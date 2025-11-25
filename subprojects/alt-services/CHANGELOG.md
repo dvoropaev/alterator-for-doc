@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## 0.1.7-alt1
+
 ### Fixed
 - build with qt < 6.9
 - editors being opened on disabled items
@@ -24,6 +26,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - "select all" & "clear" buttons were not working
 - diagnostic tools selection was not possible in keyboard-only naviggation
 - incorrect enum parameters processing
+- "Refresh" action not working
+- all actions are now properly disabled while another operation in progress
 
 ### Changed
 - updated to latest alterator-entry changes
@@ -35,6 +39,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - "force deploy" now allowes to ignore resource conflicts
 - "refresh all" option position in services table context menu
 - start & stop actions are now blocked until prefious call is finished
+- import/export file format
+- improved keyboard navigation
+- wizard's log page now displays entries hierarchically
+- diagnostic will run all selected tests, even if some of them failed
 
 ### Added
 - an option to put non-required parameters at the end of the list
@@ -46,6 +54,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - a table of resources with current owners on the start wizard page
 - check for unresolvable resource conflicts on the start wizard page
 - check for resource conflicts while validating parameters that are linked to resources
+- a warning message, when Status() returns a non-zero exit code
+- a search bar on the Parameters page of a wizard
+- ability to export journals
 
 ### Removed
 - Start() & Stop() calls during Configure()

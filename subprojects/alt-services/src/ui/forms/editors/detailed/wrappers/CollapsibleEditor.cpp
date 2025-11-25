@@ -35,13 +35,13 @@ EditorTitle* CollapsibleEditor::title()
     return ui->title;
 }
 
-QWidget* CollapsibleEditor::makeVisible(const Property::Value::ValidationInfo* info, int level)
+QWidget* CollapsibleEditor::makeVisible(const Property::Value* value)
 {
     ui->collapseBtn->setChecked(true);
     ui->content->setVisible(true);
 
-    if ( level == 0 )
+    if ( value == m_value )
         return ui->title;
 
-    return static_cast<DetailedEditor*>(m_editor.get())->makeVisible(info, level);
+    return static_cast<DetailedEditor*>(m_editor.get())->makeVisible(value);
 }

@@ -9,12 +9,12 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(QT NAMES Qt6 Qt5      REQUIRED COMPONENTS Widgets DBus LinguistTools)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets DBus LinguistTools)
+find_package(QT NAMES Qt6 Qt5      REQUIRED COMPONENTS Widgets DBus LinguistTools Xml)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets DBus LinguistTools Xml)
 
 find_package(ECM REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
-find_package(KF6                   REQUIRED COMPONENTS WidgetsAddons)
+find_package(KF6                   REQUIRED COMPONENTS WidgetsAddons ItemModels)
 
 set(TS_FILES
     ts/en_US.ts
@@ -57,6 +57,9 @@ set(PROJECT_SOURCES
     src/data/Service.h
     src/data/Service.cpp
 
+    src/data/Action.h
+    src/data/Action.cpp
+
 # DATA MODELS
     src/data/models/ParameterModel.h
     src/data/models/ParameterModel.cpp
@@ -72,6 +75,12 @@ set(PROJECT_SOURCES
 
     src/data/models/DiagModel.h
     src/data/models/DiagModel.cpp
+
+    src/data/models/DiagModeFilterModel.h
+    src/data/models/DiagModeFilterModel.cpp
+
+    src/data/models/DiagSelectionModel.h
+    src/data/models/DiagSelectionModel.cpp
 
 # MAIN WIDGETS
     src/ui/MainWindow.cpp
@@ -94,7 +103,6 @@ set(PROJECT_SOURCES
     src/ui/DiagSelectionForm.cpp
     src/ui/DiagSelectionForm.ui
 
-
 # MISC WIDGETS
     src/ui/ObjectInfoWidget.h
     src/ui/ObjectInfoWidget.cpp
@@ -106,6 +114,17 @@ set(PROJECT_SOURCES
     src/ui/ObjectInfoDelegate.h
     src/ui/ObjectInfoDelegate.cpp
 
+    src/ui/LogWidget.h
+    src/ui/LogWidget.cpp
+
+    src/ui/SearchAdapter.h
+    src/ui/ItemModelSearcher.h
+    src/ui/ItemModelSearcher.cpp
+    src/ui/ParameterSearcher.h
+
+    src/ui/SearchBar.h
+    src/ui/SearchBar.cpp
+    src/ui/SearchBar.ui
 
 # FORM VARIANTS
     src/ui/forms/BaseForm.h
@@ -192,7 +211,9 @@ add_executable(${PROJECT_NAME} ${PROJECT_SOURCES} ${RESOURCES_SRC})
 target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt${QT_VERSION_MAJOR}::Widgets
     Qt${QT_VERSION_MAJOR}::DBus
+    Qt${QT_VERSION_MAJOR}::Xml
     KF6::WidgetsAddons
+    KF6::ItemModels
     Qt6Solutions_SingleApplication-2.6
 )
 

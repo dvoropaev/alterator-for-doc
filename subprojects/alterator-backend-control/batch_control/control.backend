@@ -1,0 +1,20 @@
+type = "Backend"
+module = "executor"
+name = "control"
+interface = "batch_control1"
+action_id = "org.altlinux.alterator.batch-control1"
+
+[methods.Info]
+execute = "cat /usr/share/alterator/objects/control.object"
+stdout_bytes = true
+action_id = "Info"
+
+[methods.ListFacilities]
+execute = "/usr/lib/alterator-backend-control/control-helper list-facilities"
+stdout_strings = true
+action_id = "ListFacilities"
+
+[methods.FacilitiesInfo]
+execute = "/usr/lib/alterator-backend-control/control-helper batch-info"
+stdout_string_array = true
+action_id = "FacilitiesInfo"

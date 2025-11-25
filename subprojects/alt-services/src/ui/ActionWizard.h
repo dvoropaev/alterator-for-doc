@@ -1,8 +1,7 @@
 #pragma once
 
 #include <QWizard>
-#include "data/Service.h"
-#include "app/ServicesApp.h"
+#include "data/Action.h"
 
 class ActionWizard : public QWizard
 {
@@ -12,26 +11,20 @@ public:
     explicit ActionWizard(QWidget *parent = nullptr);
     ~ActionWizard();
 
-    void open(Parameter::Context context, Service* service);
-
-public slots:
-    void readParameters(const ServicesApp::ParsedParameters& parameters);
+    void open(Action action);
 
 private slots:
     void validateParameters();
     bool validateCurrentPage() override;
-    void fillCurrentParameters();
+    void fillCurrentParameters(bool firstFill = false);
     void onModeChanged();
     void exportParameters();
     void on_invalidParameterWarning_linkActivated(const QString &link);
     void on_invalidParameterWarning_linkHovered(const QString &link);
+    void on_autoStartCheckBox_toggled(bool checked);
     void on_forceDeployCheckBox_toggled(bool checked);
     void on_finishPageCheckBox_clicked(bool checked);
     void on_ActionWizard_currentIdChanged(int id);
-
-    // QDialog interface
-public slots:
-    void done(int) override;
 
     // QObject interface
 public:

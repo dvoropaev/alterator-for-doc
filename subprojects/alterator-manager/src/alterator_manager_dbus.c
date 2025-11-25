@@ -176,3 +176,29 @@ guint alterator_manager_dbus_init(gboolean is_session) {
 
     return owner_id;
 }
+
+#ifdef ENABLE_TEST_API
+gboolean alterator_manager_dbus_register_on_connection(
+                                                  GDBusConnection *connection) {
+    if (connection == NULL) {
+        return FALSE;
+    }
+
+    guint id = g_dbus_connection_register_subtree(connection,
+                                                  DBUS_OBJECT_PATH,
+                                                  &subtree_vtable,
+                                                  G_DBUS_SUBTREE_FLAGS_NONE,
+                                                  NULL,
+                                                  NULL,
+                                                  NULL);
+
+    if (id == 0) {
+        g_warning("g_dbus_connection_register_subtree() returned 0.");
+        return FALSE;
+    }
+
+    ManagerData *manager_data = alterator_manager_data_get_data();
+    manager_data->connection = connection;
+    return TRUE;
+}
+#endif

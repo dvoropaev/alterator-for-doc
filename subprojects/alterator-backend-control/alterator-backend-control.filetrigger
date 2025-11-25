@@ -1,0 +1,5 @@
+#!/bin/sh -e
+
+if grep -qs '^/etc/control.d/facilities|^/usr/share/alterator/control'; then
+    /usr/lib/alterator-backend-control/control-entry-generator
+fi

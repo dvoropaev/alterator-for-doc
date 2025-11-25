@@ -71,6 +71,8 @@ type = "array"
 array_type = "string"
 array_min  = 1
 array_max  = 10
+array_label.en = "Server"
+array_label.ru = "Сервер"
 pattern = "^([a-zA-Z0-9]*\\.)*([A-Za-z0-9]*)$"
 default = [ "altlinux.org", "kernel.org", "www.foo.bar" ]
 context = [
@@ -115,6 +117,7 @@ display_name.ru = "Значение 2"
 display_name.en = "Value 3"
 display_name.ru = "Значение 3"
 
+
 [parameters.composite_param.properties.int_1]
 display_name.en = "Integer field"
 display_name.ru = "Поле типа число"
@@ -131,6 +134,8 @@ comment.en = "Comment"
 comment.ru = "Комментарий"
 type = "array"
 array_type = "object"
+array_label.en = "Composite parameter"
+array_label.ru = "Составной параметр"
 prototype = "composite_param"
 array_min  = 3
 array_max  = 10
@@ -140,41 +145,49 @@ context = [
 ]
 
 
-[parameters.group_param]
-display_name.en = "Group type"
-display_name.ru = "Группа"
-comment.en = "Group alows to select one of values, just like enum."
-comment.ru = "Группа позволяет выбрать одно из значений, подобно перечислению."
+[parameters.complex_enum]
+display_name.en = "Complex enum"
+display_name.ru = "Перечисление с подпараметрами"
+comment.en = "Enum values may contain subparameters"
+comment.ru = "Значения enum могут содержать подпараметры"
+type = "enum"
 context = [
     "deploy",
     "status"
 ]
-exclusive = true
-[parameters.group_param.properties.param1]
+[parameters.complex_enum.values.param1]
 display_name.en = "Variant 1"
 display_name.ru = "Вариант 1"
-comment.en = "comment"
-comment.ru = "комментарий"
-type = "boolean"
-default = true
-constant = true
-[parameters.group_param.properties.param2]
+comment.en = "This is a simple enum value"
+comment.ru = "Простое значение enum"
+[parameters.complex_enum.values.param2]
 display_name.en = "Variant 2"
 display_name.ru = "Вариант 2"
 comment.en = "When this variant is selected, additional parameters are available."
 comment.ru = "Этот вариант содержит дополнительные параметры."
-type = "object"
-prototype = "sample_composite"
-[parameters.group_param.properties.param3]
+[parameters.complex_enum.values.param3.properties.string_subparameter]
+display_name.en = "String subparameter"
+display_name.ru = "Строковый подпараметр"
+comment.en = "Required string parameter, that appears only when 'Variant 2' of enum is selected"
+comment.ru = "Обязятельный строковый параметр, появляется только когда выбран 'Вариант 2' для enum"
+type = "string"
+required = true
+[parameters.complex_enum.values.param3]
 display_name.en = "Composite parameter array example"
 display_name.ru = "Пример массива составных параметров"
 comment.en = "This parameter consist of different values"
 comment.ru = "Этот параметр состоит из различных значений"
+[parameters.complex_enum.values.param3.properties.array_subparameter]
+display_name.en = "Array subparameter"
+display_name.ru = "Подпараметр-массив"
+comment.en = "Non-required array parameter, that appears only when 'Variant 3' of enum is selected"
+comment.ru = "Необязятельный параметр-массив, появляется только когда выбран 'Вариант 3' для enum"
 type = "array"
 array_type = "object"
 array_min = 2
 array_max = 10
 prototype = "sample_composite"
+required = false
 
 
 

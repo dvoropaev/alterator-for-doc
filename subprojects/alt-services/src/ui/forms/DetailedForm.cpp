@@ -6,24 +6,59 @@
 #include <QScrollArea>
 #include <QVBoxLayout>
 #include <QScrollBar>
-
+#include "ui/ParameterSearcher.h"
 #include "ui_DetailedForm.h"
+
+class DetailedFormSearchAdapter : public ParameterSearcher {
+    Q_OBJECT
+
+    ParameterModel m_model;
+    DetailedForm* m_form{};
+
+public:
+    DetailedFormSearchAdapter(DetailedForm* form)
+        : m_form{form}
+    {
+        m_model.setScope(Parameter::ValueScope::Edit);
+        ParameterSearcher::setModel(m_model);
+    }
+
+    void setParameters() {
+        m_model.setItems(m_form->parameters());
+    }
+
+public slots:
+    void prev() override
+    {
+        if ( auto* value = ParameterSearcher::prevValue() )
+            m_form->ensureVisible(value);
+    }
+
+    void next() override
+    {
+        if ( auto* value = ParameterSearcher::nextValue() )
+            m_form->ensureVisible(value);
+    }
+};
+#include "DetailedForm.moc"
 
 class DetailedForm::Private {
 public:
-    Private()
+    Private(DetailedForm* self)
         : ui{new Ui::DetailedForm}
+        , m_searchAdapter{self}
     {}
 
     ~Private(){delete ui;}
 
     PtrVector<DetailedEditor> m_editors;
     Ui::DetailedForm* ui;
+    DetailedFormSearchAdapter m_searchAdapter;
 };
 
-DetailedForm::DetailedForm(QWidget* parent)
-    : BaseForm{parent}
-    , d{ new Private{} }
+DetailedForm::DetailedForm(const Action& action, QWidget* parent)
+    : BaseForm{action, parent}
+    , d{ new Private{this} }
 {
     d->ui->setupUi(this);
 }
@@ -32,12 +67,16 @@ DetailedForm::~DetailedForm() { delete d; }
 
 #include <QPropertyAnimation>
 #include <QGraphicsColorizeEffect>
-void DetailedForm::ensureVisible(const Parameter::Value::ValidationInfo* invalid, int level)
+void DetailedForm::ensureVisible(const Parameter::Value* value)
 {
+    auto* topLevelParent = value;
+    while ( auto* p = topLevelParent->parent() )
+        topLevelParent = p;
+
     auto it = std::find_if(d->m_editors.cbegin(), d->m_editors.cend(),
-                           [=](const auto& editor){return editor->value() == invalid->value;});
+                           [=](const auto& editor){return editor->value() == topLevelParent;});
     if ( it != d->m_editors.cend() ) {
-        auto* widget = it->get()->makeVisible(invalid, level);
+        auto* widget = it->get()->makeVisible(value);
         d->ui->scrollArea->ensureWidgetVisible( widget );
 
         widget->setAutoFillBackground(true);
@@ -60,6 +99,8 @@ void DetailedForm::ensureVisible(const Parameter::Value::ValidationInfo* invalid
     }
 }
 
+SearchAdapter* DetailedForm::searchAdapter() { return &d->m_searchAdapter; }
+
 void DetailedForm::setParametersImpl(Parameter::Contexts contexts)
 {
     d->m_editors.clear();
@@ -71,7 +112,7 @@ void DetailedForm::setParametersImpl(Parameter::Contexts contexts)
 
     for ( auto* param : m_parameters ) {
 
-        auto editor = createEditor( param->value(Parameter::ValueScope::Edit), d->ui->content, contexts );
+        auto editor = createEditor(*this, param->value(Parameter::ValueScope::Edit), d->ui->content, contexts );
         editor->fill();
 
         d->ui->content->layout()->addWidget(editor->widget());
@@ -83,4 +124,6 @@ void DetailedForm::setParametersImpl(Parameter::Contexts contexts)
     d->ui->scrollArea->ensureVisible(0,0);
     d->ui->scrollArea->setMinimumWidth( d->ui->content->sizeHint().width() );
     d->ui->scrollArea->setMinimumHeight( qMin(d->ui->content->sizeHint().height(), d->ui->content->sizeHint().width()/2) );
+
+    d->m_searchAdapter.setParameters();
 }

@@ -17,7 +17,8 @@ void ValidationIndicator::setEditor(Editor *e)
 }
 
 void ValidationIndicator::validate(){
-    if ( auto info = m_editor->value()->isInvalid() ) {
+    if ( auto info = m_editor->value()->isInvalid(m_editor->form().action().options.force ) )
+    {
         setText(info->message);
         animatedShow();
     } else

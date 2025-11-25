@@ -69,7 +69,8 @@
                         "required": ["context"]
                     }
                 ]
-            }
+            },
+            "propertyNames": { "pattern": "^(?!(force_deploy|deployed|started)$).+$" }
         },
         "resources": {
             "type": "object",
@@ -200,20 +201,11 @@
                     "type": "integer",
                     "minimum": 1
                 },
+                "array_label": {
+                    "$ref": "#/definitions/field_with_locale"
+                },
                 "constant": {
                     "type": "boolean"
-                },
-                "values": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "object",
-                        "properties": {
-                            "display_name": {
-                                "$ref": "#/definitions/field_with_locale"
-                            }
-                        },
-                        "required": ["display_name"]
-                    }
                 },
                 "pattern": {
                     "type": "string"
@@ -241,28 +233,35 @@
                             { "properties": { "prototype": { "type": "string" } }, "required": ["prototype"] },
                             {
                                 "properties": {
-                                    "exclusive": { "type":"boolean" },
-                                    "default": { "type":"string" },
                                     "properties": {
                                         "type": "object",
                                         "additionalProperties":  { "$ref": "#/definitions/property"}
                                     }
                                 },
-                                "required": ["properties"],
-                                "if": { "properties": {"exclusive": { "const":true }}, "required": ["exclusive"] },
-                                "then": {
-                                    "properties": {
-                                        "default": false,
-                                        "properties":{
-                                            "additionalProperties":{
-                                                "properties": {"required": false}
-                                            }
-                                        }
-                                    }
-                                }
+                                "required": ["properties"]
                             }
                         ]
                     }
+                },
+                {
+                    "$comment": "For type=enum a table of possible values should be declared. Enum value may be empty, or may contain subparameters, like an object.",
+                    "if": { "properties": {"type": { "const": "enum"} } },
+                    "then": { "properties": { "values": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "object",
+                            "properties": {
+                                "display_name": { "$ref": "#/definitions/field_with_locale"},
+                                "comment":      { "$ref": "#/definitions/field_with_locale"},
+                                "properties": {
+                                    "type": "object",
+                                    "additionalProperties":  { "$ref": "#/definitions/property"}
+                                }
+                            },
+                            "required": ["display_name"]
+                        },
+                        "minProperties": 2
+                    } }, "required": ["values"] }
                 },
                 {
                     "$comment": "if parameter is constant, a default value should be set",

@@ -1,0 +1,15 @@
+stype = "Control"
+name = "oddjob-gpupdate-dbus-timeout"
+display_name.en = "oddjob-gpupdate-dbus-timeout"
+comment.en = "Determines the dbus_timeout of pam_oddjob_gpupdate PAM module D-Bus request to oddjob service"
+
+[states.default]
+type = "state"
+display_name.en = "default (25)"
+comment.en = "Set default dbus_timeout value of D-Bus request (25 seconds)"
+
+[states.timeout]
+type = "integer"
+min = 0
+display_name.en = "timeout"
+comment.en = "Set the dbus_timeout value of D-Bus request in seconds"

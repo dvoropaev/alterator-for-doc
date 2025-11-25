@@ -1092,8 +1092,8 @@ static int diag_module_run_tool_test_subcommand(AlteratorCtlDiagModule *module, 
     gchar *current_bus_prefix            = NULL;
     gboolean object_exist_on_system_bus  = FALSE;
     gboolean object_exist_on_session_bus = FALSE;
-    AlteratorGDBusSource *source = (*ctx)->additional_data ? (AlteratorGDBusSource *) (*ctx)->additional_data : NULL;
-    gboolean is_root             = alterator_ctl_is_root();
+    AlteratorGDBusSource *source         = NULL;
+    gboolean is_root                     = alterator_ctl_is_root();
 
     if (!module)
     {
@@ -1118,6 +1118,20 @@ static int diag_module_run_tool_test_subcommand(AlteratorCtlDiagModule *module, 
     {
         g_printerr(_("The call to the diag run method failed. Test name is empty.\n"));
         ERR_EXIT();
+    }
+
+    if ((*ctx)->additional_data && strlen((gchar *) (*ctx)->additional_data))
+    {
+        if (g_strcmp0((gchar *) (*ctx)->additional_data, "system") == 0)
+        {
+            both_buses = FALSE;
+            system_bus = TRUE;
+        }
+        else if (g_strcmp0((gchar *) (*ctx)->additional_data, "session") == 0)
+        {
+            both_buses  = FALSE;
+            session_bus = TRUE;
+        }
     }
 
     if (both_buses)
@@ -1148,7 +1162,8 @@ static int diag_module_run_tool_test_subcommand(AlteratorCtlDiagModule *module, 
 
         if (object_exist_on_system_bus)
         {
-            g_print("%s", system_bus_prefix);
+            if (!(*ctx)->additional_data)
+                g_print("%s", system_bus_prefix);
             if (diag_module_get_and_run_test(module, module->gdbus_system_source, diag_tool_str_id, test, result) < 0)
                 ERR_EXIT();
         }
@@ -1156,9 +1171,11 @@ static int diag_module_run_tool_test_subcommand(AlteratorCtlDiagModule *module, 
         if (!is_root && object_exist_on_session_bus)
         {
             if (object_exist_on_system_bus && !is_disable_bus_type_printing)
-                g_print("\n");
-
-            g_print("%s", session_bus_prefix);
+                if (!(*ctx)->additional_data)
+                {
+                    g_print("\n");
+                    g_print("%s", session_bus_prefix);
+                }
             if (diag_module_get_and_run_test(module, module->gdbus_session_source, diag_tool_str_id, test, result) < 0)
                 ERR_EXIT();
         }
@@ -1188,7 +1205,8 @@ static int diag_module_run_tool_test_subcommand(AlteratorCtlDiagModule *module, 
         ERR_EXIT();
     }
 
-    g_print("%s\n", current_bus_prefix);
+    if (!(*ctx)->additional_data)
+        g_print("%s\n", current_bus_prefix);
     if (diag_module_get_and_run_test(module, source, diag_tool_str_id, test, result) < 0)
         ERR_EXIT();
 

@@ -15,11 +15,11 @@
 #include <QComboBox>
 #include <QSpinBox>
 
-EditorPtr createEditorInternal(Property::Value* value, QWidget* parent, Parameter::Contexts contexts, bool compact = true) {
+EditorPtr createEditorInternal(const BaseForm& form, Property::Value* value, QWidget* parent, Parameter::Contexts contexts, bool compact = true) {
     switch ( value->property()->valueType() )
     {
 #define EDITOR( ValueType, EditorClass) \
-    case Property::Type:: ValueType : return std::make_unique<EditorClass>(value,parent);
+    case Property::Type:: ValueType : return std::make_unique<EditorClass>(form,value,parent);
 
     EDITOR( Bool,   PrimitiveEditor<QCheckBox> )
     EDITOR( String, PrimitiveEditor<KPasswordLineEdit> )
@@ -28,24 +28,24 @@ EditorPtr createEditorInternal(Property::Value* value, QWidget* parent, Paramete
 
         case Property::Type::Enum:
             if ( compact )
-                return std::make_unique<PrimitiveEditor<QComboBox>>(value, parent);
+                return std::make_unique<PrimitiveEditor<QComboBox>>(form, value, parent);
             else
-                return std::make_unique<GroupEditor>(value, parent);
+                return std::make_unique<GroupEditor>(form, value, parent);
 
         case Property::Type::Composite:
             if ( compact )
                 return {};
             else
-                return std::make_unique<CompositeEditor>(value, parent);
+                return std::make_unique<CompositeEditor>(form, value, parent);
 
         case Property::Type::Array:
             if ( compact )
-                return std::make_unique<CompactArrayFace>(value, parent);
+                return std::make_unique<CompactArrayFace>(form, value, parent);
             else {
                 if ( value->property()->prototype()->valueType() == Property::Type::Composite )
-                    return std::make_unique<CompositeArrayEditor>(value, parent, contexts);
+                    return std::make_unique<CompositeArrayEditor>(form, value, parent, contexts);
                 else
-                    return std::make_unique<ArrayEditor>(value, parent, contexts);
+                    return std::make_unique<ArrayEditor>(form, value, parent, contexts);
             }
 
         default: break;
@@ -55,9 +55,9 @@ EditorPtr createEditorInternal(Property::Value* value, QWidget* parent, Paramete
 }
 
 
-EditorPtr createEditor(Property::Value* value, QWidget* parent, Parameter::Contexts contexts, bool compact, bool array)
+EditorPtr createEditor(const BaseForm& form, Property::Value* value, QWidget* parent, Parameter::Contexts contexts, bool compact, bool array)
 {
-    auto editor = createEditorInternal(value, parent, contexts, compact);
+    auto editor = createEditorInternal(form, value, parent, contexts, compact);
 
     if ( !compact && !array ) switch ( value->property()->valueType() )
     {

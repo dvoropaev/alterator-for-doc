@@ -14,7 +14,7 @@ public:
 protected:
     using DetailedEditor::DetailedEditor;
     inline EditorWrapper(EditorPtr&& child)
-        : DetailedEditor{child->value()}
+        : DetailedEditor{child->form(), child->value()}
         , m_editor{std::move(child)}
     {
         connect(m_editor.get(), &Editor::changed, this, &Editor::changed);

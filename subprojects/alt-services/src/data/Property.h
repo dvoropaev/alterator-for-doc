@@ -171,6 +171,7 @@ public:
     /*
      *  If current value does not meet Property::allowed() requirements, returns a structure, containing a validation hint.
      *  For Property::Type::Composite, Property::Type::Array and Property::Type::Enum this function is called recursively on its children.
+     *  If force is true, parameter's linked resources will not be checked for conflicts.
      */
     struct ValidationInfo {
         const Value* value;
@@ -178,7 +179,7 @@ public:
 
         std::unique_ptr<Value::ValidationInfo> childInfo;
     };
-    std::unique_ptr<ValidationInfo> isInvalid() const;
+    std::unique_ptr<ValidationInfo> isInvalid(bool force) const;
 
     /*
      * Returns Property::displayName
@@ -199,7 +200,7 @@ public:
      *  For Property::Type::Composite, Property::Type::Array and Property::Type::Enum
      *  this functions called recursively on its children.
      */
-    void fill(const QJsonValue& value, bool required);
+    bool fill(const QJsonValue& value, bool required);
 
 
     /*

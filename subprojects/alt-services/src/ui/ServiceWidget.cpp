@@ -21,18 +21,6 @@
 
 class ServiceWidget::Private {
 public:
-    Private(Service* s, QWidget* parent)
-        : m_service{s}
-        , m_resource_model{s->resources()}
-    {
-        m_resource_model.setScope(Parameter::ValueScope::Default);
-
-        std::vector<Parameter*> status_filtered;
-        for ( const auto& parameter : s->parameters() )
-            if ( !parameter->isConstant() && parameter->contexts().testFlag(Parameter::Context::Status) )
-                status_filtered.push_back(parameter.get());
-        m_parameter_model.setItems(status_filtered);
-    }
 
     Ui::ServiceWidget ui;
     Service* m_service{};
@@ -40,12 +28,11 @@ public:
     ResourceModel m_resource_model;
 };
 
-ServiceWidget::ServiceWidget(Service* s, QWidget *parent)
+ServiceWidget::ServiceWidget(QWidget *parent)
     : QWidget(parent)
-    , d{ new Private{s, parent} }
+    , d{ new Private }
 {
     d->ui.setupUi(this);
-
 
     {
         d->ui. tabWidget->setTabIcon(0, QIcon::fromTheme("dialog-information"));
@@ -63,15 +50,10 @@ ServiceWidget::ServiceWidget(Service* s, QWidget *parent)
         d->ui. startedCheckBox->setPalette(palette);
     }
 
-    d->ui.objectInfoWidget->setObject(d->m_service);
-
     d->ui.parametersView->setModel( &d->m_parameter_model );
     d->ui.parametersView->header()->resizeSection(0, 300);
 
     d->ui.resourcesView->setModel( &d->m_resource_model );
-    for ( int r = 0; r < d->m_resource_model.rowCount(); ++r )
-        d->ui.resourcesView->setFirstColumnSpanned(r, {}, true);
-    d->ui.resourcesView->expandAll();
     d->ui.resourcesView->header()->resizeSection(0, 300);
     d->ui.resourcesView->setColumnNeverDetailed(1, true);
 
@@ -93,11 +75,37 @@ ServiceWidget::ServiceWidget(Service* s, QWidget *parent)
             d->ui.resourcesView->highlight(d->m_resource_model.indexOf(resource));
         }
     });
+}
+
+ServiceWidget::~ServiceWidget() { delete d; }
+
+void ServiceWidget::setService(Service* s)
+{
+    d->m_service = s;
+    d->ui.objectInfoWidget->setObject(d->m_service);
+    d->m_resource_model.setItems(s->resources());
+    d->m_resource_model.setScope(Parameter::ValueScope::Default);
+
+    std::vector<Parameter*> status_filtered;
+    for ( const auto& parameter : s->parameters() )
+        if ( !parameter->isConstant() && parameter->contexts().testFlag(Parameter::Context::Status) )
+            status_filtered.push_back(parameter.get());
+
+    d->m_parameter_model.setItems(status_filtered);
+
+    for ( int r = 0; r < d->m_resource_model.rowCount(); ++r )
+        d->ui.resourcesView->setFirstColumnSpanned(r, {}, true);
+    d->ui.resourcesView->expandAll();
 
     onStatusChanged();
 }
 
-ServiceWidget::~ServiceWidget() { delete d; }
+void ServiceWidget::clear()
+{
+    d->m_service = nullptr;
+    d->m_resource_model.setItems({});
+    d->m_parameter_model.setItems({});
+}
 
 void ServiceWidget::on_comboBox_activated(int index)
 {
@@ -114,5 +122,9 @@ void ServiceWidget::onStatusChanged()
 
 
     on_comboBox_activated(d->ui.comboBox->currentIndex());
+
+    d->ui.statusErrorMessage->setVisible(d->m_service->statusCode());
+    d->ui.statusErrorMessage->setText(tr("Got error code %1 while requesting service status")
+                                          .arg(d->m_service->statusCode()));
 }
 

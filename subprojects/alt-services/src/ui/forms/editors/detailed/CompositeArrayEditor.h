@@ -11,12 +11,12 @@ class CompositeArrayEditor : public DetailedEditor
 {
     Q_OBJECT
 public:
-    explicit CompositeArrayEditor(Property::Value* value, QWidget *parent = nullptr, int context = 0);
+    explicit CompositeArrayEditor(const BaseForm& form, Property::Value* value, QWidget *parent = nullptr, int context = 0);
     ~CompositeArrayEditor();
 
     void fill() override;
 
-    QWidget* makeVisible(const Property::Value::ValidationInfo* info, int level) override;
+    QWidget* makeVisible(const Property::Value* value) override;
 
 private slots:
     void addNew(Property::Value* value = nullptr);

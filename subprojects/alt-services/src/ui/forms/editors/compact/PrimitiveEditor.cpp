@@ -69,14 +69,21 @@ template<> void PrimitiveEditor<QComboBox>::init(QWidget* parent)
 }
 template<> void PrimitiveEditor<QComboBox>::load() {
     auto cb = (QComboBox*)m_widget;
-    int i = -1;
+
     auto it = std::find_if(m_value->children().cbegin(),
                            m_value->children().cend(),
                            [](const auto& child){ return child->isEnabled(); });
-    if ( it != m_value->children().cend() )
-        i = cb->findData( it->get()->property()->name() );
 
-    cb->setCurrentIndex( i >= 0 ? i : 0 );
+    if ( it == m_value->children().cend() ) {
+        it = m_value->children().cbegin();
+        it->get()->setEnabled();
+    }
+
+    int i = cb->findData( it->get()->property()->name() );
+    if ( i < 0 )
+        i = 0;
+
+    cb->setCurrentIndex( i );
 }
 template<> QVariant PrimitiveEditor<QComboBox>::data(){
     return ((QComboBox*)m_widget)->currentData();

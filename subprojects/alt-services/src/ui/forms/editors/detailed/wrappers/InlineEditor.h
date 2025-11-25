@@ -13,7 +13,7 @@ public:
     ~InlineEditor();
 
     EditorTitle* title() override;
-    QWidget* makeVisible(const Property::Value::ValidationInfo* info, int level) override;
+    QWidget* makeVisible(const Property::Value* value) override;
 
 private:
     Ui::InlineEditor *ui;

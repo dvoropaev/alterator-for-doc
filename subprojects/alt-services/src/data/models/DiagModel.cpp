@@ -9,21 +9,6 @@ void DiagModel::setService(Service* s){
     endResetModel();
 }
 
-void DiagModel::setMode(DiagTool::Test::Mode mode) {
-    m_mode = mode;
-    for ( int i = 0; i < m_data->size(); ++i ) {
-        auto& tool = (*m_data)[i];
-        auto toolIdx = index(i, 0);
-        for ( int j = 0; j < tool->tests().size(); ++j ) {
-            auto& test = tool->tests()[j];
-            test->setSelected(m_mode, false);
-        }
-        emit dataChanged(index(0,0, toolIdx), index(tool->tests().size()-1, 0, toolIdx), {Qt::CheckStateRole});
-    }
-
-    emit dataChanged(index(0,0), index(rowCount()-1, 0), {Qt::CheckStateRole});
-}
-
 QModelIndex DiagModel::index(int row, int column, const QModelIndex& parent) const {
     if ( parent.isValid() ) {
         if ( parent.parent().isValid() ) return {};
@@ -46,9 +31,7 @@ int DiagModel::rowCount(const QModelIndex& parent) const {
     return m_data ? m_data->size() : 0;
 }
 
-int DiagModel::columnCount(const QModelIndex& parent) const {
-    return parent.isValid() ? 3 : 1;
-}
+int DiagModel::columnCount(const QModelIndex& parent) const { return 3; }
 
 QVariant DiagModel::data(const QModelIndex& index, int role) const {
     DiagTool*       tool = nullptr;
@@ -61,12 +44,33 @@ QVariant DiagModel::data(const QModelIndex& index, int role) const {
         test = tool->tests().at(index.row()).get();
     }
 
-    switch ( role ) {
-        case Qt::DisplayRole:
-            return index.internalId() == LONG_LONG_MAX
-                       ? tool->displayName()
-                       : test->displayName();
+    if ( role == Qt::DisplayRole )
+    {
+        switch ( index.column() )
+        {
+            case Column::Name:
+                return index.internalId() == LONG_LONG_MAX
+                    ? tool->displayName()
+                    : test->displayName();
+            case Column::Modes:
+                return index.internalId() == LONG_LONG_MAX
+                    ? std::accumulate(tool->tests().cbegin(), tool->tests().cend(),
+                                      DiagTool::Test::Modes{},
+                                      [](DiagTool::Test::Modes m, const auto& test){ return m | test->mode(); }
+                                    )
+                    : test->mode().toInt();
+            case Column::Required:
+                return index.internalId() == LONG_LONG_MAX
+                    ? std::accumulate(tool->tests().cbegin(), tool->tests().cend(),
+                                      DiagTool::Test::Modes{DiagTool::Test::Mode::All},
+                                      [](DiagTool::Test::Modes m, const auto& test){ return m & test->required(); }
+                                    )
+                    : test->required().toInt();
+            default: return {};
+        }
+    }
 
+    switch ( role ) {
         case Qt::DecorationRole:
             return index.internalId() == LONG_LONG_MAX
                        ? tool->icon()
@@ -77,120 +81,21 @@ QVariant DiagModel::data(const QModelIndex& index, int role) const {
                        ? tool->comment()
                        : test->comment();
 
-        case Qt::CheckStateRole:
-        {
-            if ( index.internalId() == LONG_LONG_MAX ) {
-
-                if ( std::none_of( tool->tests().cbegin(), tool->tests().cend(), [this](const auto& test){
-                        return test->modes().testFlag(m_mode) && test->isEnabled(m_mode);
-                    }))
-                    return Qt::Unchecked;
-
-                return std::any_of( tool->tests().cbegin(), tool->tests().cend(), [this](const auto& test){
-                    return test->modes().testFlag(m_mode) && !test->isEnabled(m_mode);
-                })
-                           ? Qt::PartiallyChecked
-                           : Qt::Checked;
-            } else
-                return test->isEnabled(m_mode)
-                           ? Qt::Checked
-                           : Qt::Unchecked;
-
-            break;
-        }
-
-        case Qt::ForegroundRole: {
-            return QApplication::palette().brush(
-                index.data(Qt::CheckStateRole).toInt() == Qt::Unchecked
-                    ? QPalette::Disabled
-                    : QPalette::Current
-                , QPalette::Text );
-        }
-
         case Qt::UserRole:
-            if ( index.internalId() < LONG_LONG_MAX )
-                return test->modes().toInt();
-            break;
-
+            return QVariant::fromValue(index.internalId() == LONG_LONG_MAX ? (void*)tool : (void*)test);
     }
 
     return {};
 }
 
-// bool setData(const QModelIndex& idx, const QVariant& value, int role) override {
-//     if ( role == Qt::CheckStateRole ) {
-//         bool check = value.toBool();
-
-//         if ( idx.internalId() == LONG_LONG_MAX ) {
-//             auto& tool = m_data->at(idx.row());
-
-//             for ( auto& test : tool->tests() )
-//                 test->setSelected(m_mode, check);
-
-//             emit dataChanged(idx, idx, {Qt::CheckStateRole});
-//             emit dataChanged(index(0,0, idx), index(tool->tests().size()-1, 0, idx), {Qt::CheckStateRole});
-
-//             return true;
-
-//         } else {
-//             auto& tool = m_data->at(idx.internalId());
-//             auto& test = tool->tests().at(idx.row());
-
-//             test->setSelected(m_mode, check);
-
-//             emit dataChanged(idx.parent(), idx.parent(), {Qt::CheckStateRole});
-//             emit dataChanged(idx.siblingAtRow(0), idx.siblingAtRow(tool->tests().size()-1), {Qt::CheckStateRole});
-
-//             return check == test->isEnabled(m_mode);
-//         }
-//     }
-//     return false;
-// }
-
-void DiagModel::toggle(const QModelIndex& idx) {
-    if ( idx.internalId() == LONG_LONG_MAX ) {
-        auto& tool = m_data->at(idx.row());
-
-        bool isChecked = idx.data(Qt::CheckStateRole).toInt() == Qt::Checked;
-
-        for ( auto& test : tool->tests() )
-            if ( !test->isRequired(m_mode) )
-                test->setSelected(m_mode, !isChecked);
-
-        emit dataChanged(idx, idx, {Qt::CheckStateRole, Qt::ForegroundRole});
-        emit dataChanged(index(0,0, idx), index(tool->tests().size()-1, 0, idx), {Qt::CheckStateRole, Qt::ForegroundRole});
-
-    } else {
-        auto& tool = m_data->at(idx.internalId());
-        auto& test = tool->tests().at(idx.row());
-
-        if ( !test->isRequired(m_mode) )
-            test->setSelected(m_mode, !test->isEnabled(m_mode));
-
-        emit dataChanged(idx.parent(), idx.parent(), {Qt::CheckStateRole, Qt::ForegroundRole});
-        emit dataChanged(idx.siblingAtRow(0), idx.siblingAtRow(tool->tests().size()-1), {Qt::CheckStateRole, Qt::ForegroundRole});
-    }
-}
-
-Qt::ItemFlags DiagModel::flags(const QModelIndex& index) const {
-    auto flags = QAbstractItemModel::flags(index);
-
-    DiagTool* tool = nullptr;
-    DiagTool::Test* test = nullptr;
-
-    if ( index.internalId() == LONG_LONG_MAX ) {
-        tool = m_data->at(index.row()).get();
-        flags.setFlag(Qt::ItemIsUserCheckable,
-            std::any_of( tool->tests().cbegin(), tool->tests().cend(), [this](const auto& test){
-                return test->modes().testFlag(m_mode) && !test->isRequired(m_mode);
-            })
-        );
-    } else {
-        tool = m_data->at(index.internalId()).get();
-        test = tool->tests().at(index.row()).get();
-
-        flags.setFlag(Qt::ItemIsUserCheckable, !test->isRequired(m_mode) );
+QVariant DiagModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
+    if ( orientation == Qt::Horizontal && role == Qt::DisplayRole ) switch ( section )
+    {
+        case Column::Name:      return tr("Tool/Test");
+        case Column::Modes:     return tr("Modes");
+        case Column::Required:  return tr("Required");
     }
 
-    return flags;
+    return {};
 }

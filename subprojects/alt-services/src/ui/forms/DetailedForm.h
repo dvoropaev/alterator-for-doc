@@ -5,10 +5,11 @@
 class DetailedForm : public BaseForm
 {
 public:
-    DetailedForm(QWidget* parent = nullptr);
+    DetailedForm(const Action& action, QWidget* parent = nullptr);
     ~DetailedForm();
 
-    void ensureVisible(const Parameter::Value::ValidationInfo* invalid, int level) override;
+    void ensureVisible(const Parameter::Value* value) override;
+    SearchAdapter* searchAdapter() override;
 
 protected:
     void setParametersImpl(Parameter::Contexts conexts) override;

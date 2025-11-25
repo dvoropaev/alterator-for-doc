@@ -34,6 +34,13 @@ G_BEGIN_DECLS
 gboolean alterator_manager_backends_init(gboolean);
 GHashTable* alterator_manager_backends_get_data(void);
 
+/* Test helpers: allow injecting custom backend directories and resetting state.
+*/
+#ifdef ENABLE_TEST_API
+gboolean alterator_manager_backends_init_from_dirs(const gchar *const *dirs);
+void alterator_manager_backends_clear(void);
+#endif
+
 G_END_DECLS
 
 #endif

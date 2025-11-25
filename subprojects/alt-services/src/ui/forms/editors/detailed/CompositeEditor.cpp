@@ -2,8 +2,8 @@
 
 #include <QVBoxLayout>
 
-CompositeEditor::CompositeEditor(Property::Value* value, QWidget* parent)
-    : DetailedEditor{value}
+CompositeEditor::CompositeEditor(const BaseForm& form, Property::Value* value, QWidget* parent)
+    : DetailedEditor{form, value}
 {
     m_widget = new QWidget{parent};
     auto layout = new QVBoxLayout{};
@@ -16,7 +16,7 @@ void CompositeEditor::fill() {
     for ( auto& child : m_value->children() ) {
         if ( child->property()->isConstant() ) continue;
 
-        std::unique_ptr<DetailedEditor> editor = std::unique_ptr<DetailedEditor>(static_cast<DetailedEditor*>(createEditor(child.get(), m_widget, {}).release()));
+        std::unique_ptr<DetailedEditor> editor = std::unique_ptr<DetailedEditor>(static_cast<DetailedEditor*>(createEditor(m_form, child.get(), m_widget, {}).release()));
         editor->fill();
         connect(editor.get(), &Editor::changed, this, &Editor::changed);
         m_widget->layout()->addWidget(editor->widget());
@@ -24,19 +24,20 @@ void CompositeEditor::fill() {
     }
 }
 
-QWidget* CompositeEditor::makeVisible(const Property::Value::ValidationInfo* info, int level)
+QWidget* CompositeEditor::makeVisible(const Property::Value* value)
 {
-    if ( level == 0 )
+    if ( value == m_value )
         return m_widget;
 
-    if ( auto* childInfo = info->childInfo.get() ) {
-        for ( const auto& child : m_children )
-            if ( child->value() == childInfo->value )
-                return child->makeVisible(childInfo, level -1);
+    auto* parent = value;
+    while ( parent->parent() != m_value )
+        parent = parent->parent();
 
-        qWarning() << "child not found";
-    } else
-        qWarning() << "child info not found";
+    for ( const auto& child : m_children )
+        if ( child->value() == parent )
+            return child->makeVisible(value);
+
+    qWarning() << "child not found";
 
     return m_widget;
 }

@@ -3,8 +3,8 @@
 #include <QtSolutions/QtSingleApplication>
 #include <QObject>
 #include "AppSettings.h"
-#include "data/Parameter.h"
-#include "QJsonObject"
+#include "data/Service.h"
+#include "data/Action.h"
 
 class Service;
 class Controller;
@@ -27,12 +27,7 @@ public:
 
     bool notify(QObject*, QEvent*) override;
 
-    struct ParsedParameters {
-        Service* service;
-        Parameter::Contexts contexts;
-        QJsonObject data;
-    };
-    std::optional<ParsedParameters> importParameters(const QString& fileName);
+    std::optional<Action> importParameters(const QString& fileName);
 
 private:
     class Private;

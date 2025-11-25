@@ -16,9 +16,6 @@ list(GET VERSION_LIST 0 VERSION_MAJOR)
 list(GET VERSION_LIST 1 VERSION_MINOR)
 list(GET VERSION_LIST 2 VERSION_PATCH)
 
-set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
-include(${CMAKE_MODULE_PATH}/TranslationUtils.cmake)
-
 include(CheckCXXCompilerFlag)
 
 if(UNIX)

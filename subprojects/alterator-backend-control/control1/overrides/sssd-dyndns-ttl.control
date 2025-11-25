@@ -1,0 +1,15 @@
+type = "Control"
+name = "sssd-dyndns-ttl"
+display_name.en = "sssd-dyndns-ttl"
+comment.en = "Determines the TTL of client DNS record, when dyndns update by SSSD in enabled"
+
+[states.disabled]
+type = "state"
+display_name.en = "disabled"
+comment.en = "Disable setting the TTL value of client DNS record updated by SSSD (using serveside defaults)"
+
+[states.ttl]
+type = "integer"
+min = 0
+display_name.en = "ttl"
+comment.en = "Set the TTL value of client DNS record updated by SSSD in seconds (default is 1200 or 3600 for Active Directory)"

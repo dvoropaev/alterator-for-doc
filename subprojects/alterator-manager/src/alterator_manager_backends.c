@@ -652,3 +652,40 @@ gboolean alterator_manager_backends_init(gboolean is_session) {
 GHashTable* alterator_manager_backends_get_data(void) {
     return backends_data;
 }
+
+#ifdef ENABLE_TEST_API
+/* Test-only helper: clear any loaded state so tests run in isolation.
+*/
+void alterator_manager_backends_clear(void) {
+    if (backends_data) {
+        g_hash_table_destroy(backends_data);
+        backends_data = NULL;
+    }
+}
+
+/* Test-only helper: load backends from a provided, ordered list of directories.
+*/
+gboolean alterator_manager_backends_init_from_dirs(const gchar *const *dirs) {
+    gboolean result = FALSE;
+
+    if (dirs == NULL) {
+        return FALSE;
+    }
+
+    for (const gchar *const *p = dirs; p && *p; ++p) {
+        const gchar *path = *p;
+        if (path == NULL || *path == '\0') {
+            continue;
+        }
+        gboolean res = alterator_manager_backends_load(path);
+        if (res) {
+            result = TRUE;
+        } else {
+            g_warning("alterator_manager_backends_load() returned FALSE for "
+                      "%s.", path);
+        }
+    }
+
+    return result;
+}
+#endif

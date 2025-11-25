@@ -4,6 +4,7 @@
 #include <QMenu>
 #include "app/ServicesApp.h"
 #include "data/Service.h"
+#include "data/Action.h"
 
 
 class QAbstractItemModel;
@@ -22,14 +23,11 @@ public:
     QAbstractItemModel* model();
     QList<QAction*> tableActions();
 
-
-    bool call(Service* service, Parameter::Context ctx);
+    bool call(const Action& action);
     bool updateStatus(Service* service);
 
-    void start(Service* service);
-    void stop(Service* service);
-
-    bool diag(Service* service, bool post);
+    bool start(Service* service);
+    bool stop(Service* service);
 
     bool findConflict(Service* deployService, Resource* deployResource, Service** other, Resource** conflicting);
 
@@ -40,6 +38,8 @@ signals:
     void beginRefresh();
     void endRefresh();
     void select(int);
+    void actionBegin(const QString&);
+    void actionEnd(bool);
     void stdout(const QString&);
     void stderr(const QString&);
 
@@ -47,6 +47,8 @@ public slots:
     void refresh();
 
 private:
+    bool diag(Service* service, DiagTool::Test::Mode mode, const Action::TestSet& tests);
+
     class Private;
     Private* d;
 };

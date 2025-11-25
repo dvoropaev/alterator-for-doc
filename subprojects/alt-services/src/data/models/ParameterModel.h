@@ -21,6 +21,8 @@ public:
         endResetModel();
     }
 
+    Property::Value* indexToValue(const QModelIndex&) const;
+
     // QAbstractItemModel interface
 public:
     QModelIndex index(int row, int column, const QModelIndex& parent = {}) const override;

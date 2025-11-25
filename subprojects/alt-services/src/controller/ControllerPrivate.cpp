@@ -528,7 +528,8 @@ ResourcePtr buildResource(const QString& name, const toml::ordered_table& res_da
     return std::move(result);
 }
 
-std::unique_ptr<DiagTool> buildDiagTool(const QString& path, bool session, const QString& data, const std::map<QString, DiagTool::Test::Modes> testFlags) {
+using TestFlags = std::map<QString, std::pair<DiagTool::Test::Modes, DiagTool::Test::Modes>>;
+std::unique_ptr<DiagTool> buildDiagTool(const QString& path, bool session, const QString& data, const TestFlags& testModes) {
     std::istringstream iStream(data.toStdString());
     toml::ordered_table table;
     try {table = toml::parse<toml::ordered_type_config>(iStream).as_table();}
@@ -554,7 +555,7 @@ std::unique_ptr<DiagTool> buildDiagTool(const QString& path, bool session, const
         return {};
     }
 
-    for ( auto& [testName,testModes] : testFlags ) {
+    for ( auto& [testName,modes] : testModes ) {
         const toml::ordered_table* testData = nullptr;
         if ( getTomlValue(*tests_data, testName.toStdString().c_str(), testData) ) {
             if ( auto testLocales = buildBase(*testData) ) {
@@ -566,7 +567,7 @@ std::unique_ptr<DiagTool> buildDiagTool(const QString& path, bool session, const
                 else
                     iconName = "preferences-other";
 
-                tests.push_back(std::make_unique<DiagTool::Test>(testName, testLocales.value(), iconName, testModes));
+                tests.push_back(std::make_unique<DiagTool::Test>(testName, testLocales.value(), iconName, modes.first, modes.second));
                 continue;
             }
         }
@@ -726,7 +727,7 @@ std::unique_ptr<Service> Controller::Private::buildService(const QString& path, 
 
             bool isSession = *diagBus == "session";
 
-            std::map<QString, DiagTool::Test::Modes> testModes;
+            std::map<QString, std::pair<DiagTool::Test::Modes, DiagTool::Test::Modes>> testModes;
 
             QStringList  preDeploy;
             QStringList  preDeployRequired;
@@ -739,14 +740,21 @@ std::unique_ptr<Service> Controller::Private::buildService(const QString& path, 
                  m_datasource.getDiagToolTests(QString::fromStdString(*diagPath), path, "post", true,  postDeployRequired, isSession)
                 )
             {
+#define FILLFLAGS(container, mode, member) \
+    while ( !container.empty() ) { \
+        auto& pair = testModes[container.front()]; \
+        pair.member.setFlag(DiagTool::Test::Mode:: mode, true); \
+        container.pop_front(); }
 
-#define FILLFLAG(container, flag) \
-while ( !container.empty() ) { testModes[container.front()].setFlag(flag, true); container.pop_front(); }
+#define FILL_MODE( source, mode ) FILLFLAGS( source, mode, first )
+#define FILL_REQUIRED( source, mode ) FILLFLAGS( source, mode, second )
 
-                FILLFLAG( preDeploy, DiagTool::Test::PreDeploy);
-                FILLFLAG(postDeploy, DiagTool::Test::PostDeploy);
-                FILLFLAG(preDeployRequired, DiagTool::Test::PreDeployRequired);
-                FILLFLAG(postDeployRequired, DiagTool::Test::PostDeployRequired);
+                FILL_MODE     (  preDeploy,          PreDeploy );
+                FILL_MODE     ( postDeploy,         PostDeploy );
+                FILL_REQUIRED (  preDeployRequired,  PreDeploy );
+                FILL_REQUIRED ( postDeployRequired, PostDeploy );
+#undef FILL_MODE
+#undef FILL_REQUIRED
 #undef FILLFLAG
 
                 if ( auto tool = buildDiagTool(QString::fromStdString(*diagPath), isSession,

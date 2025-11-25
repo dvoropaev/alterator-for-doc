@@ -43,18 +43,19 @@ public:
     }
 
     bool tryFill(QJsonObject o, Parameter::Contexts ctx){
+        bool success = true;
         for ( const auto& name : o.keys() ) {
             auto it = std::find_if(m_parameters.cbegin(), m_parameters.cend(), [=](const ParameterPtr& parameter){
                 return  parameter->contexts() & ctx &&
                         parameter->name() == name;
             });
 
-            if ( it == m_parameters.cend() )
-                return false;
-
-            it->get()->value(Parameter::ValueScope::Edit)->fill(o.value(name), ctx);
+            if ( it == m_parameters.cend() ||
+                !it->get()->value(Parameter::ValueScope::Edit)->fill(o.value(name), ctx) )
+                success = false;
         }
-        return true;
+
+        return success;
     }
 
     const QIcon m_icon;
@@ -62,6 +63,7 @@ public:
     PtrVector<Parameter> m_parameters;
     PtrVector<Resource>  m_resources;
     PtrVector<DiagTool>  m_diag_tools;
+    int m_status_code{0};
 };
 
 
@@ -133,8 +135,9 @@ QJsonObject Service::getParameters(Parameter::Contexts ctx, bool excludePassword
 }
 
 
-void Service::setStatus(const QByteArray& data)
+void Service::setStatus(int code, const QByteArray& data)
 {
+    d->m_status_code = code;
     for ( const auto& param : d->m_parameters )
         if ( param->contexts().testFlag(Parameter::Context::Status) )
             param->value(Parameter::ValueScope::Current)->resetEnabledState();
@@ -157,8 +160,7 @@ bool Service::tryFill(QJsonObject o, Parameter::Contexts ctx) { return d->tryFil
 
 bool Service::hasPreDiag() const {
     using namespace std::placeholders;
-    return !forceDeploy() && !isDeployed() &&
-           std::any_of( d->m_diag_tools.cbegin(), d->m_diag_tools.cend(),
+    return std::any_of( d->m_diag_tools.cbegin(), d->m_diag_tools.cend(),
                         std::bind(&DiagTool::hasTests, _1, DiagTool::Test::Mode::PreDeploy) );
 }
 
@@ -167,6 +169,8 @@ bool Service::hasPostDiag() const {
     return std::any_of(d->m_diag_tools.cbegin(), d->m_diag_tools.cend(),
                        std::bind(&DiagTool::hasTests, _1, DiagTool::Test::Mode::PostDeploy));
 }
+
+int Service::statusCode() const { return d->m_status_code; }
 
 bool Service::hasConflict(Service* toDeploy, Resource* theirs, Resource** ours)
 {

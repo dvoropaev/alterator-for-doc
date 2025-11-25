@@ -5,8 +5,8 @@
 class AbstractPrimitiveEditor : public Editor {
     Q_OBJECT
 protected:
-    inline AbstractPrimitiveEditor(Property::Value* value)
-        : Editor{value}
+    inline AbstractPrimitiveEditor(const BaseForm& form, Property::Value* value)
+        : Editor{form, value}
     {}
     
     virtual void load() = 0;
@@ -23,8 +23,8 @@ private:
 template<class W, typename = std::enable_if<std::is_base_of<QWidget, W>::value>>
 class PrimitiveEditor : public AbstractPrimitiveEditor {
 public:
-    inline PrimitiveEditor(Property::Value* value, QWidget* parent)
-        : AbstractPrimitiveEditor{value}
+    inline PrimitiveEditor(const BaseForm& form, Property::Value* value, QWidget* parent)
+        : AbstractPrimitiveEditor{form, value}
     {
         init(parent);
         PrimitiveEditor<W>::fill();

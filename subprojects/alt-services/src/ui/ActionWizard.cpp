@@ -22,6 +22,8 @@
 #include <QMimeData>
 #include <QDropEvent>
 #include <QStyledItemDelegate>
+#include <QFontDatabase>
+#include <QTextBrowser>
 
 #include "forms/CompactForm.h"
 #include "forms/DetailedForm.h"
@@ -31,11 +33,23 @@
 #include "data/models/ParameterModel.h"
 #include "data/models/ResourceOwnersModel.h"
 
+#include "ParameterSearcher.h"
+#include "SearchBar.h"
+
+static const std::map<Parameter::Context, std::function<std::tuple<QString, QString, QString>()>> ctxnames {
+    { Parameter::Context::Deploy    , []{ return std::tuple{ QObject::tr("Deployment wizard"),    QObject::tr("Deployment parameters"),     QObject::tr("Set deployment configuration") }; } },
+    { Parameter::Context::Undeploy  , []{ return std::tuple{ QObject::tr("Undeployment wizard"),  QObject::tr("Undeployment parameters"),   QObject::tr("Set undeployment options")     }; } },
+    { Parameter::Context::Backup    , []{ return std::tuple{ QObject::tr("Backup wizard"),        QObject::tr("Backup parameters"),         QObject::tr("Set backup options")           }; } },
+    { Parameter::Context::Restore   , []{ return std::tuple{ QObject::tr("Restore wizard"),       QObject::tr("Restore parameters"),        QObject::tr("Set restore options")          }; } },
+    { Parameter::Context::Configure , []{ return std::tuple{ QObject::tr("Configuration wizard"), QObject::tr("Configuration parameters"),  QObject::tr("Set service configuration")    }; } },
+    { Parameter::Context::Diag      , []{ return std::tuple{ QObject::tr("Diagnostic wizard"),    QObject::tr("Diagnostic parameters"),     QObject::tr("Set diagnostic options")       }; } }
+};
+
 class ActionWizard::Private {
 public:
     Ui::ActionWizard ui;
 
-    Service* m_service{nullptr};
+    Action playfile;
 
     std::vector<Parameter*> m_parameters;
     std::unique_ptr<BaseForm> m_form;
@@ -43,34 +57,29 @@ public:
     ResourceOwnersModel m_current_resource_model;
     ResourceOwnersModel m_edited_resource_model;
 
-    Parameter::Context m_ctx{};
-
     QAction* lowerUnrequired{nullptr};
     QAction*  compactMode{nullptr};
     QAction* detailedMode{nullptr};
+
+    QAction* search{nullptr};
+
     QSize m_defaultSize;
 
     std::unique_ptr<Property::Value::ValidationInfo> m_invalid{};
 
     inline bool hasPreDiag() {
-        return Parameter::Contexts{Parameter::Context::Deploy | Parameter::Context::Diag}.testFlag(m_ctx)
-               && !ui.forceDeployCheckBox->isChecked()
-               && m_service->hasPreDiag();
+        return Parameter::Contexts{Parameter::Context::Deploy | Parameter::Context::Diag}.testFlag(playfile.action)
+               && !playfile.options.force
+               && !playfile.service->isDeployed()
+               && playfile.service->hasPreDiag();
     }
 
     inline bool hasPostDiag() {
-        return (m_ctx == Parameter::Context::Diag
-                    ? m_service->isDeployed()
-                    : m_ctx == Parameter::Context::Deploy)
-               && m_service->hasPostDiag();
-    }
-
-    inline bool preDiag() {
-        return hasPreDiag() && ui.preDiagCheckBox->isChecked();
-    }
-
-    inline bool postDiag() {
-        return hasPostDiag() && ui.postDiagCheckBox->isChecked();
+        return (playfile.action == Parameter::Context::Diag
+                    ? playfile.service->isDeployed()
+                    : Parameter::Contexts{Parameter::Context::Deploy |
+                                          Parameter::Context::Configure}.testFlag(playfile.action))
+               && playfile.service->hasPostDiag();
     }
 };
 
@@ -105,8 +114,19 @@ ActionWizard::ActionWizard(QWidget *parent)
                                                              );
 
                 if ( auto parameters = qApp->importParameters(fileName) )
-                    readParameters(parameters.value());
+                    open(parameters.value());
             } );
+        }
+
+        auto* edit = menuBar->addMenu(tr("&Edit"));
+        {
+            d->search = edit->addAction(tr("&Find..."));
+            d->search->setIcon(QIcon::fromTheme(QIcon::ThemeIcon::EditFind));
+            d->search->setShortcut(QKeySequence::Find);
+
+            d->ui.searchBar->hide();
+
+            connect(d->search, &QAction::triggered, d->ui.searchBar, &QWidget::show);
         }
 
         auto* view = menuBar->addMenu(tr("&View"));
@@ -165,6 +185,8 @@ ActionWizard::ActionWizard(QWidget *parent)
         d->ui.initialResourceOwnersView->setModel(&d->m_current_resource_model);
         d->ui.confirmResourceOwnersView->setModel(&d->m_edited_resource_model);
 
+        connect(&d->m_parameter_model, &ParameterModel::dataChanged, &d->m_edited_resource_model, &ResourceOwnersModel::parametersChanged);
+
         connect(d->ui.confirmResourceOwnersView, &QAbstractItemView::clicked, this, [this](const QModelIndex& i){
             if ( d->ui.tabWidget->indexOf( d->ui.parametersTab ) == -1 )
                 return;
@@ -191,44 +213,117 @@ ActionWizard::ActionWizard(QWidget *parent)
         });
 
 
+        d->ui. preDiagSelector->setMode(DiagTool::Test::Mode:: PreDeploy);
+        d->ui.postDiagSelector->setMode(DiagTool::Test::Mode::PostDeploy);
+
+
         d->ui. preDiagView->setModel(d->ui. preDiagSelector->model());
         d->ui.postDiagView->setModel(d->ui.postDiagSelector->model());
     }
 
-    connect(qApp->controller(), &Controller::stdout, this, [this](const QString& text)
-    {
-        d->ui.textBrowser->append(QString{"<p>%1</p>"}.arg(text));
-    });
+    connect(qApp->controller(), &Controller::actionBegin, d->ui.logWidget, &LogWidget::beginEntry);
+    connect(qApp->controller(), &Controller::actionEnd,   d->ui.logWidget, &LogWidget::endEntry);
+    connect(qApp->controller(), &Controller::stdout,      d->ui.logWidget, &LogWidget::message);
+    connect(qApp->controller(), &Controller::stderr,      d->ui.logWidget, &LogWidget::error);
 
-    connect(qApp->controller(), &Controller::stderr, this, [this](const QString& text)
-    {
-        d->ui.textBrowser->append(QString{"<p style=\"color: red;\">%1</p>"}.arg(text));
-    });
 
-    connect(d->ui. preDiagCheckBox, &QCheckBox::toggled, this, &ActionWizard::fillCurrentParameters);
-    connect(d->ui.postDiagCheckBox, &QCheckBox::toggled, this, &ActionWizard::fillCurrentParameters);
+    connect(d->ui. preDiagCheckBox, &QCheckBox::toggled, this, [this]{fillCurrentParameters();});
+    connect(d->ui.postDiagCheckBox, &QCheckBox::toggled, this, [this]{fillCurrentParameters();});
 
     connect(d->ui. preDiagSelector->model(), &QAbstractItemModel::dataChanged, this, &ActionWizard::validateCurrentPage);
     connect(d->ui.postDiagSelector->model(), &QAbstractItemModel::dataChanged, this, &ActionWizard::validateCurrentPage);
 
-    connect(d->ui. preDiagSelector->model(), &QAbstractItemModel::dataChanged, this, &ActionWizard::fillCurrentParameters);
-    connect(d->ui.postDiagSelector->model(), &QAbstractItemModel::dataChanged, this, &ActionWizard::fillCurrentParameters);
+    connect(d->ui. preDiagSelector->model(), &QAbstractItemModel::dataChanged, this, [this]{fillCurrentParameters();});
+    connect(d->ui.postDiagSelector->model(), &QAbstractItemModel::dataChanged, this, [this]{fillCurrentParameters();});
 }
 
 ActionWizard::~ActionWizard() { delete d; }
 
 
-void ActionWizard::open(Parameter::Context context, Service* service)
-{
-    d->m_service = service;
-    d->m_ctx = context;
-    d->m_parameters.clear();
 
-    connect(&d->m_parameter_model, &ParameterModel::dataChanged, &d->m_edited_resource_model, &ResourceOwnersModel::parametersChanged);
+static const std::map<QString, Parameter::Contexts> ctxmap {
+    { "configure" , Parameter::Context::Configure },
+    { "deploy"    , Parameter::Context::Deploy    },
+    { "undeploy"  , Parameter::Context::Undeploy  },
+    { "diag"      , Parameter::Context::Diag      },
+    { "backup"    , Parameter::Context::Backup    },
+    { "restore"   , Parameter::Context::Restore   },
+};
+
+void ActionWizard::open(Action action)
+{
+    if ( isVisible() )
+    {
+        if ( action.service != d->playfile.service || action.action != d->playfile.action ) {
+            auto key = QMessageBox::critical(this, tr("Warning"),
+                tr("This file contains %1 for \"%2\", but the wizard contains %3 for \"%4\".")
+                    .arg(std::get<1>(ctxnames.at(action.action)()).toLower())
+                    .arg(action.service->name())
+                    .arg(std::get<1>(ctxnames.at(d->playfile.action)()).toLower())
+                    .arg(d->playfile.service->name())
+                .append('\n').append(tr("Do you want to continue importing?")),
+
+                QMessageBox::StandardButton::Yes | QMessageBox::StandardButton::Abort
+            );
+
+            if ( key == QMessageBox::StandardButton::Abort )
+                return;
+        }
+    }
+
+    switch (action.action) {
+        case Parameter::Context::Deploy:
+            if ( action.service->isDeployed() && !action.service->isForceDeployable() ) {
+                QMessageBox::critical( this,
+                    tr("Cannot apply parameters"),
+                    tr("Service is already deployed and it does not support force deployment.")
+                );
+                return;
+            }
+            break;
+
+        case Parameter::Context::Backup:
+        case Parameter::Context::Restore:
+        case Parameter::Context::Configure:
+        case Parameter::Context::Undeploy:
+            if ( !action.service->isDeployed() ) {
+                QMessageBox::critical( this,
+                    tr("Cannot apply parameters"),
+                    tr("\"%1\" is impossible because service is not deployed.")
+                        .arg(Controller::actionName(d->playfile.action))
+                );
+                return;
+            }
+            break;
+
+        default: break;
+    }
+
+
+    d->m_parameters.clear();
+    if ( action.service->isStarted() )
+        action.options.autostart = false;
+
+    d->playfile = action;
+
+    fillCurrentParameters(true);
+    onModeChanged();
+
+    d->ui.  autoStartCheckBox->setChecked( action.options.autostart );
+    d->ui.forceDeployCheckBox->setChecked( action.options.force );
+    d->ui.    preDiagCheckBox->setChecked( action.options.prediag );
+    d->ui.   postDiagCheckBox->setChecked( action.options.postdiag );
+
+    d->ui.   autoStartCheckBox->setHidden(d->playfile.service->isStarted() || d->playfile.action != Parameter::Context::Deploy);
+    d->ui. forceDeployCheckBox->setVisible( (d->playfile.action == Parameter::Context::Deploy) && d->playfile.service->isForceDeployable() );
+    d->ui.     preDiagCheckBox->setChecked(d->playfile.options. prediag);
+    d->ui.    postDiagCheckBox->setChecked(d->playfile.options.postdiag);
+    d->ui.     preDiagCheckBox->setHidden(d->playfile.action == Parameter::Context::Diag);
+    d->ui.    postDiagCheckBox->setHidden(d->playfile.action == Parameter::Context::Diag);
 
     { // Conflicts view
-        d->m_current_resource_model.setItems(service->resources());
-        d->m_edited_resource_model.setItems(service->resources());
+        d->m_current_resource_model.setItems(d->playfile.service->resources());
+        d->m_edited_resource_model.setItems(d->playfile.service->resources());
 
         for ( int r = 0; r < d->m_current_resource_model.rowCount(); ++r )
             d->ui.initialResourceOwnersView->setFirstColumnSpanned(r, {}, true);
@@ -244,100 +339,50 @@ void ActionWizard::open(Parameter::Context context, Service* service)
         d->ui.confirmResourceOwnersView->header()->resizeSection(2, 200);
         d->ui.confirmResourceOwnersView->setColumnNeverDetailed(1, true);
 
-        d->ui.  deployResourceMessage->setVisible(context == Parameter::Context::  Deploy);
-        d->ui.undeployResourceMessage->setVisible(context == Parameter::Context::Undeploy);
+        d->ui.  deployResourceMessage->setVisible(d->playfile.action == Parameter::Context::  Deploy);
+        d->ui.undeployResourceMessage->setVisible(d->playfile.action == Parameter::Context::Undeploy);
 
-        bool needCheck   = context == Parameter::Context::Deploy && !service->isDeployed() && service->resources().size();
+        bool needCheck   = d->playfile.action == Parameter::Context::Deploy && !d->playfile.service->isDeployed() && d->playfile.service->resources().size();
         bool hasConflict = needCheck   && d->m_current_resource_model.hasConflicts();
         bool resolvable  = hasConflict && d->m_current_resource_model.conflictsResolvable();
 
-        d->ui.resourcesGroupBox->setVisible(needCheck || (service->resources().size() && context == Parameter::Context::Undeploy) );
+        d->ui.resourcesGroupBox->setVisible(needCheck || (d->playfile.service->resources().size() && d->playfile.action == Parameter::Context::Undeploy) );
 
         d->ui.conflictsDetectedMessage     ->setVisible(  hasConflict );
         d->ui.conflictsOkMessage           ->setVisible( needCheck && !hasConflict );
         d->ui.conflictsResolvableMessage   ->setVisible(   resolvable );
         d->ui.conflictsUnresolvableMessage ->setVisible( hasConflict && !resolvable );
 
-        d->ui.optionsGroupBox->setVisible( context == Parameter::Context::Deploy );
-        d->ui.otherOptionsContainer->setEnabled(!hasConflict || resolvable || d->m_service->forceDeploy());
+        d->ui.optionsGroupBox->setVisible( d->playfile.action == Parameter::Context::Deploy );
+        d->ui.otherOptionsContainer->setEnabled(!hasConflict || resolvable || d->playfile.options.force);
     }
 
-    switch (context) {
-        case Parameter::Context::Diag: break;
-
-        case Parameter::Context::Deploy:
-            if ( d->m_service->isDeployed() && !d->m_service->isForceDeployable() ) {
-                QMessageBox::critical( this,
-                    tr("Cannot apply parameters"),
-                    tr("Service is already deployed and it does not support force deployment.")
-                );
-                return;
-            }
-            break;
-
-        default:
-            if ( !d->m_service->isDeployed() ) {
-                QMessageBox::critical( this,
-                    tr("Cannot apply parameters"),
-                    tr("\"%1\" is impossible because service is not deployed.")
-                        .arg(Controller::actionName(context))
-                );
-                return;
-            }
-            break;
-    }
-
-    // reset forceDeploy state
-    d->m_service->setForceDeploy(false);
 
     {
-        d->ui. preDiagSelector->setService(d->m_service);
-        d->ui.postDiagSelector->setService(d->m_service);
-
-        d->ui. preDiagSelector->setMode(DiagTool::Test:: PreDeploy);
-        d->ui.postDiagSelector->setMode(DiagTool::Test::PostDeploy);
+        d->ui. preDiagSelector->setService(d->playfile.service, d->playfile.options. prediagTests);
+        d->ui.postDiagSelector->setService(d->playfile.service, d->playfile.options.postdiagTests);
 
         d->ui.parametersView->header()->resizeSection(0, 300);
-        fillCurrentParameters();
 
         d->ui. preDiagView->expandAll();
         d->ui.postDiagView->expandAll();
     }
 
     { // fill titles
-        d->ui.initialPage->setTitle(Controller::actionName(context) + QString{" \"%0\""}.arg(d->m_service->displayName()) );
-        d->ui.initialPage->setSubTitle(d->m_service->comment());
+        d->ui.initialPage->setTitle(Controller::actionName(d->playfile.action) + QString{" \"%0\""}.arg(d->playfile.service->displayName()) );
+        d->ui.initialPage->setSubTitle(d->playfile.service->comment());
 
-
-        static const std::map<Parameter::Context, std::tuple<QString, QString, QString>> ctxnames {
-            { Parameter::Context::Deploy    , { tr("Deployment wizard"),     tr("Deployment parameters"),     tr("Set deployment configuration") } },
-            { Parameter::Context::Undeploy  , { tr("Undeployment wizard"),   tr("Undeployment parameters"),   tr("Set undeployment options")     } },
-            { Parameter::Context::Backup    , { tr("Backup wizard"),         tr("Backup parameters"),         tr("Set backup options")           } },
-            { Parameter::Context::Restore   , { tr("Restore wizard"),        tr("Restore parameters"),        tr("Set restore options")          } },
-            { Parameter::Context::Configure , { tr("Configuration wizard"),  tr("Configuration parameters"),  tr("Set service configuration")    } },
-            { Parameter::Context::Diag      , { tr("Diagnostic wizard"),     tr("Diagnostic parameters"),     tr("Set diagnostic options")       } }
-        };
-
-        const auto& [windowTitle, pageTitle, pageSubtitle] = ctxnames.at(d->m_ctx);
+        const auto& [windowTitle, pageTitle, pageSubtitle] = ctxnames.at(d->playfile.action)();
         setWindowTitle(windowTitle);
         d->ui.parametersPage->setTitle(pageTitle);
         d->ui.parametersPage->setSubTitle(pageSubtitle);
 
         d->ui.finishPage->setTitle(d->ui.initialPage->title());
 
-        auto actionPixmap = Controller::actionIcon(d->m_ctx).pixmap(32, 32);
+        auto actionPixmap = Controller::actionIcon(d->playfile.action).pixmap(32, 32);
         d->ui.initialPage->setPixmap(QWizard::LogoPixmap, actionPixmap);
         d->ui. finishPage->setPixmap(QWizard::LogoPixmap, actionPixmap);
     }
-
-    d->ui.   autoStartCheckBox->setChecked(false);
-    d->ui.   autoStartCheckBox->setHidden(d->m_service->isStarted() || context != Parameter::Context::Deploy);
-    d->ui. forceDeployCheckBox->setChecked(false);
-    d->ui. forceDeployCheckBox->setVisible( (d->m_ctx == Parameter::Context::Deploy) && d->m_service->isForceDeployable() );
-    d->ui.     preDiagCheckBox->setChecked(true);
-    d->ui.    postDiagCheckBox->setChecked(true);
-    d->ui.     preDiagCheckBox->setHidden(d->m_ctx == Parameter::Context::Diag);
-    d->ui.    postDiagCheckBox->setHidden(d->m_ctx == Parameter::Context::Diag);
 
 
     QWizard::show();
@@ -347,8 +392,8 @@ void ActionWizard::open(Parameter::Context context, Service* service)
 
     bool startPageNeeded = d->ui.forceDeployCheckBox->isVisible() ||
                            d->ui.  autoStartCheckBox->isVisible() ||
-                           ( context == Parameter::Context::Deploy && d->m_current_resource_model.hasConflicts() ) ||
-                           ( context == Parameter::Context::Undeploy && d->m_service->resources().size() );
+                           ( d->playfile.action == Parameter::Context::Deploy && d->m_current_resource_model.hasConflicts() ) ||
+                           ( d->playfile.action == Parameter::Context::Undeploy && d->playfile.service->resources().size() );
 
     bool doubleCheckNeeded = d->ui.tabWidget->count() && (next < 4 && next != -1);
     bool finishPageNeeded = startPageNeeded && doubleCheckNeeded;
@@ -361,6 +406,16 @@ void ActionWizard::open(Parameter::Context context, Service* service)
     if ( currentId() == 0 && currentPage()->isFinalPage() ) {
         resize(minimumSize());
     } else resize(d->m_defaultSize);
+
+
+    auto it = std::find_if(ctxmap.cbegin(), ctxmap.cend(), [this](const auto& pair){ return pair.second == d->playfile.action; });
+    if ( it == ctxmap.cend() ) {
+        qCritical() << "invalid context";
+        return;
+    }
+    auto contextName = it->first;
+
+    d->ui.logWidget->setExportFileName(contextName+'_'+d->playfile.service->name());
 }
 
 void ActionWizard::validateParameters()
@@ -398,12 +453,12 @@ void ActionWizard::validateParameters()
     else
         d->ui.invalidParameterWarning->animatedHide();
 
-    if ( d->m_service ) {
-        d->ui.      missingDiagWarning->setVisible(( d->preDiag() || d->postDiag() ) && d->m_service->isDiagMissing());
-        d->ui.missingDiagParamsWarning->setVisible(( d->preDiag() || d->postDiag() ) &&
-            std::any_of(d->m_service->diagTools().cbegin(), d->m_service->diagTools().cend(), [this](const std::unique_ptr<DiagTool>& tool){
-                return ( d-> preDiag() ? tool->anySelected(DiagTool::Test:: PreDeploy) && tool->isMissingParams() : false ) ||
-                       ( d->postDiag() ? tool->anySelected(DiagTool::Test::PostDeploy) && tool->isMissingParams() : false );
+    if ( d->playfile.service ) {
+        d->ui.      missingDiagWarning->setVisible(( d->playfile.options.prediag || d->playfile.options.postdiag ) && d->playfile.service->isDiagMissing());
+        d->ui.missingDiagParamsWarning->setVisible(( d->playfile.options.prediag || d->playfile.options.postdiag ) &&
+            std::any_of(d->playfile.service->diagTools().cbegin(), d->playfile.service->diagTools().cend(), [this](const std::unique_ptr<DiagTool>& tool){
+                return ( d->playfile.options. prediag ? d->playfile.hasTool(tool.get(), DiagTool::Test::Mode:: PreDeploy) && tool->isMissingParams() : false ) ||
+                       ( d->playfile.options.postdiag ? d->playfile.hasTool(tool.get(), DiagTool::Test::Mode::PostDeploy) && tool->isMissingParams() : false );
             })
         );
     }
@@ -411,25 +466,54 @@ void ActionWizard::validateParameters()
     validateCurrentPage();
 }
 
-void ActionWizard::fillCurrentParameters()
+void ActionWizard::fillCurrentParameters(bool firstFill)
 {
-    Parameter::Contexts ctx{d->m_ctx};
+    d->playfile.options. prediag = d->ui. preDiagCheckBox->isChecked();
+    d->playfile.options.postdiag = d->ui.postDiagCheckBox->isChecked();
 
-    if ( d->m_ctx == Parameter::Context::Deploy && (d->preDiag() || d->postDiag()) )
+    Parameter::Contexts ctx{d->playfile.action};
+
+    // for deploy and configure
+    if ( d->playfile.options.prediag || d->playfile.options.postdiag )
         ctx.setFlag(Parameter::Context::Diag);
 
     auto oldParameters = d->m_parameters;
     d->m_parameters.clear();
-    bool useCurrent = (d->m_ctx == Parameter::Context::Configure) || d->m_service->isDeployed();
-    bool firstFill  = oldParameters.empty();
+    bool useCurrent = d->playfile.service->isDeployed();
 
+    bool fillFromPlayfile = !d->playfile.parameters.empty();
+
+
+    if ( oldParameters.empty() && fillFromPlayfile )
+    {
+        if ( !d->playfile.service->tryFill( d->playfile.parameters, ctx) )
+        {
+            QMessageBox mb{this};
+            mb.setIcon(QMessageBox::Icon::Warning);
+            mb.setWindowTitle(tr("Invalid data"));
+
+            mb.setStandardButtons(QMessageBox::StandardButton::RestoreDefaults |
+                                  QMessageBox::StandardButton::Ignore);
+            mb.setText(
+                tr("Some of the required parameters are missing or invalid.")
+                    .append('\n').append(tr("Press \"%1\" to use default parameters instead.")
+                                .arg(mb.button(QMessageBox::StandardButton::RestoreDefaults)->text().remove('&')))
+                    .append('\n').append(tr("Press \"%1\" to load them anyway.")
+                                .arg(mb.button(QMessageBox::StandardButton::Ignore)->text().remove('&')))
+                    .append('\n').append(tr("You may still need to enter some parameters manually."))
+                );
+            mb.exec();
+
+            fillFromPlayfile = mb.clickedButton() != mb.button(QMessageBox::StandardButton::RestoreDefaults);
+        }
+    }
 
     std::vector<Parameter*> optionalParameters;
-    for ( const auto& param : d->m_service->parameters() ) {
+    for ( const auto& param : d->playfile.service->parameters() ) {
         if ( !param->contexts().testAnyFlags(ctx) || param->isConstant() )
             continue;
 
-        if ( firstFill || std::find(oldParameters.cbegin(), oldParameters.cend(), param.get()) != oldParameters.cend() )
+        if ( !fillFromPlayfile || ( !firstFill && std::find(oldParameters.cbegin(), oldParameters.cend(), param.get()) == oldParameters.cend() ) )
             param->fillFromValue(useCurrent);
 
         param->value(Parameter::ValueScope::Edit)->setEnabled( param->required() & ctx || (useCurrent && param->value(Parameter::ValueScope::Current)->isEnabled()) );
@@ -449,14 +533,14 @@ void ActionWizard::fillCurrentParameters()
     d->m_form->setHidden(d->m_parameters.empty());
 
     // QTabWidget::setTabVisible behaves strangly. TODO?
-    if ( !d->preDiag() )
+    if ( !d->playfile.options.prediag )
         d->ui.tabWidget->removeTab(d->ui.tabWidget->indexOf(d->ui.preDiagTab));
     else {
         int i = d->ui.tabWidget->insertTab(0, d->ui.preDiagTab, tr("Premilinary diagnostics"));
         d->ui.tabWidget->setTabIcon(i, QIcon::fromTheme("system-run"));
     }
 
-    if ( !d->postDiag() )
+    if ( !d->playfile.options.postdiag )
         d->ui.tabWidget->removeTab(d->ui.tabWidget->indexOf(d->ui.postDiagTab));
     else {
         int i = d->ui.tabWidget->insertTab(1, d->ui.postDiagTab, tr("Post-deploy diagnostics"));
@@ -470,7 +554,7 @@ void ActionWizard::fillCurrentParameters()
         d->ui.tabWidget->setTabIcon(i, QIcon::fromTheme("preferences-system"));
     }
 
-    if ( d->m_service->resources().empty() )
+    if ( d->playfile.service->resources().empty() )
         d->ui.tabWidget->removeTab(d->ui.tabWidget->indexOf(d->ui.resourcesTab));
     else {
         int i = d->ui.tabWidget->insertTab(3, d->ui.resourcesTab, tr("Resources"));
@@ -492,86 +576,35 @@ void ActionWizard::fillCurrentParameters()
 void ActionWizard::onModeChanged()
 {
     if ( d->compactMode->isChecked() )
-        d->m_form = std::make_unique<CompactForm>(this);
+        d->m_form = std::make_unique<CompactForm>(d->playfile, this);
     else
-        d->m_form = std::make_unique<DetailedForm>(this);
+        d->m_form = std::make_unique<DetailedForm>(d->playfile, this);
 
 
     d->ui.formContainer->addWidget(d->m_form.get());
-    d->m_form->setParameters(d->m_parameters, d->m_ctx);
+    d->m_form->setParameters(d->m_parameters, d->playfile.action);
     d->m_form->setHidden(d->m_parameters.empty());
 
     connect(d->m_form.get(), &BaseForm::changed, this, &ActionWizard::validateParameters);
+    d->ui.searchBar->setAdapter(d->m_form->searchAdapter());
+
     validateParameters();
-}
-
-static const std::map<QString, Parameter::Contexts> ctxmap {
-    { "configure" , Parameter::Context::Configure },
-    { "deploy"    , Parameter::Context::Deploy    },
-    { "undeploy"  , Parameter::Context::Undeploy  },
-    { "diag"      , Parameter::Context::Diag      },
-  //{ "status"    , Parameter::Context::Status    },
-    { "backup"    , Parameter::Context::Backup    },
-    { "restore"   , Parameter::Context::Restore   },
-
-    { "diag+deploy", Parameter::Context::Deploy | Parameter::Context::Diag },
-};
-
-void ActionWizard::readParameters(const ServicesApp::ParsedParameters& params)
-{
-    if ( isVisible() && params.service != d->m_service ) {
-        QMessageBox::critical(this, tr("Incompatible parameters"),
-            tr("This file contains parameters for \"%1\", while \"%2\" expected.")
-              .arg(params.service->name())
-              .arg(d->m_service->name())
-        );
-
-        return;
-    }
-
-    if ( isVisible() && !(params.contexts & d->m_ctx) ) {
-        QMessageBox::critical(this, tr("Incompatible parameters"),
-            tr("This file contains parameters for \"%1\", while \"%2\" expected.")
-                .arg(Controller::actionName(d->m_ctx))
-                .arg(Controller::actionName(
-                    params.contexts.testFlags(Parameter::Context::Deploy | Parameter::Context::Diag)
-                        ? Parameter::Context::Deploy
-                        : (Parameter::Context)params.contexts.toInt()
-                    )
-                )
-        );
-        return;
-    }
-
-    if ( isHidden() )
-        open( params.contexts.testFlags(Parameter::Context::Deploy | Parameter::Context::Diag)
-                ? Parameter::Context::Deploy
-                : (Parameter::Context)params.contexts.toInt()
-            , params.service );
-
-    if ( params.contexts.testFlag(Parameter::Context::Deploy) ) {
-        bool diag = params.contexts.testFlag(Parameter::Context::Diag);
-
-        if ( diag )
-            d->ui.forceDeployCheckBox->setChecked(false);
-        d->ui.preDiagCheckBox->setChecked(diag);
-        d->ui.postDiagCheckBox->setChecked(diag);
-
-        fillCurrentParameters();
-    }
-
-
-    if ( !d->m_service->tryFill( params.data, params.contexts ) ) {
-        QMessageBox::critical(this, tr("Invalid data"), tr("Provided parameters are invalid."));
-
-        fillCurrentParameters();
-    }
-    onModeChanged();
 }
 
 void ActionWizard::exportParameters()
 {
-    auto it = std::find_if(ctxmap.cbegin(), ctxmap.cend(), [this](const auto& pair){ return pair.second == d->m_ctx; });
+    if ( d->m_form->findInvalidValue() )
+    {
+        auto button = QMessageBox::warning(this, tr("Incomplete parameter set"),
+            tr("Some of the required parameters are incorrect or missing. Do you want to continue exporting?"),
+            QMessageBox::Cancel | QMessageBox::Yes
+        );
+
+        if ( button == QMessageBox::Cancel )
+            return;
+    }
+
+    auto it = std::find_if(ctxmap.cbegin(), ctxmap.cend(), [this](const auto& pair){ return pair.second == d->playfile.action; });
     if ( it == ctxmap.cend() ) {
         qCritical() << "invalid context";
         return;
@@ -582,7 +615,7 @@ void ActionWizard::exportParameters()
     auto name = QFileDialog::getSaveFileName(this,
         tr("Export current parameters"),
         QStandardPaths::writableLocation(QStandardPaths::HomeLocation)
-            .append('/'+contextName+'_'+d->m_service->name()+".json"),
+            .append('/'+contextName+'_'+d->playfile.service->name()+".playfile.json"),
         "JSON files (*.json)"
     );
 
@@ -591,11 +624,7 @@ void ActionWizard::exportParameters()
     QFile f{name};
     if ( ! f.open(QIODevice::WriteOnly) ) return;
 
-    QByteArray data = QJsonDocument{{
-        { "service",    d->m_service->name() },
-        { "context",    contextName },
-        { "parameters", d->m_service->getParameters(d->m_ctx, true) },
-    }}.toJson(QJsonDocument::Indented);
+    QByteArray data = d->playfile.serialize();
 
     f.write(data);
     f.close();
@@ -603,40 +632,57 @@ void ActionWizard::exportParameters()
 
 void ActionWizard::dropEvent(QDropEvent* event)
 {
-    if ( auto parameters = ServicesApp::instance()->importParameters(event->mimeData()->urls().at(0).toLocalFile()) )
-        readParameters(parameters.value());
+    if ( auto parameters = qApp->importParameters(event->mimeData()->urls().at(0).toLocalFile()) )
+        open(parameters.value());
 }
 
 void ActionWizard::on_invalidParameterWarning_linkActivated(const QString& link)
 {
     int level = link.toInt();
-    d->m_form->ensureVisible(d->m_invalid.get(), level);
+    if ( d->m_invalid )
+    {
+        auto* info = d->m_invalid.get();
+
+        while ( level && info->childInfo )
+        {
+            info = info->childInfo.get();
+            --level;
+        }
+
+        d->m_form->ensureVisible(info->value);
+    }
 }
 
 void ActionWizard::on_invalidParameterWarning_linkHovered(const QString& link)
 {
     int level = link.toInt();
 
-    auto invalid = d->m_invalid.get();
-    while ( level ) {
+    auto* invalid = d->m_invalid.get();
+    while ( invalid && level ) {
         invalid = invalid->childInfo.get();
         --level;
     }
 
-    QToolTip::showText(QCursor::pos(), invalid->message);
+    if ( invalid )
+        QToolTip::showText(QCursor::pos(), invalid->message);
 }
 
 void ActionWizard::on_forceDeployCheckBox_toggled(bool checked)
 {
-    d->m_service->setForceDeploy(checked);
+    d->playfile.options.force = checked;
 
     // because is affects pre-diag;
     fillCurrentParameters();
 
     d->ui.otherOptionsContainer->setEnabled(!d->m_current_resource_model.hasConflicts() ||
                                             d->m_current_resource_model.conflictsResolvable() ||
-                                            d->m_service->forceDeploy());
+                                            d->playfile.options.force);
     validateCurrentPage();
+}
+
+void ActionWizard::on_autoStartCheckBox_toggled(bool checked)
+{
+    d->playfile.options.autostart = checked;
 }
 
 bool ActionWizard::validateCurrentPage()
@@ -644,10 +690,10 @@ bool ActionWizard::validateCurrentPage()
     bool valid = true;
 
     if ( currentPage() == d->ui.initialPage )
-        valid = d->m_ctx != Parameter::Context::Deploy ||
+        valid = d->playfile.action != Parameter::Context::Deploy ||
                 !d->m_current_resource_model.hasConflicts() ||
                  d->m_current_resource_model.conflictsResolvable() ||
-                 d->m_service->forceDeploy();
+                 d->playfile.options.force;
     if ( currentPage() == d->ui.parametersPage )
         valid = !d->m_invalid;
     else if ( currentPage() == d->ui.preDiagPage )
@@ -691,7 +737,7 @@ void ActionWizard::on_ActionWizard_currentIdChanged(int id)
 
     page(id)->setCommitPage( nextId() == 5 );
     if ( nextId() == 5 ) {
-        d->ui.textBrowser->clear();
+        d->ui.logWidget->clear();
     }
 
     if ( id == 5 ) {
@@ -701,44 +747,20 @@ void ActionWizard::on_ActionWizard_currentIdChanged(int id)
 
         bool success = true;
 
-        switch ( d->m_ctx ) {
-            case Parameter::Context::Deploy:
-                success =
-                    ( !d->preDiag() || qApp->controller()->diag(d->m_service, false) ) &&
-                    qApp->controller()->call(d->m_service, d->m_ctx);
+        d->playfile.parameters = d->playfile.service->getParameters(d->playfile.action, false);
+        if ( d->playfile.action == Parameter::Context::Deploy )
+            d->playfile.parameters["force_deploy"] = d->playfile.options.force;
+        success = qApp->controller()->call(d->playfile);
 
-                button(QWizard::BackButton)->setEnabled(!success);
-
-                success = success && ( !d->postDiag() || qApp->controller()->diag(d->m_service, true) );
-            break;
-
-            case Parameter::Context::Diag:
-                success = qApp->controller()->diag(d->m_service, d->m_service->isDeployed());
-                button(QWizard::BackButton)->setEnabled(!success);
-            break;
-
-            default:
-                success = qApp->controller()->call(d->m_service, d->m_ctx);
-        }
-
-        if ( success && !d->m_service->isStarted() && d->ui.autoStartCheckBox->isChecked() )
-            qApp->controller()->start(d->m_service);
+        // NOTE: if deploy succeeded but only post-diag failed, we can't go back anymore
+        if ( d->playfile.action == Parameter::Context::Deploy )
+            button(QWizard::BackButton)->setEnabled( d->playfile.service->isDeployed() || !success);
 
 
         d->ui.progressBar->hide();
         button(QWizard::FinishButton)->setEnabled( success);
         button(QWizard::CancelButton)->setEnabled(!success);
     }
-}
-
-void ActionWizard::done(int result)
-{
-    if ( result == QDialog::Rejected ||
-         currentId() == 5 ||
-         !currentPage()->isFinalPage() ||
-         qApp->controller()->call(d->m_service, d->m_ctx)
-        )
-        QWizard::done(result);
 }
 
 void ActionWizard::closeEvent(QCloseEvent* event)

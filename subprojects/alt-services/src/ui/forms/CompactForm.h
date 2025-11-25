@@ -5,10 +5,11 @@
 class CompactForm : public BaseForm
 {
 public:
-    CompactForm(QWidget* parent = nullptr);
+    CompactForm(const Action& action, QWidget* parent = nullptr);
     ~CompactForm();
 
-    void ensureVisible(const Parameter::Value::ValidationInfo* invalid, int level) override;
+    void ensureVisible(const Parameter::Value* value) override;
+    SearchAdapter* searchAdapter() override;
 
 protected:
     void setParametersImpl(Parameter::Contexts contexts) override;

@@ -39,13 +39,20 @@ QModelIndex ParameterModel::indexOf(const Property::Value* value) const
     return index( indexOf( (Parameter*)value->property() ), 0 );
 }
 
+Property::Value* ParameterModel::indexToValue(const QModelIndex& index) const
+{
+    if ( checkIndex(index, CheckIndexOption::IndexIsValid) )
+        return (Property::Value*)index.internalPointer();
+    return nullptr;
+}
+
 
 QModelIndex ParameterModel::index(int row, int column, const QModelIndex& parent) const {
+    if ( column < 0 || column >= columnCount(parent) || row < 0 || row >= rowCount(parent) )
+        return {};
+
     if ( parent.isValid() ) {
         auto value = (Property::Value*)parent.internalPointer();
-
-        if ( row >= rowCount(parent) )
-            return {};
 
         if ( value->property()->valueType() == Property::Type::Enum ) {
 
@@ -123,13 +130,12 @@ int ParameterModel::rowCount(const QModelIndex& parent) const {
 }
 
 int ParameterModel::columnCount(const QModelIndex& parent) const {
-    if ( !parent.isValid() || parent.column() == 0 ) return 2;
-    return 0;
+    return 2;
 }
 
 QVariant ParameterModel::data(const QModelIndex& index, int role) const
 {
-    auto* value = (Property::Value*)index.internalPointer();
+    auto* value = indexToValue(index);
     auto* property = value->property();
     auto  type = property->valueType();
 
@@ -142,9 +148,11 @@ QVariant ParameterModel::data(const QModelIndex& index, int role) const
     if ( index.column() == 0 ) switch (role) {
         case Qt::DisplayRole:
             return value->displayName(true);
+        break;
 
         case Qt::ToolTipRole:
             return property->comment();
+        break;
 
         case Qt::DecorationRole:
             if ( auto parameter = dynamic_cast<Parameter*>(property) ) {
@@ -152,10 +160,12 @@ QVariant ParameterModel::data(const QModelIndex& index, int role) const
                     ? ResourceModel::resourceIcon(parameter->resource()->type())
                     : QVariant{};
             }
+        break;
 
         case Qt::UserRole:
             if ( !index.parent().isValid() )
                 return QVariant::fromValue( ((Parameter*)value->property())->resource() );
+        break;
     }
     else if ( index.column() == 1 ) switch (role) {
         case Qt::DisplayRole:
@@ -180,6 +190,7 @@ QVariant ParameterModel::data(const QModelIndex& index, int role) const
                 return tr("(not specified)");
 
             return value->property()->isPassword() ? tr("(password hidden)") : value->get();
+        break;
 
         case Qt::ToolTipRole:
             if ( property->valueType() == Property::Type::Enum ) {
@@ -190,15 +201,17 @@ QVariant ParameterModel::data(const QModelIndex& index, int role) const
                     return it->get()->property()->comment();
             }
             return {};
+        break;
 
-        case Qt::FontRole: {
+        case Qt::FontRole:
+        {
             QFont f;
             f.setItalic( property->isPassword() ||
                          type == Property::Type::Array ||
                          ( property->valueType() != Property::Type::Enum && value->get().isNull() ) );
             return f;
         }
-
+        break;
     }
 
     return {};

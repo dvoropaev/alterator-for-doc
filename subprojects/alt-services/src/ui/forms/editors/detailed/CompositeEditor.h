@@ -4,11 +4,11 @@
 
 class CompositeEditor : public DetailedEditor {
 public:
-    CompositeEditor(Property::Value* value, QWidget* parent);
+    CompositeEditor(const BaseForm& form, Property::Value* value, QWidget* parent);
     
     void fill() override;
     
-    QWidget* makeVisible(const Property::Value::ValidationInfo* info, int level) override;
+    QWidget* makeVisible(const Property::Value* value) override;
 
 protected:
     std::vector<std::unique_ptr<DetailedEditor>> m_children;

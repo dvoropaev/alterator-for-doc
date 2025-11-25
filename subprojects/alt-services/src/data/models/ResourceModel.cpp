@@ -37,6 +37,9 @@ int ResourceModel::columnCount(const QModelIndex& parent) const {
 }
 
 QModelIndex ResourceModel::index(int row, int column, const QModelIndex& parent) const {
+    if ( column >= columnCount(parent) || row >= rowCount(parent) )
+        return {};
+
     if ( parent.isValid() && parent.internalId() == ULONG_LONG_MAX )
         return createIndex(row, column, parent.row());
 

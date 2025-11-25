@@ -876,6 +876,45 @@ static int packages_module_apt_subcommand(AlteratorCtlPackagesModule *module, al
         else
             packages_list = g_strdup(parameter1);
 
+        if (!additional_data_to_install_pckgs && !additional_data_to_remove_pckgs && !additional_data_extra_remove_pckgs)
+        {
+            check_apply_result *check_apply_info;
+            if (get_check_apply_result(module, packages_list, &check_apply_info) != 0)
+                ERR_EXIT();
+
+            if (!check_apply_info)
+            {
+                g_printerr(_("Can't check apply packages. Empty result.\n"));
+                ERR_EXIT();
+            }
+
+            if (check_apply_info->to_install)
+            {
+                GStrvBuilder *builder = g_strv_builder_new();
+                for (gsize i = 0; i < check_apply_info->to_install->len; i++)
+                    g_strv_builder_add(builder, (gchar *) check_apply_info->to_install->pdata[i]);
+                additional_data_to_install_pckgs = g_strv_builder_unref_to_strv(builder);
+            }
+
+            if (check_apply_info->to_remove)
+            {
+                GStrvBuilder *builder = g_strv_builder_new();
+                for (gsize i = 0; i < check_apply_info->to_remove->len; i++)
+                    g_strv_builder_add(builder, (gchar *) check_apply_info->to_remove->pdata[i]);
+                additional_data_to_remove_pckgs = g_strv_builder_unref_to_strv(builder);
+            }
+
+            if (check_apply_info->extra_remove)
+            {
+                GStrvBuilder *builder = g_strv_builder_new();
+                for (gsize i = 0; i < check_apply_info->extra_remove->len; i++)
+                    g_strv_builder_add(builder, (gchar *) check_apply_info->extra_remove->pdata[i]);
+                additional_data_extra_remove_pckgs = g_strv_builder_unref_to_strv(builder);
+            }
+
+            check_apply_result_free(check_apply_info);
+        }
+
         if (packages_module_apt_check_apply_package_info(module,
                                                          packages_list,
                                                          (const gchar **) additional_data_to_install_pckgs,
@@ -948,15 +987,13 @@ static int packages_module_apt_subcommand(AlteratorCtlPackagesModule *module, al
         g_ptr_array_add(signals, stdout_signal);
         g_ptr_array_add(signals, stderr_signal);
 
-        if (subcommand_id == (APT_APPLY_ASYNC | APT_REMOVE))
+        if (apt_allow_remove_manually && additional_data_extra_remove_pckgs)
         {
-            GRegex *regex_replace   = g_regex_new("-\\s+|-$", 0, 0, NULL);
-            gchar *exclude_packages = g_regex_replace_literal(regex_replace, packages_list, -1, 0, " ", 0, NULL);
-            dbus_ctx->parameters    = g_variant_new("(ss)", exclude_packages, packages_list);
-            g_regex_unref(regex_replace);
-
-            dbus_ctx->parameters = g_variant_new("(ss)", exclude_packages, packages_list);
+            gchar *exclude_packages        = g_strjoinv(" ", additional_data_extra_remove_pckgs);
+            gchar *quoted_exclude_packages = g_strdup_printf("\"%s\"", exclude_packages);
+            dbus_ctx->parameters           = g_variant_new("(ss)", quoted_exclude_packages, packages_list);
             g_free(exclude_packages);
+            g_free(quoted_exclude_packages);
         }
         else
             dbus_ctx->parameters = g_variant_new("(ss)", "\"''\"", packages_list);
@@ -1881,12 +1918,11 @@ static int packages_module_apt_check_apply_package_info(AlteratorCtlPackagesModu
                                                         const gchar **optional_calculated_packages_extra_remove,
                                                         gboolean *accepted)
 {
-    int ret                              = 0;
-    check_apply_result *check_apply_info = NULL;
-    gchar *install_result                = NULL;
-    gchar *remove_result                 = NULL;
-    gchar *extra_remove_result           = NULL;
-    gchar is_accept_symbol               = 'n';
+    int ret                    = 0;
+    gchar *install_result      = NULL;
+    gchar *remove_result       = NULL;
+    gchar *extra_remove_result = NULL;
+    gchar is_accept_symbol     = 'n';
 
     gchar remove_essential_phrase[128];
     memset(remove_essential_phrase, 0, 128);
@@ -1913,72 +1949,17 @@ static int packages_module_apt_check_apply_package_info(AlteratorCtlPackagesModu
         ERR_EXIT();
     }
 
-    if (!optional_calculated_packages_to_install && !optional_calculated_packages_to_remove
-        && !optional_calculated_packages_extra_remove)
-    {
-        if (get_check_apply_result(module, packages, &check_apply_info) != 0)
-            ERR_EXIT();
+    if (optional_calculated_packages_to_install && g_strv_length((gchar **) optional_calculated_packages_to_install)
+        && !(install_result = columnize_text((gchar **) optional_calculated_packages_to_install)))
+        ERR_EXIT();
 
-        if (!check_apply_info)
-        {
-            g_printerr(_("Can't check apply packages. Empty result.\n"));
-            ERR_EXIT();
-        }
+    if (optional_calculated_packages_to_remove && g_strv_length((gchar **) optional_calculated_packages_to_remove)
+        && !(remove_result = columnize_text((gchar **) optional_calculated_packages_to_remove)))
+        ERR_EXIT();
 
-        if (check_apply_info->to_install)
-        {
-            gchar **install_result_strv = NULL;
-            GStrvBuilder *builder       = g_strv_builder_new();
-            for (gsize i = 0; i < check_apply_info->to_install->len; i++)
-                g_strv_builder_add(builder, (gchar *) check_apply_info->to_install->pdata[i]);
-            install_result_strv = g_strv_builder_unref_to_strv(builder);
-            if (install_result_strv && g_strv_length(install_result_strv)
-                && !(install_result = columnize_text(install_result_strv)))
-                ERR_EXIT();
-            g_strfreev(install_result_strv);
-        }
-
-        if (check_apply_info->to_remove)
-        {
-            gchar **remove_result_strv = NULL;
-            GStrvBuilder *builder      = g_strv_builder_new();
-            for (gsize i = 0; i < check_apply_info->to_remove->len; i++)
-                g_strv_builder_add(builder, (gchar *) check_apply_info->to_remove->pdata[i]);
-            remove_result_strv = g_strv_builder_unref_to_strv(builder);
-            if (remove_result_strv && g_strv_length(remove_result_strv)
-                && !(remove_result = columnize_text(remove_result_strv)))
-                ERR_EXIT();
-            g_strfreev(remove_result_strv);
-        }
-
-        if (check_apply_info->extra_remove)
-        {
-            gchar **extra_remove_result_strv = NULL;
-            GStrvBuilder *builder            = g_strv_builder_new();
-            for (gsize i = 0; i < check_apply_info->extra_remove->len; i++)
-                g_strv_builder_add(builder, (gchar *) check_apply_info->extra_remove->pdata[i]);
-            extra_remove_result_strv = g_strv_builder_unref_to_strv(builder);
-            if (extra_remove_result_strv && g_strv_length(extra_remove_result_strv)
-                && !(extra_remove_result = columnize_text(extra_remove_result_strv)))
-                ERR_EXIT();
-            g_strfreev(extra_remove_result_strv);
-        }
-    }
-    else
-    {
-        if (optional_calculated_packages_to_install && g_strv_length((gchar **) optional_calculated_packages_to_install)
-            && !(install_result = columnize_text((gchar **) optional_calculated_packages_to_install)))
-            ERR_EXIT();
-
-        if (optional_calculated_packages_to_remove && g_strv_length((gchar **) optional_calculated_packages_to_remove)
-            && !(remove_result = columnize_text((gchar **) optional_calculated_packages_to_remove)))
-            ERR_EXIT();
-
-        if (optional_calculated_packages_extra_remove
-            && g_strv_length((gchar **) optional_calculated_packages_extra_remove)
-            && !(extra_remove_result = columnize_text((gchar **) optional_calculated_packages_extra_remove)))
-            ERR_EXIT();
-    }
+    if (optional_calculated_packages_extra_remove && g_strv_length((gchar **) optional_calculated_packages_extra_remove)
+        && !(extra_remove_result = columnize_text((gchar **) optional_calculated_packages_extra_remove)))
+        ERR_EXIT();
 
     if (install_result && strlen(install_result))
     {
@@ -2093,8 +2074,6 @@ static int packages_module_apt_check_apply_package_info(AlteratorCtlPackagesModu
     }
 
 end:
-    if (check_apply_info)
-        check_apply_result_free(check_apply_info);
 
     g_free(install_result);
 

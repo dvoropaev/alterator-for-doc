@@ -44,8 +44,8 @@ private:
 
 class ArrayEditor::Private {
 public:
-    Private(Property::Value* value, QWidget* parent, Parameter::Contexts contexts)
-        : m_editor{createEditor(value->property()->prototype()->defaultValue(), parent, contexts, false, true)}
+    Private(const BaseForm& form, Property::Value* value, QWidget* parent, Parameter::Contexts contexts)
+        : m_editor{createEditor(form, value->property()->prototype()->defaultValue(), parent, contexts, false, true)}
         , ui{new Ui::ArrayEditor}
         , m_model{value}
     {}
@@ -58,9 +58,9 @@ public:
 };
 
 
-ArrayEditor::ArrayEditor(Property::Value* value, QWidget *parent, Parameter::Contexts contexts)
-    : DetailedEditor{value}
-    , d{new Private{m_value, parent, contexts}}
+ArrayEditor::ArrayEditor(const BaseForm& form, Property::Value* value, QWidget *parent, Parameter::Contexts contexts)
+    : DetailedEditor{form, value}
+    , d{new Private{form, m_value, parent, contexts}}
 {
     m_widget = new QWidget{parent};
     d->ui->setupUi(m_widget);
@@ -96,23 +96,24 @@ ArrayEditor::ArrayEditor(Property::Value* value, QWidget *parent, Parameter::Con
 
 ArrayEditor::~ArrayEditor() { delete d; }
 
-QWidget* ArrayEditor::makeVisible(const Property::Value::ValidationInfo* info, int level)
+QWidget* ArrayEditor::makeVisible(const Property::Value* value)
 {
-    if ( level != 1 )
-        qWarning() << "unexpected validation level for ArrayEditor";
+    if ( value->parent() != m_value )
+    {
+        qWarning() << "this array is not a direct parent of a child that we are searhing";
+        return m_widget;
+    }
 
-    if ( auto* childInfo = info->childInfo.get() ) {
-        auto index = d->m_model.indexOf(childInfo->value);
-        if ( index.isValid() )
-            d->ui->listView->scrollTo(index);
-        else
-            qWarning() << "child not found";
+    if ( value == m_value )
+        return m_widget;
 
-        return d->ui->listView;
-    } else
-        qWarning() << "child info not found";
+    auto index = d->m_model.indexOf(value);
+    if ( index.isValid() )
+        d->ui->listView->scrollTo(index);
+    else
+        qWarning() << "child not found";
 
-    return m_widget;
+    return d->ui->listView;
 }
 
 bool ArrayEditor::checkSize(){
@@ -120,7 +121,10 @@ bool ArrayEditor::checkSize(){
     auto [min,max] = m_value->property()->allowed().toSize();
     bool oor = min != max && rc < min || rc > max;
 
-    d->ui->addButton->setEnabled( rc < max && !d->m_editor->value()->isInvalid() );
+    d->ui->addButton->setEnabled(
+        rc < max &&
+        !d->m_editor->value()->isInvalid(false /* NOTE: there is no possibility for subparameters to be resource-linked */)
+    );
 
     emit changed();
     return oor;

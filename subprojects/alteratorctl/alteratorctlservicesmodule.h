@@ -43,6 +43,8 @@ typedef struct
 
 } AlteratorCtlServicesModuleClass;
 
+typedef struct ServicesPlayPlan ServicesPlayPlan;
+
 typedef struct
 {
     GObject parnet_instance;
@@ -56,6 +58,10 @@ typedef struct
     GNode *info;
 
     AlteratorCtlApp *alterator_ctl_app;
+
+    ServicesPlayPlan *play_plan;
+
+    GHashTable *required_params_cache;
 
 } AlteratorCtlServicesModule;
 

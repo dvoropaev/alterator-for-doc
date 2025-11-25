@@ -1,0 +1,15 @@
+type = "Control"
+name = "sssd-dyndns-refresh-interval"
+display_name.en = "sssd-dyndns-refresh-interval"
+comment.en = "Determines how often should the back end perform periodic DNS records update, when dyndns update by SSSD in enabled"
+
+[states.disabled]
+type = "state"
+display_name.en = "disabled"
+comment.en = "Disable setting additional refresh interval of client DNS records updated by SSSD"
+
+[states.interval]
+type = "integer"
+min = 0
+display_name.en = "interval"
+comment.en = "Set the value of refresh interval DNS records updated by SSSD in seconds (the lowest possible value is 60, default is 86400 - 24 hours)"

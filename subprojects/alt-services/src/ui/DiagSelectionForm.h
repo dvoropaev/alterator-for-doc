@@ -1,9 +1,8 @@
 #pragma once
 
 #include <QWidget>
-
 #include "data/Service.h"
-class Controller;
+#include "data/Action.h"
 
 class DiagSelectionForm : public QWidget
 {
@@ -13,8 +12,7 @@ public:
     explicit DiagSelectionForm(QWidget *parent = nullptr);
     ~DiagSelectionForm();
 
-    void setController(Controller* c);
-    void setService(Service* service);
+    void setService(Service* service, Action::TestSet& tests);
     void setMode(DiagTool::Test::Mode mode);
 
     QAbstractItemModel* model();

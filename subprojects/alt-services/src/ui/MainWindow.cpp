@@ -15,8 +15,6 @@
 #include <QActionGroup>
 
 class MainWindow::Private {
-    std::map<QAction*, Parameter::Context> m_actionToContext;
-
 public:
     Private(MainWindow* w)
         : ui(new Ui::MainWindow)
@@ -24,6 +22,9 @@ public:
         , m_about{w}
         , m_wizard{w}
     {}
+
+
+    std::map<QAction*, Parameter::Context> m_actionToContext;
 
     inline Parameter::Context actionToContext(QAction* action)
     {
@@ -43,14 +44,13 @@ public:
         if ( auto playfile = ServicesApp::instance()->importParameters(filename) )
         {
             qApp->controller()->selectByPath(playfile->service->dbusPath());
-            m_wizard.readParameters(playfile.value());
+            m_wizard.open(playfile.value());
         }
     }
 
     MainWindow* self{};
     Ui::MainWindow *ui;
     Service* m_currentService{nullptr};
-    ServiceWidget* m_currentWidget{nullptr};
     QSortFilterProxyModel m_filter_model;
     AboutDialog m_about;
     ActionWizard m_wizard;
@@ -61,8 +61,11 @@ MainWindow::MainWindow(QWidget *parent)
     , d{ new Private{this} }
 {
     d->ui->setupUi(this);
-    d->ui->centralwidget->setEnabled(false);
-    d->ui->progressBar->hide();
+
+    d->ui->searchBar->addAction(QIcon::fromTheme(QIcon::ThemeIcon::EditFind), QLineEdit::LeadingPosition)
+        ->setDisabled(true);
+
+
     connect(d->ui->treeView, &QAbstractItemView::clicked, d->ui->treeView, &QAbstractItemView::activated);
 
     {
@@ -141,29 +144,16 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(qApp->controller()->model(), &QAbstractItemModel::modelAboutToBeReset, this, [this]{
         d->m_currentService = nullptr;
-        d->m_currentWidget  = nullptr;
-        d->ui->stackedWidget->setCurrentIndex(0);
+        d->ui->stackedWidget->setCurrentWidget(d->ui->initialPage);
         d->ui->actionRefreshCurrent->setEnabled(false);
-
-        while ( d->ui->stackedWidget->count() > 1 ) {
-            auto* widget = d->ui->stackedWidget->widget(1);
-            d->ui->stackedWidget->removeWidget(widget);
-            delete widget;
-        }
-    });
-
-    connect(qApp->controller()->model(), &QAbstractItemModel::rowsInserted, this, [=](const QModelIndex& parent, int first, int last){
-        for ( int i = first; i <= last; ++i ) {
-            auto index = qApp->controller()->model()->index(i, 0, parent);
-
-            if ( auto* service = qApp->controller()->getByIndex(index) )
-                d->ui->stackedWidget->insertWidget( index.row()+1, new ServiceWidget{ service, d->ui->stackedWidget } );
-        }
+        d->ui->serviceWidget->clear();
     });
 
     connect(qApp->controller()->model(), &QAbstractItemModel::dataChanged, this, [=](const QModelIndex& tl, const QModelIndex& br, QList<int> roles){
-        for ( int row = tl.row(); row <= br.row(); ++row )
-            ((ServiceWidget*)d->ui->stackedWidget->widget(row+1))->onStatusChanged();
+        if ( d->m_currentService )
+            for ( int row = tl.row(); row <= br.row(); ++row )
+                if ( d->m_currentService == qApp->controller()->getByIndex(qApp->controller()->model()->index(row, 0)) )
+                    d->ui->serviceWidget->onStatusChanged();
     });
 }
 
@@ -172,16 +162,22 @@ MainWindow::~MainWindow() { delete d; }
 void MainWindow::onRefreshStart()
 {
     setCursor(QCursor{Qt::WaitCursor});
-    d->ui->centralwidget->setEnabled(false);
     d->ui->progressBar->show();
     d->ui->actionRefreshAll->setDisabled(true);
+    d->ui->serviceWidget->setEnabled(false);
+
+    for ( const auto& [action,ctx] : d->m_actionToContext )
+        action->setEnabled(false);
+
+    d->ui->treeView->setEnabled(false);
 }
 
 void MainWindow::onRefreshEnd()
 {
     d->m_filter_model.invalidate();
     unsetCursor();
-    d->ui->centralwidget->setEnabled(true);
+    d->ui->serviceWidget->setEnabled(true);
+    d->ui->treeView->setEnabled(true);
     d->ui->progressBar->hide();
     d->ui->treeView->setSelectionMode(QAbstractItemView::SingleSelection);
     d->ui->treeView->header()->setSectionResizeMode(0, QHeaderView::Stretch);
@@ -189,8 +185,8 @@ void MainWindow::onRefreshEnd()
     d->ui->treeView->header()->resizeSection(1, iconSize().width());
     d->ui->actionRefreshAll->setDisabled(false);
 
-    if ( d->m_currentWidget )
-        d->m_currentWidget->onStatusChanged();
+    if ( d->ui->stackedWidget->currentWidget() == d->ui->serviceWidget )
+        d->ui->serviceWidget->onStatusChanged();
 
     onStatusChanged();
 }
@@ -218,10 +214,15 @@ void MainWindow::onStatusChanged()
 void MainWindow::on_treeView_activated(const QModelIndex &index)
 {
     auto srcIndex = d->m_filter_model.mapToSource(index);
-    d->ui->stackedWidget->setCurrentIndex(srcIndex.row()+1);
-    d->m_currentService = qApp->controller()->getByIndex(srcIndex);
-    d->m_currentWidget  = (ServiceWidget*)d->ui->stackedWidget->currentWidget();
-    onStatusChanged();
+    if ( auto* service = qApp->controller()->getByIndex(srcIndex) )
+    {
+        d->m_currentService = service;
+        d->ui->stackedWidget->setCurrentWidget(d->ui->serviceWidget);
+        d->ui->serviceWidget->setService(service);
+        onStatusChanged();
+    }
+    else
+        qWarning() << "internal error: cannot get service by index";
 }
 
 
@@ -258,7 +259,7 @@ void MainWindow::on_actionRefreshCurrent_triggered()
 {
     d->ui->actionRefreshAll->setDisabled(true);
     d->ui->actionRefreshCurrent->setDisabled(true);
-    d->m_currentWidget->onStatusChanged();
+    qApp->controller()->updateStatus(d->m_currentService);
     onStatusChanged();
     d->ui->actionRefreshAll->setDisabled(false);
     d->ui->actionRefreshCurrent->setDisabled(false);
@@ -267,14 +268,14 @@ void MainWindow::on_actionRefreshCurrent_triggered()
 void MainWindow::on_actionStart_triggered()
 {
     qApp->controller()->start(d->m_currentService);
-    d->m_currentWidget->onStatusChanged();
+    d->ui->serviceWidget->onStatusChanged();
     onStatusChanged();
 }
 
 void MainWindow::on_actionStop_triggered()
 {
     qApp->controller()->stop(d->m_currentService);
-    d->m_currentWidget->onStatusChanged();
+    d->ui->serviceWidget->onStatusChanged();
     onStatusChanged();
 }
 
@@ -282,7 +283,17 @@ void MainWindow::onContextActionTriggered()
 {
     if ( QAction* source = qobject_cast<QAction*>(QObject::sender()) ) try {
         auto ctx = d->actionToContext(source);
-        d->m_wizard.open(ctx, d->m_currentService);
+        Action action;
+        action.service = d->m_currentService;
+        action.action = ctx;
+
+        // NOTE: diagnostics should be enabled by default
+        action.options.prediag = ( ctx == Parameter::Context::Deploy && action.service->hasPreDiag() )
+                              || ( ctx == Parameter::Context::Diag && !action.service->isDeployed() );
+
+        action.options.postdiag = ( ctx == Parameter::Context::Deploy && action.service->hasPreDiag() )
+                               || ( ctx == Parameter::Context::Diag && action.service->isDeployed() );
+        d->m_wizard.open(action);
         return;
     } catch(std::out_of_range&) {}
 

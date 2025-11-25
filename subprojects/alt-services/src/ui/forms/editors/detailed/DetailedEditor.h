@@ -9,6 +9,6 @@ protected:
     using Editor::Editor;
 
 public:
-    virtual QWidget* makeVisible(const Property::Value::ValidationInfo* info, int level) = 0;
+    virtual QWidget* makeVisible(const Property::Value* value) = 0;
 };
 

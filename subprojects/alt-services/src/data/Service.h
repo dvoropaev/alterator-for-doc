@@ -6,12 +6,7 @@
 #include <QAbstractItemModel>
 #include <QIcon>
 
-class ParameterModel;
-class  ResourceModel;
-
 class DiagTool;
-template<typename T>
-struct Togglable;
 
 class Service : public TranslatableObject
 {
@@ -33,11 +28,7 @@ public:
     const QIcon& icon();
 
     inline bool isDiagMissing() {return m_diagNotFound;}
-
     inline bool isForceDeployable() const {return m_force_deployable;}
-    inline bool forceDeploy() const {return m_force_deploy;}
-    inline void setForceDeploy(bool how) {m_force_deploy = how;}
-
     inline bool isDeployed() const {return m_deployed;}
     inline bool isStarted() const {return m_started;}
 
@@ -48,18 +39,20 @@ public:
     QJsonObject getParameters(Parameter::Contexts ctx, bool excludePasswords = false);
 
     bool hasConflict(Service* another, Resource* theirs, Resource** ours);
+
     bool tryFill(QJsonObject o, Parameter::Contexts ctx);
 
     bool hasPreDiag() const;
     bool hasPostDiag() const;
 
+    int statusCode() const;
+
 protected:
     friend class Controller;
-    void setStatus(const QByteArray& data);
+    void setStatus(int code, const QByteArray& data);
 private:
     QString m_dbusPath;
     const bool m_force_deployable;
-    bool m_force_deploy{false};
     bool m_deployed{false};
     bool m_started{false};
     bool m_diagNotFound{false};
@@ -72,42 +65,38 @@ class DiagTool : public TranslatableObject {
 public:
     class Test : public TranslatableObject{
     public:
+        enum class Mode {
+            PreDeploy  = 1,
+            PostDeploy = 2,
 
-        enum Mode {
-            PreDeploy          = 0b000001,
-            PreDeploySelected  = 0b000010,
-            PreDeployRequired  = 0b000110,
-            PostDeploy         = 0b001000,
-            PostDeploySelected = 0b010000,
-            PostDeployRequired = 0b110000,
+            None = 0,
+            All  = PreDeploy | PostDeploy,
         };
         Q_DECLARE_FLAGS(Modes, Mode);
 
-        inline Test(const QString& name, const Locales& locales, const QString& iconName, Modes flags)
+        inline Test(const QString& name, const Locales& locales, const QString& iconName, Modes modes, Modes required)
             : TranslatableObject{name, locales}
-            , m_modes{flags}
+            , m_modes{modes}
+            , m_required{required}
             , m_icon{QIcon::fromTheme(iconName)}
         {}
 
-        inline bool isRequired(Mode m) const {
-            return m_modes.testFlag( m == PreDeploy ? Mode::PreDeployRequired : Mode::PostDeployRequired );
-        }
+        inline DiagTool* tool() { return m_tool; }
 
-        inline bool isEnabled(Mode m) const {
-            return m_modes.testFlag( m == PreDeploy ? Mode::PreDeploySelected : Mode::PostDeploySelected );
-        }
+        inline const Modes& mode()     const { return m_modes;    }
+        inline const Modes& required() const { return m_required; }
 
-        inline void setSelected(Mode m, bool selected) const {
-            if ( !isRequired(m) )
-                m_modes.setFlag( m == PreDeploy ? Mode::PreDeploySelected : Mode::PostDeploySelected, selected );
-        }
-        inline Modes modes() const { return m_modes; }
+        inline const QIcon& icon()     const { return m_icon;     }
 
-        inline const QIcon& icon() { return m_icon; }
+    protected:
+        friend class DiagTool;
+        inline void setTool(DiagTool* parent) { m_tool = parent; }
 
-        private:
-        mutable Modes m_modes;
+    private:
+        const Modes m_modes;
+        const Modes m_required;
         const QIcon m_icon;
+        DiagTool* m_tool{};
     };
 
     class Parameter : public TranslatableObject {
@@ -136,18 +125,28 @@ public:
         , m_parameters{std::move(parameters)}
         , m_tests{std::move(tests)}
         , m_icon{QIcon::fromTheme(iconName)}
-    {}
-
-    inline const auto& parameters() const {return m_parameters;}
-    inline auto& tests() {return m_tests;}
-    inline const auto& path() const { return m_path; }
-    inline bool session() const {return m_session;}
-    inline bool hasTests(Test::Mode m) {
-        return std::any_of(m_tests.cbegin(), m_tests.cend(),
-                           [m](const auto& test){return test->modes().testFlag(m);});
+    {
+        for ( const auto& test : m_tests )
+            test->setTool(this);
     }
-    inline bool anySelected(Test::Mode m) {
-        return std::any_of(m_tests.cbegin(), m_tests.cend(), [m](const auto& test){return test->isEnabled(m);});
+
+    inline const auto& parameters() const { return m_parameters; }
+    inline const auto& tests()      const { return m_tests;      }
+    inline const auto& path()       const { return m_path;       }
+    inline bool session()           const { return m_session;    }
+
+    inline bool hasTests(Test::Mode m) const {
+        return std::any_of(
+            m_tests.cbegin(), m_tests.cend(),
+            [m](const auto& test){return test->mode().testFlag(m);}
+        );
+    }
+
+    inline bool hasRequiredTests(Test::Mode m) const {
+        return std::any_of(
+            m_tests.cbegin(), m_tests.cend(),
+            [m](const auto& test){return test->required().testFlag(m);}
+        );
     }
 
     inline bool isMissingParams(){ return m_params_missing; }
@@ -169,7 +168,8 @@ protected:
 private:
     const bool m_session;
     const QString m_path;
-    PtrVector<Test> m_tests;
+    const PtrVector<Test> m_tests;
     const PtrVector<Parameter> m_parameters;
     const QIcon m_icon;
 };
+Q_DECLARE_METATYPE(DiagTool::Test::Modes);

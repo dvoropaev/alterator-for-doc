@@ -10,8 +10,11 @@ class ServiceWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit ServiceWidget(Service* s, QWidget *parent = nullptr);
+    explicit ServiceWidget(QWidget *parent = nullptr);
     ~ServiceWidget();
+
+    void setService(Service* s);
+    void clear();
 
 private slots:
     void on_comboBox_activated(int index);

@@ -12,8 +12,6 @@ CustomTreeView::CustomTreeView(QWidget* parent)
 {
     setSelectionMode(QAbstractItemView::NoSelection);
     setAnimated(true);
-    setTabKeyNavigation(true);
-
     header()->setStretchLastSection(true);
     setUniformRowHeights(false);
 
@@ -31,6 +29,27 @@ CustomTreeView::CustomTreeView(QWidget* parent)
 
     setContextMenuPolicy(Qt::ActionsContextMenu);
     addActions(ServicesApp::instance()->controller()->tableActions());
+
+
+    connect(this, &QAbstractItemView::clicked, this, [this](const QModelIndex& index){
+        if ( !index.flags().testFlag(Qt::ItemIsUserCheckable) )
+            return;
+
+        /*
+         * QAbstractItemView::clicked is emitted even on checkboxes
+         * so we'll avoid calling it twice
+         */
+        QStyleOptionViewItem option{};
+        option.rect = visualRect(index);
+        option.index = index;
+        QRect checkboxRect = style()->subElementRect(QStyle::SE_CheckBoxClickRect, &option, this);
+
+        QPoint clickPos = mapFromGlobal(QCursor::pos());
+        if (!checkboxRect.contains(clickPos)) {
+            auto checked = (Qt::CheckState)index.data(Qt::CheckStateRole).toInt();
+            model()->setData(index, checked == Qt::Unchecked, Qt::CheckStateRole);
+        }
+    });
 }
 
 void CustomTreeView::setModel(QAbstractItemModel* model)
@@ -74,12 +93,4 @@ void CustomTreeView::highlight(const QModelIndex& index)
             QTimer::singleShot(500, this, &QAbstractItemView::clearSelection);
         });
     } else qWarning() << "incorrect index";
-}
-
-void CustomTreeView::keyPressEvent(QKeyEvent* event)
-{
-    auto index = currentIndex();
-    if ( event->key() == Qt::Key_Space && index.isValid() )
-        emit clicked(index);
-    QTreeView::keyPressEvent(event);
 }

@@ -83,7 +83,7 @@ void Property::setLocale(const QLocale& locale) const
     m_array_prefix.setLocale(locale);
 }
 
-std::unique_ptr<Property::Value::ValidationInfo> Property::Value::isInvalid() const
+std::unique_ptr<Property::Value::ValidationInfo> Property::Value::isInvalid(bool force) const
 {
     using ValidationInfo = Property::Value::ValidationInfo;
 
@@ -101,7 +101,7 @@ std::unique_ptr<Property::Value::ValidationInfo> Property::Value::isInvalid() co
                 return std::unique_ptr<ValidationInfo>{new ValidationInfo{this, QObject::tr("List should not have more than %n element", nullptr, max)}};
 
             for ( const auto& child : m_children )
-                if ( auto childInfo = child->isInvalid() )
+                if ( auto childInfo = child->isInvalid(force) )
                     return std::unique_ptr<ValidationInfo>{new ValidationInfo{this, QObject::tr("Some of the items are invalid"), std::move(childInfo)}};
 
             break;
@@ -114,7 +114,7 @@ std::unique_ptr<Property::Value::ValidationInfo> Property::Value::isInvalid() co
             if ( currentIt == m_children.cend() )
                 return std::unique_ptr<ValidationInfo>{new ValidationInfo{this, QObject::tr("One of variants should be selected")}};
 
-            if ( auto childInfo = currentIt->get()->isInvalid() )
+            if ( auto childInfo = currentIt->get()->isInvalid(force) )
                 return std::unique_ptr<ValidationInfo>{new ValidationInfo{this, QObject::tr("Additional data for the selected variant is not valid"), std::move(childInfo)}};
 
             if ( ++currentIt == m_children.cend() )
@@ -128,7 +128,7 @@ std::unique_ptr<Property::Value::ValidationInfo> Property::Value::isInvalid() co
 
         case Property::Type::Composite:
             for ( const auto& child : m_children )
-                if ( auto childInfo = child->isInvalid() )
+                if ( auto childInfo = child->isInvalid(force) )
                     return std::unique_ptr<ValidationInfo>{new ValidationInfo{this, QObject::tr("Some of the items are invalid"), std::move(childInfo)}};
             break;
 
@@ -160,7 +160,7 @@ std::unique_ptr<Property::Value::ValidationInfo> Property::Value::isInvalid() co
     }
 
     if ( Parameter* parameter = dynamic_cast<Parameter*>(property()) ) {
-        if ( !parameter->service()->forceDeploy() ) {
+        if ( !force ) {
             if ( Resource* resource = parameter->resource() ) {
                 auto it = std::find_if(
                     parameter->service()->resources().cbegin(),
@@ -244,58 +244,71 @@ QJsonValue Property::Value::serialize(bool excludePasswords) const
     }
 }
 
-void Property::Value::fill(const QJsonValue& value, bool required)
+bool Property::Value::fill(const QJsonValue& value, bool required)
 {
+    bool success = false;
+
     if ( value.isUndefined() || value.isNull() ) {
         setEnabled(required);
-        return;
     }
-
-    switch ( m_property->m_type ) {
-        case Type::Enum:
-        {
-            QJsonObject object = value.toObject();
-            QString key;
-            QJsonValue value;
-
-            if ( !object.empty() ) {
-                key   = object.begin().key();
-                value = object.begin().value();
-            }
-
-            for ( const auto& child : m_children )
+    else
+    {
+        switch ( m_property->m_type ) {
+            case Type::Enum:
             {
-                if ( child->property()->name() == key ) {
-                    child->setEnabled(true);
-                    child->fill(value, true);
+                QJsonObject object = value.toObject();
+                QString key;
+                QJsonValue value;
+
+                if ( !object.empty() ) {
+                    key   = object.begin().key();
+                    value = object.begin().value();
                 }
-                else
-                    child->setEnabled(false);
-            }
-        } break;
 
-        case Type::Composite: {
-            QJsonObject object = value.toObject();
-
-            for ( const auto& child : m_children )
-                child->fill(object[child->m_property->name()], child->property()->isRequired());
-
-        } break;
-
-        case Type::Array: {
-            QJsonArray array = value.toArray();
-            m_children.clear();
-            if ( m_property->m_prototype )
-                for ( const auto& item : array ) {
-                    auto child = m_property->m_prototype->defaultValue()->clone();
-                    child->fill(item, true);
-                    addChild(std::move(child));
+                for ( const auto& child : m_children )
+                {
+                    if ( child->property()->name() == key ) {
+                        child->setEnabled(true);
+                        success = child->fill(value, true);
+                    }
+                    else
+                        child->setEnabled(false);
                 }
-        } break;
+            } break;
 
-        default: set(value.toVariant());
+            case Type::Composite: {
+                success = std::accumulate(m_children.cbegin(), m_children.cend(), true,
+                    [object = value.toObject()]
+                    (bool res, const auto& child){
+                        return res & child->fill(object[child->m_property->name()], child->property()->isRequired());
+                    }
+                );
+            } break;
+
+            case Type::Array: {
+                QJsonArray array = value.toArray();
+                m_children.clear();
+                if ( m_property->m_prototype )
+                {
+                    success = std::accumulate(array.cbegin(), array.cend(), true,
+                        [this](bool res, const auto& value){
+                            auto child = m_property->m_prototype->defaultValue()->clone();
+                            bool result = res & child->fill(value, true);
+                            addChild(std::move(child));
+                            return result;
+                        }
+                    );
+                }
+            } break;
+
+            default:
+                set(value.toVariant());
+                success = true;
+        }
+        m_enabled = true;
     }
-    m_enabled = true;
+
+    return success;
 }
 
 ValuePtr Property::Value::clone() noexcept

@@ -8,7 +8,7 @@
 class CompactArrayFace : public Editor {
     Q_OBJECT
 public:
-    CompactArrayFace(Property::Value* value, QWidget* parent);
+    CompactArrayFace(const BaseForm& form, Property::Value* value, QWidget* parent);
     
     void fill() override;
     

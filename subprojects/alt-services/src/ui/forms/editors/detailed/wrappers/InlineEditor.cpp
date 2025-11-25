@@ -24,7 +24,7 @@ EditorTitle* InlineEditor::title()
     return ui->title;
 }
 
-QWidget* InlineEditor::makeVisible(const Property::Value::ValidationInfo* info, int level)
+QWidget* InlineEditor::makeVisible(const Property::Value* value)
 {
     return ui->title;
 }

@@ -180,13 +180,9 @@ bool Controller::updateStatus(Service* service)
     qDebug() << service->name() << "status:" << data;
 
     if ( code )
-    {
         qDebug() << "non-zero" << service->name() << "Status() exit code!";
-        emit endRefresh();
-        return false;
-    }
 
-    service->setStatus(data);
+    service->setStatus(code, data);
 
     auto index = std::find_if(
         d->m_services.begin(),
@@ -200,67 +196,95 @@ bool Controller::updateStatus(Service* service)
     }
 
     emit endRefresh();
-    return true;
+    return code == 0;
 }
 
-
-bool Controller::call(Service* service, Parameter::Context ctx)
+bool Controller::call(const Action& action)
 {
-    QJsonObject parameters = service->getParameters(ctx);
-
-    if ( service->forceDeploy() )
-        parameters["force_deploy"] = true;
-
-    auto serializedParameters = QJsonDocument{parameters}.toJson(QJsonDocument::Compact).append('\n');
+    auto serializedParameters = QJsonDocument{action.parameters}.toJson(QJsonDocument::Compact).append('\n');
     qDebug() << serializedParameters;
 
     using DBusMethod = bool(DBusProxy::*)(const QString&, const QString&);
     static const std::map<Parameter::Context, DBusMethod> actions_
-        {
-            { Parameter::Context::Deploy,    &DBusProxy::deploy    },
-            { Parameter::Context::Undeploy,  &DBusProxy::undeploy  },
-            { Parameter::Context::Configure, &DBusProxy::configure },
-            { Parameter::Context::Backup,    &DBusProxy::backup    },
-            { Parameter::Context::Restore,   &DBusProxy::restore   },
-        };
+    {
+        { Parameter::Context::Deploy,    &DBusProxy::deploy    },
+        { Parameter::Context::Undeploy,  &DBusProxy::undeploy  },
+        { Parameter::Context::Configure, &DBusProxy::configure },
+        { Parameter::Context::Backup,    &DBusProxy::backup    },
+        { Parameter::Context::Restore,   &DBusProxy::restore   },
+    };
 
-    bool success = false;
+    bool success = true;
     ScopedLogCapture capture(this);
 
-    try {
-        auto& method = actions_.at(ctx);
-        emit beginRefresh();
-        success = std::invoke(actions_.at(ctx), &d->m_datasource,
-                              service->dbusPath(), serializedParameters);
-        emit endRefresh();
+    if (action.action == Parameter::Context::Diag)
+    {
+        /*
+         *  For diag-only action logic is simple,
+         *  since it does not alter service state
+         */
+
+        success = diag(
+            action.service,
+
+            action.service->isDeployed()
+                ? DiagTool::Test::Mode::PostDeploy
+                : DiagTool::Test::Mode::PreDeploy,
+
+            action.options.prediag
+                ? action.options.prediagTests
+                : action.options.postdiagTests
+        );
     }
-    catch (std::out_of_range&) { qCritical() << "not implemented"; }
+    else
+    {
+        /*
+         *  Any other action alters service state.
+         *  We need to re-read Status() after that.
+         *  Also, optional pre/post -diagnostics may be enabled
+         */
+        try {
+            auto& method = actions_.at(action.action);
+
+            emit beginRefresh();
+
+            if ( action.options.prediag )
+                success = diag(action.service, DiagTool::Test::Mode::PreDeploy, action.options.prediagTests);
+
+            if ( success )
+            {
+                emit actionBegin(actionName(action.action));
+                bool result = std::invoke( actions_.at(action.action), &d->m_datasource,
+                                          action.service->dbusPath(), serializedParameters );
+                emit actionEnd(result);
+                success = result;
+                updateStatus(action.service);
+            }
+
+            if ( success && action.options.autostart )
+            {
+                emit actionBegin(tr("Starting service"));
+                emit actionEnd(start(action.service));
+            }
+
+            if (success && action.options.postdiag)
+                success = diag(action.service, DiagTool::Test::Mode::PostDeploy, action.options.postdiagTests);
+
+
+            emit endRefresh();
+        }
+        catch (std::out_of_range&) { qCritical() << "not implemented"; }
+    }
 
     if ( !success ) {
         // Logs are visible in the wizard execution page.
-        QMessageBox::critical(QApplication::activeWindow(), tr("Error"), tr("%1 failed.").arg(actionName(ctx)));
-    } else {
-        switch (ctx) {
-            case Parameter::Context::Configure:
-                emit stdout(tr("Configuration completed successfully."));
-                break;
-            case Parameter::Context::Backup:
-                emit stdout(tr("Backup completed successfully."));
-                break;
-            case Parameter::Context::Restore:
-                emit stdout(tr("Restore completed successfully."));
-                break;
-            default:
-                break;
-        }
+        QMessageBox::critical(QApplication::activeWindow(), tr("Error"), tr("%1 failed.").arg(actionName(action.action)));
     }
-
-    updateStatus(service);
 
     return success;
 }
 
-void Controller::start(Service* service)
+bool Controller::start(Service* service)
 {
     ScopedLogCapture capture(this);
 
@@ -271,9 +295,10 @@ void Controller::start(Service* service)
     emit endRefresh();
 
     updateStatus(service);
+    return service->isStarted();
 }
 
-void Controller::stop(Service* service)
+bool Controller::stop(Service* service)
 {
     ScopedLogCapture capture(this);
 
@@ -284,11 +309,13 @@ void Controller::stop(Service* service)
     emit endRefresh();
 
     updateStatus(service);
+    return !service->isStarted();
 }
 
-bool Controller::diag(Service* service, bool post)
+bool Controller::diag(Service* service, DiagTool::Test::Mode mode, const Action::TestSet& testSet)
 {
     emit beginRefresh();
+    emit actionBegin(mode == DiagTool::Test::Mode::PreDeploy ? tr("Premilinary diagnostics") : tr("Post-diagnostics"));
 
     d->m_datasource.clearEnv();
 
@@ -327,21 +354,39 @@ bool Controller::diag(Service* service, bool post)
             d->m_datasource.setEnv( parameter->name(), env );
         }
     }
-    d->m_datasource.setEnv("service_deploy_mode", post ? "post" : "pre");
+    d->m_datasource.setEnv("service_deploy_mode", mode == DiagTool::Test::Mode::PostDeploy ? "post" : "pre");
 
     std::vector<Parameter*> parameters;
     for ( const auto& parameter : service->parameters() )
         if ( parameter->contexts().testFlag(Parameter::Context::Diag) )
             parameters.push_back(parameter.get());
 
-    auto mode = post? DiagTool::Test::PostDeploy : DiagTool::Test::PreDeploy;
+    bool success = std::accumulate(service->diagTools().cbegin(), service->diagTools().cend(), true,
+    [this, mode, &testSet](bool res, const auto& tool) -> bool
+    {
+        if ( testSet.hasTool(tool.get()) || tool->hasRequiredTests(mode) )
+        {
+            emit actionBegin(tr("Diagnostic tool \"%1\"").arg(tool->name()));
 
-    bool success = std::all_of( service->diagTools().cbegin(), service->diagTools().cend(), [this, mode](const auto& tool) {
-        return std::all_of(tool->tests().cbegin(), tool->tests().cend(), [this, &tool, mode](const auto& test){
-            return !test->isEnabled(mode) || d->m_datasource.runDiag(tool->path(), test->name(), tool->session());
-        });
+            bool success = std::accumulate(tool->tests().cbegin(), tool->tests().cend(), true,
+            [this, &tool, mode, &testSet](bool res, const auto& test) -> bool
+            {
+                if (!test->required().testFlag(mode) && !testSet.hasTest(test.get()) )
+                    return res;
+
+                emit actionBegin(tr("Running test \"%1\"").arg(test->name()));
+                bool result = d->m_datasource.runDiag(tool->path(), test->name(), tool->session());
+                emit actionEnd(result);
+                return res & result;
+            });
+
+            emit actionEnd(success);
+            return success & res;
+        }
+        return res;
     });
 
+    emit actionEnd(success);
     emit endRefresh();
     return success;
 }
