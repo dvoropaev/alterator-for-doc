@@ -218,6 +218,7 @@ struct ServicesPlayPlan
     gboolean autostart;
     gboolean has_force;
     gboolean force;
+    GString *diag_log_buffer;
 };
 
 static void services_play_plan_diag_clear(ServicesPlayPlanDiag *diag);
@@ -234,6 +235,12 @@ static int services_module_get_service_tests(AlteratorCtlServicesModule *module,
                                              const GPtrArray *diag_env_vars,
                                              gboolean all_modes,
                                              GHashTable **result);
+
+static int services_module_maybe_save_diag_log(AlteratorCtlServicesModule *module,
+                                               const gchar *service_str_id,
+                                               const gchar *phase_label,
+                                               const gchar *phase_id,
+                                               gboolean yes);
 
 static int services_module_is_deployed_from_status_ctx(AlteratorCtlServicesModule *module,
                                                        alteratorctl_ctx_t **status_ctx,
@@ -288,6 +295,8 @@ static void services_play_plan_free(ServicesPlayPlan *plan)
     g_free(plan->service_name);
     services_play_plan_diag_clear(&plan->prediag);
     services_play_plan_diag_clear(&plan->postdiag);
+    if (plan->diag_log_buffer)
+        g_string_free(plan->diag_log_buffer, TRUE);
     g_free(plan);
 }
 
@@ -452,9 +461,10 @@ static int services_module_play_prepare_plan(AlteratorCtlServicesModule *module,
     if (!service_name || !options_obj)
         goto end;
 
-    plan               = g_new0(ServicesPlayPlan, 1);
-    plan->service_name = g_strdup(service_name);
-    plan->command_id   = command_id;
+    plan                  = g_new0(ServicesPlayPlan, 1);
+    plan->service_name    = g_strdup(service_name);
+    plan->command_id      = command_id;
+    plan->diag_log_buffer = g_string_new(NULL);
 
     has_plan_state |= services_module_play_parse_diag_section(options_obj, "prediag", &plan->prediag);
     has_plan_state |= services_module_play_parse_diag_section(options_obj, "postdiag", &plan->postdiag);
@@ -545,6 +555,17 @@ end:
 
 static gboolean yes;
 
+typedef enum
+{
+    SERVICES_PLAY_PROMPT_YES,
+    SERVICES_PLAY_PROMPT_NO,
+    SERVICES_PLAY_PROMPT_NONTTY
+} ServicesPlayPromptResult;
+
+static ServicesPlayPromptResult services_module_prompt_yes_no_play(const gchar *auto_yes_message,
+                                                                   const gchar *prompt_message,
+                                                                   gboolean yes_flag);
+
 static int services_module_play_run_diag(AlteratorCtlServicesModule *module,
                                          const gchar *service_str_id,
                                          ServicesPlayPlanDiag *diag,
@@ -559,6 +580,11 @@ static int services_module_play_run_diag(AlteratorCtlServicesModule *module,
 
     if (!phase_label)
         phase_label = _("playfile");
+
+    const gchar *phase_id = confirm_on_fail ? "prediag" : "postdiag";
+
+    if (module->play_plan && module->play_plan->diag_log_buffer)
+        g_string_truncate(module->play_plan->diag_log_buffer, 0);
 
     g_print(_("Running %s diagnostics requested in playfile for service \"%s\".\n"), phase_label, service_str_id);
 
@@ -783,6 +809,16 @@ static int services_module_play_run_diag(AlteratorCtlServicesModule *module,
                 continue;
 
             g_print(_("Running test \"%s\" from \"%s\".\n"), test_name, tool_name);
+
+            if (module->play_plan && module->play_plan->diag_log_buffer
+                && g_strcmp0(module->play_plan->service_name, service_str_id) == 0)
+            {
+                g_string_append_printf(module->play_plan->diag_log_buffer,
+                                       _("Running test \"%s\" from \"%s\".\n"),
+                                       test_name,
+                                       tool_name);
+            }
+
             int test_result = services_module_run_test(module,
                                                        service_str_id,
                                                        selection->path ? selection->path : tool_name,
@@ -806,41 +842,22 @@ static int services_module_play_run_diag(AlteratorCtlServicesModule *module,
 
         if (confirm_on_fail)
         {
-            if (yes)
-            {
-                g_print(_("Do you want to continue? [y/N] y\n"));
-            }
-            else if (isatty_safe(STDIN_FILENO) && isatty_safe(STDOUT_FILENO))
-            {
-                g_print(_("Do you want to continue? [y/N] "));
-                fflush(stdout);
+            ServicesPlayPromptResult prompt_result
+                = services_module_prompt_yes_no_play(_("Do you want to continue? [y/N] y\n"),
+                                                     _("Do you want to continue? [y/N] "),
+                                                     yes);
 
-                gchar response_char = 'N';
-                if (scanf("%c", &response_char) != 1)
-                    response_char = 'N';
-                else if (response_char == '\n')
-                    response_char = 'N';
-                else
-                {
-                    int flush;
-                    while ((flush = getchar()) != '\n' && flush != EOF)
-                        ;
-                }
-                g_print("\n");
-
-                if (response_char != 'y' && response_char != 'Y')
-                {
+            if (prompt_result != SERVICES_PLAY_PROMPT_YES)
+            {
+                if (prompt_result == SERVICES_PLAY_PROMPT_NO)
                     g_print(_("Aborted.\n"));
-                    ERR_EXIT();
-                }
-            }
-            else
-            {
-                g_print(_("To confirm the operation, repeat the input with the --yes flag.\n"));
                 ERR_EXIT();
             }
         }
         // If confirm_on_fail is FALSE (postdiag), do not prompt or abort; just continue.
+
+        if (ret == 0)
+            services_module_maybe_save_diag_log(module, service_str_id, phase_label, phase_id, yes);
     }
 
 end:
@@ -858,6 +875,113 @@ end:
 
     g_free(service_path);
 
+    return ret;
+}
+
+static ServicesPlayPromptResult services_module_prompt_yes_no_play(const gchar *auto_yes_message,
+                                                                   const gchar *prompt_message,
+                                                                   gboolean yes_flag)
+{
+    if (yes_flag)
+    {
+        g_print("%s", auto_yes_message);
+        return SERVICES_PLAY_PROMPT_YES;
+    }
+
+    if (!(isatty_safe(STDIN_FILENO) && isatty_safe(STDOUT_FILENO)))
+    {
+        g_print("%s", _("To confirm the operation, repeat the input with the --yes flag.\n"));
+        return SERVICES_PLAY_PROMPT_NONTTY;
+    }
+
+    g_print("%s", prompt_message);
+    fflush(stdout);
+
+    gchar response_char = 'N';
+    if (scanf("%c", &response_char) != 1)
+        response_char = 'N';
+    else if (response_char == '\n')
+        response_char = 'N';
+    else
+    {
+        int flush;
+        while ((flush = getchar()) != '\n' && flush != EOF)
+            ;
+    }
+    g_print("\n");
+
+    return (response_char == 'y' || response_char == 'Y') ? SERVICES_PLAY_PROMPT_YES : SERVICES_PLAY_PROMPT_NO;
+}
+
+static int services_module_maybe_save_diag_log(AlteratorCtlServicesModule *module,
+                                               const gchar *service_str_id,
+                                               const gchar *phase_label,
+                                               const gchar *phase_id,
+                                               gboolean yes)
+{
+    int ret = 0;
+
+    if (!module || !module->play_plan || !service_str_id)
+        goto end;
+
+    ServicesPlayPlan *plan = module->play_plan;
+    if (!plan || g_strcmp0(plan->service_name, service_str_id) != 0)
+        goto end;
+
+    if (!plan->diag_log_buffer || plan->diag_log_buffer->len == 0)
+        goto end;
+
+    if (!phase_id)
+        phase_id = "diag";
+
+    if (!phase_label)
+        phase_label = _("diagnostics");
+
+    ServicesPlayPromptResult prompt_result
+        = services_module_prompt_yes_no_play(_("Do you want to save diagnostics log to a file? [y/N] y\n"),
+                                             _("Do you want to save diagnostics log to a file? [y/N] "),
+                                             yes);
+    if (prompt_result != SERVICES_PLAY_PROMPT_YES)
+        goto end;
+
+    /* Auto-generate filename: servicename-phase-ISO8601.log */
+    GDateTime *now = g_date_time_new_now_local();
+    if (!now)
+        goto end;
+
+    gchar *timestamp = g_date_time_format(now, "%Y-%m-%dT%H:%M:%S");
+    g_date_time_unref(now);
+    if (!timestamp)
+        goto end;
+
+    gchar *path = g_strdup_printf("%s-%s-%s.log", service_str_id, phase_id, timestamp);
+    g_free(timestamp);
+    if (!path)
+        goto end;
+
+    GString *file_buf = g_string_new(NULL);
+    if (!file_buf)
+        goto end;
+
+    g_string_append_printf(file_buf, _("Diagnostics log for service \"%s\" (%s)\n\n"), service_str_id, phase_label);
+
+    g_string_append_len(file_buf, plan->diag_log_buffer->str, plan->diag_log_buffer->len);
+
+    GError *error = NULL;
+    if (!g_file_set_contents(path, file_buf->str, file_buf->len, &error))
+    {
+        g_printerr(_("Failed to save diagnostics log to %s: %s\n"), path, error->message);
+        g_clear_error(&error);
+        g_string_free(file_buf, TRUE);
+        g_free(path);
+        goto end;
+    }
+
+    g_print(_("Diagnostics log has been saved to %s.\n"), path);
+    g_string_free(file_buf, TRUE);
+    g_free(path);
+
+end:
     return ret;
 }
 
@@ -980,16 +1104,16 @@ static int services_module_status_subcommand(AlteratorCtlServicesModule *module,
 static int services_module_start_subcommand(AlteratorCtlServicesModule *module, alteratorctl_ctx_t **ctx);
 static int services_module_stop_subcommand(AlteratorCtlServicesModule *module, alteratorctl_ctx_t **ctx);
 
-static int services_module_confirm_execution(AlteratorCtlServicesModule *module,
-                                             alteratorctl_ctx_t **ctx,
-                                             gint selected_subcommand,
-                                             const gchar *command_name,
-                                             const gchar *service_name,
-                                             gchar **argv,
-                                             gint actual_argc,
-                                             GArray *options,
-                                             gboolean *is_accepted,
-                                             gboolean *yes_flag);
+static gboolean services_module_confirm_execution(AlteratorCtlServicesModule *module,
+                                                  alteratorctl_ctx_t **ctx,
+                                                  gint selected_subcommand,
+                                                  const gchar *command_name,
+                                                  const gchar *service_name,
+                                                  gchar **argv,
+                                                  gint actual_argc,
+                                                  GArray *options,
+                                                  gboolean *is_accepted,
+                                                  gboolean *yes_flag);
 
 static int services_module_handle_results(AlteratorCtlServicesModule *module, alteratorctl_ctx_t **ctx);
 static int services_module_backup_handle_result(AlteratorCtlServicesModule *module, alteratorctl_ctx_t **ctx);
@@ -1878,7 +2002,9 @@ static int fill_node_recursive(AlteratorCtlServicesModule *module,
         }
         else
         {
-            g_printerr(_("Internal error: invalid parameter type: '%s'.\n"), type_str);
+            gchar *path_str = g_strjoinv(".", path);
+            g_printerr(_("Internal error: invalid type of parameter '%s': '%s'.\n"), path_str, type_str);
+            g_free(path_str);
             ERR_EXIT();
         }
 
@@ -1969,7 +2095,9 @@ static int fill_node_recursive(AlteratorCtlServicesModule *module,
             int index  = g_ascii_strtoll(path[level + 1], &end, 10);
             if (end == path[level + 1] || index < 0)
             {
-                g_printerr(_("%s: invalid index %s.\n"), g_strjoinv(".", path), path[level + 1]);
+                gchar *path_str = g_strjoinv(".", path);
+                g_printerr(_("%s: invalid index %s.\n"), path_str, path[level + 1]);
+                g_free(path_str);
                 ERR_EXIT();
             }
 
@@ -1984,7 +2112,9 @@ static int fill_node_recursive(AlteratorCtlServicesModule *module,
         }
         else
         {
-            g_printerr(_("Internal error: invalid value type: '%s'.\n"), type_str);
+            gchar *path_str = g_strjoinv(".", path);
+            g_printerr(_("Internal error: invalid type of parameter '%s': '%s'.\n"), path_str, type_str);
+            g_free(path_str);
             ERR_EXIT();
         }
     }
@@ -3115,26 +3245,14 @@ static gint get_command_id_from_context(const gchar *context)
     return -1;
 }
 
-static int services_module_parse_contextual_arguments(AlteratorCtlServicesModule *module,
-                                                      const gchar *service_name,
-                                                      int command,
-                                                      int *argc,
-                                                      char **argv,
-                                                      alteratorctl_ctx_t *ctx,
-                                                      GArray **result)
+static int services_module_build_param_options(AlteratorCtlServicesModule *module,
+                                               const gchar *service_name,
+                                               int command,
+                                               GArray **result)
 {
     int ret                                   = 0;
-    GString *params_options                   = g_string_new("");
     AlteratorCtlModuleInfoParser *info_parser = (AlteratorCtlModuleInfoParser *) module->gdbus_source->info_parser;
     gchar *context                            = NULL;
-    GError *error                             = NULL;
-    GOptionContext *option_context            = NULL;
-    GOptionGroup *contextual_params           = NULL;
-    JsonNode *defaults                        = NULL;
-    JsonNode *current_defaults                = NULL;
-    JsonNode *defaults_filtered               = NULL;
-    JsonNode *current_defaults_filtered       = NULL;
-    alteratorctl_ctx_t *service_status_ctx    = NULL;
 
     context = get_context_from_command_id(command);
 
@@ -3167,14 +3285,13 @@ static int services_module_parse_contextual_arguments(AlteratorCtlServicesModule
                                                           NULL);
         if (force_deploy_allowed && force_deploy_allowed->bool_value)
         {
-            // Allocating memory on the heap for services_module_parameter_entry_clear
-            GOptionEntry force_e = {g_strdup("force-deploy"), // Move to option from parameter section!!!!
+            GOptionEntry force_e = {g_strdup("force-deploy"),
                                     'f',
                                     G_OPTION_FLAG_NONE,
                                     G_OPTION_ARG_NONE,
                                     &force_deploy,
-                                    g_strdup("Force deploy"),  // rewrite description
-                                    g_strdup("FORCE_DEPLOY")}; // rewrite arg-description
+                                    g_strdup("Force deploy"),
+                                    g_strdup("FORCE_DEPLOY")};
             ParamEntry force     = {NULL, 0, 0, force_e, FALSE, FALSE};
 
             g_array_append_val(*result, force);
@@ -3184,6 +3301,35 @@ static int services_module_parse_contextual_arguments(AlteratorCtlServicesModule
     for (GNode *parameter = parameters->children; parameter != NULL; parameter = parameter->next)
         services_module_build_contextual_arguments_recursive(
             module, result, parameters, parameter, context, NULL, NULL, NULL, FALSE, FALSE, FALSE);
+
+end:
+    return ret;
+}
+
+static int services_module_parse_contextual_arguments(AlteratorCtlServicesModule *module,
+                                                      const gchar *service_name,
+                                                      int command,
+                                                      int *argc,
+                                                      char **argv,
+                                                      alteratorctl_ctx_t *ctx,
+                                                      GArray **result)
+{
+    int ret                                = 0;
+    GString *params_options                = g_string_new("");
+    gchar *context                         = NULL;
+    GError *error                          = NULL;
+    GOptionContext *option_context         = NULL;
+    GOptionGroup *contextual_params        = NULL;
+    JsonNode *defaults                     = NULL;
+    JsonNode *current_defaults             = NULL;
+    JsonNode *defaults_filtered            = NULL;
+    JsonNode *current_defaults_filtered    = NULL;
+    alteratorctl_ctx_t *service_status_ctx = NULL;
+
+    context = get_context_from_command_id(command);
+
+    if (services_module_build_param_options(module, service_name, command, result) < 0)
+        ERR_EXIT();
 
     option_context = g_option_context_new(context);
     g_option_context_set_ignore_unknown_options(option_context, TRUE);
@@ -3854,9 +4000,8 @@ static int services_module_confirm_execution(AlteratorCtlServicesModule *module,
             g_string_append_printf(options_line, " %s", argv[i]);
     const gchar *options_suffix = options_line->len ? options_line->str : "";
 
-    header_text         = g_string_new(NULL);
-    display_text        = g_string_new(NULL);
-    gchar response_char = assume_yes ? 'y' : 'N';
+    header_text  = g_string_new(NULL);
+    display_text = g_string_new(NULL);
 
     if (!is_missing_required && !assume_yes)
     {
@@ -3887,55 +4032,25 @@ static int services_module_confirm_execution(AlteratorCtlServicesModule *module,
     if (output_str)
         g_string_append(display_text, output_str->str);
 
+    gboolean accepted = FALSE;
+
     if (!assume_yes)
     {
-        g_string_append(display_text, _("Do you want to continue? [y/N] "));
         g_print("%s", display_text->str);
 
-        gchar is_accept_symbol = 'N';
-        if (isatty_safe(STDOUT_FILENO))
-        {
-            if (!isatty_safe(STDIN_FILENO))
-            {
-                FILE *tty = fopen("/dev/tty", "r");
-                if (tty)
-                {
-                    is_accept_symbol = getc(tty);
-                    g_print("\n");
-                    fclose(tty);
-                }
-            }
-            else
-            {
-                if (scanf("%c", &is_accept_symbol) != 1)
-                    is_accept_symbol = 'N';
-                else if (is_accept_symbol == '\n')
-                    is_accept_symbol = 'N';
-                else
-                {
-                    int flush;
-                    while ((flush = getchar()) != '\n' && flush != EOF)
-                        ;
-                }
-                g_print("\n");
-            }
-        }
-        else
-            g_print(_("To confirm the operation, repeat the input with the --yes flag.\n"));
+        ServicesPlayPromptResult prompt_result
+            = services_module_prompt_yes_no_play(_("Do you want to continue? [y/N] y\n"),
+                                                 _("Do you want to continue? [y/N] "),
+                                                 FALSE);
 
-        response_char = is_accept_symbol;
-        g_string_append_c(display_text, response_char);
-        g_string_append_c(display_text, '\n');
+        accepted = (prompt_result == SERVICES_PLAY_PROMPT_YES);
     }
     else
     {
         g_string_append(display_text, _("Do you want to continue? [y/N] y\n"));
         g_print("%s", display_text->str);
+        accepted = TRUE;
     }
-
-    gboolean accepted = assume_yes;
-    if (!assume_yes)
-        accepted = (response_char == 'Y' || response_char == 'y');
 
     if (accepted)
         *is_accepted = TRUE;
@@ -4162,6 +4277,10 @@ static int services_module_parse_arguments(
         // Stringify parameters JSON (with passwords injected)
         play_json_text_parameters = services_module_json_params_to_text(module->json, play_service_from_json);
         if (!play_json_text_parameters)
+            ERR_EXIT();
+
+        // Build parameter options for confirmation table
+        if (services_module_build_param_options(module, play_service_from_json, selected_subcommand, &options) < 0)
             ERR_EXIT();
 
         // Map play action to command and create context
@@ -10436,13 +10555,18 @@ static int services_module_run_test(AlteratorCtlServicesModule *module,
         < 0)
         ERR_EXIT();
 
-    gchar *additional_str_data = g_strdup(bus_type == G_BUS_TYPE_SYSTEM ? "system" : "session");
-    diag_ctx                   = alteratorctl_ctx_init_diag(DIAG_RUN_TOOL_TEST_PRIV,
-                                          diag_tool_name,
-                                          test_name,
-                                          NULL,
-                                          NULL,
-                                          additional_str_data);
+    GString *diag_log_buffer = NULL;
+    if (module->play_plan && g_strcmp0(module->play_plan->service_name, service_str_id) == 0)
+        diag_log_buffer = module->play_plan->diag_log_buffer;
+
+    DiagRunAdditionalData *run_data = g_new0(DiagRunAdditionalData, 1);
+    if (!run_data)
+        ERR_EXIT();
+
+    run_data->bus_hint   = g_strdup(bus_type == G_BUS_TYPE_SYSTEM ? "system" : "session");
+    run_data->log_buffer = diag_log_buffer;
+
+    diag_ctx = alteratorctl_ctx_init_diag(DIAG_RUN_TOOL_TEST_PRIV, diag_tool_name, test_name, NULL, NULL, run_data);
 
     if (!diag_gdbus_source)
     {
@@ -10468,6 +10592,12 @@ end:
     {
         diag_ctx->additional_data = NULL;
         alteratorctl_ctx_free(diag_ctx);
+    }
+
+    if (run_data)
+    {
+        g_free(run_data->bus_hint);
+        g_free(run_data);
     }
 
     if (diag_module)

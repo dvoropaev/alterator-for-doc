@@ -104,6 +104,7 @@ static diag_data_t *diag_module_data_new(AlteratorGDBusSource *gdbus_source,
                                          GNode *diag_node,
                                          diag_module_elem_type type);
 static int diag_module_data_free(diag_data_t *data);
+static gint diag_module_simple_sort_result(gconstpointer a, gconstpointer b);
 static gint diag_module_sort_result(gconstpointer a, gconstpointer b, gpointer user_data);
 
 static int diag_module_info_subcommand(AlteratorCtlDiagModule *module, alteratorctl_ctx_t **ctx);
@@ -136,10 +137,15 @@ static int diag_module_get_and_run_test(AlteratorCtlDiagModule *module,
                                         AlteratorGDBusSource *source,
                                         const gchar *diag_tool_str_id,
                                         const gchar *test,
+                                        DiagRunAdditionalData *run_data,
                                         int *result);
 
-static int diag_module_run_test(
-    AlteratorCtlDiagModule *module, AlteratorGDBusSource *source, const gchar *path, const gchar *test, int *result);
+static int diag_module_run_test(AlteratorCtlDiagModule *module,
+                                AlteratorGDBusSource *source,
+                                const gchar *path,
+                                const gchar *test,
+                                DiagRunAdditionalData *run_data,
+                                int *result);
 
 static int diag_module_get_file_suffix(AlteratorGDBusSource *source, const gchar *path, gchar **file_suffix);
 
@@ -450,6 +456,13 @@ static int diag_module_data_free(diag_data_t *data)
 
 end:
     return ret;
+}
+
+static gint diag_module_simple_sort_result(gconstpointer a, gconstpointer b)
+{
+    const gchar *first_comparable_data  = (const gchar *) ((GPtrArray *) a)->pdata;
+    const gchar *second_comparable_data = (const gchar *) ((GPtrArray *) b)->pdata;
+    return g_utf8_collate(first_comparable_data, second_comparable_data);
 }
 
 static gint diag_module_sort_result(gconstpointer a, gconstpointer b, gpointer user_data)
@@ -1094,6 +1107,7 @@ static int diag_module_run_tool_test_subcommand(AlteratorCtlDiagModule *module, 
     gboolean object_exist_on_session_bus = FALSE;
     AlteratorGDBusSource *source         = NULL;
     gboolean is_root                     = alterator_ctl_is_root();
+    DiagRunAdditionalData *run_data      = (DiagRunAdditionalData *) ((*ctx) ? (*ctx)->additional_data : NULL);
 
     if (!module)
     {
@@ -1120,14 +1134,14 @@ static int diag_module_run_tool_test_subcommand(AlteratorCtlDiagModule *module, 
         ERR_EXIT();
     }
 
-    if ((*ctx)->additional_data && strlen((gchar *) (*ctx)->additional_data))
+    if (run_data && run_data->bus_hint && strlen(run_data->bus_hint))
     {
-        if (g_strcmp0((gchar *) (*ctx)->additional_data, "system") == 0)
+        if (g_strcmp0(run_data->bus_hint, "system") == 0)
         {
             both_buses = FALSE;
             system_bus = TRUE;
         }
-        else if (g_strcmp0((gchar *) (*ctx)->additional_data, "session") == 0)
+        else if (g_strcmp0(run_data->bus_hint, "session") == 0)
         {
             both_buses  = FALSE;
             session_bus = TRUE;
@@ -1164,7 +1178,8 @@ static int diag_module_run_tool_test_subcommand(AlteratorCtlDiagModule *module, 
         {
             if (!(*ctx)->additional_data)
                 g_print("%s", system_bus_prefix);
-            if (diag_module_get_and_run_test(module, module->gdbus_system_source, diag_tool_str_id, test, result) < 0)
+            if (diag_module_get_and_run_test(module, module->gdbus_system_source, diag_tool_str_id, test, run_data, result)
+                < 0)
                 ERR_EXIT();
         }
 
@@ -1176,7 +1191,13 @@ static int diag_module_run_tool_test_subcommand(AlteratorCtlDiagModule *module, 
                     g_print("\n");
                     g_print("%s", session_bus_prefix);
                 }
-            if (diag_module_get_and_run_test(module, module->gdbus_session_source, diag_tool_str_id, test, result) < 0)
+            if (diag_module_get_and_run_test(module,
+                                             module->gdbus_session_source,
+                                             diag_tool_str_id,
+                                             test,
+                                             run_data,
+                                             result)
+                < 0)
                 ERR_EXIT();
         }
 
@@ -1207,7 +1228,7 @@ static int diag_module_run_tool_test_subcommand(AlteratorCtlDiagModule *module, 
 
     if (!(*ctx)->additional_data)
         g_print("%s\n", current_bus_prefix);
-    if (diag_module_get_and_run_test(module, source, diag_tool_str_id, test, result) < 0)
+    if (diag_module_get_and_run_test(module, source, diag_tool_str_id, test, run_data, result) < 0)
         ERR_EXIT();
 
 end:
@@ -1284,7 +1305,8 @@ static int diag_module_run_tool_subcommand(AlteratorCtlDiagModule *module, alter
         if (object_exist_on_system_bus)
         {
             g_print("%s", system_bus_prefix);
-            if (diag_module_get_and_run_test(module, module->gdbus_system_source, diag_tool_str_id, NULL, result) < 0)
+            if (diag_module_get_and_run_test(module, module->gdbus_system_source, diag_tool_str_id, NULL, NULL, result)
+                < 0)
                 ERR_EXIT();
         }
 
@@ -1294,7 +1316,8 @@ static int diag_module_run_tool_subcommand(AlteratorCtlDiagModule *module, alter
                 g_print("\n");
 
             g_print("%s", session_bus_prefix);
-            if (diag_module_get_and_run_test(module, module->gdbus_session_source, diag_tool_str_id, NULL, result) < 0)
+            if (diag_module_get_and_run_test(module, module->gdbus_session_source, diag_tool_str_id, NULL, NULL, result)
+                < 0)
                 ERR_EXIT();
         }
 
@@ -1318,7 +1341,7 @@ static int diag_module_run_tool_subcommand(AlteratorCtlDiagModule *module, alter
     }
 
     g_print("%s\n", current_bus_prefix);
-    if (diag_module_get_and_run_test(module, source, diag_tool_str_id, NULL, result) < 0)
+    if (diag_module_get_and_run_test(module, source, diag_tool_str_id, NULL, NULL, result) < 0)
         ERR_EXIT();
 
 end:
@@ -2182,6 +2205,7 @@ static void diag_module_run_stdout_signal_handler(GDBusConnection *connection,
                                                   GVariant *parameters,
                                                   gpointer user_data)
 {
+    DiagRunAdditionalData *run_data = (DiagRunAdditionalData *) user_data;
     for (int i = 0; i < g_variant_n_children(parameters); i++)
     {
         GVariant *tmp = g_variant_get_child_value(parameters, i);
@@ -2191,6 +2215,9 @@ static void diag_module_run_stdout_signal_handler(GDBusConnection *connection,
         str = g_variant_get_string(tmp, NULL);
 
         g_print("%s\n", str);
+
+        if (run_data && run_data->log_buffer)
+            g_string_append_printf(run_data->log_buffer, "%s\n", str);
 
         g_variant_unref(tmp);
     }
@@ -2226,16 +2253,23 @@ static int diag_module_get_and_run_test(AlteratorCtlDiagModule *module,
                                         AlteratorGDBusSource *source,
                                         const gchar *diag_tool_str_id,
                                         const gchar *test,
+                                        DiagRunAdditionalData *run_data,
                                         int *result)
 {
-    int ret           = 0;
-    GHashTable *tests = NULL;
-    int exit_code     = 0;
+    int ret                 = 0;
+    GHashTable *tests       = NULL;
+    GPtrArray *sorted_tests = NULL;
+    gchar *diag_tool_path   = diag_tool_str_id[0] != '/'
+                                  ? g_strdup(source->alterator_gdbus_source_get_path_by_name(source,
+                                                                                           diag_tool_str_id,
+                                                                                           DIAG_INTERFACE_NAME))
+                                  : g_strdup(diag_tool_str_id);
+    int exit_code           = 0;
 
     // run all tests
     if (!test)
     {
-        if (diag_module_get_list_of_tests(module, source, diag_tool_str_id, &tests) < 0)
+        if (diag_module_get_list_of_tests(module, source, diag_tool_path, &tests) < 0)
         {
             g_printerr(_("Can't get list of tests from object %s.\n"), diag_tool_str_id);
             ERR_EXIT();
@@ -2247,12 +2281,14 @@ static int diag_module_get_and_run_test(AlteratorCtlDiagModule *module,
             ERR_EXIT();
         }
 
-        GHashTableIter iter;
-        gpointer key = NULL, value = NULL;
-        g_hash_table_iter_init(&iter, tests);
-        while (g_hash_table_iter_next(&iter, &key, &value))
+        sorted_tests = g_hash_table_get_keys_as_ptr_array(tests);
+        g_ptr_array_sort(sorted_tests, diag_module_simple_sort_result);
+
+        for (gsize i = 0; i < sorted_tests->len; i++)
         {
-            if (diag_module_run_test(module, source, diag_tool_str_id, (gchar *) key, &exit_code))
+            gchar *test                     = ((gchar **) ((GPtrArray *) sorted_tests->pdata))[i];
+            DiagRunAdditionalData *run_data = g_hash_table_lookup(tests, test);
+            if (diag_module_run_test(module, source, diag_tool_path, test, run_data, &exit_code))
                 ERR_EXIT();
             if (exit_code != 0)
                 *result = exit_code;
@@ -2260,7 +2296,7 @@ static int diag_module_get_and_run_test(AlteratorCtlDiagModule *module,
         goto end;
     }
 
-    if (diag_module_get_list_of_tests(module, source, diag_tool_str_id, &tests) < 0)
+    if (diag_module_get_list_of_tests(module, source, diag_tool_path, &tests) < 0)
     {
         g_printerr(_("Can't get list of tests from object %s.\n"), diag_tool_str_id);
         ERR_EXIT();
@@ -2272,20 +2308,29 @@ static int diag_module_get_and_run_test(AlteratorCtlDiagModule *module,
         ERR_EXIT();
     }
 
-    if (diag_module_run_test(module, source, diag_tool_str_id, test, &exit_code) < 0)
+    if (diag_module_run_test(module, source, diag_tool_str_id, test, run_data, &exit_code) < 0)
         ERR_EXIT();
 
     *result = exit_code;
 
 end:
+    if (sorted_tests)
+        g_ptr_array_unref(sorted_tests);
+
     if (tests)
         g_hash_table_unref(tests);
+
+    g_free(diag_tool_path);
 
     return ret;
 }
 
-static int diag_module_run_test(
-    AlteratorCtlDiagModule *module, AlteratorGDBusSource *source, const gchar *path, const gchar *test, int *result)
+static int diag_module_run_test(AlteratorCtlDiagModule *module,
+                                AlteratorGDBusSource *source,
+                                const gchar *path,
+                                const gchar *test,
+                                DiagRunAdditionalData *run_data,
+                                int *result)
 {
     int ret                            = 0;
     GPtrArray *signals                 = NULL;
@@ -2317,11 +2362,11 @@ static int diag_module_run_test(
 
     stdout_signal->signal_name = DIAG_STDOUT_SIGNAL_NAME;
     stdout_signal->callback    = &diag_module_run_stdout_signal_handler;
-    stdout_signal->user_data   = d_ctx;
+    stdout_signal->user_data   = run_data;
 
     stderr_signal->signal_name = DIAG_STDERR_SIGNAL_NAME;
     stderr_signal->callback    = &diag_module_run_stderr_signal_handler;
-    stderr_signal->user_data   = d_ctx;
+    stderr_signal->user_data   = run_data;
 
     g_ptr_array_add(signals, stdout_signal);
     g_ptr_array_add(signals, stderr_signal);
@@ -2385,6 +2430,9 @@ static int diag_module_run_test(
     const gchar *status_message = test_result == PASS ? _("[PASS]") : (test_result == FAIL ? _("[FAIL]") : _("[WARN]"));
     text_color status_color     = test_result == PASS ? GREEN : (test_result == FAIL ? RED : YELLOW);
     colored_status              = colorize_text(status_message, status_color);
+
+    if (run_data && run_data->log_buffer)
+        g_string_append_printf(run_data->log_buffer, "%s: %s\n", status_message, output_name);
 
     if (test_result == FAIL)
         g_printerr("%s: %s%s\n", colored_status, output_name, module->alterator_ctl_app->arguments->verbose ? "\n" : "");

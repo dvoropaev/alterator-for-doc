@@ -213,7 +213,7 @@ public:
 
                     if ( it != value->children().end() ) {
 
-                        bool newCount = std::count_if(it->get()->children().cbegin(), it->get()->children().cend(),
+                        int newCount = std::count_if(it->get()->children().cbegin(), it->get()->children().cend(),
                                                       [](const auto& val){return !val->property()->isConstant();});
 
 
@@ -435,15 +435,13 @@ CompactForm::CompactForm(const Action& action, QWidget* parent)
         d-> openPersistentEditor(index);
     });
 
-    connect(&d->m_model, &QAbstractItemModel::rowsInserted, [this]{
-        d->closePersistentEditor();
-        d-> openPersistentEditor();
+    connect(&d->m_model, &QAbstractItemModel::rowsAboutToBeRemoved, this, [=](const QModelIndex& parent, int first, int last){
+        for ( int i = first; i <= last; ++i )
+            d->closePersistentEditor(d->m_model.index(i,1, parent));
     });
-    connect(&d->m_model, &QAbstractItemModel::rowsAboutToBeRemoved, this, [=]{
-        d->closePersistentEditor();
-    });
-    connect(&d->m_model, &QAbstractItemModel::rowsRemoved, this, [=]{
-        d-> openPersistentEditor();
+    connect(&d->m_model, &QAbstractItemModel::rowsInserted, this, [=](const QModelIndex& parent, int first, int last){
+        for ( int i = first; i <= last; ++i )
+            d->openPersistentEditor(d->m_model.index(i,1, parent));
     });
 
     connect(&d->m_model, &QAbstractItemModel::dataChanged, [this](const QModelIndex& tl, const QModelIndex& br, const QList<int>& roles){

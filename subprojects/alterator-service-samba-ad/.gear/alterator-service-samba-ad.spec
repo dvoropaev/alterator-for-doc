@@ -1,7 +1,7 @@
 %define _unpackaged_files_terminate_build 1
 %define service service-samba-ad
 Name: alterator-service-samba-ad
-Version: 0.5
+Version: 0.6
 Release: alt1
 
 Summary: Service for Samba AD management
@@ -55,11 +55,13 @@ install -p -D -m644 status.json %buildroot%_localstatedir/alterator/service/samb
 %_localstatedir/alterator/service/samba-ad/status.json
 
 %changelog
-* Tue Nov 11 2025 Evgenii Sozonov <arzdez@altlinux.org> 0.5-alt1
-- Fix start and stop methods. Add restart samba and bind if they
-  was started before deploy
-- Set samba internal dns as default
-- fix demote when dc is dead
+* Wed Nov 26 2025 Evgenii Sozonov <arzdez@altlinux.org> 0.6-alt1
+- Fix start, stop and restart function
+- Fix status
+- Hide bind settings prototype
+- Set samba internal dns as default dns backend
+
+* Tue Sep 30 2025 Evgenii Sozonov <arzdez@altlinux.org> 0.5-alt1
 - Add signals for start and stop methods
 - Fix parsing of enum parameters
 - Add internal parameters. Fix status function

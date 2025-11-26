@@ -27,6 +27,7 @@ BuildRequires: kf6-kitemmodels-devel
 BuildRequires: libqtsingleapplication-qt6-devel
 
 Requires: alterator-interface-service >= 0.2.1
+Requires: alterator-interface-diag >= 0.1.4
 Requires: alterator-manager >= 0.1.25
 Requires: alterator-module-executor >= 0.1.14
 Requires: alterator-entry >= 0.4.5

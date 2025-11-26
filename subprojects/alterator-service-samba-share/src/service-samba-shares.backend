@@ -35,11 +35,15 @@ timeout = 600
 [methods.Start]
 execute = "/usr/bin/service-samba-shares start"
 action_id = "Start"
+stdout_signal_name = "service_stdout_signal"
+stderr_signal_name = "service_stderr_signal"
 timeout = 600
 
 [methods.Stop]
 execute = "/usr/bin/service-samba-shares stop"
 action_id = "Stop"
+stdout_signal_name = "service_stdout_signal"
+stderr_signal_name = "service_stderr_signal"
 timeout = 600
 
 [methods.Backup]
@@ -58,4 +62,3 @@ timeout = 600
 execute = "/usr/bin/service-samba-shares status"
 action_id = "Status"
 stdout_bytes = true
-stdout_json = true

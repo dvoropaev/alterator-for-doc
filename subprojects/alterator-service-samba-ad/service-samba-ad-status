@@ -93,9 +93,9 @@ get_functional_level() {
     local f_level=
     local retval=0
 
-    domain_info="$(samba-tool domain level show)" || retval=1
+    domain_info="$(samba-tool domain level show 2>/dev/null)" 2>/dev/null || retval=1
     if [ $retval -ne 0 ]; then
-        echo "2008_R2"
+        f_level="2008_R2"
     else
         f_level=$(echo "$domain_info" | grep 'Domain function level' | awk -F: '{gsub(/^[ \t]+|[ \t]+$/, "", $2); print $2}')
         if [ "$f_level" = "(Windows) 2008 R2" ]; then
@@ -107,7 +107,7 @@ get_functional_level() {
         fi
     fi
     echo "$f_level"
-    return 0
+    return $retval
 }
 
 get_server_role() {
@@ -234,6 +234,59 @@ update_bind_settings() {
 
     return 0
 }
+
+update_enum_value () {
+    local path="$1"
+    local newkey="$2"
+    local tmp_file=
+    tmp_file=$(mktemp)
+
+    jq --arg p "$path" --arg new "$newkey" '
+        def to_obj:
+            if type == "string" then
+                { (.) : {} }
+            else
+                .
+            end;
+
+        def rename_single($new):
+            . as $obj
+            | ($obj | keys) as $ks
+            | if ($ks | length) == 0 then
+                $obj
+              else
+                ($ks[0]) as $old
+                | reduce ($obj | to_entries[]) as $item
+                     ({}; . +
+                        if $item.key == $old
+                        then { ($new): $item.value }
+                        else { ($item.key): $item.value }
+                        end
+                     )
+              end;
+
+        def path_to_array($p):
+            ($p | ltrimstr(".") | split(".")) ;
+
+        def update_path($path; $new):
+            (getpath($path) // null) as $node
+            | if $node == null then
+                  .  # пути нет — ничего не делаем
+              else
+                  setpath($path;
+                      ($node | to_obj | rename_single($new))
+                  )
+              end;
+
+        (path_to_array($p)) as $pa
+        | update_path($pa; $new)
+    ' "$STATUS_FILE" > "$tmp_file"
+
+    mv "$tmp_file" "$STATUS_FILE"
+
+    return 0
+}
+
 update_status_help() {
     local key="$1"
     local value=$2
@@ -368,11 +421,11 @@ update_status() {
     update_status_help "realm" "$realm"
     update_status_help "netBiosName" "$netBiosName" 
     update_status_help "siteName" "$siteName" 
-    update_status_help "functionalLevel" "$functionalLevel" 
-    update_status_help "serverRole" "$serverRole" 
+    update_enum_value "functionalLevel" "$functionalLevel" 
+    update_enum_value "serverRole" "$serverRole" 
     update_status_help "useRfc2307" $useRfc2307
-    update_status_help "backendStore" "$backendStore" 
-    update_status_help "dnsBackend" "$dnsBackend" "dnsSettings"
+    update_enum_value "backendStore" "$backendStore" 
+    update_enum_value  "dnsSettings.dnsBackend" "$dnsBackend"
     update_status_help "deployed" $deployed
     update_status_help "started" $started
     update_status_help "forwarders" "$forwarders" "dnsSettings" "true"

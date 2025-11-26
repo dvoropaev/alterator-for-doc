@@ -65,15 +65,17 @@ EOF
 # If the --help or -h flag is passed, print help and exit.
 [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]] && show_usage
 
-
 LOG_FILE="/var/log/samba-shares.log"
 
 log() {
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] [PID:$$] $1" >> "$LOG_FILE"
 }
 
+release_lock() {
+  :
+}
+
 error() {
-  log "ERROR: $1"
   echo "{\"status\": \"error\", \"message\": \"$1\"}"
   release_lock
   exit 1
@@ -93,11 +95,17 @@ get_samba_shares() {
         access_type = "ro"
         if (tolower(writable) == "yes" || tolower(readonly) == "no") access_type = "rw"
 
-        printf("  {\"share_name\":\"%s\",\"share_path\":\"%s\",\"access_type\":\"%s\",\"access_user\":\"\",\"enabled\":true,\"allowed_users\":\"%s\"}", share, path, access_type, allowed_users)
+        en = "true"
+        if (tolower(browsable) == "no") en = "false"
+
+        anon = "false"
+        if (tolower(guest_ok) == "yes") anon = "true"
+
+        printf("  {\"share_name\":\"%s\",\"share_path\":\"%s\",\"access_type\":\"%s\",\"access_user\":\"\",\"enabled\":%s,\"allowed_users\":\"%s\",\"anonymous_enabled\":%s}", share, path, access_type, en, allowed_users, anon)
       }
 
       share = substr($0, 2, length($0) - 2)
-      path = ""; writable = ""; readonly = ""; allowed_users = ""
+      path = ""; writable = ""; readonly = ""; allowed_users = ""; browsable = ""; guest_ok = ""
       next
     }
 
@@ -125,6 +133,24 @@ get_samba_shares() {
       next
     }
 
+    /^[[:space:]]*browseable[[:space:]]*=/ {
+      sub(/^[[:space:]]*browseable[[:space:]]*=[[:space:]]*/, "")
+      browsable = $0
+      next
+    }
+
+    /^[[:space:]]*browsable[[:space:]]*=/ {
+      sub(/^[[:space:]]*browsable[[:space:]]*=[[:space:]]*/, "")
+      browsable = $0
+      next
+    }
+
+    /^[[:space:]]*guest ok[[:space:]]*=/ {
+      sub(/^[[:space:]]*guest ok[[:space:]]*=[[:space:]]*/, "")
+      guest_ok = $0
+      next
+    }
+
     /^\s*$/ {
       if (share != "" && path != "") {
         if (!first) printf(",\n"); else first = 0
@@ -132,10 +158,16 @@ get_samba_shares() {
         access_type = "ro"
         if (tolower(writable) == "yes" || tolower(readonly) == "no") access_type = "rw"
 
-        printf("  {\"share_name\":\"%s\",\"share_path\":\"%s\",\"access_type\":\"%s\",\"access_user\":\"\",\"enabled\":true,\"allowed_users\":\"%s\"}", share, path, access_type, allowed_users)
+        en = "true"
+        if (tolower(browsable) == "no") en = "false"
+
+        anon = "false"
+        if (tolower(guest_ok) == "yes") anon = "true"
+
+        printf("  {\"share_name\":\"%s\",\"share_path\":\"%s\",\"access_type\":\"%s\",\"access_user\":\"\",\"enabled\":%s,\"allowed_users\":\"%s\",\"anonymous_enabled\":%s}", share, path, access_type, en, allowed_users, anon)
       }
 
-      share = ""; path = ""; writable = ""; readonly = ""; allowed_users = ""
+      share = ""; path = ""; writable = ""; readonly = ""; allowed_users = ""; browsable = ""; guest_ok = ""
     }
 
     END {
@@ -145,7 +177,13 @@ get_samba_shares() {
         access_type = "ro"
         if (tolower(writable) == "yes" || tolower(readonly) == "no") access_type = "rw"
 
-        printf("  {\"share_name\":\"%s\",\"share_path\":\"%s\",\"access_type\":\"%s\",\"access_user\":\"\",\"enabled\":true,\"allowed_users\":\"%s\"}", share, path, access_type, allowed_users)
+        en = "true"
+        if (tolower(browsable) == "no") en = "false"
+
+        anon = "false"
+        if (tolower(guest_ok) == "yes") anon = "true"
+
+        printf("  {\"share_name\":\"%s\",\"share_path\":\"%s\",\"access_type\":\"%s\",\"access_user\":\"\",\"enabled\":%s,\"allowed_users\":\"%s\",\"anonymous_enabled\":%s}", share, path, access_type, en, allowed_users, anon)
       }
 
       print "\n]"
@@ -153,138 +191,477 @@ get_samba_shares() {
   ' 
 }
 
-# ======= FUNC FOR ALL ACTION =======
+get_fs_owner() {
+  local p="$1"
+  [ -e "$p" ] || { echo ""; return; }
+  if command -v getfacl >/dev/null 2>&1; then
+    getfacl -p --absolute-names "$p" 2>/dev/null | awk -F': ' '/^# owner:/{print $2; exit}'
+  else
+    stat -c '%U' "$p" 2>/dev/null || echo ""
+  fi
+}
+
+augment_shares_with_owner() {
+  local json="$1"
+  echo "$json" | jq -c '.[]' | while read -r item; do
+    local path owner
+    path=$(echo "$item" | jq -r '.share_path')
+    owner=$(get_fs_owner "$path")
+    if [ -n "$owner" ]; then
+      echo "$item" | jq --arg owner "$owner" '. + {access_user: $owner}'
+    else
+      echo "$item"
+    fi
+  done | jq -s '.'
+}
+
+get_share_current() {
+  local name="$1"
+  local cur
+  cur=$(augment_shares_with_owner "$(get_samba_shares)" | jq -c --arg n "$name" '.[] | select(.share_name==$n)')
+  [ -z "$cur" ] && error "Share not found: $name"
+  echo "$cur"
+}
+
+remove_share_section() {
+  local share_name="$1"
+  local conf="/etc/samba/smb.conf"
+  local TMP
+  TMP=$(mktemp) || error "Cannot create temp file"
+
+  awk -v target="$share_name" '
+    function trim(s){ gsub(/^[ \t]+|[ \t]+$/, "", s); return s }
+    BEGIN { insec=0 }
+    /^\[.*\]$/ {
+      hdr = substr($0, 2, length($0)-2);
+      hdr = trim(hdr);
+      if (insec) { insec=0 }
+      if (hdr == target) { insec=1; next }
+    }
+    insec { next }
+    { print }
+  ' "$conf" > "$TMP" || { rm -f "$TMP"; error "Failed to edit smb.conf"; }
+
+  testparm -s "$TMP" >/dev/null 2>&1 || { rm -f "$TMP"; error "Configuration error after section removal"; }
+  mv "$TMP" "$conf" || { rm -f "$TMP"; error "Failed to update smb.conf"; }
+  chmod 0644 "$conf" || true
+}
+
+csv_to_lines() {
+  # we cut both by commas and spaces,
+  # remove the empty and duplicates (ignore the case)
+  tr ', ' '\n' \
+  | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' \
+  | sed '/^$/d' \
+  | awk 'BEGIN{IGNORECASE=1}!seen[tolower($0)]++'
+}
+
+join_csv() {
+  paste -sd',' -
+}
+
+strip_nobody() {
+  # input is a CSV string, output is a CSV without nobody and duplicates
+  printf '%s\n' "$1" \
+  | tr ',' '\n' \
+  | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' \
+  | awk 'BEGIN{IGNORECASE=1}
+         {
+           u = tolower($0)
+           if (u == "" || u == "nobody") next  # пропускаем пустое и nobody
+           if (!seen[u]++) print               # убираем дубли
+         }' \
+  | paste -sd',' -
+}
+
+apply_fs_acl_for_valid_users() {
+  local path="$1"
+  local users_csv="$2"
+  local owner="$3"
+  local access_type="$4"
+
+  command -v setfacl >/dev/null 2>&1 || return 0
+
+  local perms
+  if [ "$access_type" = "rw" ]; then
+    perms="rwx"
+  else
+    perms="rx"
+  fi
+
+  local users
+  users=$(printf '%s\n' "$users_csv" | csv_to_lines)
+
+  # Demolishing all the old ACLs (both regular and default),
+  # to avoid accumulating garbage with every update
+  setfacl -b "$path" 2>/dev/null || true
+
+  # Mask — full access so that ACLs are not cut by the mask
+  setfacl -m m::rwx "$path" 2>/dev/null || true
+  setfacl -d -m m::rwx "$path" 2>/dev/null || true
+
+  # We give rights to everyone on the list, EXCEPT the owner
+  while IFS= read -r u; do
+    [ -z "$u" ] && continue
+    # The owner is managed by chmod (2750/2770), we do not touch the ACL for him
+    if [ "$u" = "$owner" ]; then
+      continue
+    fi
+    setfacl -m u:"$u":"$perms" "$path" 2>/dev/null || true
+    setfacl -d -m u:"$u":"$perms" "$path" 2>/dev/null || true
+  done <<< "$users"
+}
+
+# --------------------------------------------
 
 create_share() {
-  local share_name="$1" 
+  local share_name="$1"
   local share_path="$2"
-  local access_user="$3" 
-  local access_type="$4" 
+  local access_user="$3"
+  local access_type="$4"
   local allowed_users="$5"
+  local anonymous_enabled="${6:-false}"
+  local browsable="${7:-true}"
 
-  log "Create shared folder: $share_name on path $share_path"
+  log "Create shared folder: $share_name on path '$share_path'"
 
-  if [ -z "$share_path" ] || [ -z "$share_name" ] || [ -z "$access_user" ] || [ -z "$access_type" ]; then
+  # Checking required parameters
+  if [ -z "$share_name" ] || [ -z "$share_path" ] || [ -z "$access_user" ] || [ -z "$access_type" ]; then
     error "Required parameters for creation are not set."
   fi
 
-  mkdir -p "$share_path" || error "Couldn't create folder $share_path"
+  # Check the user
+  if ! id "$access_user" >/dev/null 2>&1; then
+      error "User $access_user does not exist"
+  fi
+  local user_group
   user_group=$(id -gn "$access_user")
-  chown -R "$access_user":"$user_group" "$share_path" || error "Couldn't change the owner"
 
-  if command -v setfacl >/dev/null 2>&1; then
-    setfacl -b "$share_path" 2>/dev/null || true
-  fi
+  # Creating a folder with quotes
+  mkdir -p "$share_path" || error "Couldn't create folder '$share_path'"
+  chown -R "$access_user:$user_group" "$share_path" || error "Couldn't set owner $access_user:$user_group"
+  
 
-  local writable="no"
+  # Folder permissions
   if [ "$access_type" == "rw" ]; then
-    chmod 2770 "$share_path" || error "Couldn't set rights 2770"
-    writable="yes"
+    chmod 2770 "$share_path" || error "Couldn't set permissions 2770"
   else
-    chmod 2750 "$share_path" || error "Couldn't set rights 2750"
+    chmod 2750 "$share_path" || error "Couldn't set permissions 2750"
   fi
 
-  [ "$access_type" == "rw" ] && [ ! -w "$share_path" ] && error "Folder $share_path not available for recording after rights have been set"
-
+  # Checking the existence of a share in smb.conf
   grep -q "^\[$share_name\]" /etc/samba/smb.conf && error "Shared folder [$share_name] already exists"
 
-  local valid_users="$access_user"
-  if [ -n "$allowed_users" ] && [ "$allowed_users" != "null" ]; then
-    valid_users="$access_user,$allowed_users"
+  # Generate a list of valid users
+  # local valid_users="$access_user"
+  # [ -n "$allowed_users" ] && [ "$allowed_users" != "null" ] && valid_users="$access_user,$allowed_users"
+
+  valid_users=$(printf '%s' "$access_user${allowed_users:+,$allowed_users}" \
+    | tr ',' '\n' \
+    | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' \
+    | awk '!seen[$0]++' \
+    | paste -sd',' -)
+
+  # + anon: adding nobody to the valid users list
+  if [ "$anonymous_enabled" = "true" ]; then
+    valid_users=$(printf '%s\nnobody\n' "$valid_users" \
+      | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' \
+      | awk '!seen[$0]++' | paste -sd',' -)
   fi
 
+  apply_fs_acl_for_valid_users "$share_path" "$valid_users" "$access_user" "$access_type"
 
+  # With anonymous access, we make the directory 2775 so that the group can write and setgid is inherited
+  if [ "$anonymous_enabled" = "true" ]; then
+    chmod 2775 "$share_path" || true
+  fi
+
+  local smb_writable
+  if [ "$access_type" = "rw" ]; then
+    smb_writable="yes"
+  else
+    smb_writable="no"
+  fi
+
+  local smb_browsable
+  if [ "$browsable" = "false" ]; then
+    smb_browsable="no"
+  else
+    smb_browsable="yes"
+  fi
+
+  # Add an entry to smb.conf
   local TEMP_FILE
   TEMP_FILE=$(mktemp)
   cp /etc/samba/smb.conf "$TEMP_FILE"
+
+  tail -c1 /etc/samba/smb.conf | read -r _ || echo >> /etc/samba/smb.conf
 
   cat <<EOF >> "$TEMP_FILE"
 
 [$share_name]
    path = $share_path
-   browsable = yes
-   writable = $writable
-   guest ok = no
+   browsable = $smb_browsable
+   writable = $smb_writable
+   guest ok = $( [ "$anonymous_enabled" = "true" ] && echo yes || echo no )
    valid users = $valid_users
 EOF
 
   testparm -s "$TEMP_FILE" >/dev/null || { rm -f "$TEMP_FILE"; error "Configuration error in smb.conf"; }
-
   mv "$TEMP_FILE" /etc/samba/smb.conf
   chmod 644 /etc/samba/smb.conf
 
   log "Running: systemctl restart smb.service"
-  if ! timeout 15 systemctl restart smb.service >> "$LOG_FILE" 2>&1; then
-    error "Couldn't restart restart for smb.service"
-  fi
+  timeout 15 systemctl restart smb.service >> "$LOG_FILE" 2>&1 || error "Couldn't restart smb.service"
 
-  echo '{"status": "created"}'
+  local deployed started
+  systemctl is-active smb.service >/dev/null 2>&1 && deployed=true || deployed=false
+  systemctl is-active smb.service >/dev/null 2>&1 && started=true || started=false
+
+  local shares_json
+  shares_json=$(augment_shares_with_owner "$(get_samba_shares)")
+
+cat <<EOF
+Shared folder successfully created
+EOF
 }
 
 delete_share() {
   local share_name="$1"
-  local share_path="$2"
+  [ -z "$share_name" ] && error "Required parameters for deletion are not set"
 
-  [ -z "$share_name" ] || [ -z "$share_path" ] && error "Required parameters for deletion are not set"
+  # Normalize the name: remove the spaces at the edges
+  share_name="$(printf '%s' "$share_name" | awk '{$1=$1; print}')"
+  log "Delete request for share: '$share_name'"
 
-  # Check if the share exists in smb.conf
-  ! grep -q "^\[$share_name\]" /etc/samba/smb.conf && error "Shared folder [$share_name] not found"
+  # check the existence of the balls through testparm -s ---
+  # List of all sections except [global]
+  local exists
+  exists=$(testparm -s 2>/dev/null \
+    | awk '
+        /^\[.*\]$/ {
+          name=substr($0,2,length($0)-2);
+          gsub(/^[ \t]+|[ \t]+$/, "", name);
+          if (tolower(name)!="global") print name;
+        }' \
+    | awk -v tgt="$share_name" 'BEGIN{f=0} { if($0==tgt) f=1 } END{ print f }')
 
-  # Remove the share configuration block from smb.conf
-  sed -i "/^\[$share_name\]/,/^$/d" /etc/samba/smb.conf
-
-  log "C: systemctl restart smb.service"
-  if ! timeout 15 systemctl restart smb.service >> "$LOG_FILE" 2>&1; then
-    error "Couldn't restart smb.service"
+  if [ "$exists" != "1" ]; then
+    error "Shared folder [$share_name] not found"
   fi
 
-  echo '{"status": "deleted"}'
+  # Delete the section as a block, resistant to the absence of empty lines
+  local TMP
+  TMP=$(mktemp) || error "Cannot create temp file"
+
+  awk -v target="$share_name" '
+    function trim(s){ gsub(/^[ \t]+|[ \t]+$/, "", s); return s }
+    BEGIN { insec=0 }
+    /^\[.*\]$/ {
+      # met the section title
+      hdr = substr($0, 2, length($0)-2);
+      hdr = trim(hdr);
+      # if you were inside the target area before, get out of it
+      if (insec) { insec=0 }
+      # if this is the target, enable the pass
+      if (hdr == target) { insec=1; next }
+    }
+    # if it is in the target section, skip the lines
+    insec { next }
+    # otherwise, we print it as it is.
+    { print }
+  ' /etc/samba/smb.conf > "$TMP" || { rm -f "$TMP"; error "Failed to edit smb.conf"; }
+
+  # Validate and apply
+  if ! testparm -s "$TMP" >/dev/null 2>&1; then
+    rm -f "$TMP"
+    error "Configuration error after deletion (testparm failed)"
+  fi
+
+  mv "$TMP" /etc/samba/smb.conf || { rm -f "$TMP"; error "Failed to update smb.conf"; }
+  chmod 644 /etc/samba/smb.conf || true
+
+  # Restart and reply
+  log "Restarting smb.service after delete"
+  timeout 15 systemctl restart smb.service >> "$LOG_FILE" 2>&1 || error "Couldn't restart smb.service"
+
+  local shares_json
+  shares_json=$(augment_shares_with_owner "$(get_samba_shares)")
+
+cat <<EOF
+Shared folder successfully removed from configuration
+EOF
 }
 
 update_share() {
-  local share_name="$1" 
-  local share_path="$2" 
-  local access_user="$3" 
-  local access_type="$4" 
+  local share_name="$1"
+  local share_path="$2"
+  local access_user="$3"
+  local access_type="$4"
   local allowed_users="$5"
+  local u_delete_prev_allowed="$6"
+  local anonymous_enabled="$7"
+  local browsable="$8"
 
-  [ -z "$share_name" ] || [ -z "$share_path" ] || [ -z "$access_user" ] || [ -z "$access_type" ] && error "There are not enough parameters to update"
+  [ -z "$share_name" ] && error "share_name is required for update"
 
-  sed -i "/^\[$share_name\]/,/^$/d" /etc/samba/smb.conf
+  # Current values from the configuration/FS
+  local cur
+  cur=$(get_share_current "$share_name")
 
-  local valid_users="$access_user"
-  [ -n "$allowed_users" ] && [ "$allowed_users" != "null" ] && valid_users="$allowed_users"
+  local cur_enabled cur_browsable
+  cur_enabled=$(echo "$cur" | jq -r '.enabled // true')
+  cur_browsable=$(echo "$cur" | jq -r '.browsable // (.enabled // true)')
 
-  local writable="no"
-  [ "$access_type" == "rw" ] && writable="yes"
-
-  cat <<EOF >> /etc/samba/smb.conf
-
-[$share_name]
-   path = $share_path
-   browsable = yes
-   writable = $writable
-   guest ok = no
-   valid users = $valid_users
-EOF
-
-  testparm -s /etc/samba/smb.conf >/dev/null || error "Configuration error"
-
-  mkdir -p "$share_path"
-  chown -R "$access_user":"users" "$share_path"
-
-  if command -v setfacl >/dev/null 2>&1; then
-    setfacl -b "$share_path" 2>/dev/null || true
-  fi
-
-  if [ "$access_type" == "rw" ]; then
-    chmod 2770 "$share_path"
+  local smb_browsable
+  if [ -z "$browsable" ]; then
+    if [ "$cur_enabled" = "true" ]; then
+      smb_browsable="yes"
+    else
+      smb_browsable="no"
+    fi
   else
-    chmod 2750 "$share_path"
+    if [ "$browsable" = "false" ]; then
+      smb_browsable="no"
+    else
+      smb_browsable="yes"
+    fi
   fi
 
+  # We'll substitute everything that didn't arrive
+  [ -z "$share_path" ]   && share_path=$(echo "$cur" | jq -r '.share_path')
+  [ -z "$access_user" ]  && access_user=$(echo "$cur" | jq -r '.access_user // empty')
+  [ -z "$access_type" ]  && access_type=$(echo "$cur" | jq -r '.access_type // "ro"')
+  if [ -z "$allowed_users" ]; then
+    # If you didn't ask to clean the old ones, we'll inherit the old ones for the MERGE script.
+    if [ "${u_delete_prev_allowed,,}" != "true" ]; then
+      allowed_users=$(echo "$cur" | jq -r '.allowed_users // empty')
+    fi
+      # If you asked to clean (true), we leave allowed_users empty,
+      # to collect only the owner further.
+  fi
 
-  [ "$access_type" == "rw" ] && [ ! -w "$share_path" ] && error "Folder $share_path unavailable for recording"
+  # Validation of totals
+  [ -z "$share_path" ]  && error "share_path unresolved"
+  [ -z "$access_type" ] && error "access_type unresolved"
+
+  # Checking what was in the config
+  local cur_owner cur_allowed
+  cur_owner=$(echo "$cur" | jq -r '.access_user // empty')
+  cur_allowed=$(echo "$cur" | jq -r '.allowed_users // empty')
+  cur_anon=$(echo "$cur" | jq -r '(.anonymous_enabled // false) | tostring')
+
+  # if "nobody" is present in valid users -> anonymous = true, else false.
+  if [ -z "$anonymous_enabled" ]; then
+    if [ "$cur_anon" = "true" ]; then
+      anonymous_enabled="true"
+    else
+      anonymous_enabled="false"
+    fi
+  fi
+
+  # If anonymous is disabled, the owner is required.
+  if [ "$anonymous_enabled" != "true" ] && [ -z "$access_user" ]; then
+    error "access_user is required when anonymous access is disabled"
+  fi
+
+  # Normalize the lists
+  local old_allowed_clean new_users_clean
+  old_allowed_clean=$(printf '%s\n' "$cur_allowed" | csv_to_lines | awk -v own="$cur_owner" '$0 != own')
+  new_users_clean=$(printf '%s\n' "${allowed_users:-}" | csv_to_lines | awk -v own="$access_user" '$0 != own')
+
+  # delete_prev_allowed=true  -> REPLACE (owner + new)
+  # delete_prev_allowed=false -> MERGE   (owner + old + new)
+  local merged
+  if [ "${u_delete_prev_allowed,,}" = "true" ]; then
+    merged="$new_users_clean"
+  else
+    merged=$( { printf '%s\n' "$old_allowed_clean"; printf '%s\n' "$new_users_clean"; } | csv_to_lines )
+  fi
+
+  # Final valid users: the owner first, then the unique others
+  local final_allowed=""
+  if [ "$access_type" != "guest" ]; then
+    if [ -n "$merged" ]; then
+      final_allowed=$( { printf '%s\n' "$access_user"; printf '%s\n' "$merged"; } | csv_to_lines | join_csv )
+    else
+      final_allowed="$access_user"
+    fi
+  fi
+
+  if [ "$anonymous_enabled" = "true" ]; then
+    if [ -n "$final_allowed" ]; then
+      final_allowed=$(printf '%s\nnobody\n' "$final_allowed" | csv_to_lines | join_csv)
+    else
+      final_allowed="nobody"
+    fi
+  fi
+
+  # If anonymous access is disabled, we delete nobody from final_allowed
+  if [ "$anonymous_enabled" != "true" ] && [ -n "$final_allowed" ]; then
+    final_allowed=$(strip_nobody "$final_allowed")
+  fi
+
+  # Re-creating the section 
+  mkdir -p "$share_path"
+  id "$access_user" >/dev/null 2>&1 || useradd -m "$access_user"
+  local user_group
+  user_group=$(id -gn "$access_user")
+  chown -R "$access_user":"$user_group" "$share_path"
+  # Basic folder rights depending on access_type / anonymity
+  if [ "$access_type" = "rw" ]; then
+    chmod 2770 "$share_path" || true
+  else
+    chmod 2750 "$share_path" || true
+  fi
+
+  if [ "$anonymous_enabled" = "true" ]; then
+    chmod 2775 "$share_path" || true
+  fi
+
+  # Distributing ACLs to everyone from final_allowed (except the owner),
+  # rights depend on access_type (ro → rx, rw → rwx)
+  apply_fs_acl_for_valid_users "$share_path" "$final_allowed" "$access_user" "$access_type"
+
+  remove_share_section "$share_name"
+
+  conf="/etc/samba/smb.conf"
+
+  # if the file is not empty and the last byte is != '\n' (0a), add a newline
+  if [ -s "$conf" ] && [ "$(tail -c1 -- "$conf" | od -An -t x1 | tr -d ' ')" != "0a" ]; then
+    echo >> "$conf"
+  fi
+
+  # if the last row is NOT empty, add one empty row.
+  if [ -s "$conf" ] && [ -n "$(tail -n1 -- "$conf")" ]; then
+    echo >> "$conf"
+  fi
+
+  local smb_writable
+  if [ "$access_type" = "rw" ]; then
+    smb_writable="yes"
+  else
+    smb_writable="no"
+  fi
+
+  {
+    echo "[$share_name]"
+    echo "   path = $share_path"
+    echo "   browsable = $smb_browsable"
+    echo "   writable = $smb_writable"
+    echo "   guest ok = $( [ "$anonymous_enabled" = "true" ] && echo yes || echo no )"
+    [ -n "$final_allowed" ] && echo "   valid users = $final_allowed"
+  } >> /etc/samba/smb.conf
+
+  testparm -s /etc/samba/smb.conf >>"$LOG_FILE" 2>&1 || error "Configuration error in smb.conf"
+  systemctl restart smb.service >> "$LOG_FILE" 2>&1 || error "Couldn't restart smb.service"
+
+  local shares_json
+  shares_json=$(augment_shares_with_owner "$(get_samba_shares)")
+
+cat <<EOF
+Shared folder successfully updated
+EOF
 }
 
 deploy_samba_share() {
@@ -297,25 +674,40 @@ deploy_samba_share() {
     cp /etc/samba/smb.conf "$original" || error "Couldn't save the original one smb.conf"
   fi
 
-  systemctl enable --now smb nmb &>> "$LOG_FILE" || error "Failed to activate services Samba"
+  systemctl enable --now smb nmb >>"$LOG_FILE" 2>&1 || error "Failed to activate services Samba"
   ! systemctl is-active smb nmb >/dev/null && error "The services have not moved to an active state"
 
   if command -v alterator-announce >/dev/null 2>&1; then
     alterator-announce "samba_shares" "deployed" || true
   fi
 
-  echo "{
-    \"status\": \"deployed\",
-    \"state\": \"deployed\",
-    \"services\": {
-      \"smb\": \"$(systemctl is-active smb)\",
-      \"nmb\": \"$(systemctl is-active nmb)\"
-    },
-    \"message\": \"Samba successfully deployed\"
-  }"
+cat <<EOF
+Samba successfully deployed. You can now share folders through the 'Settings' menu in alt-services.
+EOF
 }
 
 undeploy_samba_share() {
+  local ts 
+  local bname 
+  local bjson 
+  local bstatus 
+  local bcfg 
+  local bdata
+  
+  ts=$(date '+%Y%m%d-%H%M%S')
+  bname="auto-undeploy-$ts"
+  # intercepting the backup_all output
+  if bjson=$(backup_all "$bname" 2>>"$LOG_FILE"); then
+    if command -v jq >/dev/null 2>&1; then
+      bstatus=$(echo "$bjson" | jq -r '.status // empty')
+      bcfg=$(echo "$bjson" | jq -r '.config // empty')
+      bdata=$(echo "$bjson" | jq -r '.data // empty')
+    fi
+    log "Auto-backup before undeploy ok: name=$bname status=${bstatus:-unknown} cfg=${bcfg:-} data=${bdata:-}"
+  else
+    log "Auto-backup before undeploy FAILED: name=$bname"
+  fi
+
   log "Executing: systemctl stop smb.service"
   if ! timeout 15 systemctl stop smb.service >> "$LOG_FILE" 2>&1; then
     error "Failed to execute stop for smb.service"
@@ -343,209 +735,376 @@ undeploy_samba_share() {
     log "Original smb.conf not found, restore skipped"
   fi
 
-  echo '{"status": "undeployed", "message": "Samba disabled, smb.conf restored"}'
+cat <<EOF
+Samba disabled, smb.conf restored. Auto-backup created before undeploy.
+EOF
+  echo "
+    \"auto_backup\": 
+      \"name\": \"${bname}\",
+      \"config\": \"${bcfg:-null}\",
+      \"data\": ${bdata:+\"$bdata\"
+  }"
 }
 
 start_samba_share() {
-  log "Running: systemctl start smb.service"
+  log "Running: systemctl start smb.service && systemctl start nmb.service"
   if ! timeout 15 systemctl start smb.service >> "$LOG_FILE" 2>&1; then
-    error "Failed to run smb.service"
+    error "Failed to start smb.service"
   fi
 
+  timeout 15 systemctl start nmb.service >> "$LOG_FILE" 2>&1 || true
+
   local shares_json
-  shares_json=$(get_samba_shares)
-  echo "{\"status\":\"started\", \"shares\": $shares_json}"
+  shares_json=$(augment_shares_with_owner "$(get_samba_shares)")
+
+  echo "{
+    \"shares\": $shares_json,
+    \"en\": \"Samba service started\"
+  }"
 }
 
 stop_samba_share() {
-  log "Running: systemctl stop smb.service"
-  if ! timeout 15 systemctl stop smb.service >> "$LOG_FILE" 2>&1; then
-    error "Failed to stop smb.service"
-  fi
+  log "Running: systemctl stop smb.service && systemctl stop nmb.service"
+  timeout 15 systemctl stop smb.service >> "$LOG_FILE" 2>&1 || error "Failed to stop smb.service"
+  timeout 15 systemctl stop nmb.service >> "$LOG_FILE" 2>&1 || true
+
+  sleep 0.3
 
   local shares_json
-  shares_json=$(get_samba_shares)
-  echo "{\"status\":\"stopped\", \"shares\": $shares_json}"
+  shares_json=$(augment_shares_with_owner "$(get_samba_shares)")
+
+  echo "{
+    \"shares\": $shares_json,
+    \"en\": \"Samba services stopped\"
+  }"
 }
 
 status_samba_share() {
   local smb_status 
   local nmb_status 
   local state 
-  local exit_code 
+  local deployed
+  local started
   local shares_json
 
-  smb_status=$(systemctl is-active smb.service)
-  nmb_status=$(systemctl is-active nmb.service)
+  smb_status=$(systemctl is-active smb.service 2>/dev/null || echo "inactive")
+  nmb_status=$(systemctl is-active nmb.service 2>/dev/null || echo "inactive")
 
-  if [ "$smb_status" == "active" ] && [ "$nmb_status" == "active" ]; then
-    state="deployed"; exit_code=128
-  elif [ "$smb_status" == "active" ] || [ "$nmb_status" == "active" ]; then
-    state="deployed"; exit_code=127
+  if [ "$smb_status" = "active" ] && [ "$nmb_status" = "active" ]; then
+    state="deployed"
+    deployed=true
+    started=true
+  elif [ "$smb_status" = "active" ] || [ "$nmb_status" = "active" ]; then
+    state="deployed"
+    deployed=true
+    started=true
   else
-    state="undeployed"; exit_code=0
+    state="undeployed"
+    deployed=false
+    started=false
   fi
 
-  shares_json=$(get_samba_shares)
+  shares_json=$(augment_shares_with_owner "$(get_samba_shares)")
 
-  echo "{
-    \"status\": \"$state\",
-    \"state\": \"$state\",
-    \"services\": {
-      \"smb\": \"$smb_status\",
-      \"nmb\": \"$nmb_status\"
-    },
-    \"shares\": $shares_json
-  }"
-  exit $exit_code
+  cat <<EOF
+{
+  "status": "ok",
+  "state": "$state",
+  "deployed": $deployed,
+  "started": $started,
+  "services": {
+    "smb": "$smb_status",
+    "nmb": "$nmb_status"
+  },
+  "shares": $shares_json,
+  "message": {
+    "ru": "Состояние Samba: $state",
+    "en": "Samba state: $state"
+  }
+}
+EOF
+
+  return 0
 }
 
 backup_all() {
   local backup_name="$1"
-  local config_dir="/var/lib/alterator/service/service-samba-share/config-backup"
-  local data_dir="/var/lib/alterator/service/service-samba-share/data-backup"
+
+  # Backup storage directories (left the same as before)
+  local base_dir="/var/lib/alterator/service/service-samba-share"
+  local config_dir="$base_dir/config-backup"
+  local data_dir="$base_dir/data-backup"
 
   mkdir -p "$config_dir" "$data_dir" || error "Failed to create backup directories"
 
+  # Backup name
   if [ -z "$backup_name" ] || [ "$backup_name" = "null" ]; then
-    local timestamp
-    timestamp=$(date '+%Y%m%d-%H%M%S')
-    backup_name="smb-$timestamp"
+    local ts
+    ts=$(date '+%Y%m%d-%H%M%S')
+    backup_name="smb-$ts"
   fi
 
   local config_file="$config_dir/${backup_name}.conf"
   local data_file="$data_dir/${backup_name}.tar.gz"
 
-  if cp /etc/samba/smb.conf "$config_file"; then
-    :
-  else
+  # Configuration backup — always
+  if ! cp /etc/samba/smb.conf "$config_file"; then
     error "Failed to create config backup"
   fi
 
-  # getting a list of paths from smb.conf via testparm and jq
-  local shares
-  shares=$(get_samba_shares | jq -r '.[].share_path')
+  # Collecting balloon paths from the current configuration
+  # - neat, one line at a time, unique
+  # - filter out empty and non-existent ones
+  local list
+  list=$(mktemp) || error "Cannot create temp file"
+  get_samba_shares \
+    | jq -r '.[].share_path' \
+    | sed '/^$/d' \
+    | sort -u \
+    | while IFS= read -r p; do
+        # backup only the actual paths
+        if [ -e "$p" ]; then
+          printf '%s\0' "$p"
+        fi
+      done \
+    > "$list"
 
-  if [ -n "$shares" ]; then
-    if tar -czf "$data_file" $shares; then
-      :
+  local made_data=false
+  if [ -s "$list" ]; then
+    if tar --null -czf "$data_file" --files-from="$list"; then
+      made_data=true
     else
+      rm -f "$list"
       error "Failed to create data archive"
     fi
   fi
+  rm -f "$list"
 
-  echo "{\"status\": \"success\", \"config\": \"$config_file\", \"data\": \"$data_file\"}"
+  if $made_data; then
+    echo "{
+      \"status\": \"success\",
+      \"config\": \"$config_file\",
+      \"data\": \"$data_file\",
+      \"message\": {
+        \"ru\": \"Бэкап успешно выполнен\",
+        \"en\": \"Backup completed successfully\"
+      }
+    }"
+  else
+    echo "{
+      \"status\": \"success\",
+      \"config\": \"$config_file\",
+      \"data\": null,
+      \"message\": {
+        \"ru\": \"Бэкап конфигурации выполнен, архив с данными не найдено\",
+        \"en\": \"Config backup completed, but achieve not found\"
+      }
+    }"
+  fi
 }
 
 restore_all() {
   local backup_name="$1"
-  local config_dir="/var/lib/alterator/service/service-samba-share/config-backup"
-  local data_dir="/var/lib/alterator/service/service-samba-share/data-backup"
+
+  local base_dir="/var/lib/alterator/service/service-samba-share"
+  local config_dir="$base_dir/config-backup"
+  local data_dir="$base_dir/data-backup"
 
   mkdir -p "$config_dir" "$data_dir" || error "Failed to create backup directories"
 
   local config_file
   local data_file
 
+  # Find backup
   if [ -n "$backup_name" ] && [ "$backup_name" != "null" ]; then
     case "$backup_name" in
-      *.conf) backup_name="${backup_name%.conf}" ;;
+      *.conf)   backup_name="${backup_name%.conf}" ;;
       *.tar.gz) backup_name="${backup_name%.tar.gz}" ;;
     esac
-
     config_file="$config_dir/${backup_name}.conf"
     data_file="$data_dir/${backup_name}.tar.gz"
 
     [ ! -f "$config_file" ] && error "Config backup not found: $config_file"
-    [ ! -f "$data_file" ] && error "Data backup not found: $data_file"
   else
-    config_file=$(find "$config_dir" -maxdepth 1 -type f -name '*.conf' -printf '%T@ %p\n' 2>/dev/null | sort -nr | head -n1 | cut -d' ' -f2-)
+    # We take the most recent config backup.
+    config_file=$(find "$config_dir" -maxdepth 1 -type f -name '*.conf' -printf '%T@ %p\n' 2>/dev/null \
+                  | sort -nr | head -n1 | cut -d' ' -f2-)
     [ -z "$config_file" ] && error "There are no config backups available"
 
     local base_name
     base_name=$(basename "$config_file" .conf)
     data_file="$data_dir/${base_name}.tar.gz"
-
-    [ ! -f "$data_file" ] && error "Data backup not found: $data_file"
   fi
 
-  if cp "$config_file" /etc/samba/smb.conf; then
-    :
-  else
+  # restore smb.conf
+  if ! cp "$config_file" /etc/samba/smb.conf; then
     error "Failed to restore smb.conf"
   fi
 
-  if systemctl restart smb.service; then
-    :
-  else
+  # check the configuration for validity
+  if ! testparm -s /etc/samba/smb.conf >/dev/null 2>&1; then
+    error "Restored smb.conf is invalid (testparm failed)"
+  fi
+
+  if ! systemctl restart smb.service; then
     error "Failed to restart Samba after restore"
   fi
 
-  if tar -xzf "$data_file" -C /; then
-    :
-  else
-    error "Failed to restore data from archive"
+  # Data recovery — only if the archive exists
+  local restored_data=false
+  if [ -f "$data_file" ]; then
+    if tar -xzf "$data_file" -C /; then
+      restored_data=true
+    else
+      error "Failed to restore data from archive"
+    fi
   fi
 
-  echo "{\"status\": \"restored\", \"config\": \"$config_file\", \"data\": \"$data_file\"}"
+  if $restored_data; then
+    echo "{
+      \"status\": \"restored\",
+      \"config\": \"$config_file\",
+      \"data\": \"$data_file\",
+      \"message\": {
+        \"ru\": \"Бэкап успешно восстановлен\",
+        \"en\": \"Backup successfully restored\"
+      }
+    }"
+  else
+    echo "{
+      \"status\": \"restored\",
+      \"config\": \"$config_file\",
+      \"data\": null,
+      \"message\": {
+        \"ru\": \"Восстановлен только конфиг, архив данных не найден\",
+        \"en\": \"Restored config only, data archive not found\"
+      }
+    }"
+  fi
 }
 
+enum_value() {
+  local expr="$1"
+  jq -r "$expr
+    | if . == null then
+        empty
+      elif type == \"object\" then
+        (keys_unsorted[0] // empty)
+      elif type == \"string\" then
+        .
+      else
+        empty
+      end"
+}
 
-# ========== MAIN SCRIPT ==========
-
-log "---Run script---"
+# ------------ MAIN SCRIPT ------------
 
 [ "$EUID" -ne 0 ] && error "Root required"
 
+# reading JSON from stdin (or "{}" by timeout)
 read -t 10 -r input || { log "Timeout when reading input data"; input="{}"; }
-log "Input data is received: $input"
 
-action=$(echo "$input" | jq -r '.operation // empty')
-[ -z "$action" ] && action="$1"
-[ -z "$action" ] && error "The field is not specified 'operation'"
+operation=$(echo "$input" | enum_value '.operation')
 
-share_name=$(echo "$input" | jq -r '.share_name // empty')
-share_path=$(echo "$input" | jq -r '.share_path // empty')
-access_user=$(echo "$input" | jq -r '.access_user // empty')
-access_type=$(echo "$input" | jq -r '.access_type // empty')
-allowed_users=$(echo "$input" | jq -r '.allowed_users // empty')
+if [ -z "$operation" ] && [ $# -gt 0 ]; then
+  operation="$1"
+fi
+
+# CREATE  
+c_share_name=$(echo "$input" | jq -r '.create.share_name // empty')
+c_share_path=$(echo "$input" | jq -r '.create.share_path // empty')
+c_access_user=$(echo "$input" | jq -r '.create.access_user // empty')
+c_access_type=$(echo "$input" | enum_value '.create.access_type')
+c_allowed_users=$(echo "$input" | jq -r '.create.allowed_users // empty')
+c_anonymous_enabled=$(echo "$input" | jq -r '.create.anonymous_enabled // empty')
+c_browsable=$(echo "$input" | jq -r '.create.browsable // empty') 
+
+# UPDATE
+u_share_name=$(echo "$input" | jq -r '.update.share_name // empty')
+u_share_path=$(echo "$input" | jq -r '.update.share_path // empty')
+u_access_user=$(echo "$input" | jq -r '.update.access_user // empty')
+u_access_type=$(echo "$input" | enum_value '.update.access_type')
+u_allowed_users=$(echo "$input" | jq -r '.update.allowed_users // empty')
+u_delete_prev_allowed=$(echo "$input" | jq -r '.update.delete_prev_allowed // empty')
+case "${u_delete_prev_allowed,,}" in
+  true|1|yes|on) u_delete_prev_allowed=true ;;
+  *)             u_delete_prev_allowed=false ;;
+esac
+u_anonymous_enabled=$(
+  echo "$input" | jq -r '
+    if .update.anonymous_enabled == null then
+      ""
+    elif .update.anonymous_enabled == true then
+      "true"
+    elif .update.anonymous_enabled == false then
+      "false"
+    else
+      ""
+    end
+  '
+)
+u_browsable=$(
+  echo "$input" | jq -r '
+    if .update.browsable == null then
+      ""
+    elif .update.browsable == true then
+      "true"
+    elif .update.browsable == false then
+      "false"
+    else
+      ""
+    end
+  '
+)
+
+# DELETE
+d_share_name=$(echo "$input" | jq -r '.delete.share_name // empty')
+
 backup_name=$(echo "$input" | jq -r '.backup_name // empty')
 
+to_bool() {
+  case "${1,,}" in
+    true|1|yes|on) echo true ;;
+    *)             echo false ;;
+  esac
+}
 
-case "$action" in
-  create) 
-    create_share "$share_name" "$share_path" "$access_user" "$access_type" "$allowed_users" 
+c_anonymous_enabled=$(to_bool "$c_anonymous_enabled")
+c_browsable=$(to_bool "$c_browsable")
+
+case "$operation" in
+  create)
+    [ -z "$c_share_name"  ] && error "create.share_name is required"
+    [ -z "$c_share_path"  ] && error "create.share_path is required"
+    [ -z "$c_access_user" ] && error "create.access_user is required"
+    [ -z "$c_access_type" ] && error "create.access_type is required"
+    create_share "$c_share_name" "$c_share_path" "$c_access_user" "$c_access_type" "$c_allowed_users" "$c_anonymous_enabled" "$c_browsable"
     ;;
-  delete) 
-    delete_share "$share_name" "$share_path" 
+
+  update)
+    [ -z "$u_share_name" ] && error "update.share_name is required"
+    update_share "$u_share_name" "$u_share_path" "$u_access_user" "$u_access_type" "$u_allowed_users" "$u_delete_prev_allowed" "$u_anonymous_enabled" "$u_browsable"
     ;;
-  deploy) 
-    deploy_samba_share
+
+  delete)
+    [ -z "$d_share_name" ] && error "delete.share_name is required"
+    delete_share "$d_share_name"
     ;;
-  undeploy) 
-    undeploy_samba_share
+
+  status|"")
+    status_samba_share
     ;;
-  start) 
-    start_samba_share
+
+  deploy)   deploy_samba_share ;;
+  undeploy) undeploy_samba_share ;;
+  start)    start_samba_share ;;
+  stop)     stop_samba_share ;;
+  backup)   backup_all "$backup_name" ;;
+  restore)  restore_all "$backup_name" ;;
+
+  *)
+    error "Unknown operation: $operation"
     ;;
-  stop) 
-    stop_samba_share
-    ;;
-  status) 
-    status_samba_share 
-    ;;
-  update) 
-    update_share "$share_name" "$share_path" "$access_user" "$access_type" "$allowed_users" 
-    ;;
-  backup) 
-    backup_all "$backup_name" 
-    ;;
-  restore) 
-    restore_all "$backup_name" 
-    ;;
-  *) error "Unknown action: $action" ;;
 esac
 
-log "The script has been successfully completed"
-# release_lock
 exit 0

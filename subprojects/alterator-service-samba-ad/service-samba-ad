@@ -136,7 +136,7 @@ get_json_value() {
     local json="$1"
     local key="$2"
     local path="${3:-.}"
-    echo "$json" | jq -r --arg k "$key" "$path.[\$k]" 2>/dev/null
+    echo "$json" | jq -r --arg k "$key" "$path[\$k]" 2>/dev/null
 }
 
 backup_config() {
@@ -698,17 +698,20 @@ call_restore() {
 call_start() {
     local retval=0
     local deployment_config_file="/var/lib/alterator/service/samba-ad/status.json"
+    local dns_backend=
     deployment_config="$(cat "$deployment_config_file")"
-    dns_backend=$(get_json_value "$deployment_config" "dnsBackend" ".dnsSettings")
+
+    dns_backend=$(echo "$deployment_config" | jq -r '.dnsSettings.dnsBackend | if . != null then (keys_unsorted[0]) else empty end')
+
     if [ "$dns_backend" = "BIND9_DLZ" ]; then
-        systemctl enable --now bind.service || retval=1
+        systemctl enable --now bind.service
     fi
     if [ "$dns_backend" = "SAMBA_INTERNAL" ]; then
-        if systemctl list-unit-files | grep -q '^bind\.service'; then
-            systemctl disable --now bind.service || retval=1
+        if systemctl list-units | grep -oq '\bbind.service'; then
+            systemctl disable --now bind.service 
         fi
     fi
-    systemctl enable --now samba.service || retval=1
+    systemctl enable --now samba.service
 
     return $retval
 }
@@ -716,12 +719,14 @@ call_start() {
 call_stop() {
     local retval=0
     local deployment_config_file="/var/lib/alterator/service/samba-ad/status.json"
-    systemctl disable --now samba.service || retval=1
-
+    local dns_backend=
     deployment_config="$(cat "$deployment_config_file")"
-    dns_backend=$(get_json_value "$deployment_config" "dnsBackend" ".dnsSettings")
+
+    dns_backend=$(echo "$deployment_config" | jq -r '.dnsSettings.dnsBackend | if . != null then (keys_unsorted[0]) else empty end')
+
+    systemctl disable --now samba.service 
     if [ "$dns_backend" = "BIND9_DLZ" ]; then
-        systemctl disable --now bind.service || retval=1
+        systemctl disable --now bind.service
     fi
 
     return $retval
@@ -730,15 +735,16 @@ call_stop() {
 call_restart() {
     local retval=0
     local deployment_config_file="/var/lib/alterator/service/samba-ad/status.json"
-    systemctl restart samba.service || retval=1
+    systemctl restart samba.service
 
     deployment_config="$(cat "$deployment_config_file")"
-    dns_backend=$(get_json_value "$deployment_config" "dnsBackend" ".dnsSettings")
+    dns_backend=$(echo "$deployment_config" | jq -r '.dnsSettings.dnsBackend | if . != null then (keys_unsorted[0]) else empty end')
     if [ "$dns_backend" = "BIND9_DLZ" ]; then
-        systemctl restart bind.service || retval=1
+        systemctl restart bind.service
     fi
     return $retval
 }
+
 case "$MODE" in
     provision)
         call_provision || GLOBAL_EXIT=1

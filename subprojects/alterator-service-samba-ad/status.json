@@ -1,5 +1,7 @@
 {
-  "backendStore": "tdb",
+  "backendStore": {
+    "tdb": {}
+  },
   "backendStoreSize": 4,
   "bindSettings": {
     "allowQuery": [],
@@ -24,11 +26,15 @@
         "none"
       ]
     },
-    "dnsBackend": "BIND9_DLZ",
+    "dnsBackend": {
+      "BIND9_DLZ": {}
+    },
     "forwarders": []
   },
   "functionalLevel": "2008_R2",
-  "mode": "join",
+  "mode": {
+    "join": {}
+  },
   "netBiosName": "",
   "realm": "",
   "serverRole": "dc",

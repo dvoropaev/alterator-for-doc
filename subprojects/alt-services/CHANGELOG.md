@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- segmentation fault while editing parameters in table mode
+
 ## 0.1.7-alt1
 
 ### Fixed

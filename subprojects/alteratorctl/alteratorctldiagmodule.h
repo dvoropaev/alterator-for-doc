@@ -53,6 +53,12 @@ typedef struct
 
 } AlteratorCtlDiagModule;
 
+typedef struct
+{
+    gchar *bus_hint;
+    GString *log_buffer;
+} DiagRunAdditionalData;
+
 alterator_ctl_module_t *get_diag_module();
 
 int diag_module_run_with_args(gpointer self, int argc, char **argv);
