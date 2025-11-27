@@ -12,50 +12,53 @@
 
 ## GetAll — `GetAll() -> (stdout_bytes: ay, response: i)`
 
-- Назначение: вызывает `/usr/lib/alterator/backends/systeminfo --all` и собирает агрегированный набор характеристик.
+- Назначение: получить полный набор сведений о машине и установленной системе в одном вызове.
 - Параметры: не принимает аргументов; возвращает stdout_bytes и response.
 - Формат stdout_bytes: строки вида `KEY="value"` с ключами `HOSTNAME`, `OS_NAME`, `BRANCH`, `KERNEL`, `CPU`, `ARCH`, `GPU`, `MEMORY`, `DRIVE`, `MOTHERBOARD`, `MONITOR` в указанном порядке.
 - Ожидаемое поведение (пример): response = 0, вывод содержит все перечисленные пары ключ-значение.
 
 ## GetHostName — `GetHostName() -> (stdout_strings: as, response: i)`
 
-- Назначение: запускает `systeminfo host-name`, который печатает результат `hostname`.
+- Назначение: получить имя узла, используемое в D-Bus-ответах и других командах.
 - Параметры: не принимает аргументов; возвращает stdout_strings и response.
 - Ожидаемое поведение (пример): stdout_strings содержит одно значение имени узла, response = 0.
 
 ## GetOperationSystemName — `GetOperationSystemName() -> (stdout_strings: as, response: i)`
 
-- Назначение: выполняет `systeminfo os-name`, считывая `PRETTY_NAME` из `/etc/os-release`.
+- Назначение: получить имя операционной системы в формате, удобном для представления пользователю; вызывает `systeminfo os-name`, считывающий `PRETTY_NAME` из `/etc/os-release`.
 - Параметры: аргументов нет; возвращает stdout_strings и response.
 - Ожидаемое поведение (пример): stdout_strings содержит человекочитаемое имя дистрибутива, response = 0.
 
 ## GetLicense — `GetLicense() -> (stdout_bytes: ay, response: i)`
 
-- Назначение: вызывает `systeminfo os-license`, который через `get_notes_file_path` ищет лицензионный текст и выводит файл.
+- Назначение: вернуть текст лицензии с учётом редакции и локали.
 - Параметры: входных аргументов нет; возвращает stdout_bytes и response (LC_ALL очищен).
-- Ожидаемое поведение (пример): stdout_bytes содержит содержимое лицензии текущей редакции, response = 0; при отсутствии файла команда завершается с ошибкой.
+- Логика поиска: при наличии пакета `alterator-backend-edition-utils` вызывается `/usr/lib/alterator/backends/edition`, который пытается найти файл в `/usr/share/alt-notes`; если файл не найден или редакция отсутствует, последовательно просматриваются `/usr/share/alt-notes`, `/usr/share/alt-license`, `/var/lib/install3/licenses` по локали, затем `license.all.html`.
+- Ожидаемое поведение (пример): stdout_bytes содержит содержимое лицензии, response = 0; при отсутствии файла команда завершается с ошибкой.
 
 ## GetReleaseNotes — `GetReleaseNotes() -> (stdout_bytes: ay, response: i)`
 
-- Назначение: выполняет `systeminfo release-notes` для вывода текстов релиз-нот.
+- Назначение: вернуть текст заметок релиза с учётом локали и наличия редакции.
 - Параметры: аргументов нет; возвращает stdout_bytes и response (LC_ALL очищен).
-- Ожидаемое поведение (пример): stdout_bytes содержит HTML/текст заметок выпуска; отсутствие файла приводит к ненулевому response.
+- Логика поиска: аналогична `GetLicense` — сначала используется информация редакции из `/usr/lib/alterator/backends/edition`, затем поиск по каталогам `/usr/share/alt-notes`, `/usr/share/alt-license`, `/var/lib/install3/licenses` с подстановкой локали или файла `license.all.html`.
+- Ожидаемое поведение (пример): stdout_bytes содержит HTML/текст заметок выпуска; отсутствие подходящего файла приводит к ненулевому response.
 
 ## GetFinalNotes — `GetFinalNotes() -> (stdout_bytes: ay, response: i)`
 
-- Назначение: запускает `systeminfo final-notes` для получения финальных подсказок инсталлятора.
+- Назначение: предоставить итоговые указания инсталлятора для локали пользователя.
 - Параметры: аргументов нет; возвращает stdout_bytes и response (LC_ALL очищен).
+- Логика поиска: совпадает с `GetLicense` и `GetReleaseNotes`, включая обращение к `/usr/lib/alterator/backends/edition` при наличии редакции и последующий обход каталогов с учётом локали.
 - Ожидаемое поведение (пример): stdout_bytes содержит текст финальных заметок; при отсутствии данных команда завершится с ошибкой.
 
 ## GetArch — `GetArch() -> (stdout_strings: as, response: i)`
 
-- Назначение: выполняет `systeminfo arch`, считывая архитектуру из `/proc/sys/kernel/arch`.
+- Назначение: получить архитектуру машины для отображения в сводных сведениях.
 - Параметры: аргументов нет; возвращает stdout_strings и response.
 - Ожидаемое поведение (пример): stdout_strings содержит архитектуру (например, x86_64), response = 0.
 
 ## GetBranch — `GetBranch() -> (stdout_strings: as, response: i)`
 
-- Назначение: вызывает `systeminfo branch`, возвращая значение `%_priority_distbranch` из rpm.
+- Назначение: возвращает значение rpm-макроса `%_priority_distbranch`.
 - Параметры: не принимает аргументов; возвращает stdout_strings и response.
 - Ожидаемое поведение (пример): stdout_strings включает текущую ветку репозитория, response = 0.
 
