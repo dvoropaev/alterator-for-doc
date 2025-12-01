@@ -5,6 +5,7 @@ set -euo pipefail
 trap 'echo "❌ Ошибка при выполнении скрипта (строка $LINENO)"; exit 1' ERR
 
 REPOS=(
+  "https://altlinux.space/sheriffkorov/dbusxml-to-md-xslt-template.git"
   "https://altlinux.space/alterator/alt-components.git"
   "https://altlinux.space/alterator/contributing.git"
   "https://altlinux.space/alterator/alteratorctl.git"

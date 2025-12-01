@@ -1,0 +1,43 @@
+<!DOCTYPE node PUBLIC
+  "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+  "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node name="/" xmlns:doc="http://www.freedesktop.org/dbus/1.0/doc.dtd">
+  <interface name="org.freedesktop.example.example1">
+	<doc:summary>Some summary of example</doc:summary>
+    <method name="Foo">
+      <doc:summary>Some summary of Foo</doc:summary>
+      <arg type="as" name="arg1" direction="in">
+        <doc:summary>Some summary of arg1</doc:summary>
+      </arg>
+      <arg type="s" name="arg2" direction="in">
+        <doc:summary>Some summary of arg2</doc:summary>
+      </arg>
+    </method>
+    <method name="EmptyFoo">
+	  <doc:summary>Some summary of EmptyFoo</doc:summary>
+    </method>
+    <method name="DetailFoo">
+      <doc:summary>Some summary of DetailFoo</doc:summary>
+      <arg type="s" name="action_id" direction="in">
+        <doc:summary>Some summary of action_id</doc:summary>
+        <doc:detail>
+		  Some list:
+		  - `some first item`;
+		  - `some second item`.
+        </doc:detail> 
+      </arg>
+      <arg type="as" name="out1" direction="out">
+        <doc:summary>Some summary of out1</doc:summary>
+      </arg>
+      <arg type="i" name="out2" direction="out">
+        <doc:summary>Some summary of out2</doc:summary>
+      </arg>
+    </method>
+    <signal name="OnSomething">
+      <doc:summary>Some summary of OnSomething</doc:summary>
+      <arg type="s" name="">
+        <doc:summary>Some summary of ... what?</doc:summary>
+      </arg>
+    </signal>
+  </interface>
+</node>
