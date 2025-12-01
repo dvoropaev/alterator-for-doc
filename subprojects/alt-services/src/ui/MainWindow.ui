@@ -433,7 +433,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset theme="system-run"/>
+    <iconset theme="applications-system"/>
    </property>
    <property name="text">
     <string>D&amp;iagnostics</string>

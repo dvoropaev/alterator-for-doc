@@ -422,7 +422,7 @@ const QIcon& Controller::actionIcon(Parameter::Context context)
         { Parameter::Context::Configure , QIcon::fromTheme("preferences-system")},
         { Parameter::Context::Deploy    , QIcon::fromTheme("go-up")},
         { Parameter::Context::Undeploy  , QIcon::fromTheme("window-close")},
-        { Parameter::Context::Diag      , QIcon::fromTheme("system-run")},
+        { Parameter::Context::Diag      , QIcon::fromTheme("applications-system")},
         { Parameter::Context::Backup    , QIcon::fromTheme("document-save")},
         { Parameter::Context::Restore   , QIcon::fromTheme("edit-undo")},
     };

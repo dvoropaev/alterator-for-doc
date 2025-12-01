@@ -8,20 +8,24 @@ action_id = "org.altlinux.alterator.control1"
 execute = "/usr/lib/alterator-backend-control/control-helper info <FACILITY>"
 stdout_bytes = true
 action_id = "Info"
+exit_status = true
 
 [methods.Get]
 execute = "/usr/lib/alterator-backend-control/control-helper status <FACILITY>"
 stdout_bytes = true
 stderr_strings = true
 action_id = "Get"
+exit_status = true
 
 [methods.List]
 execute ='/usr/lib/alterator-backend-control/control-helper list-states <FACILITY>'
 stdout_strings = true
 stderr_strings = true
 action_id = "List"
+exit_status = true
 
 [methods.Set]
 execute = "control <FACILITY> {status}"
 stderr_strings = true
 action_id = "Set"
+exit_status = true

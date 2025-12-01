@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - segmentation fault while editing parameters in table mode
+- "Copy"/"Select All" default actions not being displayed in Log Page context menu
+- "table mode" parameter editor was losing its scroll position while adding/removing parameters
+- optional parameter selection was only possible outside of table checkboxes
 
 ## 0.1.7-alt1
 

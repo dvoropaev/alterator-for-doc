@@ -84,7 +84,8 @@ QVariant StateForm::value()
                 return spinBox->value();
             break;
 
-        default: break;
+        default:
+            return d->m_state->name();
     }
 
     return {};

@@ -8,22 +8,26 @@ thread_limit = 100
 execute = "cat /usr/share/alterator/services/<SERVICE>.service"
 action_id = "Info"
 stdout_bytes = true
+exit_status = true
 
 [methods.Start]
 execute = "test-services-helper -n <SERVICE> --start"
 action_id = "Start"
 timeout = 600
+exit_status = true
 
 [methods.Stop]
 execute = "test-services-helper -n <SERVICE> --stop"
 action_id = "Stop"
 timeout = 600
+exit_status = true
 
 [methods.Configure]
 execute = "test-services-helper -n <SERVICE> -c"
 action_id = "Configure"
 timeout = 600
 stdin_string = true
+exit_status = true
 
 [methods.Deploy]
 execute = "test-services-helper -n <SERVICE> -d"
@@ -32,6 +36,7 @@ timeout = 600
 stdin_string = true
 stdout_signal_name = "service_stdout_signal"
 stderr_signal_name = "service_stderr_signal"
+exit_status = true
 
 [methods.Undeploy]
 execute = "test-services-helper -n <SERVICE> -u"
@@ -40,20 +45,24 @@ timeout = 600
 stdin_string = true
 stdout_signal_name = "service_stdout_signal"
 stderr_signal_name = "service_stderr_signal"
+exit_status = true
 
 [methods.Backup]
 execute = "test-services-helper -n <SERVICE> -b"
 action_id = "Backup"
 timeout = 600
 stdin_string = true
+exit_status = true
 
 [methods.Restore]
 execute = "test-services-helper -n <SERVICE> -r"
 action_id = "Restore"
 timeout = 600
 stdin_string = true
+exit_status = true
 
 [methods.Status]
 execute = "test-services-helper -n <SERVICE> -s"
 action_id = "Status"
 stdout_bytes = true
+exit_status = true

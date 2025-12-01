@@ -217,7 +217,7 @@ void MainWindow::on_facilityView_clicked(const QModelIndex &index)
 
         layout->addItem(new QSpacerItem(0,0, QSizePolicy::Minimum, QSizePolicy::Expanding));
 
-        connect(&d->m_group, &QButtonGroup::buttonClicked, this, [this](QAbstractButton* b)
+        connect(&d->m_group, &QButtonGroup::buttonToggled, this, [this](QAbstractButton* b)
         {
             auto* stateForm = d->m_states.at(static_cast<QRadioButton*>(b));
             d->m_pending = stateForm->state() != d->m_facility->currentState() || stateForm->isChanged();

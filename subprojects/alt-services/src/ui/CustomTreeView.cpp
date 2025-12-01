@@ -44,7 +44,7 @@ CustomTreeView::CustomTreeView(QWidget* parent)
         option.index = index;
         QRect checkboxRect = style()->subElementRect(QStyle::SE_CheckBoxClickRect, &option, this);
 
-        QPoint clickPos = mapFromGlobal(QCursor::pos());
+        QPoint clickPos = viewport()->mapFromGlobal(QCursor::pos());
         if (!checkboxRect.contains(clickPos)) {
             auto checked = (Qt::CheckState)index.data(Qt::CheckStateRole).toInt();
             model()->setData(index, checked == Qt::Unchecked, Qt::CheckStateRole);

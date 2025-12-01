@@ -27,25 +27,30 @@ interface = "edition1"
 [methods.Info]
 execute = "$exec info $edition_name"
 stdout_bytes = true
+exit_status  = true
 
 [methods.Description]
 execute = "$exec description $edition_name"
 stdout_bytes = true
+exit_status  = true
 environment.LC_ALL = {}
 
 [methods.License]
 execute = "$exec license $edition_name"
 stdout_bytes = true
+exit_status  = true
 environment.LC_ALL = {}
 
 [methods.ReleaseNotes]
 execute = "$exec release-notes $edition_name"
 stdout_bytes = true
+exit_status  = true
 environment.LC_ALL = {}
 
 [methods.FinalNotes]
 execute = "$exec final-notes $edition_name"
 stdout_bytes = true
+exit_status  = true
 environment.LC_ALL = {}
 EOF
 

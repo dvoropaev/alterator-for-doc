@@ -6,4 +6,5 @@ interface = "application1"
 [methods.Info]
 execute = "cat /usr/share/alterator/applications/components-app.application"
 stdout_bytes = true
+exit_status  = true
 action_id = "Info"

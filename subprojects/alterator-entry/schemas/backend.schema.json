@@ -3,6 +3,86 @@
     "title": "Alterator Backend",
     "type": "object",
     "$comment": "TODO(chernigin): figure out actually required properties",
+    "$defs": {
+        "executor_module_validation": {
+            "anyOf": [
+                {
+                    "not": {
+                        "properties": {
+                            "module": {
+                                "const": "executor"
+                            }
+                        },
+                        "required": [
+                            "module"
+                        ]
+                    }
+                },
+                {
+                    "properties": {
+                        "methods": {
+                            "additionalProperties": {
+                                "required": [
+                                    "execute"
+                                ]
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "backend3_module_validation": {
+            "anyOf": [
+                {
+                    "not": {
+                        "properties": {
+                            "module": {
+                                "const": "backend3"
+                            }
+                        },
+                        "required": [
+                            "module"
+                        ]
+                    }
+                },
+                {
+                    "properties": {
+                        "methods": {
+                            "additionalProperties": {
+                                "required": [
+                                    "backend3"
+                                ]
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "backend3_or_execute": {
+            "oneOf": [
+                {
+                    "properties": {
+                        "backend3": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "backend3"
+                    ]
+                },
+                {
+                    "properties": {
+                        "execute": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "execute"
+                    ]
+                }
+            ]
+        }
+    },
     "propertyNames": {
         "enum": [
             "type",
@@ -51,6 +131,7 @@
                 "propertyNames": {
                     "enum": [
                         "execute",
+                        "backend3",
                         "timeout",
                         "thread_limit",
                         "stdout_strings",
@@ -61,11 +142,20 @@
                         "stderr_strings_limit",
                         "stdout_signal_name",
                         "stderr_signal_name",
-                        "action_id"
+                        "action_id",
+                        "environment",
+                        "stdin_string",
+                        "stdout_byte_arrays",
+                        "stdout_string_array",
+                        "stdout_json",
+                        "exit_status"
                     ]
                 },
                 "properties": {
                     "execute": {
+                        "type": "string"
+                    },
+                    "backend3": {
                         "type": "string"
                     },
                     "timeout": {
@@ -108,9 +198,61 @@
                     },
                     "action_id": {
                         "type": "string"
+                    },
+                    "environment": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "object",
+                            "propertyNames": {
+                                "enum": [
+                                    "default",
+                                    "required"
+                                ]
+                            },
+                            "properties": {
+                                "default": {
+                                    "type": "string"
+                                },
+                                "required": {
+                                    "type": "boolean"
+                                }
+                            }
+                        }
+                    },
+                    "stdin_string": {
+                        "type": "boolean"
+                    },
+                    "stdout_byte_arrays": {
+                        "type": "boolean"
+                    },
+                    "stdout_string_array": {
+                        "type": "boolean"
+                    },
+                    "stdout_json": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "pattern": "[A-Za-z0-9_]*$"
+                        }
+                    },
+                    "exit_status": {
+                        "type": "boolean"
                     }
-                }
+                },
+                "allOf": [
+                    {
+                        "$ref": "#/$defs/backend3_or_execute"
+                    }
+                ]
             }
         }
-    }
+    },
+    "allOf": [
+        {
+            "$ref": "#/$defs/executor_module_validation"
+        },
+        {
+            "$ref": "#/$defs/backend3_module_validation"
+        }
+    ]
 }

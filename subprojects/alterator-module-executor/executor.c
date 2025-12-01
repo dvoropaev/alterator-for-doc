@@ -47,8 +47,10 @@ static const gchar xml_arg_output_string_array[] =
 static const gchar xml_arg_error_strings[] =
   "      <arg type='as' name='stderr_strings' direction='out'/>";
 
+static const gchar xml_arg_exit_status[] =
+  "      <arg type='i' name='response' direction='out'/>";
+
 static const gchar xml_method_end[] =
-  "      <arg type='i' name='response' direction='out'/>"
   "    </method>";
 
 static const gchar xml_signal_start[] =
@@ -104,7 +106,8 @@ static gboolean check_execute_string(gchar *execute_string) {
 /* Make a type string for stdout_json from param_names.
    It returns newly allocated string. */
 static gchar *make_type_string_for_stdout_json(gchar **param_names,
-                                               gboolean stderr_array)
+                                               gboolean stderr_array,
+                                               gboolean exit_status)
 {
     GString *str;
 
@@ -128,7 +131,10 @@ static gchar *make_type_string_for_stdout_json(gchar **param_names,
     }
 
     /* Exit status. */
-    g_string_append_c(str, 'i');
+    if (exit_status) {
+        g_string_append_c(str, 'i');
+    }
+
     g_string_append_c(str, ')');
 
     return g_string_free(str, FALSE);
@@ -220,10 +226,25 @@ static void invocation_return_value(ThreadFuncParam *param, gint exit_status) {
     gboolean is_ay_open = FALSE;
     gchar *type_string;
 
+    /* If exit_status return is disabled, but exit_status is not zero, then we
+       return the dbus_error. */
+    if (!param->exit_status_enabled && exit_status) {
+        gchar *message = g_strdup_printf("Exit status is %d.", exit_status);
+
+        g_dbus_method_invocation_return_dbus_error(param->invocation,
+                                                   DBUS_NAME,
+                                      (message) ? message : "exit_status != 0");
+
+        g_free(message);
+        return;
+    }
+
     /* Strings from json and error strings. */
     if (param->stdout_json_enabled && param->stderr_strings_enabled) {
         type_string =
-              make_type_string_for_stdout_json(param->stdout_param_names, TRUE);
+              make_type_string_for_stdout_json(param->stdout_param_names,
+                                               TRUE,
+                                               param->exit_status_enabled);
         builder = g_variant_builder_new(G_VARIANT_TYPE (type_string));
         g_free(type_string);
 
@@ -247,12 +268,12 @@ static void invocation_return_value(ThreadFuncParam *param, gint exit_status) {
         }
         g_variant_builder_close(builder);
 
-        /* Exit status. */
-        g_variant_builder_add(builder, "i", exit_status);
     /* Strings from json only. */
     } else if (param->stdout_json_enabled) {
         type_string =
-             make_type_string_for_stdout_json(param->stdout_param_names, FALSE);
+             make_type_string_for_stdout_json(param->stdout_param_names,
+                                              FALSE,
+                                              param->exit_status_enabled);
         builder = g_variant_builder_new(G_VARIANT_TYPE (type_string));
         g_free(type_string);
 
@@ -267,13 +288,12 @@ static void invocation_return_value(ThreadFuncParam *param, gint exit_status) {
             return;
         }
 
-        /* Exit status. */
-        g_variant_builder_add(builder, "i", exit_status);
     /* String array and error strings. */
     } else if (param->stdout_string_array_enabled &&
                param->stderr_strings_enabled)
     {
-        builder = g_variant_builder_new(G_VARIANT_TYPE (TWO_ARRAYS));
+        type_string = (param->exit_status_enabled) ? TWO_ARRAYS_I : TWO_ARRAYS;
+        builder = g_variant_builder_new(G_VARIANT_TYPE (type_string));
 
         g_variant_builder_open(builder, G_VARIANT_TYPE ("as"));
 
@@ -298,10 +318,10 @@ static void invocation_return_value(ThreadFuncParam *param, gint exit_status) {
         }
         g_variant_builder_close(builder);
 
-        g_variant_builder_add(builder, "i", exit_status);
     /* String array only. */
     } else if (param->stdout_string_array_enabled) {
-        builder = g_variant_builder_new(G_VARIANT_TYPE (ARRAY_ONLY));
+        type_string = (param->exit_status_enabled) ? ARRAY_ONLY_I : ARRAY_ONLY;
+        builder = g_variant_builder_new(G_VARIANT_TYPE (type_string));
 
         g_variant_builder_open(builder, G_VARIANT_TYPE ("as"));
 
@@ -317,14 +337,15 @@ static void invocation_return_value(ThreadFuncParam *param, gint exit_status) {
 
         g_variant_builder_close(builder);
 
-        g_variant_builder_add(builder, "i", exit_status);
     /* Blob arrays and error strings. */
     } else if (param->stdout_byte_arrays_enabled &&
                param->stderr_strings_enabled)
     {
         param->stderr_strings = g_list_reverse(param->stderr_strings);
 
-        builder = g_variant_builder_new(G_VARIANT_TYPE (BYTE_ARRAYS_AND_ARRAY));
+        type_string = (param->exit_status_enabled) ? BYTE_ARRAYS_AND_ARRAY_I :
+                                                     BYTE_ARRAYS_AND_ARRAY;
+        builder = g_variant_builder_new(G_VARIANT_TYPE (type_string));
 
         g_variant_builder_open(builder, G_VARIANT_TYPE ("aay"));
         is_ay_open = FALSE;
@@ -350,16 +371,18 @@ static void invocation_return_value(ThreadFuncParam *param, gint exit_status) {
         }
         g_variant_builder_close(builder);// "aay"
 
-        g_variant_builder_open (builder, G_VARIANT_TYPE ("as"));
+        /* Error string. */
+        g_variant_builder_open(builder, G_VARIANT_TYPE ("as"));
         for (GList *a = param->stderr_strings; a; a = a->next) {
             g_variant_builder_add(builder, "s", (gchar*) a->data);
         }
-        g_variant_builder_close (builder);
+        g_variant_builder_close(builder);
 
-        g_variant_builder_add(builder, "i", exit_status);
     /* Blob arrays only. */
     } else if (param->stdout_byte_arrays_enabled) {
-        builder = g_variant_builder_new(G_VARIANT_TYPE (BYTE_ARRAYS_ONLY));
+        type_string = (param->exit_status_enabled) ? BYTE_ARRAYS_ONLY_I :
+                                                     BYTE_ARRAYS_ONLY;
+        builder = g_variant_builder_new(G_VARIANT_TYPE (type_string));
 
         g_variant_builder_open(builder, G_VARIANT_TYPE ("aay"));
 
@@ -386,87 +409,96 @@ static void invocation_return_value(ThreadFuncParam *param, gint exit_status) {
         }
         g_variant_builder_close(builder);// "aay"
 
-        g_variant_builder_add(builder, "i", exit_status);
     /* Blob and error strings. */
     } else if (param->stdout_bytes_enabled && param->stderr_strings_enabled) {
         param->stderr_strings = g_list_reverse(param->stderr_strings);
 
-        builder = g_variant_builder_new (G_VARIANT_TYPE (BYTES_AND_ARRAY));
+        type_string = (param->exit_status_enabled) ? BYTES_AND_ARRAY_I :
+                                                     BYTES_AND_ARRAY;
+        builder = g_variant_builder_new(G_VARIANT_TYPE (type_string));
 
-        g_variant_builder_open (builder, G_VARIANT_TYPE ("ay"));
+        g_variant_builder_open(builder, G_VARIANT_TYPE ("ay"));
         for (gsize i = 0; i < param->stdout_bytes->len; i++) {
             g_variant_builder_add(builder, "y", param->stdout_bytes->str[i]);
         }
-        g_variant_builder_close (builder);
+        g_variant_builder_close(builder);
 
-        g_variant_builder_open (builder, G_VARIANT_TYPE ("as"));
+        /* Error strings. */
+        g_variant_builder_open(builder, G_VARIANT_TYPE ("as"));
         for (GList *a = param->stderr_strings; a; a = a->next) {
             g_variant_builder_add(builder, "s", (gchar*) a->data);
         }
-        g_variant_builder_close (builder);
+        g_variant_builder_close(builder);
 
-        g_variant_builder_add(builder, "i", exit_status);
     /* Blob only. */
     } else if (param->stdout_bytes_enabled) {
-        builder = g_variant_builder_new (G_VARIANT_TYPE (BYTES_ONLY));
+        type_string = (param->exit_status_enabled) ? BYTES_ONLY_I : BYTES_ONLY;
+        builder = g_variant_builder_new(G_VARIANT_TYPE (type_string));
 
-        g_variant_builder_open (builder, G_VARIANT_TYPE ("ay"));
+        g_variant_builder_open(builder, G_VARIANT_TYPE ("ay"));
         for (gsize i = 0; i < param->stdout_bytes->len; i++) {
             g_variant_builder_add(builder, "y", param->stdout_bytes->str[i]);
         }
-        g_variant_builder_close (builder);
+        g_variant_builder_close(builder);
 
-        g_variant_builder_add(builder, "i", exit_status);
     /* Out strings and error strings. */
     } else if (param->stderr_strings_enabled && param->stdout_strings_enabled) {
         param->stderr_strings = g_list_reverse(param->stderr_strings);
         param->stdout_strings = g_list_reverse(param->stdout_strings);
 
-        builder = g_variant_builder_new (G_VARIANT_TYPE (TWO_ARRAYS));
+        type_string = (param->exit_status_enabled) ? TWO_ARRAYS_I : TWO_ARRAYS;
+        builder = g_variant_builder_new(G_VARIANT_TYPE (type_string));
 
-        g_variant_builder_open (builder, G_VARIANT_TYPE ("as"));
+        g_variant_builder_open(builder, G_VARIANT_TYPE ("as"));
         for (GList *a = param->stdout_strings; a; a = a->next) {
             g_variant_builder_add(builder, "s", (gchar*) a->data);
         }
-        g_variant_builder_close (builder);
+        g_variant_builder_close(builder);
 
-        g_variant_builder_open (builder, G_VARIANT_TYPE ("as"));
+        /* Error strings. */
+        g_variant_builder_open(builder, G_VARIANT_TYPE ("as"));
         for (GList *a = param->stderr_strings; a; a = a->next) {
             g_variant_builder_add(builder, "s", (gchar*) a->data);
         }
-        g_variant_builder_close (builder);
+        g_variant_builder_close(builder);
 
-        g_variant_builder_add(builder, "i", exit_status);
     /* Out strings. */
     } else if (param->stdout_strings_enabled) {
         param->stdout_strings = g_list_reverse(param->stdout_strings);
 
-        builder = g_variant_builder_new (G_VARIANT_TYPE (ARRAY_ONLY));
+        type_string = (param->exit_status_enabled) ? ARRAY_ONLY_I : ARRAY_ONLY;
+        builder = g_variant_builder_new(G_VARIANT_TYPE (type_string));
 
-        g_variant_builder_open (builder, G_VARIANT_TYPE ("as"));
+        g_variant_builder_open(builder, G_VARIANT_TYPE ("as"));
         for (GList *a = param->stdout_strings; a; a = a->next) {
             g_variant_builder_add(builder, "s", (gchar*) a->data);
         }
-        g_variant_builder_close (builder);
+        g_variant_builder_close(builder);
 
-        g_variant_builder_add(builder, "i", exit_status);
     /* Error strings. */
     } else if (param->stderr_strings_enabled) {
         param->stderr_strings = g_list_reverse(param->stderr_strings);
 
-        builder = g_variant_builder_new (G_VARIANT_TYPE (ARRAY_ONLY));
+        type_string = (param->exit_status_enabled) ? ARRAY_ONLY_I : ARRAY_ONLY;
+        builder = g_variant_builder_new(G_VARIANT_TYPE (type_string));
 
-        g_variant_builder_open (builder, G_VARIANT_TYPE ("as"));
+        g_variant_builder_open(builder, G_VARIANT_TYPE ("as"));
         for (GList *a = param->stderr_strings; a; a = a->next) {
             g_variant_builder_add(builder, "s", (gchar*) a->data);
         }
-        g_variant_builder_close (builder);
+        g_variant_builder_close(builder);
 
-        g_variant_builder_add(builder, "i", exit_status);
-    /* Exit status only.*/
+    /* Exit status only. */
+    } else if (param->exit_status_enabled) {
+        builder = g_variant_builder_new(G_VARIANT_TYPE (EXIT_STATUS_ONLY));
+
+    /* Empty answer. */
     } else {
-        builder = g_variant_builder_new (G_VARIANT_TYPE (EXIT_STATUS_ONLY));
+        builder = g_variant_builder_new(G_VARIANT_TYPE (EMPTY));
+    }
 
+    /* If exit_status is enabled, then we add it. */
+    if (param->exit_status_enabled) {
         g_variant_builder_add(builder, "i", exit_status);
     }
 
@@ -1208,6 +1240,7 @@ static void handle_method_call(GDBusConnection *connection,
     gboolean stdout_json_enabled         = FALSE;
     gboolean stderr_signals_enabled      = FALSE;
     gboolean stderr_strings_enabled      = FALSE;
+    gboolean exit_status_enabled         = FALSE;
     gint stdout_strings_limit = DEFAULT_BYTE_LIMIT;
     gint stdout_byte_limit = DEFAULT_BYTE_LIMIT;
     gint stderr_strings_limit = DEFAULT_BYTE_LIMIT;
@@ -1265,6 +1298,9 @@ static void handle_method_call(GDBusConnection *connection,
 
                             stderr_strings_enabled =
                                             method_info->stderr_strings_enabled;
+
+                            exit_status_enabled =
+                                            method_info->exit_status_enabled;
 
                             stdout_strings_limit =
                                             method_info->stdout_strings_limit;
@@ -1395,6 +1431,7 @@ static void handle_method_call(GDBusConnection *connection,
     thread_func_param->stdout_signals_enabled = stdout_signals_enabled;
     thread_func_param->stderr_strings_enabled = stderr_strings_enabled;
     thread_func_param->stderr_signals_enabled = stderr_signals_enabled;
+    thread_func_param->exit_status_enabled = exit_status_enabled;
     thread_func_param->stdout_param_names = g_strdupv(stdout_param_names);
     thread_func_param->stdout_strings = NULL;
     thread_func_param->stdout_bytes = g_string_new(NULL);
@@ -2046,6 +2083,13 @@ static gboolean make_and_save_introspection(gchar *node_name,
             }
         }
 
+        raw = g_hash_table_lookup(method_data, INFO_EXIT_STATUS);
+        if (toml_raw_to_boolean(raw)) {
+            method_info->exit_status_enabled = TRUE;
+        } else {
+            method_info->exit_status_enabled = FALSE;
+        }
+
         copy_environment(method_info, method_object_info->environment);
 
         add_method_to_table(node_name, interface_name, method_name,
@@ -2098,6 +2142,10 @@ static gboolean make_and_save_introspection(gchar *node_name,
 
         if (method_info->stderr_strings_enabled) {
             g_string_append(xml, xml_arg_error_strings);
+        }
+
+        if (method_info->exit_status_enabled) {
+            g_string_append(xml, xml_arg_exit_status);
         }
 
         g_string_append(xml, xml_method_end);

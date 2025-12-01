@@ -6,4 +6,5 @@ interface = "batch_component_categories1"
 [methods.Info]
 execute             = "/usr/lib/alterator/backends/component info --category --all"
 stdout_string_array = true
+exit_status         = true
 action_id           = "Info"

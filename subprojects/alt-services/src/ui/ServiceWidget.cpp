@@ -37,7 +37,7 @@ ServiceWidget::ServiceWidget(QWidget *parent)
     {
         d->ui. tabWidget->setTabIcon(0, QIcon::fromTheme("dialog-information"));
         d->ui. tabWidget->setTabIcon(1, QIcon::fromTheme("changes-prevent"));
-        d->ui. tabWidget->setTabIcon(2, QIcon::fromTheme("system-run"));
+        d->ui. tabWidget->setTabIcon(2, QIcon::fromTheme("applications-system"));
     }
 
 

@@ -165,7 +165,7 @@ ActionWizard::ActionWizard(QWidget *parent)
     }
 
     { // icons
-        d->ui.preDiagPage->setPixmap(QWizard::LogoPixmap, QIcon::fromTheme("system-run").pixmap(32, 32));
+        d->ui.preDiagPage->setPixmap(QWizard::LogoPixmap, QIcon::fromTheme("applications-system").pixmap(32, 32));
         d->ui.postDiagPage->setPixmap(QWizard::LogoPixmap, d->ui.preDiagPage->pixmap(QWizard::LogoPixmap));
         d->ui.parametersPage->setPixmap(QWizard::LogoPixmap, QIcon::fromTheme("preferences-system").pixmap(32, 32));
     }
@@ -537,14 +537,14 @@ void ActionWizard::fillCurrentParameters(bool firstFill)
         d->ui.tabWidget->removeTab(d->ui.tabWidget->indexOf(d->ui.preDiagTab));
     else {
         int i = d->ui.tabWidget->insertTab(0, d->ui.preDiagTab, tr("Premilinary diagnostics"));
-        d->ui.tabWidget->setTabIcon(i, QIcon::fromTheme("system-run"));
+        d->ui.tabWidget->setTabIcon(i, QIcon::fromTheme("applications-system"));
     }
 
     if ( !d->playfile.options.postdiag )
         d->ui.tabWidget->removeTab(d->ui.tabWidget->indexOf(d->ui.postDiagTab));
     else {
         int i = d->ui.tabWidget->insertTab(1, d->ui.postDiagTab, tr("Post-deploy diagnostics"));
-        d->ui.tabWidget->setTabIcon(i, QIcon::fromTheme("system-run"));
+        d->ui.tabWidget->setTabIcon(i, QIcon::fromTheme("applications-system"));
     }
 
     if ( d->m_parameters.empty() )

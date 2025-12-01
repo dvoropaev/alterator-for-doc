@@ -6,6 +6,7 @@ interface = "repo1"
 [methods.Info]
 execute      = "cat /usr/share/alterator/objects/repo.object"
 stdout_bytes = true
+exit_status  = true
 action_id    = "Info"
 
 [methods.List]
@@ -13,13 +14,16 @@ execute        = "apt-repo list"
 stdout_strings = true
 action_id      = "List"
 stderr_strings = true
+exit_status    = true
 
 [methods.Add]
 execute        = "apt-repo add {source}"
 action_id      = "Add"
 stderr_strings = true
+exit_status    = true
 
 [methods.Remove]
 execute        = "apt-repo rm {source}"
 action_id      = "Remove"
 stderr_strings = true
+exit_status    = true

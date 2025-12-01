@@ -616,7 +616,7 @@ std::unique_ptr<DiagTool> buildDiagTool(const QString& path, bool session, const
     if ( getTomlValue(table, "icon", icon) )
         iconName = QString::fromStdString(*icon);
     else
-        iconName = "system-run";
+        iconName = "applications-system";
 
     return std::make_unique<DiagTool>(QString::fromStdString(*diagName), locales.value(),
                                       path, iconName, session, std::move(tests), std::move(diagParameters));

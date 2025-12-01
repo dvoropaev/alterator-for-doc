@@ -79,6 +79,8 @@ The `execute` field is required, others are optional.
 - The `stderr_strings` field enables returning an array of strings from the
   stderr stream.
 
+- The `exit_status` field enables returning the exit code of the process.
+
 - The fields `stdout_byte_limit`, `stdout_strings_limit`, and
   `stderr_strings_limit` set the maximum size in bytes for the corresponding
   array.

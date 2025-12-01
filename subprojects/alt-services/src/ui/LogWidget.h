@@ -10,6 +10,9 @@ public:
     explicit LogWidget(QWidget *parent = nullptr);
     ~LogWidget();
 
+    QAction* searchAction() const;
+    QAction* exportAction() const;
+
 public slots:
     void beginEntry( const QString& );
     void endEntry( bool );

@@ -7,4 +7,5 @@ action_id = "org.altlinux.alterator.application1"
 [methods.Info]
 execute = "cat /usr/share/alterator/applications/alt-services.application"
 stdout_bytes = true
+exit_status = true
 action_id = "Info"

@@ -8,22 +8,26 @@ execute = "cat /usr/share/alterator/test_service_diag/<SERVICE>.diag"
 stdout_bytes = true
 thread_limit = 3
 action_id = "Info"
+exit_status = true
 
 [methods.Run]
 execute = "/usr/lib/test-services/diag-helper <SERVICE> {param}"
 stdout_signal_name = "diag1_stdout_signal"
 stderr_signal_name = "diag1_stderr_signal"
 action_id = "Run"
+exit_status = true
 
 [methods.List]
 execute = "/usr/lib/test-services/diag-helper <SERVICE> -l"
 stdout_strings = true
 action_id = "List"
+exit_status = true
 
 [methods.Report]
 execute = "/usr/lib/test-services/diag-helper <SERVICE> -r"
 stdout_bytes = true
 action_id = "Report"
+exit_status = true
 
 
 [methods.List.environment.service_path]

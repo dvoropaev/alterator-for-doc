@@ -26,15 +26,18 @@ interface = "component1"
 [methods.Info]
 execute = "$exec_dir/component info $component_name"
 stdout_bytes = true
+exit_status  = true
 
 [methods.Description]
 execute = "$exec_dir/component description $component_name"
 stdout_bytes = true
+exit_status  = true
 environment.LC_ALL = {}
 
 [methods.Status]
 execute = "$exec_dir/component status $component_name"
 stdout_strings = true
+exit_status = true
 EOF
 
 done

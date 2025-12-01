@@ -7,3 +7,4 @@ interface = "application1"
 execute      = "cat /usr/share/alterator/applications/alterator-application-control.application"
 stdout_bytes = true
 action_id    = "Info"
+exit_status = true

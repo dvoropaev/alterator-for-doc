@@ -2,21 +2,21 @@
 %define shortname systeminfo
 
 Name: alterator-backend-%{shortname}
-Version: 0.4.1
+Version: 0.4.2
 Release: alt1
 
 Summary: Alterator backend for getting system information
 License: GPLv3
 Group: System/Configuration/Other
-URL: https://gitlab.basealt.space/alt/alterator-backend-systeminfo
+URL: https://altlinux.space/alterator/alterator-backend-systeminfo
 
 BuildArch: noarch
 Source: %name-%version.tar
 
 Requires: alterator-interface-%{shortname} >= 0.4.0
-Requires: alterator-backend-%{shortname}-utils
+Requires: alterator-backend-%{shortname}-utils = %version-%release
 Requires: alterator-manager >= 0.1.25
-Requires: alterator-module-executor >= 0.1.14
+Requires: alterator-module-executor >= 0.1.29
 
 BuildRequires(pre): rpm-macros-alterator
 
@@ -33,7 +33,7 @@ Group: System/Configuration/Other
 %package -n alterator-backend-%{shortname}-utils
 Summary: Scripts for alterator-backend-%{shortname}
 Group: System/Configuration/Other
-Requires: alterator-notes-utils
+Requires: alterator-notes-utils = %version-%release
 
 %description -n alterator-backend-%{shortname}-utils
 %summary.
@@ -66,6 +66,13 @@ Group: System/Configuration/Other
 %_alterator_libdir/backends/%{shortname}.d/notes
 
 %changelog
+* Fri Nov 28 2025 Kirill Sharov <sheriffkorov@altlinux.org> 0.4.2-alt1
+- Add 'exit_status = true' for new version of executor.
+
+* Thu Aug 14 2025 Kirill Sharov <sheriffkorov@altlinux.org> 0.4.1-alt2
+- Actualize upstream URL.
+- Fix requirements.
+
 * Mon Aug 11 2025 Kirill Sharov <sheriffkorov@altlinux.org> 0.4.1-alt1
 - Move search of notes to child shell lib.
 - Move exec files to /usr/lib/alterator/backends filesystem.

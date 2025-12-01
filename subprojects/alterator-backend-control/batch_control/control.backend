@@ -8,13 +8,16 @@ action_id = "org.altlinux.alterator.batch-control1"
 execute = "cat /usr/share/alterator/objects/control.object"
 stdout_bytes = true
 action_id = "Info"
+exit_status = true
 
 [methods.ListFacilities]
 execute = "/usr/lib/alterator-backend-control/control-helper list-facilities"
 stdout_strings = true
 action_id = "ListFacilities"
+exit_status = true
 
 [methods.FacilitiesInfo]
 execute = "/usr/lib/alterator-backend-control/control-helper batch-info"
 stdout_string_array = true
 action_id = "FacilitiesInfo"
+exit_status = true

@@ -1,0 +1,20 @@
+type = "Backend"
+module = "backend3"
+name = "notes"
+interface = "notes"
+action_id = "org.altlinux.alterator.notes"
+
+[methods.license]
+backend3 = "notes"
+action_id = "Info"
+#environment._objects = ""
+#environment.language = "ru_RU"
+environment.action.default = "read"
+
+[methods.release_notes]
+backend3 = "notes"
+action_id = "Info"
+environment._objects.default = "name:release-notes"
+environment.language.default = "ru_RU"
+environment.action.default = "read"
+

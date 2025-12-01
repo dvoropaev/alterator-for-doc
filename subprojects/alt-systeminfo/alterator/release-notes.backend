@@ -7,3 +7,4 @@ interface = "release_notes1"
 execute      = "cat /usr/share/alterator/objects/release-notes.object"
 action_id    = "Info"
 stdout_bytes = true
+exit_status  = true

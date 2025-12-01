@@ -6,5 +6,6 @@ interface = "license1"
 [methods.Info]
 execute      = "cat /usr/share/alterator/objects/license.object"
 stdout_bytes = true
+exit_status  = true
 action_id    = "Info"
 

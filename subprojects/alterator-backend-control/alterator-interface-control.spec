@@ -54,8 +54,11 @@ install -vpDm 644 control1/facility.backend.template              %buildroot%_li
 install -vpDm 644 control1/control-whitelist                      %buildroot%_libexecdir/%name/whitelist
 cp -r             control1/overrides                              %buildroot%_libexecdir/%name/overrides
 
-find %buildroot%_libexecdir/%name/overrides/ -type f -name '*\.policy' -print0 |
-    xargs -0 ln -srt %buildroot%_datadir/polkit-1/actions/
+find %buildroot%_libexecdir/%name/overrides/ -type f -name '*\.policy' |
+while read -r facility
+do
+    ln "$facility" -srt %buildroot%_datadir/polkit-1/actions/
+done
 
 install -vpDm 644 batch_control/control.object                    %buildroot%_alterator_datadir/objects
 install -vpDm 644 batch_control/control.backend                   %buildroot%_alterator_datadir/backends

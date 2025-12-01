@@ -164,7 +164,7 @@ inline const QIcon& ResourceModel::resourceIcon(Resource::Type t)
     static const std::map<Resource::Type, QIcon> typeIcons {
         { Resource::Type::Path, QIcon::fromTheme("folder"        ) },
         { Resource::Type::File, QIcon::fromTheme("text-x-generic") },
-        { Resource::Type::Unit, QIcon::fromTheme("system-run"    ) },
+        { Resource::Type::Unit, QIcon::fromTheme("applications-system") },
         { Resource::Type::Port, QIcon::fromTheme("network-server") },
     };
 

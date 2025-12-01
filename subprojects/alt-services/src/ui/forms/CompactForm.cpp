@@ -270,16 +270,29 @@ public:
 
 
 class TabNavigatedTreeView : public CustomTreeView {
-public :
+private:
+    bool removePending{false};
+
+public:
     TabNavigatedTreeView()
         : CustomTreeView{}
     {
         setTabKeyNavigation(true);
     }
 
+    void setModel(EditModel* m)
+    {
+        connect(m, &QAbstractItemModel::rowsAboutToBeRemoved, this, [this]{removePending = true; });
+        connect(m, &QAbstractItemModel::rowsRemoved,          this, [this]{removePending = false;});
+        CustomTreeView::setModel(m);
+    }
+
 protected:
     bool focusNextPrevChild(bool next) override
     {
+        if ( removePending )
+            return true;
+
         QModelIndex current = currentIndex();
         if ( !current.isValid() )
             current = model()->index(0, 0);
@@ -379,6 +392,14 @@ public:
 
     void openPersistentEditor(const QModelIndex& parent = {})
     {
+        if ( parent.isValid() && parent.column() != 1 )
+        {
+            qCritical() << "Interanal error:"
+                        << __PRETTY_FUNCTION__
+                        << "called with index at incorrect column";
+            return;
+        }
+
         if ( parent.isValid() && parent.column() == 1 && !m_view.isRowHidden(parent.row(), parent.parent()) ) {
             auto checked = parent.siblingAtColumn(0).data(Qt::CheckStateRole);
             if ( checked.isValid() && checked.toInt() == Qt::Unchecked )
@@ -429,10 +450,10 @@ CompactForm::CompactForm(const Action& action, QWidget* parent)
     d->m_view.setItemDelegateForColumn(1, &d->m_delegate);
 
     connect(&d->m_view, &QTreeView::collapsed, this, [this](const auto& index){
-        d->closePersistentEditor(index);
+        d->closePersistentEditor(index.siblingAtColumn(1));
     });
     connect(&d->m_view, &QTreeView::expanded,  this, [this](const auto& index){
-        d-> openPersistentEditor(index);
+        d-> openPersistentEditor(index.siblingAtColumn(1));
     });
 
     connect(&d->m_model, &QAbstractItemModel::rowsAboutToBeRemoved, this, [=](const QModelIndex& parent, int first, int last){

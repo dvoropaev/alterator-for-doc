@@ -6,74 +6,92 @@ interface = "systeminfo1"
 [methods.Info]
 execute        = "cat /usr/share/alterator/objects/systeminfo.object"
 stdout_bytes   = true
+exit_status    = true
 
 [methods.GetAll]
 execute        = "/usr/lib/alterator/backends/systeminfo --all"
 stdout_bytes   = true
+exit_status    = true
 
 [methods.GetHostName]
 execute        = "/usr/lib/alterator/backends/systeminfo host-name"
 stdout_strings = true
+exit_status    = true
 
 [methods.GetOperationSystemName]
 execute        = "/usr/lib/alterator/backends/systeminfo os-name"
 stdout_strings = true
+exit_status    = true
 
 [methods.GetLicense]
 execute             = "/usr/lib/alterator/backends/systeminfo os-license"
 stdout_bytes        = true
+exit_status         = true
 environment.LC_ALL  = {}
 
 [methods.GetReleaseNotes]
 execute             = "/usr/lib/alterator/backends/systeminfo release-notes"
 stdout_bytes        = true
+exit_status         = true
 environment.LC_ALL  = {}
 
 [methods.GetFinalNotes]
 execute             = "/usr/lib/alterator/backends/systeminfo final-notes"
 stdout_bytes        = true
+exit_status         = true
 environment.LC_ALL  = {}
 
 [methods.GetArch]
 execute        = "/usr/lib/alterator/backends/systeminfo arch"
 stdout_strings = true
+exit_status    = true
 
 [methods.GetBranch]
 execute        = "/usr/lib/alterator/backends/systeminfo branch"
 stdout_strings = true
+exit_status    = true
 
 [methods.GetKernel]
 execute        = "/usr/lib/alterator/backends/systeminfo kernel"
 stdout_strings = true
+exit_status    = true
 
 [methods.GetCPU]
 execute        = "/usr/lib/alterator/backends/systeminfo cpu"
 stdout_strings = true
+exit_status    = true
 
 [methods.GetGPU]
 execute        = "/usr/lib/alterator/backends/systeminfo gpu"
 stdout_strings = true
+exit_status    = true
 
 [methods.GetMemory]
 execute        = "/usr/lib/alterator/backends/systeminfo memory"
 stdout_strings = true
+exit_status    = true
 
 [methods.GetDrive]
 execute        = "/usr/lib/alterator/backends/systeminfo drive"
 stdout_strings = true
+exit_status    = true
 
 [methods.GetMonitor]
 execute        = "/usr/lib/alterator/backends/systeminfo monitor"
 stdout_strings = true
+exit_status    = true
 
 [methods.GetMotherboard]
 execute        = "/usr/lib/alterator/backends/systeminfo motherboard"
 stdout_strings = true
+exit_status    = true
 
 [methods.GetLocale]
 execute        = "/usr/lib/alterator/backends/systeminfo locale"
 stdout_strings = true
+exit_status    = true
 
 [methods.ListDesktopEnvironments]
 execute        = "/usr/lib/alterator/backends/systeminfo list-desktop-environments"
 stdout_strings = true
+exit_status    = true

@@ -26,11 +26,13 @@ action_id = "org.altlinux.alterator.legacy1"
 [methods.Info]
 execute = "cat $file"
 stdout_bytes = true
+exit_status  = true
 action_id = "Info"
 
 [methods.Run]
 execute = "/usr/sbin/alterator-standalone $modname"
 stderr_strings = true
+exit_status    = true
 timeout = 0
 
 [methods.Run.environment.DISPLAY]

@@ -18,6 +18,7 @@ stdout_byte_arrays = true
 stdout_string_array = true
 stdout_json = ["arg1", "arg2", "arg3[]"]
 stderr_strings = true
+exit_status = true
 stdout_signal_name = "stdout_signal_example"
 stderr_signal_name = "stderr_signal_example"
 stdout_byte_limit = 200000
@@ -78,6 +79,8 @@ required = false
   `stdout_json` также отключают возврат строк из stdout сигналами.
 
 - Поле `stderr_strings` включает возврат массива строк из потока ошибок.
+
+- Поле `exit_status` включает возврат кода завершения процесса.
 
 - Поля `stdout_byte_limit`, `stdout_strings_limit` и `stderr_strings_limit`
   задают максимальный размер в байтах для соответсвующего массива.

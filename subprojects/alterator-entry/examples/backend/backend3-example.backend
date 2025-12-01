@@ -1,0 +1,15 @@
+type = "Backend"
+module = "backend3"
+name = "backend3"
+interface = "Backend3Test1"
+action_id = "org.altlinux.alterator.test1"
+thread_limit = 1
+
+[methods.ListMenu]
+backend3 = "menu"
+[methods.ListMenu.environment._objects]
+default = "avail_modules"
+[methods.ListMenu.environment.language]
+default = "ru_RU"
+[methods.ListMenu.environment.action]
+default = "list"

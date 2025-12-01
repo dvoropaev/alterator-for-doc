@@ -402,7 +402,7 @@ You may want to undeploy the conflicting services, or reconfigure them, if their
       </property>
       <widget class="QWidget" name="preDiagTab">
        <attribute name="icon">
-        <iconset theme="system-run"/>
+        <iconset theme="applications-system"/>
        </attribute>
        <attribute name="title">
         <string>Premilinary diagnostics</string>
@@ -428,7 +428,7 @@ You may want to undeploy the conflicting services, or reconfigure them, if their
       </widget>
       <widget class="QWidget" name="postDiagTab">
        <attribute name="icon">
-        <iconset theme="system-run"/>
+        <iconset theme="applications-system"/>
        </attribute>
        <attribute name="title">
         <string>Post-deploy diagnostics</string>

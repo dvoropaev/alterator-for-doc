@@ -29,19 +29,27 @@ G_BEGIN_DECLS
 #define INFO_THREAD_LIMIT "thread_limit"
 #define INFO_ACTION_ID "action_id"
 #define INFO_TIMEOUT "timeout"
+#define INFO_EXIT_STATUS "exit_status"
 #define PRM_STDIN "stdin"
 #define THREAD_LIMIT 1
 #define PLUGIN_NAME "executor"
 #define DBUS_NAME "org.altlinux.alterator.executor"
 #define OBJECT_PATH_PREFIX "/org/altlinux/alterator/"
 #define MAX_NAME_LENGTH 100
-#define BYTE_ARRAYS_AND_ARRAY "(aayasi)"
-#define BYTE_ARRAYS_ONLY "(aayi)"
-#define TWO_ARRAYS "(asasi)"
-#define BYTES_AND_ARRAY "(ayasi)"
-#define ARRAY_ONLY "(asi)"
-#define BYTES_ONLY "(ayi)"
+#define BYTE_ARRAYS_AND_ARRAY "(aayas)"
+#define BYTE_ARRAYS_AND_ARRAY_I "(aayasi)"
+#define BYTE_ARRAYS_ONLY "(aay)"
+#define BYTE_ARRAYS_ONLY_I "(aayi)"
+#define TWO_ARRAYS "(asas)"
+#define TWO_ARRAYS_I "(asasi)"
+#define BYTES_AND_ARRAY "(ayas)"
+#define BYTES_AND_ARRAY_I "(ayasi)"
+#define ARRAY_ONLY "(as)"
+#define ARRAY_ONLY_I "(asi)"
+#define BYTES_ONLY "(ay)"
+#define BYTES_ONLY_I "(ayi)"
 #define EXIT_STATUS_ONLY "(i)"
+#define EMPTY "()"
 #define DEFAULT_BYTE_LIMIT 524288
 #define DEFAULT_TIMEOUT 60
 
@@ -63,6 +71,7 @@ typedef struct {
     gboolean     stdout_signals_enabled;
     gboolean     stderr_strings_enabled;
     gboolean     stderr_signals_enabled;
+    gboolean     exit_status_enabled;
     gint         stdout_strings_limit;
     gint         stdout_byte_limit;
     gint         stderr_strings_limit;
@@ -111,6 +120,7 @@ typedef struct {
     gboolean               stdout_signals_enabled;
     gboolean               stderr_strings_enabled;
     gboolean               stderr_signals_enabled;
+    gboolean               exit_status_enabled;
     GList                 *stdout_strings;
     GList                 *stderr_strings;
     GString               *stdout_bytes;

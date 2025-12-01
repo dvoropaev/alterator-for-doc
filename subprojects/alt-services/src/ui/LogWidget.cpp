@@ -148,6 +148,8 @@ public:
     QTextBrowser* m_lastText{};
     CustomTreeView* m_tree{};
     QStandardItemModel m_model;
+    QAction* m_search{};
+    QAction* m_export{};
 
     QString m_filename{"log"};
 
@@ -165,8 +167,30 @@ public:
 
             m_lastTextItem->setData(true, Qt::UserRole);
 
-            m_lastText = new QTextBrowser;
-            m_lastText->setContextMenuPolicy(Qt::NoContextMenu);
+            m_lastText = new QTextBrowser{m_tree};
+            m_lastText->setContextMenuPolicy(Qt::CustomContextMenu);
+
+            connect(m_lastText, &QTextBrowser::customContextMenuRequested,
+            [=,
+                // NOTE: m_lastText gets changed when new entry appears
+                textBrowser = m_lastText,
+                // NOTE: we are responsible for its destruction now
+                menu = std::unique_ptr<QMenu>{}
+            ]
+            (const QPoint& pos) mutable
+            {
+                if ( menu ) return;
+
+                menu.reset( textBrowser->createStandardContextMenu(pos) );
+
+                menu->addSeparator();
+                menu->addAction(m_search);
+                menu->addAction(m_export);
+
+                connect(menu.get(), &QMenu::aboutToHide, [&menu]{menu->deleteLater(); menu.release();});
+                menu->popup(textBrowser->mapToGlobal(pos));
+            });
+
             m_lastText->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
             m_lastText->setLineWrapMode(QTextBrowser::LineWrapMode::WidgetWidth);
             m_lastText->setTextInteractionFlags(Qt::TextSelectableByMouse);
@@ -247,19 +271,19 @@ LogWidget::LogWidget(QWidget *parent)
     layout->addWidget(searchBar);
     layout->addWidget(d->m_tree);
 
-    auto searchAction = new QAction{QIcon::fromTheme(QIcon::ThemeIcon::EditFind), tr("&Find..."), this};
-    searchAction->setShortcut(QKeySequence::Find);
-    d->m_tree->addAction(searchAction);
+    d->m_search = new QAction{QIcon::fromTheme(QIcon::ThemeIcon::EditFind), tr("&Find..."), this};
+    d->m_search->setShortcut(QKeySequence::Find);
+    d->m_tree->addAction(d->m_search);
 
-    connect(searchAction, &QAction::triggered, searchBar, &QWidget::show);
+    connect(d->m_search, &QAction::triggered, searchBar, &QWidget::show);
 
-    auto* exportAction = new QAction{QIcon::fromTheme(QIcon::ThemeIcon::DocumentSaveAs), tr("Export journal...")};
+    d->m_export = new QAction{QIcon::fromTheme(QIcon::ThemeIcon::DocumentSaveAs), tr("Export journal...")};
 
-    connect(qApp->controller(), &Controller::beginRefresh, this, [=]{exportAction->setDisabled(true );});
-    connect(qApp->controller(), &Controller::endRefresh,   this, [=]{exportAction->setDisabled(false);});
+    connect(qApp->controller(), &Controller::beginRefresh, this, [=]{d->m_export->setDisabled(true );});
+    connect(qApp->controller(), &Controller::endRefresh,   this, [=]{d->m_export->setDisabled(false);});
 
-    d->m_tree->addAction(exportAction);
-    connect(exportAction, &QAction::triggered, this, [this]{
+    d->m_tree->addAction(d->m_export);
+    connect(d->m_export, &QAction::triggered, this, [this]{
         auto dst = QFileDialog::getSaveFileName(this,
             tr("Chose where to save journal"),
             QStandardPaths::writableLocation(QStandardPaths::HomeLocation)
@@ -318,6 +342,9 @@ entry {
 }
 
 LogWidget::~LogWidget() { delete d; }
+
+QAction* LogWidget::searchAction() const { return d->m_search; }
+QAction* LogWidget::exportAction() const { return d->m_export; }
 
 void LogWidget::beginEntry(const QString& msg)
 {
