@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Самоучитель по Alterator</title>
+  <style>
+    body { font-family: sans-serif; line-height: 1.5; margin: 2rem; }
+    h1, h2 { color: #222; }
+    nav ul { list-style-type: none; padding-left: 1.5rem; }
+    nav li { margin: 0.25rem 0; }
+    nav li.section { margin-top: 1.5rem; font-weight: bold; }
+    nav li.section span { text-transform: uppercase; }
+    nav li ul { list-style-type: disc; }
+  </style>
+</head>
+<body>
+  <h1>Самоучитель по Alterator</h1>
+  <p>Структура самоучителя организована по разделам. Каждый раздел раскрывает отдельный аспект платформы Alterator: основу, архитектурные решения, интерфейсы, разработку модулей, а также подробные материалы по всем подпроектам.</p>
+  <nav>
+    <ul>
+      <li class="section"><span>Раздел 1. Основы и подготовка</span>
+        <ul>
+          <li><a href="basics/introduction.html">Введение в Alterator</a></li>
+          <li><a href="basics/terminology.html">Термины и используемые технологии</a></li>
+          <li><a href="basics/distribution-integration.html">Обзор дистрибутивных компонентов Alterator</a></li>
+          <li><a href="basics/environment-prerequisites.html">Предварительные условия и зависимости</a></li>
+        </ul>
+      </li>
+      <li class="section"><span>Раздел 2. Архитектура платформы</span>
+        <ul>
+          <li><a href="architecture/component-model.html">Компонентная модель Alterator</a></li>
+          <li><a href="architecture/module-lifecycle.html">Жизненный цикл модулей Alterator</a></li>
+          <li><a href="architecture/dbus-integration.html">Взаимодействие через D-Bus</a></li>
+          <li><a href="architecture/services-and-daemons.html">Системные службы и процессы Alterator</a></li>
+          <li><a href="architecture/data-flows.html">Потоки данных и обработка событий</a></li>
+        </ul>
+      </li>
+      <li class="section"><span>Раздел 3. Интерфейсы и формат Alterator</span>
+        <ul>
+          <li><a href="interfaces/dbus-standard.html">Стандартные интерфейсы D-Bus</a></li>
+          <li><a href="interfaces/alterator-entry-format.html">Спецификация Alterator Entry</a></li>
+          <li><a href="interfaces/gui-and-web.html">GUI и веб-интерфейсы Alterator</a></li>
+          <li><a href="interfaces/service-contracts.html">Контракты взаимодействия и API</a></li>
+          <li><a href="interfaces/custom-interfaces.html">Проектирование собственных интерфейсов</a></li>
+        </ul>
+      </li>
+      <li class="section"><span>Раздел 4. Разработка и расширение модулей</span>
+        <ul>
+          <li><a href="modules/backend-template.html">Шаблон backend-модуля</a></li>
+          <li><a href="modules/interface-template.html">Шаблон интерфейсного модуля</a></li>
+          <li><a href="modules/manager-integration.html">Интеграция с alterator-manager</a></li>
+          <li><a href="modules/localization-and-i18n.html">Локализация и языковые ресурсы</a></li>
+          <li><a href="modules/extension-overview.html">Подходы к расширению существующих модулей</a></li>
+          <li><a href="modules/distribution-packaging.html">Распространение и поставка модулей</a></li>
+        </ul>
+      </li>
+      <li class="section"><span>Раздел 5. Каталог модулей Alterator</span>
+        <ul>
+          <li><strong>Backend-модули</strong>
+            <ul>
+              <li><a href="modules/catalog/alterator-backend-batch_component_categories.html">alterator-backend-batch_component_categories</a></li>
+              <li><a href="modules/catalog/alterator-backend-batch_components.html">alterator-backend-batch_components</a></li>
+              <li><a href="modules/catalog/alterator-backend-categories.html">alterator-backend-categories</a></li>
+              <li><a href="modules/catalog/alterator-backend-component.html">alterator-backend-component</a></li>
+              <li><a href="modules/catalog/alterator-backend-component_categories.html">alterator-backend-component_categories</a></li>
+              <li><a href="modules/catalog/alterator-backend-control.html">alterator-backend-control</a></li>
+              <li><a href="modules/catalog/alterator-backend-edition.html">alterator-backend-edition</a></li>
+              <li><a href="modules/catalog/alterator-backend-legacy.html">alterator-backend-legacy</a></li>
+              <li><a href="modules/catalog/alterator-backend-packages.html">alterator-backend-packages</a></li>
+              <li><a href="modules/catalog/alterator-backend-systeminfo.html">alterator-backend-systeminfo</a></li>
+            </ul>
+          </li>
+          <li><strong>Сервисные модули</strong>
+            <ul>
+              <li><a href="modules/catalog/alterator-service-chrony.html">alterator-service-chrony</a></li>
+              <li><a href="modules/catalog/alterator-service-nextcloud.html">alterator-service-nextcloud</a></li>
+              <li><a href="modules/catalog/alterator-service-samba-ad.html">alterator-service-samba-ad</a></li>
+              <li><a href="modules/catalog/alterator-service-samba-share.html">alterator-service-samba-share</a></li>
+              <li><a href="modules/catalog/alterator-service-vsftpd.html">alterator-service-vsftpd</a></li>
+            </ul>
+          </li>
+          <li><strong>Интерфейсные модули</strong>
+            <ul>
+              <li><a href="modules/catalog/alterator-interface-application.html">alterator-interface-application</a></li>
+              <li><a href="modules/catalog/alterator-interface-diag.html">alterator-interface-diag</a></li>
+              <li><a href="modules/catalog/alterator-interface-service.html">alterator-interface-service</a></li>
+              <li><a href="modules/catalog/alterator-module-backend3.html">alterator-module-backend3</a></li>
+              <li><a href="modules/catalog/alterator-module-executor.html">alterator-module-executor</a></li>
+              <li><a href="modules/catalog/alterator-module-remote.html">alterator-module-remote</a></li>
+              <li><a href="modules/catalog/alterator-explorer.html">alterator-explorer</a></li>
+              <li><a href="modules/catalog/alterator-manager.html">alterator-manager</a></li>
+              <li><a href="modules/catalog/alteratorctl.html">alteratorctl</a></li>
+            </ul>
+          </li>
+          <li><strong>Диагностические комплексы</strong>
+            <ul>
+              <li><a href="modules/catalog/diag-domain-client.html">diag-domain-client</a></li>
+              <li><a href="modules/catalog/diag-domain-controller.html">diag-domain-controller</a></li>
+              <li><a href="modules/catalog/alterator-test-services.html">alterator-test-services</a></li>
+            </ul>
+          </li>
+          <li><strong>Инфраструктурные компоненты</strong>
+            <ul>
+              <li><a href="modules/catalog/python3-module-alterator.html">python3-module-alterator</a></li>
+              <li><a href="modules/catalog/remote-polkit-agent.html">remote-polkit-agent</a></li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li class="section"><span>Раздел 6. Подпроекты и репозитории</span>
+        <ul>
+          <li><a href="subprojects/adt.html">adt</a></li>
+          <li><a href="subprojects/adt-test-tools.html">adt-test-tools</a></li>
+          <li><a href="subprojects/alt-components.html">alt-components</a></li>
+          <li><a href="subprojects/alt-components-base.html">alt-components-base</a></li>
+          <li><a href="subprojects/alt-control.html">alt-control</a></li>
+          <li><a href="subprojects/alt-packages.html">alt-packages</a></li>
+          <li><a href="subprojects/alt-services.html">alt-services</a></li>
+          <li><a href="subprojects/alt-systeminfo.html">alt-systeminfo</a></li>
+          <li><a href="subprojects/alterator-backend-batch_component_categories.html">alterator-backend-batch_component_categories</a></li>
+          <li><a href="subprojects/alterator-backend-batch_components.html">alterator-backend-batch_components</a></li>
+          <li><a href="subprojects/alterator-backend-categories.html">alterator-backend-categories</a></li>
+          <li><a href="subprojects/alterator-backend-component.html">alterator-backend-component</a></li>
+          <li><a href="subprojects/alterator-backend-component_categories.html">alterator-backend-component_categories</a></li>
+          <li><a href="subprojects/alterator-backend-control.html">alterator-backend-control</a></li>
+          <li><a href="subprojects/alterator-backend-edition.html">alterator-backend-edition</a></li>
+          <li><a href="subprojects/alterator-backend-legacy.html">alterator-backend-legacy</a></li>
+          <li><a href="subprojects/alterator-backend-packages.html">alterator-backend-packages</a></li>
+          <li><a href="subprojects/alterator-backend-systeminfo.html">alterator-backend-systeminfo</a></li>
+          <li><a href="subprojects/alterator-entry.html">alterator-entry</a></li>
+          <li><a href="subprojects/alterator-explorer.html">alterator-explorer</a></li>
+          <li><a href="subprojects/alterator-how-to-test.html">alterator-how-to-test</a></li>
+          <li><a href="subprojects/alterator-interface-application.html">alterator-interface-application</a></li>
+          <li><a href="subprojects/alterator-interface-diag.html">alterator-interface-diag</a></li>
+          <li><a href="subprojects/alterator-interface-service.html">alterator-interface-service</a></li>
+          <li><a href="subprojects/alterator-manager.html">alterator-manager</a></li>
+          <li><a href="subprojects/alterator-module-backend3.html">alterator-module-backend3</a></li>
+          <li><a href="subprojects/alterator-module-executor.html">alterator-module-executor</a></li>
+          <li><a href="subprojects/alterator-module-remote.html">alterator-module-remote</a></li>
+          <li><a href="subprojects/alterator-service-chrony.html">alterator-service-chrony</a></li>
+          <li><a href="subprojects/alterator-service-nextcloud.html">alterator-service-nextcloud</a></li>
+          <li><a href="subprojects/alterator-service-samba-ad.html">alterator-service-samba-ad</a></li>
+          <li><a href="subprojects/alterator-service-samba-share.html">alterator-service-samba-share</a></li>
+          <li><a href="subprojects/alterator-service-vsftpd.html">alterator-service-vsftpd</a></li>
+          <li><a href="subprojects/alterator-test-services.html">alterator-test-services</a></li>
+          <li><a href="subprojects/alteratorctl.html">alteratorctl</a></li>
+          <li><a href="subprojects/backlog.html">backlog</a></li>
+          <li><a href="subprojects/contributing.html">contributing</a></li>
+          <li><a href="subprojects/diag-domain-client.html">diag-domain-client</a></li>
+          <li><a href="subprojects/diag-domain-controller.html">diag-domain-controller</a></li>
+          <li><a href="subprojects/python3-module-alterator.html">python3-module-alterator</a></li>
+          <li><a href="subprojects/remote-polkit-agent.html">remote-polkit-agent</a></li>
+        </ul>
+      </li>
+      <li class="section"><span>Раздел 7. Справочные материалы</span>
+        <ul>
+          <li><a href="reference/glossary.html">Глоссарий терминов</a></li>
+          <li><a href="reference/dbus-reference.html">Справочник D-Bus объектов и методов</a></li>
+          <li><a href="reference/config-templates.html">Шаблоны конфигураций Alterator</a></li>
+          <li><a href="reference/checklists.html">Контрольные списки внедрения и аудита</a></li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+</body>
+</html>
