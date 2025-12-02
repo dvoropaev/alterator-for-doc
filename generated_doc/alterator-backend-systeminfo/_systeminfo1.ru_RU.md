@@ -2,9 +2,9 @@
 
 Предоставляет методы бэкенда systeminfo для получения данных о системе через помощники `/usr/lib/alterator/backends/systeminfo`; каждый метод возвращает stdout и код завершения базовой команды.
 
-| Метод | Назначение |
+| Метод | Описание |
 |--------|------------|
-| [GetAll](#method-GetAll) | Собирает сводные сведения о системе в виде пар ключ/значение. |
+| [GetAll](#method-GetAll) | Собирает данные о системе в виде пар ключ/значение. |
 | [GetCPU](#method-GetCPU) | Возвращает модель CPU, число логических ядер и частоту через `systeminfo cpu`. |
 | [GetHostName](#method-GetHostName) | Возвращает имя хоста через `systeminfo host-name`. |
 | [GetDrive](#method-GetDrive) | Возвращает суммарный объём накопителей через `systeminfo drive`. |
