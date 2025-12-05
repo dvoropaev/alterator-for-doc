@@ -12,7 +12,11 @@
     </method>
     <method name="GetCPU">
       <doc:summary>Return CPU model, logical core count, and frequency via systeminfo cpu.</doc:summary>
-      <doc:detail>stdout_strings[0] — model; stdout_strings[1] — logical cores; stdout_strings[2] — frequency in MHz. Response: 0 — success, != 0 — error.</doc:detail>
+      <doc:detail>stdout_strings entries:
+1. model;
+2. logical cores;
+3. frequency in MHz.
+Response: 0 — success, != 0 — error.</doc:detail>
       <arg type="as" name="stdout_strings" direction="out"></arg>
       <arg type="i" name="response" direction="out"></arg>
     </method>
@@ -90,7 +94,11 @@
     </method>
     <method name="GetMotherboard">
       <doc:summary>Return motherboard vendor, model, and version via systeminfo motherboard.</doc:summary>
-      <doc:detail>Combines /sys/devices/virtual/dmi/id/board_vendor, board_name, board_version. stdout_strings[0] — vendor; stdout_strings[1] — model; stdout_strings[2] — version. Response: 0 — success, != 0 — error.</doc:detail>
+      <doc:detail>Combines /sys/devices/virtual/dmi/id/board_vendor, board_name, board_version. stdout_strings entries:
+1. vendor;
+2. model;
+3. version.
+Response: 0 — success, != 0 — error.</doc:detail>
       <arg type="as" name="stdout_strings" direction="out"></arg>
       <arg type="i" name="response" direction="out"></arg>
     </method>

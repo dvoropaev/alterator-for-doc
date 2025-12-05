@@ -7,12 +7,12 @@ Provides Alterator clients with system details through the D-Bus interface.
 ---
 
 # Overview
-| Component | Location | Purpose |
-| --------- | -------- | ------- |
-| Script `systeminfo` | `/usr/lib/alterator/backends/systeminfo` | Provides system information about the computer and the operating system. |
-| File `systeminfo.backend` | `/usr/share/alterator/backends/systeminfo.backend` | Describes the `org.altlinux.alterator.systeminfo1` interface of the `/org/altlinux/alterator/systeminfo` object. |
-| File `systeminfo.object` | `/usr/share/alterator/objects/systeminfo.object` | Stores data for registering the Alterator object "About system" for clients. |
-| Script `systeminfo.d/notes` | `/usr/lib/alterator/backends/systeminfo.d/notes` | Provides helper routines that locate license texts, release notes, and distribution records for use by the `systeminfo` script. |
+| Location | Purpose |
+| -------- | ------- |
+| `/usr/lib/alterator/backends/systeminfo` | Script that provides system information about the computer and the operating system. |
+| `/usr/share/alterator/backends/systeminfo.backend` | File that describes the `org.altlinux.alterator.systeminfo1` interface of the `/org/altlinux/alterator/systeminfo` object. |
+| `/usr/share/alterator/objects/systeminfo.object` | File that stores data for registering the Alterator object "About system" for clients. |
+| `/usr/lib/alterator/backends/systeminfo.d/notes` | Script that provides helper routines that locate license texts, release notes, and distribution records for use by the `systeminfo` script. |
 
 # Capabilities
 - Retrieve textual system attributes: host name, repository branch, kernel version, locale.
@@ -24,7 +24,7 @@ Provides Alterator clients with system details through the D-Bus interface.
 # Integration
 - Methods for retrieving machine and system data are available to clients through the `org.altlinux.alterator.systeminfo1` interface.
 - `alterator-module-executor` from `alterator-manager` registers the backend using `/usr/share/alterator/backends/systeminfo.backend`.
-- License, release notes, and final notes lookup is performed by `systeminfo.d/notes` with edition awareness: when `alterator-backend-edition-utils` is installed, `/usr/lib/alterator/backends/edition` is consulted and files in `/usr/share/alt-notes` are checked first; otherwise the search scans `/usr/share/alt-notes/license.<lang>.html`, `/usr/share/alt-license/license.<lang>.html`, `/var/lib/install3/licenses/license.<lang>.html` and falls back to `license.all.html` in these locations.
+- License, release notes, and final notes lookup is performed by `systeminfo.d/notes` with edition awareness: when `alterator-backend-edition-utils` is installed, `/usr/lib/alterator/backends/edition` is consulted and files in `/usr/share/alt-notes` are checked first. On systems without edition data and without `alterator-backend-edition-utils`, license files are searched sequentially in `/usr/share/alt-notes/license.<lang>.html`, `/usr/share/alt-license/license.<lang>.html`, `/var/lib/install3/licenses/license.<lang>.html`; `license.all.html` from these directories is used as a fallback when no localized version exists.
 - `systeminfo.object` declares the object category `X-Alterator-System`, enabling the module in `alterator-explorer`.
 
 # `systeminfo` commands

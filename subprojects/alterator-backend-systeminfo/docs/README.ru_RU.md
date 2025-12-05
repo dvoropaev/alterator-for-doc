@@ -7,12 +7,12 @@
 ---
 
 # Общие сведения
-| Компонент | Расположение | Назначение |
-| --------- | ------------ | ---------- |
-| Скрипт `systeminfo` | `/usr/lib/alterator/backends/systeminfo` | Предоставляет системную информации о компьютере и операционной системе. |
-| Файл `systeminfo.backend` | `/usr/share/alterator/backends/systeminfo.backend` | Описывает интерфейс org.altlinux.alterator.systeminfo1 объекта `/org/altlinux/alterator/systeminfo`. |
-| Файл `systeminfo.object` | `/usr/share/alterator/objects/systeminfo.object` | Содержит сведения для регистрации объекта Alterator «О системе» для клиентов. |
-| Скрипт `systeminfo.d/notes` | `/usr/lib/alterator/backends/systeminfo.d/notes` | Предоставляет вспомогательные функции поиска лицензий, заметок релиза и записей информации о дистрибутиве для использования скриптом `systeminfo`. |
+| Расположение | Назначение |
+| ------------ | ---------- |
+| `/usr/lib/alterator/backends/systeminfo` | Скрипт, предоставляющий системную информацию о компьютере и операционной системе. |
+| `/usr/share/alterator/backends/systeminfo.backend` | Файл, описывающий интерфейс `org.altlinux.alterator.systeminfo1` объекта `/org/altlinux/alterator/systeminfo`. |
+| `/usr/share/alterator/objects/systeminfo.object` | Файл, содержащий сведения для регистрации объекта Alterator «О системе» для клиентов. |
+| `/usr/lib/alterator/backends/systeminfo.d/notes` | Скрипт, предоставляющий вспомогательные функции поиска лицензий, заметок релиза и записей информации о дистрибутиве для использования скриптом `systeminfo`. |
 
 # Возможности
 - Получение текстовых характеристик системы: имя хоста, ветка репозитория, версия ядра, локаль.
@@ -24,7 +24,7 @@
 # Интеграция с другими компонентами
 - Методы для получения информации о машине и системе доступны клиентам через интерфейс `org.altlinux.alterator.systeminfo1`.
 - Регистрацию backend выполняет `alterator-module-executor` в составе `alterator-manager` на основании `/usr/share/alterator/backends/systeminfo.backend`.
-- Поиск лицензии, release-notes и final-notes выполняется через `systeminfo.d/notes` с учётом наличия редакции: сначала проверяются файлы, предоставленные `/usr/lib/alterator/backends/edition` (при установленном `alterator-backend-edition-utils`), затем последовательно просматриваются `/usr/share/alt-notes/license.<язык>.html`, `/usr/share/alt-license/license.<язык>.html`, `/var/lib/install3/licenses/license.<язык>.html`, при отсутствии локализованной версии используется `license.all.html` из указанных путей.
+- Поиск лицензии, release-notes и final-notes выполняется через `systeminfo.d/notes` с учётом наличия редакции: сначала проверяются файлы, предоставленные `/usr/lib/alterator/backends/edition` (при установленном `alterator-backend-edition-utils`), затем каталоги `/usr/share/alt-notes`. В системах без редакции и без `alterator-backend-edition-utils` файл лицензии ищется последовательно в `/usr/share/alt-notes/license.<язык>.html`, `/usr/share/alt-license/license.<язык>.html`, `/var/lib/install3/licenses/license.<язык>.html`; при отсутствии локализованной версии используется `license.all.html` из перечисленных директорий.
 - Файл `systeminfo.object` включает объект категории `X-Alterator-System`, что позволяет отображать модуль в `alterator-explorer`.
 
 # Команды `systeminfo`
