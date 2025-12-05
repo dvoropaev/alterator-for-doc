@@ -1,13 +1,16 @@
 #include "Resource.h"
+#include "Service.h"
 
-bool Resource::conflicts(const Resource* toDeploy) const {
-    if ( toDeploy == this ) return false;
-    if ( m_type == toDeploy->m_type ) {
-        return value(service() == toDeploy->service()
-                         ? Parameter::ValueScope::Edit
-                         : Parameter::ValueScope::Current)
-                   == toDeploy->value(Parameter::ValueScope::Edit)
-                && ( m_type != Type::Port || m_port_protocol & toDeploy->m_port_protocol);
-    }
-    return false;
+inline auto getResourceValue(const Resource* r)
+{
+    return r->value(r->service()->isDeployed()
+                        ? Parameter::ValueScope::Edit
+                        : Parameter::ValueScope::Current );
+}
+
+bool Resource::intersects(const Resource* other) const
+{
+    return m_type == other->m_type &&
+           ::getResourceValue(this) == ::getResourceValue(other) &&
+           ( m_type != Type::Port || m_port_protocol & other->m_port_protocol );
 }

@@ -5,6 +5,10 @@
 #include <QJsonDocument>
 #include <QIcon>
 
+#include <range/v3/algorithm.hpp>
+#include <range/v3/view.hpp>
+#include <functional>
+
 class Service::Private {
 public:
     Private(PtrVector<Parameter>&& parameters,
@@ -15,22 +19,15 @@ public:
         , m_resources{std::move(resources)}
         , m_diag_tools{std::move(tools)}
         , m_icon{ QIcon::fromTheme(iconName) }
-    {
+    {   
         for ( auto& tool : m_diag_tools ) {
-            tool->m_params_missing = !std::all_of( m_parameters.cbegin(), m_parameters.cend(), [&](const auto& serviceParam){
-                if ( !serviceParam->contexts().testFlag(Parameter::Context::Diag) )
-                    return true;
+            using namespace std::placeholders;
 
-                auto it = std::find_if( tool->parameters().cbegin(), tool->parameters().cend(), [&](const auto& toolParameter){
-                    return serviceParam->name() == toolParameter->name();
-                });
-
-                bool res = it != tool->parameters().cend();
-                if ( !res )
-                    qWarning() << serviceParam->name() << "had 'diag' context, but is not used by" << tool->name();
-
-                return res;
-            });
+            tool->m_params_missing = ranges::includes(
+                m_parameters | ranges::views::filter(std::bind(std::bit_and(), Parameter::Context::Diag, _1), &Parameter::contexts),
+                tool->parameters(),
+                {}, &TranslatableObject::name,&TranslatableObject::name
+            );
         }
     }
 
@@ -45,13 +42,13 @@ public:
     bool tryFill(QJsonObject o, Parameter::Contexts ctx){
         bool success = true;
         for ( const auto& name : o.keys() ) {
-            auto it = std::find_if(m_parameters.cbegin(), m_parameters.cend(), [=](const ParameterPtr& parameter){
+            auto match = ranges::find_if(m_parameters, [=](const ParameterPtr& parameter){
                 return  parameter->contexts() & ctx &&
                         parameter->name() == name;
             });
 
-            if ( it == m_parameters.cend() ||
-                !it->get()->value(Parameter::ValueScope::Edit)->fill(o.value(name), ctx) )
+            if ( match == m_parameters.cend() ||
+                !match->get()->value(Parameter::ValueScope::Edit)->fill(o.value(name), ctx) )
                 success = false;
         }
 
@@ -125,7 +122,7 @@ QJsonObject Service::getParameters(Parameter::Contexts ctx, bool excludePassword
     QJsonObject parameters;
 
     for ( auto& parameter : d->m_parameters ) {
-        if ( ! (parameter->contexts() & ctx) || ( !(parameter->required() & ctx) & !parameter->value(Parameter::ValueScope::Edit)->isEnabled() ) )
+        if ( ! (parameter->contexts() & ctx) || ( !(parameter->required() & ctx) && !parameter->value(Parameter::ValueScope::Edit)->isEnabled() ) )
             continue;
 
         parameters[parameter->name()] = parameter->value(parameter->isConstant() ? Parameter::ValueScope::Default : Parameter::ValueScope::Edit)->serialize(excludePasswords);
@@ -160,14 +157,12 @@ bool Service::tryFill(QJsonObject o, Parameter::Contexts ctx) { return d->tryFil
 
 bool Service::hasPreDiag() const {
     using namespace std::placeholders;
-    return std::any_of( d->m_diag_tools.cbegin(), d->m_diag_tools.cend(),
-                        std::bind(&DiagTool::hasTests, _1, DiagTool::Test::Mode::PreDeploy) );
+    return ranges::any_of( d->m_diag_tools, std::bind(&DiagTool::hasTests, _1, DiagTool::Test::Mode::PreDeploy) );
 }
 
 bool Service::hasPostDiag() const {
     using namespace std::placeholders;
-    return std::any_of(d->m_diag_tools.cbegin(), d->m_diag_tools.cend(),
-                       std::bind(&DiagTool::hasTests, _1, DiagTool::Test::Mode::PostDeploy));
+    return ranges::any_of( d->m_diag_tools, std::bind(&DiagTool::hasTests, _1, DiagTool::Test::Mode::PostDeploy) );
 }
 
 int Service::statusCode() const { return d->m_status_code; }
@@ -177,7 +172,7 @@ bool Service::hasConflict(Service* toDeploy, Resource* theirs, Resource** ours)
     if ( m_deployed && this != toDeploy )
         for ( auto& our_resource : d->m_resources ) {
             if ( our_resource.get() == theirs ) continue;
-            if ( our_resource->conflicts(theirs) ){
+            if ( our_resource->intersects(theirs) ){
                 *ours   = our_resource.get();
                 return true;
             }

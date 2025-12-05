@@ -9,20 +9,20 @@
 void ResourceModel::setItems(const PtrVector<Resource>& items)
 {
     beginResetModel();
-    m_resources.clear();
+    m_resourcesByType.clear();
     for ( const auto& resource : items )
-        m_resources[resource->type()].push_back(resource.get());
+        m_resourcesByType[resource->type()].push_back(resource.get());
     endResetModel();
 }
 
 int ResourceModel::rowCount(const QModelIndex& parent) const {
     if ( !parent.isValid() )
-        return m_resources.size();
+        return m_resourcesByType.size();
 
     if ( parent.internalId() == ULONG_LONG_MAX ) {
-        auto typeIt = m_resources.begin();
+        auto typeIt = m_resourcesByType.begin();
         std::advance(typeIt, parent.row());
-        if ( typeIt == m_resources.end() )
+        if ( typeIt == m_resourcesByType.end() )
             return {};
 
         auto& [type,resources] = *typeIt;
@@ -63,9 +63,9 @@ QSize ResourceModel::span(const QModelIndex& index) const {
 
 QVariant ResourceModel::data(const QModelIndex& index, int role) const
 {
-    auto typeIt = m_resources.begin();
+    auto typeIt = m_resourcesByType.begin();
     std::advance(typeIt, index.internalId() == ULONG_LONG_MAX ? index.row() : index.internalId());
-    if ( typeIt == m_resources.end() )
+    if ( typeIt == m_resourcesByType.end() )
         return {};
 
     auto& [type,resources] = *typeIt;
@@ -173,23 +173,23 @@ inline const QIcon& ResourceModel::resourceIcon(Resource::Type t)
 
 QModelIndex ResourceModel::indexOf(Resource* resource)
 {
-    auto it = m_resources.find(resource->type());
+    auto entry = m_resourcesByType.find(resource->type());
 
-    if ( it == m_resources.end() ) {
+    if ( entry == m_resourcesByType.end() ) {
         qWarning() << "internal error: cannot find resource parent index";
         return {};
     }
 
-    int row = std::distance(m_resources.begin(), it);
-    auto parent = createIndex(row, 0, ULONG_LONG_MAX);
+    int parentRow = std::distance(m_resourcesByType.begin(), entry);
+    auto parent = createIndex(parentRow, 0, ULONG_LONG_MAX);
 
-    auto resourceIt = std::find(it->second.begin(), it->second.end(), resource);
-    if ( resourceIt == it->second.end() ) {
+    auto resourceIt = ranges::find(entry->second, resource);
+    if ( resourceIt == entry->second.end() ) {
         qWarning() << "internal error: cannot find resource index";
         return {};
     }
 
-    return createIndex(std::distance(it->second.begin(), resourceIt), 0, row);
+    return createIndex(std::distance(entry->second.begin(), resourceIt), 0, parentRow);
 }
 
 Resource* ResourceModel::resource(const QModelIndex& index) const
@@ -197,10 +197,10 @@ Resource* ResourceModel::resource(const QModelIndex& index) const
     if ( index.internalId() == ULONG_LONG_MAX  )
         return nullptr;
 
-    auto typeIt = m_resources.begin();
+    auto typeIt = m_resourcesByType.begin();
     std::advance( typeIt, index.internalId() );
 
-    if ( typeIt == m_resources.end() )
+    if ( typeIt == m_resourcesByType.end() )
         return nullptr;
 
     auto& [type,resources] = *typeIt;

@@ -63,15 +63,15 @@ template<typename V>
 inline bool getTomlValue(const toml::ordered_table& table, const char* key, V& value, bool warnMissing = false, bool warnInvalid = true) {
     using Type = std::decay_t<std::remove_pointer_t<V>>;
 
-    auto it = table.find(key);
+    auto match = table.find(key);
 
-    if ( it == table.cend() ) {
+    if ( match == table.cend() ) {
         if ( warnMissing )
             qWarning() << key << "not found";
         return false;
     }
 
-    const toml::ordered_value& val = it->second;
+    const toml::ordered_value& val = match->second;
 
     if ( !val.is<Type>() ) {
         if ( warnInvalid )
@@ -450,13 +450,13 @@ ResourcePtr buildResource(const QString& name, const toml::ordered_table& res_da
         { "port",         { Resource::Type::Port, keys::resource::key_inet_service, Property::Type::Int    } },
     };
 
-    auto it = keymap.find(*resource_type);
-    if ( it == keymap.cend() ) {
+    auto resourceMetadata = keymap.find(*resource_type);
+    if ( resourceMetadata == keymap.cend() ) {
         qWarning() << "invalid resource type" << *resource_type;
         return {};
     }
 
-    const auto& [type,key,valType] = it->second;
+    const auto& [type,key,valType] = resourceMetadata->second;
     Parameter* overridingParameter = nullptr;
 
     const toml::ordered_table* prop = nullptr;
@@ -466,13 +466,13 @@ ResourcePtr buildResource(const QString& name, const toml::ordered_table& res_da
     }
 
 
-    auto value_it = prop->find(keys::resource::key_value);
-    if ( value_it == prop->cend() ) {
+    auto value = prop->find(keys::resource::key_value);
+    if ( value == prop->cend() ) {
         qWarning() << "resource property" << key << "does not have a default value";
         return {};
     }
 
-    auto val = parseDefault(value_it->second, valType);
+    auto val = parseDefault(value->second, valType);
 
     const std::string* paramName = nullptr;
     if ( getTomlValue(*prop, keys::resource::key_parameter, paramName) ) {

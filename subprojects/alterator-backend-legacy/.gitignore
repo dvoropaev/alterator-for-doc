@@ -1,5 +1,10 @@
 build
 *.qm
 .*
+!.gitignore
+!.gear
+!.clang-format
+!.clang-tidy
+!.forgejo
 *.qrc
 *.user

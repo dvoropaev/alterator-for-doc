@@ -35,6 +35,6 @@ public:
     Resource* resource(const QModelIndex& i) const ;
     
 protected:
-    std::map<Resource::Type, std::vector<Resource*>> m_resources;
+    std::map<Resource::Type, std::vector<Resource*>> m_resourcesByType;
     Parameter::ValueScope m_scope{Parameter::ValueScope::Default};
 };

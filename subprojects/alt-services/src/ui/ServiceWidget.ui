@@ -176,12 +176,12 @@
   <customwidget>
    <class>CustomTreeView</class>
    <extends>QTreeView</extends>
-   <header>ui/CustomTreeView.h</header>
+   <header>ui/misc/CustomTreeView.h</header>
   </customwidget>
   <customwidget>
    <class>ObjectInfoWidget</class>
    <extends>QWidget</extends>
-   <header>ui/ObjectInfoWidget.h</header>
+   <header>ui/misc/ObjectInfoWidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

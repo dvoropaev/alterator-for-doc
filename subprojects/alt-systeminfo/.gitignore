@@ -3,6 +3,7 @@
 !.gear
 !.clang-format
 !.clang-tidy
+!.forgejo
 build
 *.qm
 *.tr.qrc

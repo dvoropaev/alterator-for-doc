@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- improved wizard appearance and navigation
+
+## 0.1.8-alt1
+
 ### Fixed
 - segmentation fault while editing parameters in table mode
 - "Copy"/"Select All" default actions not being displayed in Log Page context menu

@@ -7,6 +7,9 @@
 #include <QJsonObject>
 #include <QSize>
 
+#include <range/v3/algorithm.hpp>
+#include <range/v3/iterator/insert_iterators.hpp>
+
 #include "app/ServicesApp.h"
 #include "controller/Controller.h"
 
@@ -22,9 +25,7 @@ Property::Property(Property& other) noexcept
     , m_array_prefix    { other.m_array_prefix }
 {
     m_value->m_property = this;
-    for ( auto& child : other.m_children )
-        m_children.push_back(std::move(child));
-    other.m_children.clear();
+    ranges::move(other.m_children, ranges::back_inserter(m_children));
 }
 
 Property::Property(const QString& name, const Locales &locales, Type type,
@@ -108,19 +109,18 @@ std::unique_ptr<Property::Value::ValidationInfo> Property::Value::isInvalid(bool
         }
 
         case Property::Type::Enum: {
-            auto currentIt = std::find_if(m_children.cbegin(), m_children.cend(),
-                                          [](const auto& child){return child->isEnabled();} );
+            auto currentVariant = ranges::find_if(m_children, &Value::isEnabled);
 
-            if ( currentIt == m_children.cend() )
+            if ( currentVariant == m_children.cend() )
                 return std::unique_ptr<ValidationInfo>{new ValidationInfo{this, QObject::tr("One of variants should be selected")}};
 
-            if ( auto childInfo = currentIt->get()->isInvalid(force) )
+            if ( auto childInfo = currentVariant->get()->isInvalid(force) )
                 return std::unique_ptr<ValidationInfo>{new ValidationInfo{this, QObject::tr("Additional data for the selected variant is not valid"), std::move(childInfo)}};
 
-            if ( ++currentIt == m_children.cend() )
+            if ( ++currentVariant == m_children.cend() )
                 break;
 
-            if ( std::any_of(currentIt, m_children.cend(), [](const auto& child){return child->isEnabled();}) )
+            if ( ranges::any_of(currentVariant, m_children.cend(), &Value::isEnabled) )
                 return std::unique_ptr<ValidationInfo>{new ValidationInfo{this, QObject::tr("More than one items are selected. This is an internal error. Please re-select an item.")}};
 
             break;
@@ -162,34 +162,25 @@ std::unique_ptr<Property::Value::ValidationInfo> Property::Value::isInvalid(bool
     if ( Parameter* parameter = dynamic_cast<Parameter*>(property()) ) {
         if ( !force ) {
             if ( Resource* resource = parameter->resource() ) {
-                auto it = std::find_if(
-                    parameter->service()->resources().cbegin(),
-                    parameter->service()->resources().cend(),
-                    [resource](const auto& otherResource){
-                        return resource->conflicts(otherResource.get());
-                    }
-                );
-
-                if ( it != parameter->service()->resources().cend() )
+                if ( Resource* other = qApp->controller()->findOwner(resource) )
                 {
-                    return std::unique_ptr<ValidationInfo>{new ValidationInfo{this,
-                        QObject::tr("Resource '%0' conflicts with '%1'")
-                            .arg(resource->displayName())
-                            .arg(it->get()->displayName())
-                    }};
+                    if ( other != resource )
+                    {
+                        if ( other->service() == resource->service() )
+                            return std::unique_ptr<ValidationInfo>{new ValidationInfo{this,
+                                QObject::tr("Resource '%0' conflicts with '%1'")
+                                    .arg(resource->displayName())
+                                    .arg(other->displayName())
+                            }};
+                        else
+                            return std::unique_ptr<ValidationInfo>{new ValidationInfo{this,
+                                QObject::tr("Resource '%0' conflicts with '%1' of an already deployed service '%2'")
+                                    .arg(resource->displayName())
+                                    .arg(other->displayName())
+                                    .arg(other->service()->displayName())
+                            }};
+                    }
                 }
-
-
-                Service* otherService{};
-                Resource* otherResource{};
-                if ( ServicesApp::instance()->controller()->findConflict(parameter->service(), parameter->resource(),
-                                                                         &otherService, &otherResource) )
-                    return std::unique_ptr<ValidationInfo>{new ValidationInfo{this,
-                        QObject::tr("Resource '%0' conflicts with '%1' of an already deployed service '%2'")
-                            .arg(resource->displayName())
-                            .arg(otherResource->displayName())
-                            .arg(otherService->displayName())
-                    }};
             }
         }
     }
@@ -244,6 +235,7 @@ QJsonValue Property::Value::serialize(bool excludePasswords) const
     }
 }
 
+#include <range/v3/view.hpp>
 bool Property::Value::fill(const QJsonValue& value, bool required)
 {
     bool success = false;
@@ -277,7 +269,7 @@ bool Property::Value::fill(const QJsonValue& value, bool required)
             } break;
 
             case Type::Composite: {
-                success = std::accumulate(m_children.cbegin(), m_children.cend(), true,
+                success = ranges::fold_left(m_children, true,
                     [object = value.toObject()]
                     (bool res, const auto& child){
                         return res & child->fill(object[child->m_property->name()], child->property()->isRequired());
@@ -290,7 +282,7 @@ bool Property::Value::fill(const QJsonValue& value, bool required)
                 m_children.clear();
                 if ( m_property->m_prototype )
                 {
-                    success = std::accumulate(array.cbegin(), array.cend(), true,
+                    success = ranges::fold_left(array, true,
                         [this](bool res, const auto& value){
                             auto child = m_property->m_prototype->defaultValue()->clone();
                             bool result = res & child->fill(value, true);
@@ -328,7 +320,7 @@ ValuePtr Property::Value::clone() noexcept
             copy->m_value = m_value;
             break;
     }
-    return std::move(copy);
+    return copy;
 }
 void Property::Value::addChild(ValuePtr &&child) {
     child->m_parent = this;

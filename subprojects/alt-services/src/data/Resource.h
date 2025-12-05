@@ -54,7 +54,11 @@ public:
 
     inline int portProtocol(){ return m_port_protocol; }
 
-    bool conflicts(const Resource* toDeploy) const;
+    /*
+     * Returns true if other resource has same type and value
+     */
+    bool intersects(const Resource* other) const;
+
     inline Parameter* override() const {return m_override;}
 
     inline Service* service() const {return m_service;}

@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>InitialPage</class>
+ <widget class="QWizardPage" name="InitialPage">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>629</width>
+    <height>757</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string notr="true">WizardPage</string>
+  </property>
+  <property name="title">
+   <string notr="true"/>
+  </property>
+  <property name="subTitle">
+   <string notr="true"/>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="0,1,0,0,0,0,0">
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Orientation::Vertical</enum>
+     </property>
+     <property name="sizeType">
+      <enum>QSizePolicy::Policy::Expanding</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="resourcesGroupBox">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="title">
+      <string>Resources</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_12">
+      <item>
+       <widget class="QLabel" name="deployResourceMessage">
+        <property name="text">
+         <string>The following system resources will be owned by this service after deployment:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="undeployResourceMessage">
+        <property name="text">
+         <string>The following system resources will be released after undeploying this service:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="CustomTreeView" name="resourceOwnersView"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="KMessageWidget" name="conflictsDetectedMessage">
+     <property name="text">
+      <string>Some resources are owned by another deployed services.</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+     <property name="closeButtonVisible">
+      <bool>false</bool>
+     </property>
+     <property name="messageType">
+      <enum>KMessageWidget::MessageType::Warning</enum>
+     </property>
+     <property name="icon">
+      <iconset theme="dialog-warning"/>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="KMessageWidget" name="conflictsResolvableMessage">
+     <property name="text">
+      <string>All resource conflicts may be resolved by overriding these resources on the &quot;Parameters&quot; page.</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+     <property name="closeButtonVisible">
+      <bool>false</bool>
+     </property>
+     <property name="messageType">
+      <enum>KMessageWidget::MessageType::Information</enum>
+     </property>
+     <property name="icon">
+      <iconset theme="dialog-ok"/>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="KMessageWidget" name="conflictsUnresolvableMessage">
+     <property name="text">
+      <string>Deployment is not possible, because these resources could not be overridden.
+You may want to undeploy the conflicting services, or reconfigure them, if their resourses are overridable.</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+     <property name="closeButtonVisible">
+      <bool>false</bool>
+     </property>
+     <property name="messageType">
+      <enum>KMessageWidget::MessageType::Error</enum>
+     </property>
+     <property name="icon">
+      <iconset theme="dialog-error"/>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="KMessageWidget" name="conflictsOkMessage">
+     <property name="text">
+      <string>Conflicts were not detected.</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+     <property name="closeButtonVisible">
+      <bool>false</bool>
+     </property>
+     <property name="messageType">
+      <enum>KMessageWidget::MessageType::Positive</enum>
+     </property>
+     <property name="icon">
+      <iconset theme="dialog-ok"/>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="optionsGroupBox">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="title">
+      <string>Additional options</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_8">
+      <item>
+       <widget class="QCheckBox" name="forceDeployCheckBox">
+        <property name="toolTip">
+         <string>When this option is activated, diagnostic tests are not available. The service will be deployed regardless of the current status.</string>
+        </property>
+        <property name="text">
+         <string>Force deploy (skip premilinary tests and ignore current status)</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QWidget" name="otherOptionsContainer" native="true">
+        <layout class="QVBoxLayout" name="verticalLayout_13">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QCheckBox" name="preDiagCheckBox">
+           <property name="toolTip">
+            <string>When this option is activated, diagnostic tests are not available. The service will be deployed regardless of the current status.</string>
+           </property>
+           <property name="text">
+            <string>Plemirinary diagnostics</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="postDiagCheckBox">
+           <property name="toolTip">
+            <string>When this option is activated, diagnostic tests are not available. The service will be deployed regardless of the current status.</string>
+           </property>
+           <property name="text">
+            <string>Post-diagnostics</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="autoStartCheckBox">
+           <property name="toolTip">
+            <string>Service will be started immediately after a successfull deploy</string>
+           </property>
+           <property name="text">
+            <string>Start service immediately after deploy</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>KMessageWidget</class>
+   <extends>QFrame</extends>
+   <header>kmessagewidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>CustomTreeView</class>
+   <extends>QTreeView</extends>
+   <header>ui/misc/CustomTreeView.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

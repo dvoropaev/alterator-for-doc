@@ -363,6 +363,28 @@ required = [
     "restore"
 ]
 
+[parameters.resetToDefaults]
+display_name.en = "Reset to defaults"
+display_name.ru = "Сбросить настройки к значениям по умолчанию"
+type = "boolean"
+context = [
+    "undeploy"
+]
+required = [
+    "undeploy"
+]
+
+[parameters.saveCurrentConfig]
+display_name.en = "Save current configuration"
+display_name.ru = "Сохранить текущую конфигурацию"
+type = "boolean"
+context = [
+    "undeploy"
+]
+required = [
+    "undeploy"
+]
+
 [resources.chronyConf]
 display_name.en = "Chrony configuring file"
 display_name.ru = "Конфигурационный файл Chrony"

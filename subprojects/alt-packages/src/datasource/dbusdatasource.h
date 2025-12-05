@@ -61,6 +61,7 @@ private:
 
     AlteratorExecutorReply dbusCall(const QString &path,
                                     const QString &interface,
+                                    int timeout,
                                     const QString &method,
                                     const QString &arg = QString());
 

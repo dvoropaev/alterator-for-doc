@@ -4,7 +4,7 @@ interface = "service1"
 name = "service_samba_shares"
 
 [methods.Info]
-execute = "cat /usr/share/alterator/service/service-samba-shares.service"
+execute = "cat /usr/share/alterator/services/service-samba-shares.service"
 action_id = "Info"
 stdout_bytes = true
 

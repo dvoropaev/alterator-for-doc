@@ -17,6 +17,9 @@ struct AlteratorExecutorReply
     QStringList stderr_strings = {};
 };
 
+constexpr int NO_TIMEOUT  = -1;
+constexpr int DAY_TIMEOUT = 24 * 60 * 60 * 1000;
+
 DBusDataSource::DBusDataSource(QString serviceName, QString path, QString ifaceName, QString methodName)
     : m_connection(QDBusConnection::systemBus())
     , m_serviceName(serviceName)
@@ -112,7 +115,7 @@ int DBusDataSource::rpmList(QStringList &result)
         return 1;
     }
 
-    auto reply = dbusCall(m_rpmPath, RPM_INTERFACE_NAME, RPM_LIST_METHOD_NAME);
+    auto reply = dbusCall(m_rpmPath, RPM_INTERFACE_NAME, NO_TIMEOUT, RPM_LIST_METHOD_NAME);
     if (reply.status)
     {
         result = reply.stderr_strings;
@@ -135,7 +138,7 @@ int DBusDataSource::rpmInstall(QStringList &result, const QString package)
         return 1;
     }
 
-    auto reply = dbusCall(m_rpmPath, RPM_INTERFACE_NAME, RPM_INSTALL_METHOD_NAME, package);
+    auto reply = dbusCall(m_rpmPath, RPM_INTERFACE_NAME, NO_TIMEOUT, RPM_INSTALL_METHOD_NAME, package);
     if (reply.status)
     {
         result = reply.stderr_strings;
@@ -158,7 +161,7 @@ int DBusDataSource::rpmRemove(QStringList &result, const QString package)
         return 1;
     }
 
-    auto reply = dbusCall(m_rpmPath, RPM_INTERFACE_NAME, RPM_REMOVE_METHOD_NAME, package);
+    auto reply = dbusCall(m_rpmPath, RPM_INTERFACE_NAME, NO_TIMEOUT, RPM_REMOVE_METHOD_NAME, package);
     if (reply.status)
     {
         result = reply.stderr_strings;
@@ -181,7 +184,7 @@ int DBusDataSource::rpmInfo(QStringList &result, const QString package)
         return 1;
     }
 
-    auto reply = dbusCall(m_rpmPath, RPM_INTERFACE_NAME, RPM_INFO_METHOD_NAME, package);
+    auto reply = dbusCall(m_rpmPath, RPM_INTERFACE_NAME, NO_TIMEOUT, RPM_INFO_METHOD_NAME, package);
     if (reply.status)
     {
         result = reply.stderr_strings;
@@ -208,7 +211,7 @@ int DBusDataSource::rpmFiles(QStringList &result, const QString package)
         return 1;
     }
 
-    auto reply = dbusCall(m_rpmPath, RPM_INTERFACE_NAME, RPM_FILES_METHOD_NAME, package);
+    auto reply = dbusCall(m_rpmPath, RPM_INTERFACE_NAME, NO_TIMEOUT, RPM_FILES_METHOD_NAME, package);
     if (reply.status)
     {
         result = reply.stderr_strings;
@@ -232,7 +235,7 @@ int DBusDataSource::aptCheckApply(QStringList &stdout_result, QStringList &stder
         return 1;
     }
 
-    auto reply    = dbusCall(m_aptPath, APT_INTERFACE_NAME, APT_CHECK_APPLY_METHOD_NAME, package);
+    auto reply    = dbusCall(m_aptPath, APT_INTERFACE_NAME, DAY_TIMEOUT, APT_CHECK_APPLY_METHOD_NAME, package);
     stdout_result = reply.stdout_strings;
     stderr_result = reply.stderr_strings;
 
@@ -250,7 +253,7 @@ int DBusDataSource::aptCheckDistUpgrade(QStringList &stdout_result, QStringList 
         return 1;
     }
 
-    auto reply    = dbusCall(m_aptPath, APT_INTERFACE_NAME, APT_CHECK_DIST_UPGRADE_METHOD_NAME);
+    auto reply    = dbusCall(m_aptPath, APT_INTERFACE_NAME, DAY_TIMEOUT, APT_CHECK_DIST_UPGRADE_METHOD_NAME);
     stdout_result = reply.stdout_strings;
     stderr_result = reply.stderr_strings;
 
@@ -267,7 +270,7 @@ int DBusDataSource::aptInstall(QStringList &result, const QString package)
         return 1;
     }
 
-    auto reply = dbusCall(m_aptPath, APT_INTERFACE_NAME, APT_INSTALL_METHOD_NAME, package);
+    auto reply = dbusCall(m_aptPath, APT_INTERFACE_NAME, DAY_TIMEOUT, APT_INSTALL_METHOD_NAME, package);
     if (reply.status)
     {
         result = reply.stderr_strings;
@@ -309,6 +312,7 @@ int DBusDataSource::aptApplyAsync(QStringList &result, const QString exclude_pac
         qWarning() << result;
         return 2;
     }
+    iface.setTimeout(DAY_TIMEOUT);
 
     QDBusMessage reply = iface.call(QDBus::CallMode::BlockWithGui, method, exclude_packages, packages);
     if (reply.type() == QDBusMessage::ErrorMessage)
@@ -330,7 +334,7 @@ int DBusDataSource::aptApplyAsync(QStringList &result, const QString exclude_pac
 
 int DBusDataSource::aptDistUpgradeAsync(QStringList &result)
 {
-    auto reply = dbusCall(m_aptPath, APT_INTERFACE_NAME, APT_DIST_UPGRADE_ASYNC_METHOD_NAME);
+    auto reply = dbusCall(m_aptPath, APT_INTERFACE_NAME, DAY_TIMEOUT, APT_DIST_UPGRADE_ASYNC_METHOD_NAME);
     result     = reply.stderr_strings;
     return reply.status;
 }
@@ -345,7 +349,7 @@ int DBusDataSource::aptReinstall(QStringList &result, const QString package)
         return 1;
     }
 
-    auto reply = dbusCall(m_aptPath, APT_INTERFACE_NAME, APT_REINSTALL_METHOD_NAME, package);
+    auto reply = dbusCall(m_aptPath, APT_INTERFACE_NAME, DAY_TIMEOUT, APT_REINSTALL_METHOD_NAME, package);
     if (reply.status)
     {
         result = reply.stderr_strings;
@@ -368,7 +372,7 @@ int DBusDataSource::aptRemove(QStringList &result, const QString package)
         return 1;
     }
 
-    auto reply = dbusCall(m_aptPath, APT_INTERFACE_NAME, APT_REMOVE_METHOD_NAME, package);
+    auto reply = dbusCall(m_aptPath, APT_INTERFACE_NAME, DAY_TIMEOUT, APT_REMOVE_METHOD_NAME, package);
     if (reply.status)
     {
         result = reply.stderr_strings;
@@ -391,7 +395,7 @@ int DBusDataSource::aptUpdate(QStringList &result)
         return 1;
     }
 
-    auto reply = dbusCall(m_aptPath, APT_INTERFACE_NAME, APT_UPDATE_METHOD_NAME);
+    auto reply = dbusCall(m_aptPath, APT_INTERFACE_NAME, NO_TIMEOUT, APT_UPDATE_METHOD_NAME);
     if (reply.status)
     {
         result = reply.stderr_strings;
@@ -406,7 +410,7 @@ int DBusDataSource::aptUpdate(QStringList &result)
 
 int DBusDataSource::aptUpdateAsync(QStringList &result)
 {
-    auto reply = dbusCall(m_aptPath, APT_INTERFACE_NAME, APT_UPDATE_ASYNC_METHOD_NAME);
+    auto reply = dbusCall(m_aptPath, APT_INTERFACE_NAME, NO_TIMEOUT, APT_UPDATE_ASYNC_METHOD_NAME);
     result     = reply.stderr_strings;
     return reply.status;
 }
@@ -421,7 +425,7 @@ int DBusDataSource::aptListAllPackages(QStringList &result)
         return 1;
     }
 
-    auto reply = dbusCall(m_aptPath, APT_INTERFACE_NAME, APT_LIST_ALL_PACKAGES_METHOD_NAME);
+    auto reply = dbusCall(m_aptPath, APT_INTERFACE_NAME, NO_TIMEOUT, APT_LIST_ALL_PACKAGES_METHOD_NAME);
     if (reply.status)
     {
         result = reply.stderr_strings;
@@ -444,7 +448,7 @@ int DBusDataSource::aptLastUpdate(QStringList &result)
         return 1;
     }
 
-    auto reply = dbusCall(m_aptPath, APT_INTERFACE_NAME, APT_LAST_UPDATE_METHOD_NAME);
+    auto reply = dbusCall(m_aptPath, APT_INTERFACE_NAME, NO_TIMEOUT, APT_LAST_UPDATE_METHOD_NAME);
     if (reply.status)
     {
         result = reply.stderr_strings;
@@ -493,7 +497,7 @@ int DBusDataSource::repoAdd(QStringList &result, const QString repo)
         return 1;
     }
 
-    auto reply = dbusCall(m_repoPath, REPO_INTERFACE_NAME, REPO_ADD_METHOD_NAME, repo);
+    auto reply = dbusCall(m_repoPath, REPO_INTERFACE_NAME, NO_TIMEOUT, REPO_ADD_METHOD_NAME, repo);
     if (reply.status)
     {
         result = reply.stderr_strings;
@@ -516,7 +520,7 @@ int DBusDataSource::repoList(QStringList &result)
         return 1;
     }
 
-    auto reply = dbusCall(m_repoPath, REPO_INTERFACE_NAME, REPO_LIST_METHOD_NAME);
+    auto reply = dbusCall(m_repoPath, REPO_INTERFACE_NAME, NO_TIMEOUT, REPO_LIST_METHOD_NAME);
     if (reply.status)
     {
         result = reply.stderr_strings;
@@ -539,7 +543,7 @@ int DBusDataSource::repoRemove(QStringList &result, const QString repo)
         return 1;
     }
 
-    auto reply = dbusCall(m_repoPath, REPO_INTERFACE_NAME, REPO_REMOVE_METHOD_NAME, repo);
+    auto reply = dbusCall(m_repoPath, REPO_INTERFACE_NAME, NO_TIMEOUT, REPO_REMOVE_METHOD_NAME, repo);
     if (reply.status)
     {
         result = reply.stderr_strings;
@@ -552,10 +556,8 @@ int DBusDataSource::repoRemove(QStringList &result, const QString repo)
     return reply.status;
 }
 
-AlteratorExecutorReply DBusDataSource::dbusCall(const QString &path,
-                                                const QString &interface,
-                                                const QString &method,
-                                                const QString &arg)
+AlteratorExecutorReply DBusDataSource::dbusCall(
+    const QString &path, const QString &interface, int timeout, const QString &method, const QString &arg)
 {
     AlteratorExecutorReply result;
 
@@ -569,6 +571,7 @@ AlteratorExecutorReply DBusDataSource::dbusCall(const QString &path,
         result.status = 2;
         return result;
     }
+    iface.setTimeout(timeout);
 
     QDBusMessage reply;
     if (!arg.isNull())

@@ -6,6 +6,8 @@
 #include <QFont>
 #include <QPalette>
 
+#include <range/v3/algorithm.hpp>
+
 void ParameterModel::setItems(const std::vector<Parameter*>& items) {
     beginResetModel();
     m_items = items;
@@ -21,8 +23,8 @@ void ParameterModel::setScope(Parameter::ValueScope scope)
 
 
 int ParameterModel::indexOf(const Parameter* param) const {
-    auto it = std::find(m_items.cbegin(), m_items.cend(), param);
-    return it == m_items.cend() ? -1 : std::distance(m_items.cbegin(), it);
+    auto match = ranges::find(m_items, param);
+    return match == m_items.cend() ? -1 : std::distance(m_items.cbegin(), match);
 }
 
 QModelIndex ParameterModel::indexOf(const Property::Value* value) const
@@ -36,7 +38,7 @@ QModelIndex ParameterModel::indexOf(const Property::Value* value) const
         return index(parent->indexOf(value), 0, indexOf(parent) );
     }
 
-    return index( indexOf( (Parameter*)value->property() ), 0 );
+    return index( indexOf( static_cast<Parameter*>(value->property()) ), 0 );
 }
 
 Property::Value* ParameterModel::indexToValue(const QModelIndex& index) const
@@ -52,22 +54,20 @@ QModelIndex ParameterModel::index(int row, int column, const QModelIndex& parent
         return {};
 
     if ( parent.isValid() ) {
-        auto value = (Property::Value*)parent.internalPointer();
+        auto value = static_cast<Property::Value*>(parent.internalPointer());
 
         if ( value->property()->valueType() == Property::Type::Enum ) {
 
-            auto it = std::find_if(value->children().cbegin(),
-                                   value->children().cend(),
-                                   [](const auto& child){ return child->isEnabled(); });
+            auto currenVariant = ranges::find_if(value->children(), &Property::Value::isEnabled);
 
-            if ( it != value->children().cend() ) {
+            if ( currenVariant != value->children().cend() ) {
 
-                if ( it->get()->children().size() <= row )
+                if ( currenVariant->get()->children().size() <= row )
                     return {};
 
                 int i = row;
-                for ( const auto& v : it->get()->children() ) {
-                    if ( it->get()->children()[i]->property()->isConstant() )
+                for ( const auto& v : currenVariant->get()->children() ) {
+                    if ( currenVariant->get()->children()[i]->property()->isConstant() )
                         continue;
 
                     if ( i )
@@ -90,17 +90,17 @@ QModelIndex ParameterModel::index(int row, int column, const QModelIndex& parent
 }
 
 QModelIndex ParameterModel::parent(const QModelIndex& child) const {
-    if ( auto value = (Property::Value*)child.internalPointer() ) {
+    if ( auto* value = static_cast<Property::Value*>(child.internalPointer()) ) {
 
-        if ( auto* parent = value->parent() ) {
-            if ( auto* gramps = parent->parent() ) {
+        if ( Property::Value* parent = value->parent() ) {
+            if ( Property::Value* gramps = parent->parent() ) {
                 if ( gramps->property()->valueType() == Property::Type::Enum )
                     return indexOf(gramps);
                 else
                     return createIndex(gramps->indexOf(parent), 0, parent);
             }
 
-            return createIndex( indexOf((Parameter*)parent->property()), 0, parent);
+            return createIndex( indexOf(static_cast<Parameter*>(parent->property())), 0, parent);
         }
     }
 
@@ -109,17 +109,16 @@ QModelIndex ParameterModel::parent(const QModelIndex& child) const {
 
 int ParameterModel::rowCount(const QModelIndex& parent) const {
     if ( parent.isValid() ) {
-        auto value = (Property::Value*)parent.internalPointer();
+        auto value = static_cast<Property::Value*>(parent.internalPointer());
 
         if ( value->property()->valueType() == Property::Type::Enum ) {
 
-            auto it = std::find_if(value->children().cbegin(),
-                                   value->children().cend(),
-                                   [](const auto& child){ return child->isEnabled(); });
+            auto currentVariant = ranges::find_if(value->children(), &Property::Value::isEnabled);
 
-            if ( it != value->children().cend() )
-                return std::count_if(it->get()->children().cbegin(), it->get()->children().cend(),
-                                     [](const auto& val){return !val->property()->isConstant();});
+            if ( currentVariant != value->children().cend() )
+                return ranges::count_if(currentVariant->get()->children(),
+                                        std::not_fn(&Property::isConstant),
+                                        &Property::Value::property);
 
             return 0;
         }
@@ -164,17 +163,15 @@ QVariant ParameterModel::data(const QModelIndex& index, int role) const
 
         case Qt::UserRole:
             if ( !index.parent().isValid() )
-                return QVariant::fromValue( ((Parameter*)value->property())->resource() );
+                return QVariant::fromValue( static_cast<Parameter*>(value->property())->resource() );
         break;
     }
     else if ( index.column() == 1 ) switch (role) {
         case Qt::DisplayRole:
             if ( property->valueType() == Property::Type::Enum ) {
-                auto it = std::find_if(value->children().cbegin(),
-                                       value->children().cend(),
-                                       [](const auto& child){ return child->isEnabled(); });
-                if ( it != value->children().cend() )
-                    return it->get()->property()->displayName();
+                auto currentVariant = ranges::find_if(value->children(), &Property::Value::isEnabled);
+                if ( currentVariant != value->children().cend() )
+                    return currentVariant->get()->property()->displayName();
             }
 
             if ( type == Property::Type::Bool )
@@ -194,11 +191,9 @@ QVariant ParameterModel::data(const QModelIndex& index, int role) const
 
         case Qt::ToolTipRole:
             if ( property->valueType() == Property::Type::Enum ) {
-                auto it = std::find_if(value->children().cbegin(),
-                                       value->children().cend(),
-                                       [](const auto& child){ return child->isEnabled(); });
-                if ( it != value->children().cend() )
-                    return it->get()->property()->comment();
+                auto currentVariant = ranges::find_if(value->children(), &Property::Value::isEnabled);
+                if ( currentVariant != value->children().cend() )
+                    return currentVariant->get()->property()->comment();
             }
             return {};
         break;
@@ -211,7 +206,6 @@ QVariant ParameterModel::data(const QModelIndex& index, int role) const
                          ( property->valueType() != Property::Type::Enum && value->get().isNull() ) );
             return f;
         }
-        break;
     }
 
     return {};

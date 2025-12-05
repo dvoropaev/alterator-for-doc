@@ -35,6 +35,14 @@ mkdir -p %buildroot%_datadir/alterator/diagnostic_tool3_user
 mkdir -p %buildroot%_datadir/alterator/diagnostic_tool4
 mkdir -p %buildroot%_datadir/alterator/diagnostic_tool4_user
 
+mkdir -p %buildroot%_datadir/alterator/diagnostic_tool5
+
+mkdir -p %buildroot%_datadir/alterator/diagnostic_tool6_user
+
+mkdir -p %buildroot%_datadir/alterator/diagnostic_tool7
+
+mkdir -p %buildroot%_datadir/alterator/diagnostic_tool8
+
 install -v -p -m 755 -D adt-test-tool %buildroot%_libexecdir/%name
 install -v -p -m 755 -D adt-test-tool-user %buildroot%_libexecdir/%name
 
@@ -59,6 +67,22 @@ install -v -p -m 644 -D diagnostic_tool4_user.backend %buildroot%_sysconfdir/alt
 
 install -v -p -m 644 -D diagnostic_tool4_sys.diag %buildroot%_datadir/alterator/diagnostic_tool4
 install -v -p -m 644 -D diagnostic_tool4_user.diag %buildroot%_datadir/alterator/diagnostic_tool4_user
+
+install -v -p -m 644 -D diagnostic_tool5_sys.backend %buildroot%_sysconfdir/alterator/backends/system
+
+install -v -p -m 644 -D diagnostic_tool5_sys.diag %buildroot%_datadir/alterator/diagnostic_tool5
+
+install -v -p -m 644 -D diagnostic_tool6_user.backend %buildroot%_sysconfdir/alterator/backends/user
+
+install -v -p -m 644 -D diagnostic_tool6_user.diag %buildroot%_datadir/alterator/diagnostic_tool6_user
+
+install -v -p -m 644 -D diagnostic_tool7_sys.backend %buildroot%_sysconfdir/alterator/backends/system
+
+install -v -p -m 644 -D diagnostic_tool7_sys.diag %buildroot%_datadir/alterator/diagnostic_tool7
+
+install -v -p -m 644 -D diagnostic_tool8_sys.backend %buildroot%_sysconfdir/alterator/backends/system
+
+install -v -p -m 644 -D diagnostic_tool8_sys.diag %buildroot%_datadir/alterator/diagnostic_tool8
 
 %files
 %_libexecdir/%name/adt-test-tool
@@ -85,6 +109,22 @@ install -v -p -m 644 -D diagnostic_tool4_user.diag %buildroot%_datadir/alterator
 
 %_datadir/alterator/diagnostic_tool4/diagnostic_tool4_sys.diag
 %_datadir/alterator/diagnostic_tool4_user/diagnostic_tool4_user.diag
+
+%_sysconfdir/alterator/backends/system/diagnostic_tool5_sys.backend
+
+%_datadir/alterator/diagnostic_tool5/diagnostic_tool5_sys.diag
+
+%_sysconfdir/alterator/backends/user/diagnostic_tool6_user.backend
+
+%_datadir/alterator/diagnostic_tool6_user/diagnostic_tool6_user.diag
+
+%_sysconfdir/alterator/backends/system/diagnostic_tool7_sys.backend
+
+%_datadir/alterator/diagnostic_tool7/diagnostic_tool7_sys.diag
+
+%_sysconfdir/alterator/backends/system/diagnostic_tool8_sys.backend
+
+%_datadir/alterator/diagnostic_tool8/diagnostic_tool8_sys.diag
 
 %changelog
 * Tue Aug 05 2025 Aleksey Saprunov <sav@altlinux.org> 0.1.9-alt1

@@ -136,15 +136,13 @@ public:
     inline bool session()           const { return m_session;    }
 
     inline bool hasTests(Test::Mode m) const {
-        return std::any_of(
-            m_tests.cbegin(), m_tests.cend(),
+        return ranges::any_of(m_tests,
             [m](const auto& test){return test->mode().testFlag(m);}
         );
     }
 
     inline bool hasRequiredTests(Test::Mode m) const {
-        return std::any_of(
-            m_tests.cbegin(), m_tests.cend(),
+        return ranges::any_of(m_tests,
             [m](const auto& test){return test->required().testFlag(m);}
         );
     }

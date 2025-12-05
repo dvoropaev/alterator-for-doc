@@ -16,6 +16,8 @@ find_package(ECM REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 find_package(KF6                   REQUIRED COMPONENTS WidgetsAddons ItemModels)
 
+find_package(range-v3 REQUIRED)
+
 set(TS_FILES
     ts/en_US.ts
     ts/ru_RU.ts
@@ -95,95 +97,119 @@ set(PROJECT_SOURCES
     src/ui/ServiceWidget.cpp
     src/ui/ServiceWidget.ui
 
-    src/ui/ActionWizard.h
-    src/ui/ActionWizard.cpp
-    src/ui/ActionWizard.ui
+# WIZARD
+    src/ui/wizard/ActionWizard.h
+    src/ui/wizard/ActionWizard.cpp
 
-    src/ui/DiagSelectionForm.h
-    src/ui/DiagSelectionForm.cpp
-    src/ui/DiagSelectionForm.ui
+# WIZARD PAGES
+    src/ui/wizard/Page.h
+
+    src/ui/wizard/01-initial/InitialPage.h
+    src/ui/wizard/01-initial/InitialPage.cpp
+    src/ui/wizard/01-initial/InitialPage.ui
+
+    src/ui/wizard/02-diag-selection/DiagSelectionForm.h
+    src/ui/wizard/02-diag-selection/DiagSelectionForm.cpp
+    src/ui/wizard/02-diag-selection/DiagSelectionForm.ui
+
+    src/ui/wizard/02-diag-selection/DiagSelectionPage.h
+    src/ui/wizard/02-diag-selection/DiagSelectionPage.cpp
+    src/ui/wizard/02-diag-selection/DiagSelectionPage.ui
+
+    src/ui/wizard/03-parameters/ParametersPage.h
+    src/ui/wizard/03-parameters/ParametersPage.cpp
+    src/ui/wizard/03-parameters/ParametersPage.ui
+
+    src/ui/wizard/04-confirmation/ConfirmationPage.h
+    src/ui/wizard/04-confirmation/ConfirmationPage.cpp
+    src/ui/wizard/04-confirmation/ConfirmationPage.ui
+
+    src/ui/wizard/05-progress/LogWidget.h
+    src/ui/wizard/05-progress/LogWidget.cpp
+
+    src/ui/wizard/05-progress/ProgressPage.h
+    src/ui/wizard/05-progress/ProgressPage.cpp
+    src/ui/wizard/05-progress/ProgressPage.ui
+
 
 # MISC WIDGETS
-    src/ui/ObjectInfoWidget.h
-    src/ui/ObjectInfoWidget.cpp
-    src/ui/ObjectInfoWidget.ui
+    src/ui/misc/ObjectInfoWidget.h
+    src/ui/misc/ObjectInfoWidget.cpp
+    src/ui/misc/ObjectInfoWidget.ui
 
-    src/ui/CustomTreeView.h
-    src/ui/CustomTreeView.cpp
+    src/ui/misc/CustomTreeView.h
+    src/ui/misc/CustomTreeView.cpp
 
-    src/ui/ObjectInfoDelegate.h
-    src/ui/ObjectInfoDelegate.cpp
+    src/ui/misc/ObjectInfoDelegate.h
+    src/ui/misc/ObjectInfoDelegate.cpp
 
-    src/ui/LogWidget.h
-    src/ui/LogWidget.cpp
+    src/ui/misc/SearchAdapter.h
+    src/ui/misc/ItemModelSearcher.h
+    src/ui/misc/ItemModelSearcher.cpp
+    src/ui/misc/ParameterSearcher.h
 
-    src/ui/SearchAdapter.h
-    src/ui/ItemModelSearcher.h
-    src/ui/ItemModelSearcher.cpp
-    src/ui/ParameterSearcher.h
-
-    src/ui/SearchBar.h
-    src/ui/SearchBar.cpp
-    src/ui/SearchBar.ui
+    src/ui/misc/SearchBar.h
+    src/ui/misc/SearchBar.cpp
+    src/ui/misc/SearchBar.ui
 
 # FORM VARIANTS
-    src/ui/forms/BaseForm.h
+    src/ui/wizard/03-parameters/forms/BaseForm.h
 
-    src/ui/forms/CompactForm.h
-    src/ui/forms/CompactForm.cpp
+    src/ui/wizard/03-parameters/forms/CompactForm.h
+    src/ui/wizard/03-parameters/forms/CompactForm.cpp
 
-    src/ui/forms/DetailedForm.h
-    src/ui/forms/DetailedForm.cpp
-    src/ui/forms/DetailedForm.ui
+    src/ui/wizard/03-parameters/forms/DetailedForm.h
+    src/ui/wizard/03-parameters/forms/DetailedForm.cpp
+    src/ui/wizard/03-parameters/forms/DetailedForm.ui
 
 # FORM EDITORS
-    src/ui/forms/editors/Editor.h
-    src/ui/forms/editors/Editor.cpp
+    src/ui/wizard/03-parameters/forms/editors/Editor.h
+    src/ui/wizard/03-parameters/forms/editors/Editor.cpp
 
-    src/ui/forms/editors/compact/CompactArrayFace.h
-    src/ui/forms/editors/compact/CompactArrayFace.cpp
+    src/ui/wizard/03-parameters/forms/editors/compact/CompactArrayFace.h
+    src/ui/wizard/03-parameters/forms/editors/compact/CompactArrayFace.cpp
 
-    src/ui/forms/editors/compact/PrimitiveEditor.h
-    src/ui/forms/editors/compact/PrimitiveEditor.cpp
+    src/ui/wizard/03-parameters/forms/editors/compact/PrimitiveEditor.h
+    src/ui/wizard/03-parameters/forms/editors/compact/PrimitiveEditor.cpp
 
-    src/ui/forms/editors/detailed/CompositeEditor.h
-    src/ui/forms/editors/detailed/CompositeEditor.cpp
+    src/ui/wizard/03-parameters/forms/editors/detailed/CompositeEditor.h
+    src/ui/wizard/03-parameters/forms/editors/detailed/CompositeEditor.cpp
 
-    src/ui/forms/editors/detailed/GroupEditor.h
-    src/ui/forms/editors/detailed/GroupEditor.cpp
+    src/ui/wizard/03-parameters/forms/editors/detailed/GroupEditor.h
+    src/ui/wizard/03-parameters/forms/editors/detailed/GroupEditor.cpp
 
-    src/ui/forms/editors/detailed/CompositeArrayEditor.h
-    src/ui/forms/editors/detailed/CompositeArrayEditor.cpp
-    src/ui/forms/editors/detailed/CompositeArrayEditor.ui
+    src/ui/wizard/03-parameters/forms/editors/detailed/CompositeArrayEditor.h
+    src/ui/wizard/03-parameters/forms/editors/detailed/CompositeArrayEditor.cpp
+    src/ui/wizard/03-parameters/forms/editors/detailed/CompositeArrayEditor.ui
 
-    src/ui/forms/editors/detailed/ArrayEditor.h
-    src/ui/forms/editors/detailed/ArrayEditor.cpp
-    src/ui/forms/editors/detailed/ArrayEditor.ui
+    src/ui/wizard/03-parameters/forms/editors/detailed/ArrayEditor.h
+    src/ui/wizard/03-parameters/forms/editors/detailed/ArrayEditor.cpp
+    src/ui/wizard/03-parameters/forms/editors/detailed/ArrayEditor.ui
 
-    src/ui/forms/editors/detailed/misc/EditorTitle.h
-    src/ui/forms/editors/detailed/misc/EditorTitle.cpp
-    src/ui/forms/editors/detailed/misc/EditorTitle.ui
+    src/ui/wizard/03-parameters/forms/editors/detailed/misc/EditorTitle.h
+    src/ui/wizard/03-parameters/forms/editors/detailed/misc/EditorTitle.cpp
+    src/ui/wizard/03-parameters/forms/editors/detailed/misc/EditorTitle.ui
 
-    src/ui/forms/editors/detailed/misc/CollapseButton.h
-    src/ui/forms/editors/detailed/misc/CollapseButton.cpp
+    src/ui/wizard/03-parameters/forms/editors/detailed/misc/CollapseButton.h
+    src/ui/wizard/03-parameters/forms/editors/detailed/misc/CollapseButton.cpp
 
-    src/ui/forms/editors/detailed/misc/ValidationIndicator.h
-    src/ui/forms/editors/detailed/misc/ValidationIndicator.cpp
+    src/ui/wizard/03-parameters/forms/editors/detailed/misc/ValidationIndicator.h
+    src/ui/wizard/03-parameters/forms/editors/detailed/misc/ValidationIndicator.cpp
 
-    src/ui/forms/editors/detailed/DetailedEditor.h
-    src/ui/forms/editors/detailed/wrappers/EditorWrapper.h
+    src/ui/wizard/03-parameters/forms/editors/detailed/DetailedEditor.h
+    src/ui/wizard/03-parameters/forms/editors/detailed/wrappers/EditorWrapper.h
 
-    src/ui/forms/editors/detailed/wrappers/InlineEditor.h
-    src/ui/forms/editors/detailed/wrappers/InlineEditor.cpp
-    src/ui/forms/editors/detailed/wrappers/InlineEditor.ui
+    src/ui/wizard/03-parameters/forms/editors/detailed/wrappers/InlineEditor.h
+    src/ui/wizard/03-parameters/forms/editors/detailed/wrappers/InlineEditor.cpp
+    src/ui/wizard/03-parameters/forms/editors/detailed/wrappers/InlineEditor.ui
 
-    src/ui/forms/editors/detailed/wrappers/CollapsibleEditor.h
-    src/ui/forms/editors/detailed/wrappers/CollapsibleEditor.cpp
-    src/ui/forms/editors/detailed/wrappers/CollapsibleEditor.ui
+    src/ui/wizard/03-parameters/forms/editors/detailed/wrappers/CollapsibleEditor.h
+    src/ui/wizard/03-parameters/forms/editors/detailed/wrappers/CollapsibleEditor.cpp
+    src/ui/wizard/03-parameters/forms/editors/detailed/wrappers/CollapsibleEditor.ui
 
-    src/ui/forms/editors/detailed/wrappers/CompositeArrayItem.h
-    src/ui/forms/editors/detailed/wrappers/CompositeArrayItem.cpp
-    src/ui/forms/editors/detailed/wrappers/CompositeArrayItem.ui
+    src/ui/wizard/03-parameters/forms/editors/detailed/wrappers/CompositeArrayItem.h
+    src/ui/wizard/03-parameters/forms/editors/detailed/wrappers/CompositeArrayItem.cpp
+    src/ui/wizard/03-parameters/forms/editors/detailed/wrappers/CompositeArrayItem.ui
 )
 
 add_custom_target(app_ts

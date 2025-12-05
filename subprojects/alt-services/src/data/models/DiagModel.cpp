@@ -3,6 +3,8 @@
 #include <QApplication>
 #include <QPalette>
 
+#include <range/v3/algorithm.hpp>
+
 void DiagModel::setService(Service* s){
     beginResetModel();
     m_data = &s->diagTools();
@@ -54,16 +56,14 @@ QVariant DiagModel::data(const QModelIndex& index, int role) const {
                     : test->displayName();
             case Column::Modes:
                 return index.internalId() == LONG_LONG_MAX
-                    ? std::accumulate(tool->tests().cbegin(), tool->tests().cend(),
-                                      DiagTool::Test::Modes{},
-                                      [](DiagTool::Test::Modes m, const auto& test){ return m | test->mode(); }
+                    ? ranges::fold_left(tool->tests(), DiagTool::Test::Modes{},
+                                      [](auto m, const auto& test){ return m | test->mode(); }
                                     )
                     : test->mode().toInt();
             case Column::Required:
                 return index.internalId() == LONG_LONG_MAX
-                    ? std::accumulate(tool->tests().cbegin(), tool->tests().cend(),
-                                      DiagTool::Test::Modes{DiagTool::Test::Mode::All},
-                                      [](DiagTool::Test::Modes m, const auto& test){ return m & test->required(); }
+                    ? ranges::fold_left(tool->tests(), DiagTool::Test::Modes{DiagTool::Test::Mode::All},
+                                      [](auto m, const auto& test){ return m & test->required(); }
                                     )
                     : test->required().toInt();
             default: return {};
@@ -82,7 +82,10 @@ QVariant DiagModel::data(const QModelIndex& index, int role) const {
                        : test->comment();
 
         case Qt::UserRole:
-            return QVariant::fromValue(index.internalId() == LONG_LONG_MAX ? (void*)tool : (void*)test);
+            return QVariant::fromValue(index.internalId() == LONG_LONG_MAX
+                ? static_cast<void*>(tool)
+                : static_cast<void*>(test)
+            );
     }
 
     return {};

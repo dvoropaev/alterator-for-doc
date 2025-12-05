@@ -13,7 +13,12 @@
 #include <QtGlobal>
 
 #include <map>
+#include <range/v3/view/filter.hpp>
+#include <range/v3/view/join.hpp>
+#include <range/v3/view/transform.hpp>
 #include <set>
+
+#include <range/v3/algorithm.hpp>
 
 #include "ControllerPrivate.h"
 
@@ -146,9 +151,9 @@ Service* Controller::getByIndex(const QModelIndex& index)
 
 Service* Controller::findByName(const QString& name)
 {
-    for ( const auto& service : d->m_services )
-        if ( service->name() == name )
-            return service.get();
+    auto match = ranges::find(d->m_services, name, &Service::name);
+    if ( match != d->m_services.cend() )
+        return match->get();
 
     qWarning() << "service with name" << name << "not found";
     return nullptr;
@@ -156,12 +161,10 @@ Service* Controller::findByName(const QString& name)
 
 void Controller::selectByPath(const QString& path)
 {
-    auto it = std::find_if(d->m_services.cbegin(), d->m_services.cend(),
-        [&path](auto& service){ return service->dbusPath() ==  path; }
-    );
+    auto match = ranges::find(d->m_services, path, &Service::dbusPath);
 
-    if ( it != d->m_services.cend() )
-        emit select(std::distance(d->m_services.cbegin(), it));
+    if ( match != d->m_services.cend() )
+        emit select(std::distance(d->m_services.begin(), match));
     else
         qWarning() << "object" << path << "not found";
 }
@@ -184,13 +187,9 @@ bool Controller::updateStatus(Service* service)
 
     service->setStatus(code, data);
 
-    auto index = std::find_if(
-        d->m_services.begin(),
-        d->m_services.end(),
-        [=](auto& servicePtr){return servicePtr.get() == service;}
-    );
-    if ( index != d->m_services.end() ) {
-        int row = std::distance(d->m_services.begin(), index);
+    auto match = ranges::find( d->m_services, service, &std::unique_ptr<Service>::get );
+    if ( match != d->m_services.end() ) {
+        int row = std::distance(d->m_services.begin(), match);
         auto modelIndex = d->m_model.index(row, 1);
         emit d->m_model.dataChanged(modelIndex, modelIndex);
     }
@@ -356,51 +355,48 @@ bool Controller::diag(Service* service, DiagTool::Test::Mode mode, const Action:
     }
     d->m_datasource.setEnv("service_deploy_mode", mode == DiagTool::Test::Mode::PostDeploy ? "post" : "pre");
 
-    std::vector<Parameter*> parameters;
-    for ( const auto& parameter : service->parameters() )
-        if ( parameter->contexts().testFlag(Parameter::Context::Diag) )
-            parameters.push_back(parameter.get());
-
-    bool success = std::accumulate(service->diagTools().cbegin(), service->diagTools().cend(), true,
-    [this, mode, &testSet](bool res, const auto& tool) -> bool
+    bool success = true;
+    for ( const auto& tool : service->diagTools() )
     {
         if ( testSet.hasTool(tool.get()) || tool->hasRequiredTests(mode) )
         {
             emit actionBegin(tr("Diagnostic tool \"%1\"").arg(tool->name()));
+            bool toolRun = true;
 
-            bool success = std::accumulate(tool->tests().cbegin(), tool->tests().cend(), true,
-            [this, &tool, mode, &testSet](bool res, const auto& test) -> bool
+            for ( const auto& test : tool->tests() )
             {
                 if (!test->required().testFlag(mode) && !testSet.hasTest(test.get()) )
-                    return res;
+                    continue;
 
                 emit actionBegin(tr("Running test \"%1\"").arg(test->name()));
-                bool result = d->m_datasource.runDiag(tool->path(), test->name(), tool->session());
-                emit actionEnd(result);
-                return res & result;
-            });
+                bool testRun = d->m_datasource.runDiag(tool->path(), test->name(), tool->session());
+                emit actionEnd(testRun);
+                toolRun &= testRun;
+            }
 
-            emit actionEnd(success);
-            return success & res;
+            emit actionEnd(toolRun);
+            success &= toolRun;
         }
-        return res;
-    });
+    }
 
     emit actionEnd(success);
     emit endRefresh();
     return success;
 }
 
-bool Controller::findConflict(Service* deployService, Resource* deployResource, Service** other, Resource** conflicting)
+Resource* Controller::findOwner(const Resource* resource)
 {
-    for ( auto& service : d->m_services ) {
-        if ( bool conflict = service->hasConflict(deployService, deployResource, conflicting) ){
-            *other = service.get();
-            return true;
-        }
-    }
+    auto lockedResources = d->m_services
+        | ranges::views::filter(&Service::isDeployed)
+        | ranges::views::transform(&Service::resources)
+        | ranges::views::join;
 
-    return false;
+    auto match = ranges::find_if(lockedResources, [resource](const auto& r){ return r->intersects(resource); });
+
+    if ( match != lockedResources.end() )
+        return match->get();
+
+    return nullptr;
 }
 
 const QString& Controller::actionName(Parameter::Context context)

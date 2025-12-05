@@ -2,22 +2,61 @@
 
 #include <QJsonArray>
 
+#include <range/v3/algorithm.hpp>
+#include <range/v3/view/transform.hpp>
+#include <range/v3/view/filter.hpp>
+
 bool Action::TestSet::hasTool(DiagTool* tool) const
 {
-    return std::any_of(cbegin(), cend(), [tool](auto* test){return test->tool() == tool;});
+    return ranges::contains(*this, tool, &DiagTool::Test::tool);
 }
 
 bool Action::TestSet::hasTest(DiagTool::Test* test) const
 {
-    return std::find(cbegin(), cend(), test) != cend();
+    return find(test) != cend();
 }
 
-bool Action::hasTool(DiagTool* tool, DiagTool::Test::Mode mode) {
+bool Action::modifiesResourses() const
+{
+    using namespace std::placeholders;
+    switch ( action )
+    {
+        case Parameter::Context::Deploy:
+        case Parameter::Context::Undeploy:
+            return service->resources().size();
+
+        case Parameter::Context::Configure:
+            return ranges::any_of(
+                service->resources()
+                    | ranges::views::transform(&Resource::override)
+                    | ranges::views::filter(ranges::identity()),
+                std::bind(std::bit_and(), Parameter::Context::Configure, _1),
+                &Parameter::contexts
+            );
+
+        default: return false;
+    }
+}
+
+bool Action::preDiagAvailable() const
+{
+    return service->hasPreDiag() &&
+           !service->isDeployed() &&
+           action & ( Parameter::Context::Deploy );
+}
+
+bool Action::postDiagAvailable() const
+{
+    return service->hasPostDiag() &&
+           action & ( Parameter::Context::Deploy | Parameter::Context::Configure | Parameter::Context::Restore );
+}
+
+bool Action::hasTool(DiagTool* tool, DiagTool::Test::Mode mode) const {
     return ( mode == DiagTool::Test::Mode::PreDeploy
          ? std::ref( options.prediagTests)
          : std::ref(options.postdiagTests) ).get().hasTool(tool);
 }
-bool Action::hasTest(DiagTool::Test* test, DiagTool::Test::Mode mode) {
+bool Action::hasTest(DiagTool::Test* test, DiagTool::Test::Mode mode) const {
     return ( mode == DiagTool::Test::Mode::PreDeploy
                 ? std::ref(options. prediagTests)
                 : std::ref(options.postdiagTests) ).get().hasTest(test);

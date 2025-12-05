@@ -1,6 +1,8 @@
 #include "ServiceModel.h"
 
 #include <QIcon>
+#include <range/v3/iterator/insert_iterators.hpp>
+#include <range/v3/view/transform.hpp>
 
 void ServiceModel::setItems(const PtrVector<Service>& items)
 {
@@ -11,9 +13,8 @@ void ServiceModel::setItems(const PtrVector<Service>& items)
     if ( items.size() )
         beginInsertRows({}, 0, items.size()-1);
 
-    m_services.reserve(items.size());
-    for ( const auto& service : items )
-        m_services.push_back(service.get());
+    ranges::copy(items | ranges::views::transform(&std::unique_ptr<Service>::get),
+                 ranges::back_inserter(m_services));
 
     if ( items.size() )
         endInsertRows();

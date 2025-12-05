@@ -450,7 +450,7 @@
   <customwidget>
    <class>CustomTreeView</class>
    <extends>QTreeView</extends>
-   <header>ui/CustomTreeView.h</header>
+   <header>ui/misc/CustomTreeView.h</header>
   </customwidget>
   <customwidget>
    <class>ServiceWidget</class>

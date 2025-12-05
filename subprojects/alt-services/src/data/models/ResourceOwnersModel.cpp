@@ -6,17 +6,21 @@
 
 #include <QIcon>
 
-void ResourceOwnersModel::parametersChanged()
+ResourceOwnersModel::ResourceOwnersModel(const PtrVector<Resource>& data)
+    : ResourceModel{data}
 {
-    m_conflicts.clear();
-    for ( const auto& [type,resources] : m_resources ) {
-        for ( const auto& resource : resources ) {
-            Service* otherService{};
-            Resource* otherResource{};
-            if ( ServicesApp::instance()->controller()->findConflict(resource->service(), resource, &otherService, &otherResource) )
-                m_conflicts[resource] = { otherService, otherResource };
-        }
-    }
+    connect(this, &QAbstractItemModel::modelReset,
+            this, &ResourceOwnersModel::checkConflicts);
+}
+
+void ResourceOwnersModel::checkConflicts()
+{
+    m_owners = m_resourcesByType
+            | ranges::views::values
+            | ranges::views::join
+            | ranges::views::transform([](Resource* r){ return std::make_pair(r, qApp->controller()->findOwner(r)); })
+            | ranges::to<OwnersMap>();
+
     emit dataChanged(index(0, 2),
                      index(rowCount()-1, 2),
                      {Qt::DisplayRole, Qt::DecorationRole});
@@ -30,35 +34,54 @@ QVariant ResourceOwnersModel::data(const QModelIndex& index, int role) const {
     if ( !index.parent().isValid() || index.column() < 2 )
         return ResourceModel::data(index, role);
 
-    auto it = m_conflicts.find( ResourceModel::resource(index) );
-    if ( it != m_conflicts.cend() ) {
-        auto& [otherService,otherResource] = it->second;
+    const Resource* resource      = ResourceModel::resource(index);
+    const Resource* otherResource = m_owners.at( resource );
 
-        switch (role) {
-            case Qt::DisplayRole:    return tr("Owned by '%0'").arg(otherService->displayName());
-            case Qt::ToolTipRole:    return otherService->comment();
-            case Qt::DecorationRole: return QIcon::fromTheme("dialog-warning");
-            default: return {};
-        }
-    } else
-        switch (role) {
-            case Qt::DisplayRole:    return tr("Free");
-            case Qt::DecorationRole: return QIcon::fromTheme("dialog-ok");
-            default: return {};
-        }
+    switch ( role )
+    {
+        case Qt::DisplayRole:
+            return otherResource
+                ? tr("Owned by '%0'")
+                    .arg(otherResource->service()->displayName())
+                : tr("Free");
 
-    return {};
+        case Qt::ToolTipRole:
+            return otherResource
+                ? otherResource->service()->comment()
+                : QVariant{};
 
+        case Qt::DecorationRole:
+            return otherResource &&
+                   otherResource != resource &&
+                   otherResource->service() != resource->service()
+                ? QIcon::fromTheme(QIcon::ThemeIcon::DialogWarning)
+                : QIcon::fromTheme("dialog-ok");
+
+        default:
+            return {};
+    }
 }
 
-QVariant ResourceOwnersModel::headerData(int section, Qt::Orientation orientation, int role) const {
+QVariant ResourceOwnersModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
     if ( orientation == Qt::Horizontal && section == 2 && role == Qt::DisplayRole )
-        return tr("State");
+        return tr("Current state");
+
     return ResourceModel::headerData(section, orientation, role);
 }
 
-void ResourceOwnersModel::setItems(const PtrVector<Resource>& items)
+bool ResourceOwnersModel::hasConflicts() const
 {
-    ResourceModel::setItems(items);
-    parametersChanged();
+    return ranges::any_of(m_owners, [](const auto& pair){
+        const auto& [a,b] = pair;
+        return a != b && b != nullptr;
+    });
+}
+
+bool ResourceOwnersModel::conflictsResolvable() const
+{
+    return ranges::all_of(m_owners, [](const auto& pair){
+        const auto& [a,b] = pair;
+        return a == b || b == nullptr || b->override();
+    });
 }

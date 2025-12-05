@@ -1,7 +1,7 @@
 %define _unpackaged_files_terminate_build 1
 %define service service-samba-shares
 Name: alterator-service-samba-shares
-Version: 0.2
+Version: 0.3
 Release: alt1
 
 Summary: Service for managment samba shares
@@ -39,6 +39,11 @@ install -p -D -m644 src/%service.service %buildroot%_alterator_datadir/services/
 %_bindir/%service
 
 %changelog
+* Wed Nov 26 2025 Evgenii Sozonov <arzdez@altlinux.org> 0.3-alt1
+- Add acl managment
+- Add backup and restore for shated folders
+- Any fixes
+
 * Tue Sep 16 2025 Evgenii Sozonov <arzdez@altlinux.org> 0.2-alt1
 - Fix delete (thx Dmitry Filippenko)
 - Add backup and restore shared folders (thx Dmitry Filippenko)

@@ -48,16 +48,15 @@ bool ADTVarBuilderInt::build(const toml::table *paramSection, ADTTool *tool, con
     }
 
     //value
-    QString val = QString((*paramSection)[PARAMS_CONSTANTS.VALUE_KEY_NAME].value_or(""));
-    if (!val.isEmpty()) //value is specified
+    auto val = (*paramSection)[PARAMS_CONSTANTS.VALUE_KEY_NAME];
+    if (val.is_integer())
     {
-        bool ok = false;
-        value   = val.toInt(&ok, 10);
-        if (!ok)
-        {
-            qWarning() << "ERROR: Value is not a number in INTEGER param: " << varId << " tool with id: " << tool->id();
-            return false;
-        }
+        value = val.value_or(0);
+    }
+    else
+    {
+        qWarning() << "ERROR: Value is not a number in INTEGER param: " << varId << " tool with id: " << tool->id();
+        return false;
     }
 
     tool->m_vars.push_back(

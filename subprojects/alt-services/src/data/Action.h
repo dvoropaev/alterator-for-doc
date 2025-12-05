@@ -37,12 +37,27 @@ public:
     } options;
 
     /*
+     * Returns true if service's resources may be modified
+     */
+    bool modifiesResourses() const;
+
+    /*
+     * Returns true if Options.prediag may be enabled
+     */
+    bool  preDiagAvailable() const;
+
+    /*
+     * Returns true if Options.postdiag may be enabled
+     */
+    bool postDiagAvailable() const;
+
+    /*
      * Returns true if any of tool's tests are selected in specified mode:
      *  - for DiagTool::Test::Mode::PreDeploy:  options::prediagTests
      *  - for DiagTool::Test::Mode::PostDeploy: options::postdiagTests
      */
-    bool hasTool(DiagTool*       tool, DiagTool::Test::Mode mode);
-    bool hasTest(DiagTool::Test* test, DiagTool::Test::Mode mode);
+    bool hasTool(DiagTool*       tool, DiagTool::Test::Mode mode) const;
+    bool hasTest(DiagTool::Test* test, DiagTool::Test::Mode mode) const;
 
     /*
      * Save to json.

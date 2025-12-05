@@ -29,7 +29,12 @@ public:
     bool start(Service* service);
     bool stop(Service* service);
 
-    bool findConflict(Service* deployService, Resource* deployResource, Service** other, Resource** conflicting);
+    /*
+     * For given resource, returns another (or same) resource,
+     * which has same type and value and owned by some deployed service,
+     * or nullptr if such resource is not owned.
+     */
+    Resource* findOwner(const Resource* resource);
 
     static const QString& actionName(Parameter::Context context);
     static const QIcon& actionIcon(Parameter::Context context);

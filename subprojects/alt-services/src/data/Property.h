@@ -1,6 +1,7 @@
 #pragma once
 
 #include "TranslatableObject.h"
+#include <range/v3/algorithm.hpp>
 
 template <typename T>
 using PtrVector = std::vector<std::unique_ptr<T>>;
@@ -221,10 +222,8 @@ public:
      */
     inline const PtrVector<Value>& children() const { return m_children; }
     inline int indexOf(const Value* child) const {
-        auto it = std::find_if( m_children.begin(),
-                                m_children.end(),
-                                [=](auto& ptr){return ptr.get() == child;} );
-        return it == m_children.end() ? -1 : std::distance(m_children.begin(), it);
+        auto match = ranges::find(m_children, child, &ValuePtr::get);
+        return match == m_children.end() ? -1 : std::distance(m_children.begin(), match);
     }
 
     void addChild(ValuePtr &&child);

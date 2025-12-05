@@ -49,7 +49,7 @@ QVariant DiagSelectionModel::data(const QModelIndex& index, int role) const
             for ( int row = 0; row < rowCount(index); ++row )
             {
                 bool checked = DiagSelectionModel::index( row, 0, index )
-                    .data(Qt::CheckStateRole).toInt() == Qt::Checked;
+                    .data(Qt::CheckStateRole).value<Qt::CheckState>() == Qt::Checked;
 
                 if ( checked )
                     any = true;
@@ -99,7 +99,7 @@ bool DiagSelectionModel::setData(const QModelIndex& index, const QVariant& value
         }
         else
         {
-            Qt::CheckState currentState = (Qt::CheckState)index.data(Qt::CheckStateRole).toInt();
+            Qt::CheckState currentState = index.data(Qt::CheckStateRole).value<Qt::CheckState>();
             for ( int row = 0; row < rowCount(index); ++row )
             {
                 auto child = DiagSelectionModel::index( row, 0, index );

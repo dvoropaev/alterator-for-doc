@@ -7,8 +7,10 @@ bool ADTVarBuilderEnum::build(const toml::table *paramSection, ADTTool *tool, co
 {
     QMap<QString, QString> displayNames;
     QMap<QString, QString> comments;
-    QStringList valuesList;
-    QString defaultValue;
+    QStringList stringValues;
+    QString defaultStringValue;
+    QList<int> intValues;
+    int defaultIntValue = 0;
 
     //Check param id
     if (varId.isEmpty())
@@ -62,30 +64,67 @@ bool ADTVarBuilderEnum::build(const toml::table *paramSection, ADTTool *tool, co
         return false;
     }
 
-    //Write values to QStringList
-    vals->for_each([&valuesList](auto &elem) { valuesList.append(QString(elem.value_or(""))); });
-    if (valuesList.isEmpty())
+    //Write values to QStringList or QList<int>
+    vals->for_each([&intValues, &stringValues](auto &elem) {
+        if (elem.is_integer())
+        {
+            intValues.append(elem.value_or(0));
+        }
+        else if (elem.is_string())
+        {
+            stringValues.append(elem.value_or(""));
+        }
+    });
+    if (intValues.isEmpty() && stringValues.isEmpty())
     {
         qWarning() << "ERROR: Can't get enum values in param: " << varId << " tool with id: " << tool->id();
         return false;
     }
 
     //Get and valudate default value
-    defaultValue = (*enumTable)[PARAMS_CONSTANTS.ENUM_TYPE_DEFAULT_KEY_NAME].value_or("");
-    if (!defaultValue.isEmpty())
+    bool intCheck = true;
+    auto defaultValue = (*enumTable)[PARAMS_CONSTANTS.ENUM_TYPE_DEFAULT_KEY_NAME];
+    if (defaultValue.is_integer())
     {
+        defaultIntValue = defaultValue.value_or(0);
         bool flag = false;
-        std::for_each(valuesList.begin(), valuesList.end(), [&flag, &valuesList, &defaultValue](QString &elem) {
-            if (elem == defaultValue)
+        std::for_each(intValues.begin(), intValues.end(), [&flag, &intValues, &defaultIntValue](int &elem) {
+            if (elem == defaultIntValue)
                 flag = true;
         });
 
         if (!flag)
         {
-            qWarning() << "ERROR: Default value: " << defaultValue << "not found in values " << "in param: " << varId
+            intCheck = false;
+            qWarning() << "ERROR: Default value: " << defaultIntValue << "not found in values " << "in param: " << varId
                        << " tool with id: " << tool->id();
             return false;
         }
+    }
+    else if (defaultValue.is_string())
+    {
+        defaultStringValue = defaultValue.value_or("");
+        if (!defaultStringValue.isEmpty())
+        {
+            bool flag = false;
+            std::for_each(stringValues.begin(), stringValues.end(), [&flag, &stringValues, &defaultStringValue](QString &elem) {
+                if (elem == defaultStringValue)
+                    flag = true;
+            });
+
+            if (!flag)
+            {
+                qWarning() << "ERROR: Default value: " << defaultStringValue << "not found in values " << "in param: " << varId
+                           << " tool with id: " << tool->id();
+                return false;
+            }
+        }
+    }
+    else
+    {
+        qWarning() << "ERROR: Default value is absent or not int or string in param: " << varId
+                   << " tool with id: " << tool->id();
+        return false;
     }
 
     //get enum type
@@ -111,66 +150,24 @@ bool ADTVarBuilderEnum::build(const toml::table *paramSection, ADTTool *tool, co
 
     if (!QString::compare(enum_type, PARAMS_CONSTANTS.ENUM_TYPE_STRING_TYPE_VALUE)) //this is string enum
     {
-        if (defaultValue.isEmpty())
+        if (defaultStringValue.isEmpty())
         {
-            var.reset(new ADTVar(varId, valuesList, valuesList.at(0), displayNames, comments));
+            var.reset(new ADTVar(varId, stringValues, stringValues.at(0), displayNames, comments));
         }
         else
         {
-            var.reset(new ADTVar(varId, valuesList, defaultValue, displayNames, comments));
+            var.reset(new ADTVar(varId, stringValues, defaultStringValue, displayNames, comments));
         }
     }
     else if (!QString::compare(enum_type, PARAMS_CONSTANTS.ENUM_TYPE_INT_TYPE_VALUE)) //this is int enum
     {
-        QList<int> intValues;
-        int defaultIntValue = 0;
-
-        std::for_each(valuesList.begin(), valuesList.end(), [&intValues, tool, &varId](QString &val) {
-            bool ok        = false;
-            int currentVal = val.toInt(&ok, 10);
-            if (!ok)
-            {
-                qWarning() << "ERROR: Value is not a number in INTEGER param: " << varId
-                           << " tool with id: " << tool->id();
-                return;
-            }
-
-            intValues.append(currentVal);
-        });
-
-        if (intValues.isEmpty())
+        if (!intCheck)
         {
-            qWarning() << "ERROR: Can't convert enum values to integer in param: " << varId
-                       << " tool with id: " << tool->id();
-            return false;
-        }
-
-        if (defaultValue.isEmpty())
-        {
-            bool success = false;
-            int value    = valuesList.at(0).toInt(&success);
-            if (!success)
-            {
-                qWarning() << "ERROR: Can't convert default enum value to integer in param: " << varId
-                           << " tool with id: " << tool->id();
-
-                return false;
-            }
-
-            var.reset(new ADTVar(varId, intValues, value, displayNames, comments));
+            var.reset(new ADTVar(varId, intValues, intValues.at(0), displayNames, comments));
         }
         else
         {
-            bool success    = false;
-            defaultIntValue = defaultValue.toInt(&success, 10);
-            if (success)
-                var.reset(new ADTVar(varId, intValues, defaultIntValue, displayNames, comments));
-            else
-            {
-                qWarning() << "ERROR: Can't convert default enum value to integer in param: " << varId
-                           << " tool with id: " << tool->id();
-                return false;
-            }
+            var.reset(new ADTVar(varId, intValues, defaultIntValue, displayNames, comments));
         }
     }
 

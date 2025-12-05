@@ -38,7 +38,7 @@ edition_files = get_all_files_with_extension(EDITIONS_DIR, "edition")
 category_name_to_file = dict()
 for file in categories_files:
     name = ae.get_field(file, "name")
-    if name in category_name_to_file.values():
+    if name in category_name_to_file.keys():
         error(
             f"both '{file}' and '{category_name_to_file[name]}' provide category '{name}'"
         )

@@ -12,12 +12,14 @@
 #include <QJsonParseError>
 #include <QJsonArray>
 
+#include <range/v3/algorithm.hpp>
+
 #include "version.h"
 
 class ServicesApp::Private {
 public:
     AppSettings m_settings;
-    Controller* m_controller;
+    std::unique_ptr<Controller> m_controller;
 };
 
 ServicesApp::ServicesApp(int& argc, char** argv)
@@ -34,23 +36,22 @@ ServicesApp::~ServicesApp() { delete d; }
 
 int ServicesApp::run()
 {
-    Controller controller;
-    d->m_controller = &controller;
+    d->m_controller.reset(new Controller);
 
     MainWindow window;
     window.show();
 
-    controller.refresh();
+    d->m_controller->refresh();
 
     auto args = arguments();
     if ( args.size() >= 3 && args[1] == "-o" )
-        controller.selectByPath(args[2]);
+        d->m_controller->selectByPath(args[2]);
 
     return exec();
 }
 
 AppSettings* ServicesApp::settings() { return &d->m_settings; }
-Controller* ServicesApp::controller() { return d->m_controller; }
+Controller* ServicesApp::controller() { return d->m_controller.get(); }
 
 
 
@@ -79,11 +80,11 @@ bool ServicesApp::notify(QObject* object, QEvent* event)
         if ( widget->acceptDrops() ) {
             switch ( event->type() ) {
                 case QEvent::Type::DragEnter:
-                    if ( checkEvent((QDragEnterEvent*)event) ) break;
+                    if ( checkEvent(static_cast<QDragEnterEvent*>(event)) ) break;
                     return false;
 
                 case QEvent::Type::Drop:
-                    if ( checkEvent((QDropEvent*)event) ) break;
+                    if ( checkEvent(static_cast<QDropEvent*>(event)) ) break;
                     return false;
 
                 default:
@@ -105,8 +106,7 @@ bool getTests(Action::TestSet& result, const QJsonObject& options, Service* serv
         if ( key.isEmpty() )
             return false;
 
-        auto toolIt = std::find_if( service->diagTools().cbegin(), service->diagTools().cend(),
-                                   [&](const auto& tool){return tool->name() == key;} );
+        auto toolIt = ranges::find(service->diagTools(), key, &DiagTool::name);
 
         if ( toolIt == service->diagTools().cend() )
         {
@@ -129,8 +129,7 @@ bool getTests(Action::TestSet& result, const QJsonObject& options, Service* serv
             if (testName.isEmpty())
                 return false;
 
-            auto testIt = std::find_if( tool->tests().cbegin(), tool->tests().cend(),
-                                       [&](const auto& test){ return test->name() == testName; });
+            auto testIt = ranges::find( tool->tests(), testName, &DiagTool::Test::name );
 
             if ( testIt == tool->tests().cend() )
             {
