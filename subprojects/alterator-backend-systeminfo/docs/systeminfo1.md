@@ -42,7 +42,11 @@ Output format: lines KEY="value" ordered as HOSTNAME, OS_NAME, BRANCH, KERNEL, C
 
 Return CPU model, logical core count, and frequency via systeminfo cpu.
 
-stdout_strings[0] — model; stdout_strings[1] — logical cores; stdout_strings[2] — frequency in MHz. Response: 0 — success, != 0 — error.
+stdout_strings entries:
+1. model;
+2. logical cores;
+3. frequency in MHz.
+Response: 0 — success, != 0 — error.
 #### Output arguments
 
 ##### **stdout_strings** : `as` <a id="argument-stdout_strings-of-GetCPU"></a>
@@ -185,7 +189,11 @@ Reads /sys/class/drm/*/modes and matches connectors; stdout_strings entries look
 
 Return motherboard vendor, model, and version via systeminfo motherboard.
 
-Combines /sys/devices/virtual/dmi/id/board_vendor, board_name, board_version. stdout_strings[0] — vendor; stdout_strings[1] — model; stdout_strings[2] — version. Response: 0 — success, != 0 — error.
+Combines /sys/devices/virtual/dmi/id/board_vendor, board_name, board_version. stdout_strings entries:
+1. vendor;
+2. model;
+3. version.
+Response: 0 — success, != 0 — error.
 #### Output arguments
 
 ##### **stdout_strings** : `as` <a id="argument-stdout_strings-of-GetMotherboard"></a>
