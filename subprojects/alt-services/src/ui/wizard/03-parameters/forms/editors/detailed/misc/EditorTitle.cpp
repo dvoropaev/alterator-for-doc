@@ -1,8 +1,6 @@
 #include "EditorTitle.h"
 #include "ui_EditorTitle.h"
 
-#include "data/Parameter.h"
-
 EditorTitle::EditorTitle(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::EditorTitle)
@@ -15,7 +13,7 @@ EditorTitle::~EditorTitle()
     delete ui;
 }
 
-void EditorTitle::setEditor(Editor* editor, Parameter::Contexts contexts)
+void EditorTitle::setEditor(Editor* editor)
 {
     m_editor = editor;
 
@@ -32,8 +30,7 @@ void EditorTitle::setEditor(Editor* editor, Parameter::Contexts contexts)
     // preserve same left padding
     ui->widget->resize(ui->checkBox->width(), ui->widget->height());
 
-    auto* param = dynamic_cast<Parameter*>(property);
-    bool required = property->isRequired() || (param && (param->required() & contexts));
+    bool required = editor->isRequired();
     ui->radioButton->setVisible(inGroup);
     ui->checkBox->setHidden( inGroup || required );
 

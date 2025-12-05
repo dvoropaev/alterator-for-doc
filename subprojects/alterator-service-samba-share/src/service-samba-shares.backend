@@ -7,19 +7,22 @@ name = "service_samba_shares"
 execute = "cat /usr/share/alterator/services/service-samba-shares.service"
 action_id = "Info"
 stdout_bytes = true
+exit_status = true
 
 [methods.Deploy]
 execute = "/usr/bin/service-samba-shares deploy"
 action_id = "Deploy"
 stdin_string = true
+exit_status = true
 stdout_signal_name = "service_stdout_signal"
 stderr_signal_name = "service_stderr_signal"
 timeout = 600
 
 [methods.Undeploy]
 execute = "/usr/bin/service-samba-shares undeploy"
-action_id = "Undeploy"
+action_id = "Undeploy"  
 stdin_string = true
+exit_status = true
 stdout_signal_name = "service_stdout_signal"
 stderr_signal_name = "service_stderr_signal"
 timeout = 600
@@ -28,6 +31,7 @@ timeout = 600
 execute = "bash /usr/bin/service-samba-shares configure"
 action_id = "Configure"
 stdin_string = true
+exit_status = true
 stdout_signal_name = "service_stdout_signal"
 stderr_signal_name = "service_stderr_signal"
 timeout = 600
@@ -35,6 +39,7 @@ timeout = 600
 [methods.Start]
 execute = "/usr/bin/service-samba-shares start"
 action_id = "Start"
+exit_status = true
 stdout_signal_name = "service_stdout_signal"
 stderr_signal_name = "service_stderr_signal"
 timeout = 600
@@ -42,6 +47,7 @@ timeout = 600
 [methods.Stop]
 execute = "/usr/bin/service-samba-shares stop"
 action_id = "Stop"
+exit_status = true
 stdout_signal_name = "service_stdout_signal"
 stderr_signal_name = "service_stderr_signal"
 timeout = 600
@@ -50,15 +56,18 @@ timeout = 600
 execute = "/usr/bin/service-samba-shares backup"
 action_id = "Backup"
 stdin_string = true
+exit_status = true
 timeout = 600
 
 [methods.Restore]
 execute = "/usr/bin/service-samba-shares restore"
 action_id = "Restore"
 stdin_string = true
+exit_status = true
 timeout = 600
 
 [methods.Status]
 execute = "/usr/bin/service-samba-shares status"
 action_id = "Status"
 stdout_bytes = true
+exit_status = true

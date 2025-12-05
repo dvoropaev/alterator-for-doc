@@ -1,64 +1,81 @@
 type = "Service"
-name = "samba_ad_service"
+name = "service_samba_ad"
 category = "X-Alterator-Servers"
 display_name.en = "Samba AD"
 display_name.ru = "Samba AD"
 comment.en = "Samba active directory"
 comment.ru = "Samba active directory"
+enable_force_deploy = false
 
 [diag_tools.diag_domain_controller]
 bus = "system"
 path = "/org/altlinux/alterator/diag_domain_controller"
 
-[parameters.netBiosName]
-display_name.en = "NetBios name"
-display_name.ru = "NetBios имя"
-comment.en = "NetBios domain name, e.g. EXAMPLE"
-comment.ru = "NetBios имя домена, например EXAMPLE"
-type = "string"
-context = [
-    "deploy",
-    "backup",
-    "restore",
-    "diag",
-    "status"
-]
-required = [
-    "deploy",
-    "restore"
-]
-
-[parameters.realm]
-display_name.en = "Realm"
-display_name.ru = "Realm"
-comment.en = "DNS domain name, e.g. EXAMPLE.COM"
-comment.ru = "DNS имя домена, например EXAMPLE.COM"
-type = "string"
-context = [
-    "deploy",
-    "backup",
-    "restore",
-    "diag",
-    "status"
-]
-required = [
-    "deploy",
-    "restore"
-]
-
 [parameters.adminLogin]
+display_name.en = "Admin login"
+display_name.ru = "Логин администратора"
+comment.en = "Domain admin login name. Required to join DC to existing domain"
+comment.ru = "Логин администратора домена. Необходим для понижения контроллера домена"
+type = "string"
+context = [
+    "undeploy"
+]
+required = [
+    "undeploy"
+]
+
+[parameters.mode]
+display_name.en = "Mode"
+display_name.ru = "Режим"
+comment.en = "Join to existing domain or create new domain"
+comment.ru = "Присоединиться к существующему домену или создать новый домен"
+type = "enum"
+default = "join"
+context = [
+    "deploy"
+]
+required = [
+    "deploy"
+]
+[parameters.mode.values.join]
+display_name.en = "Join to existing domain"
+display_name.ru = "Присоединиться к существующему домену"
+[parameters.mode.values.join.properties.adminLogin]
 display_name.en = "Admin login"
 display_name.ru = "Логин администратора"
 comment.en = "Domain admin login name. Required to join DC to existing domain"
 comment.ru = "Логин администратора домена. Необходим для присоединения DC к существующему домену и понижению контроллера домена"
 type = "string"
+required = true
+[parameters.mode.values.join.properties.ipAddressDc]
+display_name.en = "IPv4 address of domain controller"
+display_name.ru = "IPv4 адрес контроллера домена"
+comment.en = "IPv4 address of Domain controller in existing domain"
+comment.ru = "IPv4 адрес контроллера домена в существующем домене"
+type = "string"
+required = true
+[parameters.mode.values.join.properties.serverRole]
+display_name.en = "Server role"
+display_name.ru = "Роль сервера"
+comment.en = "Role of Samba AD server"
+comment.ru = "Роль сервера Samba AD"
+type = "enum"
+default = "dc"
 context = [
     "deploy",
-    "undeploy"
+    "status",
 ]
-required = [
-    "undeploy"
-]
+required = true
+[parameters.mode.values.join.properties.serverRole.values.dc]
+display_name.en = "Domain controller"
+display_name.ru = "Контроллер домена"
+[parameters.mode.values.join.properties.serverRole.values.rodc]
+display_name.en = "Read-only domain controller"
+display_name.ru = "Контроллер только для чтения"
+
+[parameters.mode.values.create]
+display_name.en = "Create new domain"
+display_name.ru = "Создать новый домен"
 
 [parameters.adminPassword]
 display_name.en = "Admin password"
@@ -72,6 +89,40 @@ context = [
 required = [
     "deploy",
     "undeploy"
+]
+
+[parameters.netBiosName]
+display_name.en = "NetBios name"
+display_name.ru = "NetBios имя"
+comment.en = "NetBios domain name, e.g. example"
+comment.ru = "NetBios имя домена, например example"
+type = "string"
+context = [
+    "deploy",
+    "restore",
+    "diag",
+    "status"
+]
+required = [
+    "deploy",
+    "restore"
+]
+
+[parameters.realm]
+display_name.en = "Realm"
+display_name.ru = "Realm"
+comment.en = "DNS domain name, e.g. example.com"
+comment.ru = "DNS имя домена, например example.com"
+type = "string"
+context = [
+    "deploy",
+    "restore",
+    "diag",
+    "status"
+]
+required = [
+    "deploy",
+    "restore"
 ]
 
 [parameters.backendStore]
@@ -95,21 +146,15 @@ display_name.ru = "tdb"
 [parameters.backendStore.values.mdb]
 display_name.en = "mdb"
 display_name.ru = "mdb"
-
-[parameters.backendStoreSize]
-display_name.en = "mdbv store size"
+[parameters.backendStore.values.mdb.properties.backendStoreSize]
+display_name.en = "mdb store size"
 display_name.ru = "Размер базы mdb"
 comment.en = "Size of mdb store for Samba AD in gigabytes"
 comment.ru = "Размер базы mdb для Samba AD в гигабайтах"
 type = "integer"
+required = true
 default = 4
-context = [
-    "deploy",
-    "status"
-]
-required = [
-    "deploy"
-]
+min = 1
 
 [parameters.useRfc2307]
 display_name.en = "Use RFC 2307"
@@ -158,37 +203,6 @@ context = [
     "status"
 ]
 
-[parameters.mode]
-display_name.en = "Mode"
-display_name.ru = "Режим"
-comment.en = "Join to existing domain or create new domain"
-comment.ru = "Присоединиться к существующему домену или создать новый домен"
-type = "enum"
-default = "join"
-context = [
-    "deploy"
-]
-required = [
-    "deploy"
-]
-[parameters.mode.values.create]
-display_name.en = "Create new domain"
-display_name.ru = "Создать новый домен"
-[parameters.mode.values.join]
-display_name.en = "Join to existing domain"
-display_name.ru = "Присоединиться к существующему домену"
-
-[parameters.ipAddressDc]
-display_name.en = "IPv4 address of domain controller"
-display_name.ru = "IPv4 адрес контроллера домена"
-comment.en = "IPv4 address of Domain controller in existing domain"
-comment.ru = "IPv4 адрес контроллера домена в существующем домене"
-type = "string"
-context = [
-    "deploy",
-    "restore"
-]
-
 [parameters.bindSettings]
 display_name.en = "BIND settings"
 display_name.ru = "Настройки BIND"
@@ -206,7 +220,7 @@ required = false
 pattern = "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(?:/(?:[1-2]?[0-9]|3[0-2]))?$"
 [parameters.bindSettings.properties.allowRecursion]
 display_name.en = "Allowed subnets for recursion queries"
-display_name.ru = " Разрешённые Подсети для рекурсивных запросов"
+display_name.ru = "Разрешённые Подсети для рекурсивных запросов"
 comment.en = "List of allowed subnets for DNS recursion queries"
 comment.ru = "Список разрешённых подсетей для DNS рекурсивных запросов"
 type = "array"
@@ -214,14 +228,6 @@ array_type = "string"
 array_min = 1
 required = false
 pattern = "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(?:/(?:[1-2]?[0-9]|3[0-2]))?$"
-[parameters.bindSettings.properties.dnssecValidation]
-display_name.en = "DNSSEC"
-display_name.ru = "DNSSEC"
-comment.en = "Enable DNSSEC validation"
-comment.ru = "Включить проверку DNSSEC"
-type = "boolean"
-required = true
-default = false
 [parameters.bindSettings.properties.listenOn]
 display_name.en = "Listen on IPv4"
 display_name.ru = "Интерфейсы для прослушивания IPv4"
@@ -244,6 +250,14 @@ array_min = 1
 required = true
 pattern = "^(none|(?:[A-Fa-f0-9]{1,4}:){7}[A-Fa-f0-9]{1,4})$"
 default = [ "none" ]
+[parameters.bindSettings.properties.dnssecValidation]
+display_name.en = "DNSSEC"
+display_name.ru = "DNSSEC"
+comment.en = "Enable DNSSEC validation"
+comment.ru = "Включить проверку DNSSEC"
+type = "boolean"
+required = true
+default = false
 
 [parameters.dnsSettings]
 display_name.en = "DNS settings"
@@ -259,6 +273,29 @@ context = [
 required = [
     "deploy"
 ]
+[parameters.dnsSettings.properties.dnsBackend]
+display_name.en = "DNS backend"
+display_name.ru = "Бэкенд DNS"
+comment.en = "DNS backend for Samba AD"
+comment.ru = "Бэкенд DNS для Samba AD"
+type = "enum"
+required = true
+default = "SAMBA_INTERNAL"
+[parameters.dnsSettings.properties.dnsBackend.values.SAMBA_INTERNAL]
+display_name.en = "Samba internal"
+display_name.ru = "Встроенный Samba"
+[parameters.dnsSettings.properties.dnsBackend.values.BIND9_DLZ]
+display_name.en = "BIND9"
+display_name.ru = "BIND9"
+[parameters.dnsSettings.properties.dnsBackend.values.BIND9_DLZ.properties.bindSettings]
+display_name.en = "BIND settings"
+display_name.ru = "Настройки BIND"
+comment.en = "BIND settings for Samba AD"
+comment.ru = "Настройки BIND для Samba AD"
+type = "object"
+prototype = "bindSettings"
+required = true
+
 [parameters.dnsSettings.properties.forwarders]
 display_name.en = "Forwarders"
 display_name.ru = "Серверы пересылки"
@@ -268,28 +305,7 @@ type = "array"
 array_type = "string"
 array_min = 1
 pattern = "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
-required = true
-[parameters.dnsSettings.properties.dnsBackend]
-display_name.en = "DNS backend"
-display_name.ru = "Бэкенд DNS"
-comment.en = "DNS backend for Samba AD"
-comment.ru = "Бэкенд DNS для Samba AD"
-type = "enum"
-required = true
-default = "SAMBA_INTERNAL"
-[parameters.dnsSettings.properties.dnsBackend.values.BIND9_DLZ]
-display_name.en = "BIND9"
-display_name.ru = "BIND9"
-[parameters.dnsSettings.properties.dnsBackend.values.SAMBA_INTERNAL]
-display_name.en = "Samba internal"
-display_name.ru = "Встроенный Samba"
-[parameters.dnsSettings.properties.bindSettings]
-display_name.en = "BIND settings"
-display_name.ru = "Настройки BIND"
-comment.en = "BIND settings for Samba AD"
-comment.ru = "Настройки BIND для Samba AD"
-type = "object"
-prototype = "bindSettings"
+required = false
 
 [parameters.resetToDefaults]
 display_name.en = "Reset to defaults before deploy"
@@ -311,24 +327,6 @@ display_name.ru = "Сохранить текущую конфигурацию"
 comment.en = "Save configuration files before undeploy domain"
 comment.ru = "Сохранить конфигурационные файлы перед удалением домена"
 type = "boolean"
-context = [
-    "undeploy"
-]
-
-[parameters.dcToRemove]
-display_name.en = "DC to remove"
-display_name.ru = "DC для удаления"
-comment.en = "Name of dead DC to remove from domain"
-comment.ru = "Имя неактивного контроллера домена, который нужно удалить из домена"
-type = "string"
-context = [
-    "undeploy"
-]
-
-[parameters.removeOtherDC]
-display_name.en = "Remove other dead DC"
-display_name.ru = "Удалить неактивный Контроллер домена"
-type = "boolean"
 default = false
 context = [
     "undeploy"
@@ -336,27 +334,6 @@ context = [
 required = [
     "undeploy"
 ]
-
-[parameters.serverRole]
-display_name.en = "Server role"
-display_name.ru = "Роль сервера"
-comment.en = "Role of Samba AD server"
-comment.ru = "Роль сервера Samba AD"
-type = "enum"
-default = "dc"
-context = [
-    "deploy",
-    "status",
-]
-required = [
-    "deploy"
-]
-[parameters.serverRole.values.dc]
-display_name.en = "Domain controller"
-display_name.ru = "Контроллер домена"
-[parameters.serverRole.values.rodc]
-display_name.en = "Read-only domain controller"
-display_name.ru = "Контроллер домена только для чтения"
 
 [resources.smbConf]
 display_name.en = "Samba configuration file"
@@ -371,8 +348,8 @@ type = "file"
 path.value  = "/etc/krb5.conf"
 
 [resources.libSamba]
-display_name.en = "lib samba"
-display_name.ru = "lib samba"
+display_name.en = "Lib samba"
+display_name.ru = "Lib samba"
 type = "directory"
 path.value  = "/usr/lib/samba"
 

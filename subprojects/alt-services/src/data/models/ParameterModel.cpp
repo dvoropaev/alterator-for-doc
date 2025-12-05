@@ -29,8 +29,8 @@ int ParameterModel::indexOf(const Parameter* param) const {
 
 QModelIndex ParameterModel::indexOf(const Property::Value* value) const
 {
-    if ( auto* parent = value->parent() ) {
-        if ( auto* gramps = parent->parent() ) {
+    if ( const auto* parent = value->parent() ) {
+        if ( const auto* gramps = parent->parent() ) {
             if ( gramps->property()->valueType() == Property::Type::Enum )
                 return index(parent->indexOf(value), 0, indexOf(gramps) );
         }
@@ -62,7 +62,7 @@ QModelIndex ParameterModel::index(int row, int column, const QModelIndex& parent
 
             if ( currenVariant != value->children().cend() ) {
 
-                if ( currenVariant->get()->children().size() <= row )
+                if ( currenVariant->get()->children().size() <= static_cast<size_t>(row) )
                     return {};
 
                 int i = row;
@@ -90,10 +90,10 @@ QModelIndex ParameterModel::index(int row, int column, const QModelIndex& parent
 }
 
 QModelIndex ParameterModel::parent(const QModelIndex& child) const {
-    if ( auto* value = static_cast<Property::Value*>(child.internalPointer()) ) {
+    if ( const auto* value = static_cast<Property::Value*>(child.internalPointer()) ) {
 
-        if ( Property::Value* parent = value->parent() ) {
-            if ( Property::Value* gramps = parent->parent() ) {
+        if ( const Property::Value* parent = value->parent() ) {
+            if ( const Property::Value* gramps = parent->parent() ) {
                 if ( gramps->property()->valueType() == Property::Type::Enum )
                     return indexOf(gramps);
                 else
@@ -109,7 +109,7 @@ QModelIndex ParameterModel::parent(const QModelIndex& child) const {
 
 int ParameterModel::rowCount(const QModelIndex& parent) const {
     if ( parent.isValid() ) {
-        auto value = static_cast<Property::Value*>(parent.internalPointer());
+        const auto* value = static_cast<Property::Value*>(parent.internalPointer());
 
         if ( value->property()->valueType() == Property::Type::Enum ) {
 
@@ -154,7 +154,7 @@ QVariant ParameterModel::data(const QModelIndex& index, int role) const
         break;
 
         case Qt::DecorationRole:
-            if ( auto parameter = dynamic_cast<Parameter*>(property) ) {
+            if ( const auto* parameter = dynamic_cast<Parameter*>(property) ) {
                 return parameter->resource()
                     ? ResourceModel::resourceIcon(parameter->resource()->type())
                     : QVariant{};

@@ -15,7 +15,7 @@ public:
     void initializePage() override;
     bool isComplete() const override;
 
-    const std::vector<Parameter*>& parameters();
+    const std::vector<Parameter*>& parameters() const;
 
 private slots:
     void setForm();

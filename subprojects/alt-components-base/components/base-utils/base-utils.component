@@ -29,6 +29,7 @@ sed = {}
 
 kbd = {}
 terminfo-extra = {}
+dialog = {}
 
 usbutils = {}
 pciutils = {}

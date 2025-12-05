@@ -14,10 +14,10 @@ CompactArrayFace::CompactArrayFace(const BaseForm& form, Property::Value* value,
     if ( addBtn->icon().isNull() )
         addBtn->setText(tr("Add"));
 
-    auto [min_,max_] = value->property()->allowed().toSize();
-    min = min_;
-    max = max_;
-    connect(addBtn, &QPushButton::clicked, [=,max=max]{
+    auto [min,max] = value->property()->allowed().toSize();
+    m_min = min;
+    m_max = max;
+    connect(addBtn, &QPushButton::clicked, [=]{
         auto copy = value->property()->prototype()->defaultValue()->clone();
         copy ->setEnabled();
         emit aboutToChange();
@@ -34,5 +34,5 @@ CompactArrayFace::CompactArrayFace(const BaseForm& form, Property::Value* value,
 
 void CompactArrayFace::fill() {
     label->setText(tr("%n items", nullptr, m_value->children().size()));
-    addBtn->setEnabled(m_value->children().size() < max);
+    addBtn->setEnabled(m_value->children().size() < m_max);
 }

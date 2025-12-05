@@ -3,6 +3,8 @@
 #include <QObject>
 #include <QStringList>
 
+#include "Controller.h"
+
 class DBusProxy : public QObject
 {
     Q_OBJECT
@@ -27,7 +29,7 @@ public:
     void setEnv(const QString& key, const QString& value);
     void clearEnv();
 
-    bool runDiag(const QString& path, const QString& test, bool session = false);
+    Controller::Result runDiag(const QString& path, const QString& test, bool session = false);
 
 signals:
     void stdout(QString);

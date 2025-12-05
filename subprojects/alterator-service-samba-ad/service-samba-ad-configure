@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+# Samba active directory provision
+# Tool for provision samba active directory
+#
+# Copyright (C) 2024 Evgenii Sozonov <arzdez@altlinux.org>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# shellcheck disable=SC2034
+# shellcheck disable=SC1091
+# shellcheck disable=SC2086
+# shellcheck disable=SC2317
+# shellcheck disable=SC3037
+
+set -euo pipefail
+
+change_dns_backend(){
+    local new_dns_backend="$1"
+    local current_dns_backend="$2"
+    local retval=0
+
+    if  [ "$current_dns_backend" == "BIND9_DLZ" ] && [ "$new_dns_backend" == "SAMBA_INTERNAL" ] ; then
+        echo "Removing BIND9_DLZ specific settings from smb.conf"
+        sed -i '/server services/d' /etc/samba/smb.conf
+    elif [ "$current_dns_backend" == "SAMBA_INTERNAL" ] && [ "$new_dns_backend" == "BIND9_DLZ" ] ; then
+        ini_config_set /etc/samba/smb.conf global "server services" "-dns"
+    fi
+
+    out="$(samba_upgradedns --dns-backend="$new_dns_backend")" || retval=1
+    if [ $retval -ne 0 ]; then
+        echo "Error changing Samba DNS backend: $out"
+    else
+        echo "Samba DNS backend changed successfully."
+    fi
+
+
+    return $retval
+}
+
+edit_forwarders_samba() {
+    local forwarders_list="$1"
+    local smb_conf="/etc/samba/smb.conf"
+    echo "Setting DNS forwarders to: $forwarders_list}"
+    ini_config_set "$smb_conf" global "dns forwarder" "[ $forwarders_list ]"
+
+    return 0
+}

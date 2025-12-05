@@ -272,7 +272,7 @@ bool ParametersPage::isComplete() const
     return !d->m_invalid;
 }
 
-const std::vector<Parameter*>& ParametersPage::parameters()
+const std::vector<Parameter*>& ParametersPage::parameters() const
 {
     return d->m_parameters;
 }

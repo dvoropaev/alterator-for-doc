@@ -137,8 +137,9 @@ public slots:
 class EditDelegate : public ObjectInfoDelegate {
     Q_OBJECT
 private:
+    QAbstractItemView* m_view{};
     EditModel& m_model;
-    const BaseForm* m_form;
+    const BaseForm* m_form{};
 public:
 signals:
     void changed() const;
@@ -147,6 +148,11 @@ public:
         : m_model{model}
         , m_form{form}
     {}
+
+    void setView(QAbstractItemView* view){
+        m_view = view;
+        emit sizeHintChanged({});
+    }
 
     void createRemoveButton(Property::Value* value, QWidget* container) const {
         auto removeBtn = new QPushButton{container};
@@ -174,7 +180,7 @@ public:
         container->setLayout(layout);
         container->setAutoFillBackground(true);
 
-        if ( Editor* editor = ::createEditor(*m_form, value, parent, Parameter::Context::Deploy, true).release() ) {
+        if ( Editor* editor = ::createEditor(*m_form, value, parent, true).release() ) {
             connect(editor, &Editor::changed, this, &EditDelegate::changed);
 
             editor->fill();
@@ -256,7 +262,13 @@ public:
 public:
     QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const override {
         QSize s = QStyledItemDelegate::sizeHint(option, index);
-        s.setHeight(40);
+
+        const QWidget* widget = nullptr;
+        if ( m_view && ( widget = m_view->indexWidget(index) ))
+            s.setHeight(widget->sizeHint().height());
+        else
+            s.setHeight(40);
+
         return s;
     }
 };
@@ -299,17 +311,22 @@ protected:
             // if current index has an editor, make sure we'll walk through its children
             if ( auto* widget = indexWidget(current) )
             {
-                auto children = widget->findChildren<QWidget*>(Qt::FindChildOption::FindDirectChildrenOnly);
-                auto focusedChild = ranges::find_if(children, &QWidget::hasFocus);
-
-                int i = std::distance(children.begin(), focusedChild);
-                i += (next ? 1 : -1);
-
-                for ( ; i < children.size() && i >= 0 ; i += (next ? 1 : -1) )
+                auto* target = widget;
+                bool foundPrev = false;
+                while ( target = next || !foundPrev
+                        ? target->nextInFocusChain()
+                        : target->previousInFocusChain(),
+                        widget->findChildren<QWidget*>().contains(target) )
                 {
-                    if ( children[i]->focusPolicy() & Qt::TabFocus )
+                    if ( target->hasFocus() )
                     {
-                        children[i]->setFocus(Qt::TabFocusReason);
+                        foundPrev = true;
+                        continue;
+                    }
+
+                    if ( foundPrev && !target->isHidden() && !target->hasFocus() )
+                    {
+                        target->setFocus(Qt::TabFocusReason);
                         return true;
                     }
                 }
@@ -441,6 +458,7 @@ CompactForm::CompactForm(const Action& action, QWidget* parent)
 
     d->m_view.setModel(&d->m_model);
     d->m_view.setItemDelegateForColumn(1, &d->m_delegate);
+    d->m_delegate.setView(&d->m_view);
 
     connect(&d->m_view, &QTreeView::collapsed, this, [this](const auto& index){
         d->closePersistentEditor(index.siblingAtColumn(1));

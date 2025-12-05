@@ -8,7 +8,7 @@ CollapsibleEditor::CollapsibleEditor(EditorPtr&& child, QWidget *parent, Paramet
     m_widget = new QWidget{parent};
     ui->setupUi(m_widget);
 
-    ui->title->setEditor(m_editor.get(), contexts);
+    ui->title->setEditor(m_editor.get());
     ui->indicator->setEditor(m_editor.get());
 
     connect(ui->collapseBtn, &QAbstractButton::clicked, ui->content, &QWidget::setVisible);

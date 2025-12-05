@@ -11,7 +11,7 @@ class CompositeArrayEditor : public DetailedEditor
 {
     Q_OBJECT
 public:
-    explicit CompositeArrayEditor(const BaseForm& form, Property::Value* value, QWidget *parent = nullptr, int context = 0);
+    explicit CompositeArrayEditor(const BaseForm& form, Property::Value* value, QWidget *parent = nullptr);
     ~CompositeArrayEditor();
 
     void fill() override;

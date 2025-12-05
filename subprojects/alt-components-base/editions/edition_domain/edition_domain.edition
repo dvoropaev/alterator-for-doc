@@ -101,8 +101,7 @@ components = [
     "samba-ad-client-winbind",
     "samba-ad-client-support",
     "samba-dc",
-    "freeipa-client",
-    "freeipa-server"
+    "freeipa-client"
 ]
 
 [sections.main]
@@ -251,6 +250,8 @@ components = [
     "postgresql17",
     "postgresql17-1c",
     "postgresql-jdbc",
+# domain-infra:
+    "freeipa-server",
 # apps/system-apps:
     "network-manager-gtk4",
     "gparted",

@@ -14,8 +14,9 @@ public:
     void open(Action action);
     Action& action();
 
-    static const inline auto ImportButton = WizardButton::CustomButton1;
-    static const inline auto ExportButton = WizardButton::CustomButton2;
+    static const inline auto ParametersImportButton = WizardButton::CustomButton1;
+    static const inline auto ParametersExportButton = WizardButton::CustomButton2;
+    static const inline auto LogExportButton        = WizardButton::CustomButton3;
 
 public:
     void closeEvent(QCloseEvent* event) override;

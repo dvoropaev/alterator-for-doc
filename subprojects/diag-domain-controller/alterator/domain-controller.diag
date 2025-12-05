@@ -151,3 +151,11 @@ display_name.en = "Checking whether the nslcd service is disabled"
 display_name.ru = "Проверка: отключён ли сервис nslcd"
 comment.en = "Checking whether the nslcd service is disabled"
 comment.ru = "Проверка: отключён ли сервис nslcd"
+
+[parameters.service_deploy_mode]
+display_name.en = "mode"
+display_name.ru = "режим"
+comment.en = "This parameter determines current diagnostic step"
+comment.ru = "Этот параметр определяет текущий этап диагностики"
+type = "enum"
+enum_values = { type = "string", values = ["pre", "post"], default = "post" }

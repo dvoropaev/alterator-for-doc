@@ -46,3 +46,8 @@ bool ProgressPage::isComplete() const
 {
     return ui->progressBar->isVisible();
 }
+
+QAction* ProgressPage::exportAction() const
+{
+    return ui->logWidget->exportAction();
+}

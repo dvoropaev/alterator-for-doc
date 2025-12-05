@@ -15,12 +15,12 @@ public:
             PtrVector<Resource>&& resources,
             PtrVector<DiagTool>&& tools,
             const QString& iconName)
-        : m_parameters{std::move(parameters)}
+        : m_icon{ QIcon::fromTheme(iconName) }
+        , m_parameters{std::move(parameters)}
         , m_resources{std::move(resources)}
         , m_diag_tools{std::move(tools)}
-        , m_icon{ QIcon::fromTheme(iconName) }
-    {   
-        for ( auto& tool : m_diag_tools ) {
+    {
+        for ( const auto& tool : m_diag_tools ) {
             using namespace std::placeholders;
 
             tool->m_params_missing = ranges::includes(
@@ -32,7 +32,7 @@ public:
     }
 
     void fill(QJsonObject o, Parameter::Context ctx){
-        for ( auto& param : m_parameters ) {
+        for ( const auto& param : m_parameters ) {
             auto obj = o[param->name()];
             if ( !obj.isUndefined() && !obj.isNull() )
                 param->value(Parameter::ValueScope::Current)->fill(obj, param->required().testFlag(ctx));
@@ -56,7 +56,6 @@ public:
     }
 
     const QIcon m_icon;
-    PtrVector<Property>  m_prototypes;
     PtrVector<Parameter> m_parameters;
     PtrVector<Resource>  m_resources;
     PtrVector<DiagTool>  m_diag_tools;
@@ -78,10 +77,10 @@ Service::Service(const QString& name,
     , m_force_deployable{force_deployable}
     , m_diagNotFound{diagMissing}
 {
-    for ( auto& parameter : d->m_parameters )
+    for ( const auto& parameter : d->m_parameters )
         parameter->m_service = this;
 
-    for ( auto& resource : d->m_resources )
+    for ( const auto& resource : d->m_resources )
         resource->m_service = this;
 }
 
@@ -90,39 +89,38 @@ Service::~Service() { delete d; }
 void Service::setLocale(const QLocale& locale) const {
     TranslatableObject::setLocale(locale);
 
-    for ( auto& obj : d->m_prototypes ) obj->setLocale(locale);
-    for ( auto& obj : d->m_parameters ) obj->setLocale(locale);
-    for ( auto& obj : d->m_resources  ) obj->setLocale(locale);
-    for ( auto& obj : d->m_diag_tools ) obj->setLocale(locale);
+    for ( const auto& obj : d->m_parameters ) obj->setLocale(locale);
+    for ( const auto& obj : d->m_resources  ) obj->setLocale(locale);
+    for ( const auto& obj : d->m_diag_tools ) obj->setLocale(locale);
 }
 
-const QIcon& Service::icon()
+const QIcon& Service::icon() const
 {
     return d->m_icon;
 }
 
-const PtrVector<Parameter>& Service::parameters()
+const PtrVector<Parameter>& Service::parameters() const
 {
     return d->m_parameters;
 }
 
-const PtrVector<Resource>& Service::resources()
+const PtrVector<Resource>& Service::resources() const
 {
     return d->m_resources;
 }
 
-const PtrVector<DiagTool>& Service::diagTools()
+const PtrVector<DiagTool>& Service::diagTools() const
 {
     return d->m_diag_tools;
 }
 
 
-QJsonObject Service::getParameters(Parameter::Contexts ctx, bool excludePasswords)
+QJsonObject Service::getParameters(Parameter::Contexts ctx, bool excludePasswords) const
 {
     QJsonObject parameters;
 
-    for ( auto& parameter : d->m_parameters ) {
-        if ( ! (parameter->contexts() & ctx) || ( !(parameter->required() & ctx) && !parameter->value(Parameter::ValueScope::Edit)->isEnabled() ) )
+    for ( const auto& parameter : d->m_parameters ) {
+        if ( !(parameter->contexts() & ctx) || ( !(parameter->required() & ctx) && !parameter->value(Parameter::ValueScope::Edit)->isEnabled() ) )
             continue;
 
         parameters[parameter->name()] = parameter->value(parameter->isConstant() ? Parameter::ValueScope::Default : Parameter::ValueScope::Edit)->serialize(excludePasswords);
@@ -167,10 +165,10 @@ bool Service::hasPostDiag() const {
 
 int Service::statusCode() const { return d->m_status_code; }
 
-bool Service::hasConflict(Service* toDeploy, Resource* theirs, Resource** ours)
+bool Service::hasConflict(const Service* toDeploy, const Resource* theirs, const Resource** ours) const
 {
     if ( m_deployed && this != toDeploy )
-        for ( auto& our_resource : d->m_resources ) {
+        for ( const auto& our_resource : d->m_resources ) {
             if ( our_resource.get() == theirs ) continue;
             if ( our_resource->intersects(theirs) ){
                 *ours   = our_resource.get();

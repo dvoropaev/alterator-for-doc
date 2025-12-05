@@ -1252,7 +1252,7 @@ static int components_module_status_subcommand(AlteratorCtlComponentsModule *mod
 
     GNode *component_packages_table = NULL;
     if (!(component_packages_table = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-              info_parser, component_parse_info, COMPONENT_ALTERATOR_ENTRY_COMPONENT_PACKAGES_TABLE_NAME)))
+              info_parser, component_parse_info, COMPONENT_ALTERATOR_ENTRY_COMPONENT_PACKAGES_TABLE_NAME, -1)))
     {
         g_printerr(_("Can't get component %s data. Getting packages list failed.\n"), component_str_id);
         ERR_EXIT();
@@ -2316,7 +2316,8 @@ static GNode **components_module_get_section_nodes(AlteratorCtlComponentsModule 
     GNode *sections = info_parser
                           ->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
                                                                               parsed_edition_info,
-                                                                              COMPONENTS_EDITION_SECTION_TABLE_NAME);
+                                                                              COMPONENTS_EDITION_SECTION_TABLE_NAME,
+                                                                              -1);
     if (!sections)
     {
         alterator_ctl_module_info_parser_result_tree_free(parsed_edition_info);
@@ -3947,7 +3948,7 @@ static int components_module_get_section_display_name(AlteratorCtlComponentsModu
     AlteratorCtlModuleInfoParser *info_parser = (AlteratorCtlModuleInfoParser *) module->gdbus_source->info_parser;
 
     GNode *display_name_node = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-        info_parser, data, COMPONENT_ALTERATOR_ENTRY_COMPONENT_DISPLAY_NAME_TABLE_NAME);
+        info_parser, data, COMPONENT_ALTERATOR_ENTRY_COMPONENT_DISPLAY_NAME_TABLE_NAME, -1);
     if (!display_name_node)
     {
         g_printerr(_("Finding section display name failed.\n"));
@@ -4152,7 +4153,8 @@ static int components_module_get_component_status_by_uninstalled_packages_list(
     if (!(packages_node = module->gdbus_source->info_parser->alterator_ctl_module_info_parser_get_node_by_name(
               module->gdbus_source->info_parser,
               (GNode *) parsed_component,
-              COMPONENT_ALTERATOR_ENTRY_COMPONENT_PACKAGES_TABLE_NAME)))
+              COMPONENT_ALTERATOR_ENTRY_COMPONENT_PACKAGES_TABLE_NAME,
+              -1)))
     {
         g_printerr(_("Can't get packages list of component %s.\n"), component_name_toml_value->str_value);
         ERR_EXIT();
@@ -4876,7 +4878,7 @@ static int components_module_get_packages_of_component(AlteratorCtlComponentsMod
 
     GNode *component_packages_table = NULL;
     if (!(component_packages_table = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-              info_parser, parsed_component, COMPONENT_ALTERATOR_ENTRY_COMPONENT_PACKAGES_TABLE_NAME)))
+              info_parser, parsed_component, COMPONENT_ALTERATOR_ENTRY_COMPONENT_PACKAGES_TABLE_NAME, -1)))
     {
         g_printerr(_("Can't get component %s installed packages. Getting packages list failed.\n"), component_str_id);
         ERR_EXIT();
@@ -5239,7 +5241,7 @@ static int components_module_calculate_affected_components(AlteratorCtlComponent
 
         GNode *packages = NULL;
         if (!(packages = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-                  info_parser, component_info, COMPONENT_ALTERATOR_ENTRY_COMPONENT_PACKAGES_TABLE_NAME)))
+                  info_parser, component_info, COMPONENT_ALTERATOR_ENTRY_COMPONENT_PACKAGES_TABLE_NAME, -1)))
         {
             g_printerr(_("Failed to calculate affected components for %s of component %s. Can't get packages list of "
                          "component %s.\n"),
@@ -5637,7 +5639,7 @@ static int components_module_get_base_section_packages(AlteratorCtlComponentsMod
 
         GNode *component_packages_table = NULL;
         if (!(component_packages_table = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-                  info_parser, component_info, COMPONENT_ALTERATOR_ENTRY_COMPONENT_PACKAGES_TABLE_NAME)))
+                  info_parser, component_info, COMPONENT_ALTERATOR_ENTRY_COMPONENT_PACKAGES_TABLE_NAME, -1)))
         {
             g_printerr(_("Can't get component %s packages. Getting base components packages list failed.\n"),
                        component_name->str_value);

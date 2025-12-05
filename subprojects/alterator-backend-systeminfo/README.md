@@ -38,4 +38,4 @@ Provides Alterator clients with system details through the D-Bus interface.
 Important: every command runs with `set -o pipefail`; errors return a non-zero code with diagnostics sent to stderr.
 
 # Interface documentation
-- `systeminfo1` — exposes system information including hardware characteristics and service notes. See [systeminfo1.md](/docs/systeminfo1.md).
+- `systeminfo1` — exposes system information including hardware characteristics and service notes. See [systeminfo1.md](./docs/systeminfo1.md).

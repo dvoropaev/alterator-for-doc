@@ -13,7 +13,7 @@ class EditorTitle : public QWidget
 public:
     explicit EditorTitle(QWidget *parent = nullptr);
     ~EditorTitle();
-    void setEditor(Editor* e, Parameter::Contexts contexts);
+    void setEditor(Editor* e);
     QRadioButton* radio();
 
 private slots:

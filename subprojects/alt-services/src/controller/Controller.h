@@ -23,7 +23,10 @@ public:
     QAbstractItemModel* model();
     QList<QAction*> tableActions();
 
-    bool call(const Action& action);
+    enum class Result
+    { Success, Warning, Error };
+
+    Result call(const Action& action);
     bool updateStatus(Service* service);
 
     bool start(Service* service);
@@ -39,12 +42,13 @@ public:
     static const QString& actionName(Parameter::Context context);
     static const QIcon& actionIcon(Parameter::Context context);
 
+
 signals:
     void beginRefresh();
     void endRefresh();
     void select(int);
     void actionBegin(const QString&);
-    void actionEnd(bool);
+    void actionEnd(Result);
     void stdout(const QString&);
     void stderr(const QString&);
 
@@ -52,7 +56,7 @@ public slots:
     void refresh();
 
 private:
-    bool diag(Service* service, DiagTool::Test::Mode mode, const Action::TestSet& tests);
+    Result diag(Service* service, DiagTool::Test::Mode mode, const Action::TestSet& tests);
 
     class Private;
     Private* d;

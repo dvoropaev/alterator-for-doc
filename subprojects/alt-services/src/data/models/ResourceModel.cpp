@@ -181,7 +181,6 @@ QModelIndex ResourceModel::indexOf(Resource* resource)
     }
 
     int parentRow = std::distance(m_resourcesByType.begin(), entry);
-    auto parent = createIndex(parentRow, 0, ULONG_LONG_MAX);
 
     auto resourceIt = ranges::find(entry->second, resource);
     if ( resourceIt == entry->second.end() ) {

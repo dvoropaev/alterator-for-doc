@@ -62,6 +62,18 @@ See [playfile JSON-schema](doc/service.playfile.schema.json).
 - use `File` -> `Import...`.
 - or just drag and drop a file into the application window.
 
+## Service developement & debugging
+You can enable debug output to:
+- see Status() json output
+- see json that is actually sent to Deploy()/Undeploy()/Configure()/Backup()/Restore()
+
+Add the following lines to `/etc/qt6/qtlogging.ini` 
+```ini
+[Rules]
+*.debug=false
+default.debug=true
+```
+
 
 # Building
 - install the following dependencies (see `BuildRequirements` section of the [spec file](.gear/alt-services.spec))

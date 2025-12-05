@@ -7,8 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- password confirmation
+
 ### Changed
 - improved wizard appearance and navigation
+
+### Fixed
+- handling diagnostic "warning" result
 
 ## 0.1.8-alt1
 

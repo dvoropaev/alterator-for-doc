@@ -63,7 +63,7 @@ bool Action::hasTest(DiagTool::Test* test, DiagTool::Test::Mode mode) const {
 }
 
 
-QJsonObject Action::saveTests(DiagTool::Test::Mode mode) {
+QJsonObject Action::saveTests(DiagTool::Test::Mode mode) const {
     const TestSet& testSet = mode == DiagTool::Test::Mode::PreDeploy
                             ? options.prediagTests
                             : options.postdiagTests;
@@ -82,7 +82,7 @@ QJsonObject Action::saveTests(DiagTool::Test::Mode mode) {
     return result;
 }
 
-QByteArray Action::serialize()
+QByteArray Action::serialize() const
 {
 
     static const std::map<Parameter::Context, QString> ctxmap {

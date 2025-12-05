@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QWidget>
+#include "controller/Controller.h"
 
 class LogWidget : public QWidget
 {
@@ -15,7 +16,7 @@ public:
 
 public slots:
     void beginEntry( const QString& );
-    void endEntry( bool );
+    void endEntry( Controller::Result );
     void message( const QString& );
     void error( const QString& );
     void clear();

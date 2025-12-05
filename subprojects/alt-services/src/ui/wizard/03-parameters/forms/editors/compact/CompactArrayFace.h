@@ -15,5 +15,5 @@ public:
 private:
     QLabel* label;
     QPushButton* addBtn;
-    int min, max;
+    size_t m_min, m_max;
 };

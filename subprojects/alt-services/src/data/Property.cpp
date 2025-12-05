@@ -16,13 +16,13 @@
 Property::Property(Property& other) noexcept
     : TranslatableObject{other}
     , m_constant        { other.m_constant  }
-    , m_prototype       { other.m_prototype ? std::move(other.m_prototype) : nullptr }
     , m_required        { other.m_required  }
-    , m_type            { other.m_type      }
-    , m_allowed_values  { other.m_allowed_values }
-    , m_value           { other.m_value->clone() }
     , m_password        { other.m_password }
+    , m_type            { other.m_type      }
     , m_array_prefix    { other.m_array_prefix }
+    , m_allowed_values  { other.m_allowed_values }
+    , m_prototype       { other.m_prototype ? std::move(other.m_prototype) : nullptr }
+    , m_value           { other.m_value->clone() }
 {
     m_value->m_property = this;
     ranges::move(other.m_children, ranges::back_inserter(m_children));
@@ -31,13 +31,13 @@ Property::Property(Property& other) noexcept
 Property::Property(const QString& name, const Locales &locales, Type type,
                    bool constant, bool required, bool password, PropertyPtr prototype, TranslatableField arrayPrefix) noexcept
     : TranslatableObject{name, locales}
-    , m_type           { type     }
     , m_constant       { constant }
     , m_required       { required }
-    , m_value          { std::make_unique<Value>(this) }
-    , m_prototype      { std::move(prototype) }
     , m_password       { password }
+    , m_type           { type     }
     , m_array_prefix   { arrayPrefix }
+    , m_prototype      { std::move(prototype) }
+    , m_value          { std::make_unique<Value>(this) }
 {
     if ( m_prototype )
         m_prototype->m_value->setEnabled();
@@ -51,22 +51,16 @@ Property::Property(Type type, std::vector<PropertyPtr>&& children) noexcept
     , m_children { std::move(children) }
     , m_value    { std::make_unique<Value>(this) }
 {
-    for ( auto& property : m_children )
+    for ( const auto& property : m_children )
         m_value->addChild(property->defaultValue()->clone());
 }
-
-Property::Property(const QString& name, const Locales& locales, std::vector<PropertyPtr>&& children) noexcept
-    : TranslatableObject{name, locales}
-    , m_children{std::move(children)}
-    , m_value { std::make_unique<Value>(this) }
-{}
 
 // primitive prototype
 Property::Property(Type type, bool password) noexcept
     : TranslatableObject{{}, {}}
+    , m_password {password}
     , m_type { type }
     , m_value { std::make_unique<Value>(this) }
-    , m_password {password}
 {}
 
 
@@ -78,7 +72,7 @@ void Property::setLocale(const QLocale& locale) const
     if ( m_prototype )
         m_prototype->setLocale(locale);
 
-    for ( auto& child : m_children )
+    for ( const auto& child : m_children )
         child->setLocale(locale);
 
     m_array_prefix.setLocale(locale);
@@ -92,7 +86,7 @@ std::unique_ptr<Property::Value::ValidationInfo> Property::Value::isInvalid(bool
 
     if (m_enabled) switch ( m_property->m_type ) {
         case Property::Type::Array: {
-            auto size = m_children.size();
+            int size = m_children.size();
             auto [min,max] = m_property->m_allowed_values.toSize();
 
             if ( size < min )
@@ -143,6 +137,10 @@ std::unique_ptr<Property::Value::ValidationInfo> Property::Value::isInvalid(bool
             if ( !regexp.isEmpty() && !QRegularExpression{regexp}.match(string).hasMatch() )
                 return std::unique_ptr<ValidationInfo>{new ValidationInfo{this, QObject::tr("Invalid input")}};
 
+            if ( property()->isPassword() && m_value != m_passwordConfirmation )
+                return std::unique_ptr<ValidationInfo>{new ValidationInfo{this, QObject::tr("Passwords not matching")}};
+
+
             break;
         }
 
@@ -159,10 +157,10 @@ std::unique_ptr<Property::Value::ValidationInfo> Property::Value::isInvalid(bool
         default: break;
     }
 
-    if ( Parameter* parameter = dynamic_cast<Parameter*>(property()) ) {
+    if ( const Parameter* parameter = dynamic_cast<Parameter*>(property()) ) {
         if ( !force ) {
-            if ( Resource* resource = parameter->resource() ) {
-                if ( Resource* other = qApp->controller()->findOwner(resource) )
+            if ( const Resource* resource = parameter->resource() ) {
+                if ( const Resource* other = qApp->controller()->findOwner(resource) )
                 {
                     if ( other != resource )
                     {

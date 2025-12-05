@@ -14,7 +14,7 @@ void GroupEditor::fill() {
         } else
             qWarning() << "editor is not of type wrapper";
     }
-    if ( !m_group.checkedButton() )
+    if ( m_children.size() && !m_group.checkedButton() )
         m_group.buttons().front()->toggle();
 
     connect(&m_group, &QButtonGroup::buttonToggled, this, &Editor::changed);

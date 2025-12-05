@@ -14,9 +14,11 @@ protected:
         , m_action{action}
     {};
 public:
-    inline void setParameters(const std::vector<Parameter*>& params, Parameter::Contexts conext){
+    inline void setParameters(const std::vector<Parameter*>& params, Parameter::Contexts conexts)
+    {
         m_parameters = params;
-        setParametersImpl(conext);
+        m_contexts = conexts;
+        setParametersImpl(conexts);
     }
 
     virtual void ensureVisible(const Parameter::Value* value) = 0;
@@ -24,13 +26,15 @@ public:
 
     inline const Action& action() const { return m_action; };
     inline const auto& parameters() const { return m_parameters; }
+    inline auto contexts() const { return m_contexts; }
 
 signals:
     void changed();
 
 protected:
     friend class Editor;
-    virtual void setParametersImpl(Parameter::Contexts conext) = 0;
+    virtual void setParametersImpl(Parameter::Contexts conexts) = 0;
     const Action& m_action;
+    Parameter::Contexts m_contexts;
     std::vector<Parameter*> m_parameters;
 };

@@ -107,7 +107,7 @@ QStringList DBusProxy::getServicePaths()
     return result;
 }
 
-inline auto method(QString iface, QString path, QString methodName, QList<QVariant> args = {}){
+inline auto method(const QString&& iface, const QString& path, const QString&& methodName, const QList<QVariant>&& args = {}){
     auto msg = QDBusMessage::createMethodCall(
         ALTERATOR, path, iface, methodName
     );
@@ -115,8 +115,8 @@ inline auto method(QString iface, QString path, QString methodName, QList<QVaria
     return msg;
 }
 
-inline auto serviceMethod(QString path, QString methodName, QList<QVariant> args = {}){
-    return method(IFACE_SERVICE, path, methodName, args);
+inline auto serviceMethod(const QString& path, const QString&& methodName, const QList<QVariant>&& args = {}){
+    return method(IFACE_SERVICE, path, std::move(methodName), std::move(args));
 }
 
 static std::pair<int, QString> parseReply(const QDBusMessage& reply)
@@ -383,7 +383,7 @@ void DBusProxy::clearEnv()
     d->m_env.clear();
 }
 
-bool DBusProxy::runDiag(const QString& path, const QString& test, bool session)
+Controller::Result DBusProxy::runDiag(const QString& path, const QString& test, bool session)
 {
     QDBusConnection& connection = session ? std::ref(d->m_session) : std::ref(d->m_system);
 
@@ -391,11 +391,24 @@ bool DBusProxy::runDiag(const QString& path, const QString& test, bool session)
 
     auto testReply = connection.call(method(IFACE_DIAG, path, "Run", {test}), QDBus::BlockWithGui, DBUS_TIMEOUT);
 
-    if ( testReply.type() == QDBusMessage::ErrorMessage || testReply.arguments().at(0) != 0 ) {
-        emit stderr(tr("Test failed"));
+    if ( testReply.type() == QDBusMessage::ErrorMessage )
+    {
         emit stderr(testReply.errorMessage());
-        return false;
+        return Controller::Result::Error;
     }
 
-    return true;
+    switch ( testReply.arguments().at(0).toInt() )
+    {
+        case 0:
+            emit stdout(tr("Test result:").append(' ').append(tr("Success")));
+            return Controller::Result::Success;
+
+        case 2:
+            emit stderr(tr("Test result:").append(' ').append(tr("Warning")));
+            return Controller::Result::Warning;
+
+        default:
+            emit stderr(tr("Test result:").append(' ').append(tr("Error")));
+            return Controller::Result::Error;
+    }
 }

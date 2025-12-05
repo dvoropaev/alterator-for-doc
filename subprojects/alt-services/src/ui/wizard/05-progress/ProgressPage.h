@@ -19,6 +19,9 @@ public:
     void initializePage() override;
     bool isComplete() const override;
 
+    QAction* exportAction() const;
+
+
 private:
     Ui::ProgressPage *ui;
 };

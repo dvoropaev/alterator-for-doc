@@ -2,7 +2,7 @@
 #include "wrappers/CompositeArrayItem.h"
 #include "ui_CompositeArrayEditor.h"
 
-CompositeArrayEditor::CompositeArrayEditor(const BaseForm& form, Property::Value* value, QWidget *parent, int context)
+CompositeArrayEditor::CompositeArrayEditor(const BaseForm& form, Property::Value* value, QWidget *parent)
     : DetailedEditor{form, value}
     , ui(new Ui::CompositeArrayEditor)
 {
@@ -77,7 +77,7 @@ void CompositeArrayEditor::checkSize() {
 
     auto [min,max] = m_value->property()->allowed().toSize();
     auto size = m_children.size();
-    ui->pushButton->setDisabled( size >= max );
+    ui->pushButton->setDisabled( max != min && size >= static_cast<size_t>(max) );
 
     for ( const auto& item : m_children )
         item->refresh();

@@ -44,7 +44,7 @@ public:
         qInstallMessageHandler(s_prevHandler);
     }
 
-    QString logs() const { return m_buffer; }
+    const QString& logs() const { return m_buffer; }
     bool empty() const { return m_buffer.trimmed().isEmpty(); }
 
 private:
@@ -198,7 +198,7 @@ bool Controller::updateStatus(Service* service)
     return code == 0;
 }
 
-bool Controller::call(const Action& action)
+Controller::Result Controller::call(const Action& action)
 {
     auto serializedParameters = QJsonDocument{action.parameters}.toJson(QJsonDocument::Compact).append('\n');
     qDebug() << serializedParameters;
@@ -213,7 +213,7 @@ bool Controller::call(const Action& action)
         { Parameter::Context::Restore,   &DBusProxy::restore   },
     };
 
-    bool success = true;
+    Result result = Result::Success;
     ScopedLogCapture capture(this);
 
     if (action.action == Parameter::Context::Diag)
@@ -223,7 +223,7 @@ bool Controller::call(const Action& action)
          *  since it does not alter service state
          */
 
-        success = diag(
+        result = diag(
             action.service,
 
             action.service->isDeployed()
@@ -243,44 +243,50 @@ bool Controller::call(const Action& action)
          *  Also, optional pre/post -diagnostics may be enabled
          */
         try {
-            auto& method = actions_.at(action.action);
-
             emit beginRefresh();
 
             if ( action.options.prediag )
-                success = diag(action.service, DiagTool::Test::Mode::PreDeploy, action.options.prediagTests);
+            {
+                auto prediagResult = diag(action.service, DiagTool::Test::Mode::PreDeploy, action.options.prediagTests);
+                if ( prediagResult > result )
+                    result = prediagResult;
+            }
 
-            if ( success )
+            if ( result != Result::Error )
             {
                 emit actionBegin(actionName(action.action));
-                bool result = std::invoke( actions_.at(action.action), &d->m_datasource,
+                bool mainResult = std::invoke( actions_.at(action.action), &d->m_datasource,
                                           action.service->dbusPath(), serializedParameters );
-                emit actionEnd(result);
-                success = result;
+                emit actionEnd(mainResult ? Result::Success : Result::Error);
+                if ( !mainResult )
+                    result = Result::Error;
                 updateStatus(action.service);
             }
 
-            if ( success && action.options.autostart )
+            if ( result != Result::Error && action.options.autostart )
             {
                 emit actionBegin(tr("Starting service"));
-                emit actionEnd(start(action.service));
+                emit actionEnd(start(action.service) ? Result::Success : Result::Error);
             }
 
-            if (success && action.options.postdiag)
-                success = diag(action.service, DiagTool::Test::Mode::PostDeploy, action.options.postdiagTests);
-
+            if (result != Result::Error && action.options.postdiag)
+            {
+                auto postdiagResult = diag(action.service, DiagTool::Test::Mode::PostDeploy, action.options.postdiagTests);
+                if ( postdiagResult > result )
+                    result = postdiagResult;
+            }
 
             emit endRefresh();
         }
         catch (std::out_of_range&) { qCritical() << "not implemented"; }
     }
 
-    if ( !success ) {
+    if ( result == Result::Error ) {
         // Logs are visible in the wizard execution page.
         QMessageBox::critical(QApplication::activeWindow(), tr("Error"), tr("%1 failed.").arg(actionName(action.action)));
     }
 
-    return success;
+    return result;
 }
 
 bool Controller::start(Service* service)
@@ -311,7 +317,7 @@ bool Controller::stop(Service* service)
     return !service->isStarted();
 }
 
-bool Controller::diag(Service* service, DiagTool::Test::Mode mode, const Action::TestSet& testSet)
+Controller::Result Controller::diag(Service* service, DiagTool::Test::Mode mode, const Action::TestSet& testSet)
 {
     emit beginRefresh();
     emit actionBegin(mode == DiagTool::Test::Mode::PreDeploy ? tr("Premilinary diagnostics") : tr("Post-diagnostics"));
@@ -355,13 +361,13 @@ bool Controller::diag(Service* service, DiagTool::Test::Mode mode, const Action:
     }
     d->m_datasource.setEnv("service_deploy_mode", mode == DiagTool::Test::Mode::PostDeploy ? "post" : "pre");
 
-    bool success = true;
+    Result result = Result::Success;
     for ( const auto& tool : service->diagTools() )
     {
         if ( testSet.hasTool(tool.get()) || tool->hasRequiredTests(mode) )
         {
             emit actionBegin(tr("Diagnostic tool \"%1\"").arg(tool->name()));
-            bool toolRun = true;
+            Result toolRun = Result::Success;
 
             for ( const auto& test : tool->tests() )
             {
@@ -369,19 +375,23 @@ bool Controller::diag(Service* service, DiagTool::Test::Mode mode, const Action:
                     continue;
 
                 emit actionBegin(tr("Running test \"%1\"").arg(test->name()));
-                bool testRun = d->m_datasource.runDiag(tool->path(), test->name(), tool->session());
+                Result testRun = d->m_datasource.runDiag(tool->path(), test->name(), tool->session());
                 emit actionEnd(testRun);
-                toolRun &= testRun;
+
+                if ( testRun > toolRun )
+                    toolRun = testRun;
             }
 
             emit actionEnd(toolRun);
-            success &= toolRun;
+
+            if ( toolRun > result )
+                result = toolRun;
         }
     }
 
-    emit actionEnd(success);
+    emit actionEnd(result);
     emit endRefresh();
-    return success;
+    return result;
 }
 
 Resource* Controller::findOwner(const Resource* resource)
@@ -434,7 +444,7 @@ void Controller::refresh(){
 
     auto paths = d->m_datasource.getServicePaths();
 
-    for ( auto& path : paths ) {
+    for ( const auto& path : paths ) {
         if ( auto s = d->buildService(path, d->m_datasource.getServiceInfo(path)) )
         {       
             s->setLocale(QLocale::system());

@@ -147,7 +147,7 @@ MainWindow::MainWindow(QWidget *parent)
     });
 
     connect(qApp->controller()->model(), &QAbstractItemModel::dataChanged, this,
-    [=](const QModelIndex& tl, const QModelIndex& br, const QList<int> roles)
+    [=](const QModelIndex& tl, const QModelIndex& br, const QList<int>& roles)
     {
         if ( d->m_currentService )
             for ( int row = tl.row(); row <= br.row(); ++row )

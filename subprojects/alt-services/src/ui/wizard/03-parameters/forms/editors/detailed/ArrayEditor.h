@@ -10,7 +10,7 @@ class ArrayEditor : public DetailedEditor
 {
     Q_OBJECT
 public:
-    explicit ArrayEditor(const BaseForm& form, Property::Value* value, QWidget *parent, Parameter::Contexts contexts);
+    explicit ArrayEditor(const BaseForm& form, Property::Value* value, QWidget *parent);
     ~ArrayEditor();
 
     void fill() override {checkSize();}

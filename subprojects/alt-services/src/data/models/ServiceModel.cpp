@@ -24,7 +24,9 @@ int ServiceModel::rowCount(const QModelIndex& parent) const {return m_services.s
 
 QVariant ServiceModel::data(const QModelIndex& index, int role) const
 {
-    if ( index.row() >= m_services.size() ) return {};
+    if ( index.row() < 0 || static_cast<size_t>(index.row()) >= m_services.size() )
+        return {};
+
     auto service = m_services[index.row()];
 
     if ( role == Qt::DisplayRole && index.column() == 0 )

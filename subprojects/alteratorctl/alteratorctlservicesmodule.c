@@ -221,6 +221,13 @@ struct ServicesPlayPlan
     GString *diag_log_buffer;
 };
 
+typedef enum
+{
+    PRE_DIAG,
+    POST_DIAG,
+    POST_CONFIGURE
+} play_diag_phase;
+
 static void services_play_plan_diag_clear(ServicesPlayPlanDiag *diag);
 static void services_play_plan_reset(AlteratorCtlServicesModule *module);
 static ServicesPlayPlan *services_play_plan_get(AlteratorCtlServicesModule *module,
@@ -238,8 +245,7 @@ static int services_module_get_service_tests(AlteratorCtlServicesModule *module,
 
 static int services_module_maybe_save_diag_log(AlteratorCtlServicesModule *module,
                                                const gchar *service_str_id,
-                                               const gchar *phase_label,
-                                               const gchar *phase_id,
+                                               play_diag_phase phase,
                                                gboolean yes);
 
 static int services_module_is_deployed_from_status_ctx(AlteratorCtlServicesModule *module,
@@ -566,27 +572,58 @@ static ServicesPlayPromptResult services_module_prompt_yes_no_play(const gchar *
                                                                    const gchar *prompt_message,
                                                                    gboolean yes_flag);
 
+static void print_diagnostics_tools_running_mode(deployment_status status)
+{
+    const gchar *diagnostic_mode_header = g_strdup_printf("  %s  ",
+                                                          status == DEPLOYED ? _("Running post-diagnostic tests:")
+
+                                                                             : _("Running pre-diagnostic tests:"));
+    const gchar *header_border_line     = g_strnfill(g_utf8_strlen(diagnostic_mode_header, -1), '=');
+
+    g_print("\n%s\n", header_border_line);
+    g_print("%s\n", diagnostic_mode_header);
+    g_print("%s\n\n", header_border_line);
+
+    g_free((gpointer) header_border_line);
+    g_free((gpointer) diagnostic_mode_header);
+}
+
 static int services_module_play_run_diag(AlteratorCtlServicesModule *module,
                                          const gchar *service_str_id,
                                          ServicesPlayPlanDiag *diag,
                                          deployment_status status,
                                          gboolean confirm_on_fail,
-                                         const gchar *phase_label)
+                                         play_diag_phase phase)
 {
     int ret = 0;
 
     if (!module || !diag || !diag->enabled)
         goto end;
 
-    if (!phase_label)
-        phase_label = _("playfile");
-
-    const gchar *phase_id = confirm_on_fail ? "prediag" : "postdiag";
-
     if (module->play_plan && module->play_plan->diag_log_buffer)
         g_string_truncate(module->play_plan->diag_log_buffer, 0);
 
-    g_print(_("Running %s diagnostics requested in playfile for service \"%s\".\n"), phase_label, service_str_id);
+    switch (phase)
+    {
+    case PRE_DIAG:
+        g_print(_("%sDiagnostic run requested pre-diagnostic in the \"%s\" service playfile.\n"),
+                yes ? "\n" : "",
+                service_str_id);
+        break;
+    case POST_DIAG:
+        g_print(_("%sDiagnostic run requested post-diagnostic in the \"%s\" service playfile.\n"),
+                yes ? "\n" : "",
+                service_str_id);
+        break;
+    case POST_CONFIGURE:
+        g_print(_("%sDiagnostic run requested diagnostic after configuration in the \"%s\" service playfile.\n"),
+                yes ? "\n" : "",
+                service_str_id);
+        break;
+    default:
+        g_print(_("%sDiagnostic run requested in the \"%s\" service playfile.\n"), yes ? "\n" : "", service_str_id);
+        break;
+    };
 
     gchar *service_path = services_module_get_service_path(module, service_str_id);
     if (!service_path || !strlen(service_path))
@@ -798,6 +835,7 @@ static int services_module_play_run_diag(AlteratorCtlServicesModule *module,
 
         g_ptr_array_sort(tests_to_run, services_module_sort_result);
 
+        print_diagnostics_tools_running_mode(status);
         if (selection->bus_type == G_BUS_TYPE_SYSTEM)
             g_print("%s", _("<<< Tests on the system bus:\n"));
         else if (selection->bus_type == G_BUS_TYPE_SESSION)
@@ -838,7 +876,24 @@ static int services_module_play_run_diag(AlteratorCtlServicesModule *module,
 
     if (has_failures)
     {
-        g_print(_("Some %s diagnostics failed for service \"%s\".\n"), phase_label, service_str_id);
+        switch (phase)
+        {
+        case PRE_DIAG:
+            g_print(_("Some diagnostic tests failed before deploying service \"%s\".\n"), service_str_id);
+            break;
+
+        case POST_DIAG:
+            g_print(_("Some diagnostic tests failed after deploying service \"%s\".\n"), service_str_id);
+            break;
+
+        case POST_CONFIGURE:
+            g_print(_("Some diagnostic tests failed after configuring service \"%s\"."), service_str_id);
+            break;
+
+        default:
+            g_print(_("Some diagnostics tests failed for service \"%s\".\n"), service_str_id);
+            break;
+        };
 
         if (confirm_on_fail)
         {
@@ -857,7 +912,7 @@ static int services_module_play_run_diag(AlteratorCtlServicesModule *module,
         // If confirm_on_fail is FALSE (postdiag), do not prompt or abort; just continue.
 
         if (ret == 0)
-            services_module_maybe_save_diag_log(module, service_str_id, phase_label, phase_id, yes);
+            services_module_maybe_save_diag_log(module, service_str_id, phase, yes);
     }
 
 end:
@@ -884,7 +939,7 @@ static ServicesPlayPromptResult services_module_prompt_yes_no_play(const gchar *
 {
     if (yes_flag)
     {
-        g_print("%s", auto_yes_message);
+        g_print("\n%s", auto_yes_message);
         return SERVICES_PLAY_PROMPT_YES;
     }
 
@@ -894,7 +949,7 @@ static ServicesPlayPromptResult services_module_prompt_yes_no_play(const gchar *
         return SERVICES_PLAY_PROMPT_NONTTY;
     }
 
-    g_print("%s", prompt_message);
+    g_print("%s%s", yes_flag ? "\n" : "", prompt_message);
     fflush(stdout);
 
     gchar response_char = 'N';
@@ -915,8 +970,7 @@ static ServicesPlayPromptResult services_module_prompt_yes_no_play(const gchar *
 
 static int services_module_maybe_save_diag_log(AlteratorCtlServicesModule *module,
                                                const gchar *service_str_id,
-                                               const gchar *phase_label,
-                                               const gchar *phase_id,
+                                               play_diag_phase phase,
                                                gboolean yes)
 {
     int ret = 0;
@@ -931,14 +985,8 @@ static int services_module_maybe_save_diag_log(AlteratorCtlServicesModule *modul
     if (!plan->diag_log_buffer || plan->diag_log_buffer->len == 0)
         goto end;
 
-    if (!phase_id)
-        phase_id = "diag";
-
-    if (!phase_label)
-        phase_label = _("diagnostics");
-
     ServicesPlayPromptResult prompt_result
-        = services_module_prompt_yes_no_play(_("Do you want to save diagnostics log to a file? [y/N] y\n"),
+        = services_module_prompt_yes_no_play(_("Do you want to save diagnostics log to a file? [y/N] y\n\n"),
                                              _("Do you want to save diagnostics log to a file? [y/N] "),
                                              yes);
     if (prompt_result != SERVICES_PLAY_PROMPT_YES)
@@ -954,16 +1002,32 @@ static int services_module_maybe_save_diag_log(AlteratorCtlServicesModule *modul
     if (!timestamp)
         goto end;
 
-    gchar *path = g_strdup_printf("%s-%s-%s.log", service_str_id, phase_id, timestamp);
-    g_free(timestamp);
-    if (!path)
-        goto end;
-
+    gchar *path       = NULL;
     GString *file_buf = g_string_new(NULL);
-    if (!file_buf)
-        goto end;
-
-    g_string_append_printf(file_buf, _("Diagnostics log for service \"%s\" (%s)\n\n"), service_str_id, phase_label);
+    switch (phase)
+    {
+    case PRE_DIAG:
+        path = g_strdup_printf("%s-prediag-%s.log", service_str_id, timestamp);
+        g_string_append_printf(file_buf,
+                               _("Diagnostics log for service \"%s\" (before deployment)\n\n"),
+                               service_str_id);
+        break;
+    case POST_DIAG:
+        path = g_strdup_printf("%s-postdiag-%s.log", service_str_id, timestamp);
+        g_string_append_printf(file_buf, _("Diagnostics log for service \"%s\" (after deployment)\n\n"), service_str_id);
+        break;
+    case POST_CONFIGURE:
+        path = g_strdup_printf("%s-postconfigure-%s.log", service_str_id, timestamp);
+        g_string_append_printf(file_buf,
+                               _("Diagnostics log for service \"%s\" (after configuration)\n\n"),
+                               service_str_id);
+        break;
+    default:
+        path = g_strdup_printf("%s-diag-%s.log", service_str_id, timestamp);
+        g_string_append_printf(file_buf, _("Diagnostics log for service \"%s\"\n\n"), service_str_id);
+        break;
+    };
+    g_free(timestamp);
 
     g_string_append_len(file_buf, plan->diag_log_buffer->str, plan->diag_log_buffer->len);
 
@@ -977,7 +1041,7 @@ static int services_module_maybe_save_diag_log(AlteratorCtlServicesModule *modul
         goto end;
     }
 
-    g_print(_("Diagnostics log has been saved to %s.\n"), path);
+    g_print(_("Diagnostics log has been saved to %s.\n\n"), path);
     g_string_free(file_buf, TRUE);
     g_free(path);
 
@@ -1197,6 +1261,7 @@ static gchar *services_module_print_resource_with_links_to_params(gchar *resourc
 
 static int services_module_printing_resources_value(AlteratorCtlServicesModule *module,
                                                     const gchar *service_str_id,
+                                                    GNode *service_info,
                                                     const GNode *resources,
                                                     ServicesModuleTomlValuePrintingMode mode,
                                                     gpointer user_data);
@@ -1206,13 +1271,8 @@ static gchar *services_module_get_localized_field(AlteratorCtlModuleInfoParser *
                                                   const gchar *table_name);
 static gchar *services_module_resource_value_to_string(const toml_value *value);
 static services_module_resource_group_t services_module_get_resource_group(const gchar *type_str);
-static GString *services_module_render_resources_ascii_table(const gchar *left_header,
-                                                             const gchar *right_header,
-                                                             const GPtrArray *rows);
+static GString *services_module_render_resources_ascii_table(const GPtrArray *rows);
 static void services_module_resource_row_free(gpointer data);
-static void services_module_append_ascii_border(GString *buffer, gsize left_width, gsize right_width, gchar fill);
-static void services_module_append_ascii_row(
-    GString *buffer, gsize left_width, gsize right_width, const gchar *left, const gchar *right);
 static void services_module_append_spaces(GString *buffer, gsize count);
 
 static int services_module_get_initial_params(AlteratorCtlServicesModule *module,
@@ -1877,18 +1937,25 @@ static int services_module_parse_diagnose_arguments(AlteratorCtlServicesModule *
         }
 
         GPtrArray *required_tests_array = g_hash_table_get_keys_as_ptr_array(tool_info->required_tests);
+        gboolean catches_first_missed   = FALSE;
         for (gsize i = 0; i < required_tests_array->len; i++)
         {
             gchar *test = (gchar *) required_tests_array->pdata[i];
             if (!g_hash_table_contains(tool_tests->all_tests, test))
             {
-                g_print(_("WARNING: The required test \"%s\" of the diagnostic tool \"%s\" was not specified. This "
-                          "test will be run.\n"),
-                        test,
-                        tool_name);
+                if (!catches_first_missed)
+                {
+                    g_print(_("The following \"%s\" diagnostic tool tests will be run by default:\n"), tool_name);
+                    catches_first_missed = TRUE;
+                }
+
+                g_print("  %s\n", test);
                 g_hash_table_add(tool_tests->all_tests, g_strdup(test));
             }
         }
+        if (catches_first_missed)
+            g_print("\n");
+
         g_ptr_array_unref(required_tests_array);
     }
 
@@ -1925,10 +1992,13 @@ static int fill_node_recursive(AlteratorCtlServicesModule *module,
 
     AlteratorCtlModuleInfoParser *info_parser = module->gdbus_source->info_parser;
     GNode *parameters                         = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-        info_parser, module->info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME);
+        info_parser, module->info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME, 2);
 
     if (!parameter)
-        parameter = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser, parameters, path[level]);
+        parameter = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
+                                                                                   parameters,
+                                                                                   path[level],
+                                                                                   2);
 
     if (!parameter)
     {
@@ -1937,15 +2007,20 @@ static int fill_node_recursive(AlteratorCtlServicesModule *module,
     }
 
     alterator_entry_node *param_data = parameter->data;
-    toml_value *type = g_hash_table_lookup(param_data->toml_pairs, is_array_member ? "array_type" : "type");
-    // TODO: check null
-    gchar *type_str = type->str_value;
+
+    gchar *type_str = NULL;
+    if (!is_enum_subparameter)
+    {
+        toml_value *type = g_hash_table_lookup(param_data->toml_pairs, is_array_member ? "array_type" : "type");
+        // TODO: check null
+        type_str = type->str_value;
+    }
 
     if (g_strv_length(path + level) == 1)
     {
         if (streq(type_str, "enum"))
         {
-            // just create object if not exist and return
+            // just create object if not exist and fill new defaults
             JsonObject *enum_object = NULL;
             if (!*node)
             {
@@ -1970,6 +2045,24 @@ static int fill_node_recursive(AlteratorCtlServicesModule *module,
             {
                 JsonObject *member = json_object_new();
                 json_object_set_object_member(enum_object, value_str, member);
+
+                JsonNode *child = json_object_get_member(enum_object, value_str);
+
+                GNode *parameters = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
+                    info_parser, module->info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME, 2);
+
+                GNode *values = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
+                                                                                               parameter,
+                                                                                               "values",
+                                                                                               2);
+                GNode *value  = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
+                                                                                              values,
+                                                                                              value_str,
+                                                                                              2);
+
+                // fill new defaults.
+                services_module_recursive_get_initial_params(
+                    module, "", module->info, parameters, value, node, TRUE, NULL, NULL, NULL, FALSE, FALSE);
             }
 
             goto end;
@@ -2032,20 +2125,32 @@ static int fill_node_recursive(AlteratorCtlServicesModule *module,
                 {
                     parameter = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
                                                                                                parameters,
-                                                                                               prototype->str_value);
+                                                                                               prototype->str_value,
+                                                                                               2);
                 }
             }
 
             GNode *children = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-                info_parser, parameter, SERVICES_ALTERATOR_ENTRY_SERVICE_PROPERTIES_TABLE_NAME);
+                info_parser,
+                parameter,
+                streq(type_str, "enum") ? "values" : SERVICES_ALTERATOR_ENTRY_SERVICE_PROPERTIES_TABLE_NAME,
+                2);
             GNode *child = children ? info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
                                                                                                      children,
-                                                                                                     path[level + 1])
+                                                                                                     path[level + 1],
+                                                                                                     2)
                                     : NULL;
 
             if (is_enum_subparameter || streq(type_str, "object"))
             {
                 JsonNode *member = json_object_get_member(object, path[level + 1]);
+                // Empty json param object (enum field withour subparameters)
+                if (member && json_node_is_null(member))
+                {
+                    json_object_remove_member(object, path[level + 1]);
+                    member = NULL;
+                }
+
                 ret = fill_node_recursive(module, &member, path, level + 1, value_str, child, FALSE, FALSE);
                 json_object_set_member(object, path[level + 1], member);
             }
@@ -2142,7 +2247,7 @@ static int parse_parameter_argument(AlteratorCtlServicesModule *module,
     }
 
     GNode *parameters = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-        info_parser, module->info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME);
+        info_parser, module->info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME, 2);
 
     if (!module->json)
     {
@@ -2270,16 +2375,16 @@ static int validate_json_recursive(AlteratorCtlServicesModule *module,
         toml_value *prototype = g_hash_table_lookup(param_data->toml_pairs, "prototype");
         if (prototype)
         {
-            GNode *parameters = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
-                                                                                               module->info,
-                                                                                               "parameters");
-            parameter         = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
+            GNode *parameters = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
+                info_parser, module->info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME, 2);
+            parameter = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
                                                                                        parameters,
-                                                                                       prototype->str_value);
+                                                                                       prototype->str_value,
+                                                                                       2);
         }
 
         GNode *children = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-            info_parser, parameter, SERVICES_ALTERATOR_ENTRY_SERVICE_PROPERTIES_TABLE_NAME);
+            info_parser, parameter, SERVICES_ALTERATOR_ENTRY_SERVICE_PROPERTIES_TABLE_NAME, 2);
 
         if (children)
         {
@@ -2424,8 +2529,14 @@ static int validate_json_recursive(AlteratorCtlServicesModule *module,
         gchar *field_name      = (gchar *) enum_field_name->data;
         g_list_free(enum_field_name);
 
-        GNode *values = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser, parameter, "values");
-        GNode *value = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser, values, field_name);
+        GNode *values = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
+                                                                                       parameter,
+                                                                                       "values",
+                                                                                       2);
+        GNode *value  = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
+                                                                                      values,
+                                                                                      field_name,
+                                                                                      2);
 
         if (!value)
         {
@@ -2476,7 +2587,7 @@ static int validate_json(AlteratorCtlServicesModule *module,
     AlteratorCtlModuleInfoParser *info_parser = (AlteratorCtlModuleInfoParser *) module->gdbus_source->info_parser;
 
     GNode *parameters = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-        info_parser, module->info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME);
+        info_parser, module->info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME, 2);
 
     for (GNode *parameter = parameters->children; parameter != NULL; parameter = parameter->next)
     {
@@ -2687,7 +2798,7 @@ static gboolean fill_object_passwords(AlteratorCtlModuleInfoParser *info_parser,
                                       gsize contexts_len)
 {
     GNode *children = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-        info_parser, object_schema, SERVICES_ALTERATOR_ENTRY_SERVICE_PROPERTIES_TABLE_NAME);
+        info_parser, object_schema, SERVICES_ALTERATOR_ENTRY_SERVICE_PROPERTIES_TABLE_NAME, 2);
     for (GNode *child = children ? children->children : NULL; child != NULL; child = child->next)
     {
         alterator_entry_node *child_data = child->data;
@@ -2726,8 +2837,14 @@ static gboolean fill_enum_passwords(AlteratorCtlModuleInfoParser *info_parser,
         return TRUE;
     JsonObject *variant_obj = json_node_get_object(variant_node);
 
-    GNode *values = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser, enum_schema, "values");
-    GNode *variant_schema = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser, values, variant);
+    GNode *values         = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
+                                                                                   enum_schema,
+                                                                                   "values",
+                                                                                   2);
+    GNode *variant_schema = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
+                                                                                           values,
+                                                                                           variant,
+                                                                                           2);
     if (!variant_schema)
         return TRUE;
 
@@ -2750,7 +2867,7 @@ static int services_fill_missing_passwords(AlteratorCtlServicesModule *module,
 
     JsonObject *root  = json_node_get_object(module->json);
     GNode *parameters = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-        info_parser, module->info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME);
+        info_parser, module->info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME, 2);
 
     for (GNode *parameter = parameters ? parameters->children : NULL; parameter != NULL; parameter = parameter->next)
     {
@@ -2912,11 +3029,12 @@ static int services_module_build_contextual_arguments_recursive(AlteratorCtlServ
             if (prototype)
                 parameter = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
                                                                                            parameters,
-                                                                                           prototype->str_value);
+                                                                                           prototype->str_value,
+                                                                                           2);
         }
 
         GNode *children = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-            info_parser, parameter, SERVICES_ALTERATOR_ENTRY_SERVICE_PROPERTIES_TABLE_NAME);
+            info_parser, parameter, SERVICES_ALTERATOR_ENTRY_SERVICE_PROPERTIES_TABLE_NAME, 2);
 
         if (!children)
             goto end;
@@ -3060,7 +3178,10 @@ static int services_module_build_contextual_arguments_recursive(AlteratorCtlServ
     {
         param_entry.is_array = FALSE;
         GArray *values_array = g_array_new(TRUE, FALSE, sizeof(gchar *));
-        GNode *values = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser, parameter, "values");
+        GNode *values        = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
+                                                                                       parameter,
+                                                                                       "values",
+                                                                                       2);
 
         enum_subparameters_len = (*option_array)->len;
 
@@ -3272,7 +3393,7 @@ static int services_module_build_param_options(AlteratorCtlServicesModule *modul
     }
 
     GNode *parameters = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-        info_parser, module->info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME);
+        info_parser, module->info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME, 2);
 
     if (command == SERVICES_DEPLOY)
     {
@@ -3342,13 +3463,13 @@ static int services_module_parse_contextual_arguments(AlteratorCtlServicesModule
     for (gsize i = 0; i < (*result)->len; i++)
     {
         GOptionEntry entry = ((ParamEntry *) (*result)->data)[i].option_entry;
-        GOptionEntry copy  = {g_strdup(entry.long_name),
+        GOptionEntry copy  = {entry.long_name,
                               entry.short_name,
                               entry.flags,
                               entry.arg,
                               entry.arg_data,
-                              g_strdup(entry.description),
-                              g_strdup(entry.arg_description)};
+                              entry.description,
+                              entry.arg_description};
         g_array_append_val(option_entries, copy);
     }
     g_option_group_add_entries(contextual_params, (GOptionEntry *) option_entries->data);
@@ -3930,7 +4051,7 @@ static int services_module_confirm_execution(AlteratorCtlServicesModule *module,
     }
 
     GNode *parameters_data = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-        info_parser, module->info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME);
+        info_parser, module->info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME, 2);
     if (!parameters_data)
     {
         g_printerr(_("Error processing service %s parameters: empty service info.\n"), service_name);
@@ -4133,8 +4254,9 @@ static int services_module_parse_arguments(
     {
         if (help)
         {
-            g_print(_("Usage: services play <file|->\n"));
-            g_print(_("  Execute action from JSON file\n\n"));
+            g_print(_("Execute action from JSON file\n"));
+            g_print(_("Usage:\n"
+                      "  services play <file|->\n\n"));
             *is_accepted = TRUE;
             goto end;
         }
@@ -4336,7 +4458,18 @@ static int services_module_parse_arguments(
         if (help)
         {
             g_print(_("List services\n"));
-            g_print(_("Usage:\n  services list\n"));
+            g_print(_("Usage:\n  services list\n\n"));
+            g_print(_("Options:\n"));
+            g_print(_("  -v, --verbose               Add services paths to services list output\n"));
+            g_print(_("  -d, --display-name-only     Show only services display names\n"));
+            g_print(_("  -D, --no-display-name       Show services without display names\n"));
+            g_print(_("  -p, --path-only             Show only services objects paths on D-Bus\n"));
+            g_print(_("  -n, --name-only             Show only services objects names\n"));
+            g_print(_("  -E, --except-status-markers Show services list without deploy and running\n"
+                      "                              state markers\n"));
+            g_print(_("  -N, --no-name               Hide services names\n"));
+            g_print(_("  -H, --hide-markers-legend   Hide the legend of status tokens\n"));
+            g_print(_("  -h, --help                  Show services list comand usage help\n\n"));
             goto end;
         }
 
@@ -4355,23 +4488,23 @@ static int services_module_parse_arguments(
             {
             case SERVICES_INFO:
                 g_print(_("Get info of specified service\n"));
-                g_print(_("Usage:\n  services info <service>\n"));
+                g_print(_("Usage:\n  services info <service>\n\n"));
                 goto end;
             case SERVICES_RESOURCES:
                 g_print(_("Show resources of specified service\n"));
-                g_print(_("Usage:\n  services resources <service>\n"));
+                g_print(_("Usage:\n  services resources <service>\n\n"));
                 goto end;
             case SERVICES_STATUS:
                 g_print(_("Get current state and parameters of specified service\n"));
-                g_print(_("Usage:\n  services status <service>\n"));
+                g_print(_("Usage:\n  services status <service>\n\n"));
                 goto end;
             case SERVICES_START:
                 g_print(_("Start specified service\n"));
-                g_print(_("Usage:\n  services start <service>\n"));
+                g_print(_("Usage:\n  services start <service>\n\n"));
                 goto end;
             case SERVICES_STOP:
                 g_print(_("Stop specified service\n"));
-                g_print(_("Usage:\n  services stop <service>\n"));
+                g_print(_("Usage:\n  services stop <service>\n\n"));
                 goto end;
             default:
                 break;
@@ -4706,12 +4839,7 @@ static int services_module_parametrized_subcommand(AlteratorCtlServicesModule *m
                              && (command == SERVICES_DEPLOY || command == SERVICES_CONFIGURE);
 
     if (need_prediag)
-        if (services_module_play_run_diag(module,
-                                          service_str_id,
-                                          &play_plan->prediag,
-                                          current_status,
-                                          TRUE,
-                                          _("pre-deployment"))
+        if (services_module_play_run_diag(module, service_str_id, &play_plan->prediag, current_status, TRUE, PRE_DIAG)
             < 0)
             ERR_EXIT();
 
@@ -4822,10 +4950,11 @@ static int services_module_parametrized_subcommand(AlteratorCtlServicesModule *m
         deployment_status updated_status = current_status;
         if (services_module_is_deployed(module, service_str_id, &updated_status) < 0)
             ERR_EXIT();
-        const gchar *phase = command == SERVICES_CONFIGURE ? _("post-configuration") : _("post-deployment");
-        if (services_module_play_run_diag(module, service_str_id, &play_plan->postdiag, updated_status, FALSE, phase)
-            < 0)
-            ERR_EXIT();
+        play_diag_phase phase = command == SERVICES_CONFIGURE ? POST_CONFIGURE : POST_DIAG;
+        if (command == SERVICES_DEPLOY && updated_status == DEPLOYED)
+            if (services_module_play_run_diag(module, service_str_id, &play_plan->postdiag, updated_status, FALSE, phase)
+                < 0)
+                ERR_EXIT();
     }
 
 end:
@@ -5052,7 +5181,7 @@ static int services_module_diagnose_subcommand(AlteratorCtlServicesModule *modul
         GNode *tests_node = NULL;
         if (!name_only
             && !(tests_node = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-                     info_parser, tool_info, DIAG_ALTERATOR_ENTRY_SERVICE_DIAG_TESTS_TABLE_NAME)))
+                     info_parser, tool_info, DIAG_ALTERATOR_ENTRY_SERVICE_DIAG_TESTS_TABLE_NAME, -1)))
         {
             g_printerr(_("Failed to get tests display names in \"%s\" diagnostic tool.\n"), (gchar *) tool_name);
             ERR_EXIT();
@@ -5061,7 +5190,7 @@ static int services_module_diagnose_subcommand(AlteratorCtlServicesModule *modul
         if (diagnostic_tests && diagnostic_tests->len)
         {
             g_ptr_array_sort(diagnostic_tests, services_module_sort_result);
-
+            print_diagnostics_tools_running_mode(status);
             if (test->bus_type == G_BUS_TYPE_SYSTEM)
                 g_print("%s", _("<<< Tests on the system bus:\n"));
             else if (test->bus_type == G_BUS_TYPE_SESSION)
@@ -5081,7 +5210,7 @@ static int services_module_diagnose_subcommand(AlteratorCtlServicesModule *modul
                 GNode *test_node = NULL;
                 if (!name_only
                     && !(test_node = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-                             info_parser, tests_node, diagnostic_tests->pdata[i])))
+                             info_parser, tests_node, diagnostic_tests->pdata[i], -1)))
                 {
                     g_printerr(_("Failed to get tests display names in \"%s\" diagnostic tool.\n"), (gchar *) tool_name);
                     ERR_EXIT();
@@ -5122,6 +5251,7 @@ static int services_module_diagnose_subcommand(AlteratorCtlServicesModule *modul
             g_ptr_array_unref(diagnostic_tests);
 
         diagnostic_tests = services_module_get_sorted_string_keys(test->all_tests);
+        print_diagnostics_tools_running_mode(status);
         if (test->bus_type == G_BUS_TYPE_SYSTEM)
             g_print("%s", _("<<< Tests on the system bus:\n"));
         else if (test->bus_type == G_BUS_TYPE_SESSION)
@@ -5377,14 +5507,15 @@ static int services_module_resources_subcommand(AlteratorCtlServicesModule *modu
 
     GNode *resources = NULL;
     if (!(resources = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-              module, parsed_info, SERVICES_ALTERATOR_ENTRY_SERVICE_RESOURCES_TABLE_NAME)))
+              module, parsed_info, SERVICES_ALTERATOR_ENTRY_SERVICE_RESOURCES_TABLE_NAME, -1)))
     {
         g_print(_("No resources of service %s.\n"), service_str_id);
         goto end;
     }
 
-    (*ctx)->results      = (gpointer) alterator_ctl_module_info_parser_tree_deep_copy(resources);
+    (*ctx)->results      = (gpointer) parsed_info;
     (*ctx)->free_results = (gpointer) alterator_ctl_module_info_parser_result_tree_free;
+    parsed_info          = NULL;
 
     // Parse JSON parameters of deployed service for getting resource linked params
     {
@@ -6072,11 +6203,13 @@ end:
 
 static int services_module_resources_handle_result(AlteratorCtlServicesModule *module, alteratorctl_ctx_t **ctx)
 {
-    int ret                         = 0;
-    gchar *service_str_id           = NULL;
-    GNode *resources                = NULL;
-    GHashTable *params_to_resources = NULL;
-    GHashTable *resources_to_params = NULL;
+    int ret                                   = 0;
+    gchar *service_str_id                     = NULL;
+    GNode *service_info                       = NULL;
+    GNode *resources                          = NULL;
+    GHashTable *params_to_resources           = NULL;
+    GHashTable *resources_to_params           = NULL;
+    AlteratorCtlModuleInfoParser *info_parser = (AlteratorCtlModuleInfoParser *) module->gdbus_source->info_parser;
 
     g_variant_get((*ctx)->parameters, "(msms)", &service_str_id, NULL);
     if (!service_str_id)
@@ -6088,7 +6221,12 @@ static int services_module_resources_handle_result(AlteratorCtlServicesModule *m
     if (!(*ctx)->results)
         goto end;
 
-    resources = (GNode *) (*ctx)->results;
+    service_info = (GNode *) (*ctx)->results;
+
+    resources = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
+        info_parser, service_info, SERVICES_ALTERATOR_ENTRY_SERVICE_RESOURCES_TABLE_NAME, 2);
+    if (!resources)
+        goto end;
 
     if (services_module_get_param_to_resource_table(module, resources, &params_to_resources) < 0)
         ERR_EXIT();
@@ -6097,6 +6235,7 @@ static int services_module_resources_handle_result(AlteratorCtlServicesModule *m
 
     if (services_module_printing_resources_value(module,
                                                  service_str_id,
+                                                 service_info,
                                                  resources,
                                                  services_module_print_resource_with_links_to_params,
                                                  resources_to_params)
@@ -6306,7 +6445,8 @@ static int services_module_status_params_build_path(AlteratorCtlServicesModule *
                 if (!children)
                     children = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
                                                                                               parameter_node,
-                                                                                              "values");
+                                                                                              "values",
+                                                                                              2);
 
                 if (children)
                 {
@@ -6579,16 +6719,17 @@ static gboolean services_module_get_required_parameters_paths_recursive(Alterato
             if (prototype)
             {
                 GNode *parameters = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-                    info_parser, module->info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME);
+                    info_parser, module->info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME, 2);
 
                 parameter = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
                                                                                            parameters,
-                                                                                           prototype->str_value);
+                                                                                           prototype->str_value,
+                                                                                           2);
             }
         }
 
         GNode *parameters = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-            info_parser, parameter, SERVICES_ALTERATOR_ENTRY_SERVICE_PROPERTIES_TABLE_NAME);
+            info_parser, parameter, SERVICES_ALTERATOR_ENTRY_SERVICE_PROPERTIES_TABLE_NAME, 2);
 
         if (parameters)
         {
@@ -6633,11 +6774,13 @@ static gboolean services_module_get_required_parameters_paths_recursive(Alterato
 
             GNode *enum_values = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
                                                                                                 parameter,
-                                                                                                "values");
+                                                                                                "values",
+                                                                                                2);
 
             GNode *value_data    = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
                                                                                                enum_values,
-                                                                                               enum_value_name);
+                                                                                               enum_value_name,
+                                                                                               2);
             JsonNode *enum_value = json_object_get_member(enum_object, enum_value_name);
 
             services_module_get_required_parameters_paths_recursive(module,
@@ -6741,7 +6884,7 @@ static int services_module_get_required_parameters_paths(AlteratorCtlServicesMod
         GHashTable *fresh = g_hash_table_new_full(g_str_hash, g_str_equal, (GDestroyNotify) g_free, NULL);
 
         GNode *parameters = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-            info_parser, module->info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME);
+            info_parser, module->info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME, 2);
 
         if (!module->json)
             json_node_init_object(module->json, json_object_new());
@@ -6882,7 +7025,11 @@ static int services_module_create_params_table(GHashTable *stringified_params_da
 
         g_free(help_path);
 
-        gchar **description_parts       = description ? g_strsplit(description, "\n", -1) : NULL;
+        gchar **description_parts = description ? g_strsplit(description, "\n", -1) : NULL;
+        // Remove last string (because it's empty)
+        if (description_parts)
+            g_clear_pointer(&description_parts[g_strv_length(description_parts) - 1], g_free);
+
         gsize descriprion_subrow_length = description_parts ? max_path_length + g_utf8_strlen("  ", -1)
                                                                   + max_value_length + g_utf8_strlen("  ", -1)
                                                                   + g_utf8_strlen(SERVICES_PARAMS_TABLE_DOUBLE_V, -1)
@@ -7032,7 +7179,7 @@ static int services_module_status_handle_result(AlteratorCtlServicesModule *modu
     json_node_set_object(parameters_node, parameters_object);
     AlteratorCtlModuleInfoParser *info_parser = (AlteratorCtlModuleInfoParser *) module->gdbus_source->info_parser;
     GNode *parameters_data                    = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-        info_parser, module->info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME);
+        info_parser, module->info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME, 2);
 
     g_variant_get((*ctx)->parameters, "(msms)", &service_str_id, NULL);
     if (!service_str_id)
@@ -7385,6 +7532,8 @@ int services_module_print_help(gpointer self)
     int ret = 0;
 
     g_print(_("Usage:\n"));
+    g_print(_("  alteratorctl services <COMMAND> [service] --help\n"
+              "                              Show command usage help\n"));
     g_print(_("  alteratorctl services [OPTIONS]\n"
               "                              List services\n"));
     g_print(_("  alteratorctl services [COMMAND] [OPTIONS] [PARAMETERS <argument>] [service]\n\n"));
@@ -7420,6 +7569,7 @@ int services_module_print_help(gpointer self)
               "                              (pre-diagnostic or post-diagnostic)\n"));
     g_print(_("  -f, --force-deploy          Force deploy service\n"));
     g_print(_("  -y, --yes                   Assume Yes to all queries and do not prompt\n"));
+    g_print(_("  --no-default                Do not use default value if parameter is not set\n"));
     g_print(_("  -s, --autostart             Start the service immediately after deployment\n"));
     g_print(_("  -E, --except-status-markers Show services list without deploy and running\n"
               "                              state markers\n"));
@@ -7650,11 +7800,11 @@ static int services_module_status_params_get_state(JsonNode *params, deployment_
 
     JsonNode *deployed_field = json_object_get_member(params_object,
                                                       SERVICES_ALTERATOR_ENTRY_SERVICE_DEFAULT_PARAM_DEPLOYED_KEY_NAME);
-    gboolean is_deployed     = deployed_field ? json_node_get_boolean(deployed_field) : FALSE;
+    gboolean is_deployed     = deployed_field && json_node_get_boolean(deployed_field);
 
     JsonNode *started_field = json_object_get_member(params_object,
                                                      SERVICES_ALTERATOR_ENTRY_SERVICE_DEFAULT_PARAM_STARTED_KEY_NAME);
-    gboolean is_started     = deployed_field ? json_node_get_boolean(started_field) : FALSE;
+    gboolean is_started     = is_deployed && started_field && json_node_get_boolean(started_field);
 
     if (is_deployed && is_started)
         *deploy_status = DEPLOYED_AND_STARTED;
@@ -7937,7 +8087,7 @@ static const gchar *services_module_marker_shape_for_status(deployment_status st
     case DEPLOYED_AND_STARTED:
         return "■"; // running
     case DEPLOYED:
-        return "◆"; // deployed, stopped
+        return "●"; // deployed, stopped
     case UNDEPLOYED:
     default:
         return "▲"; // not deployed
@@ -8107,6 +8257,7 @@ static gchar *services_module_print_resource_with_links_to_params(gchar *resourc
 
 static int services_module_printing_resources_value(AlteratorCtlServicesModule *module,
                                                     const gchar *service_str_id,
+                                                    GNode *service_info,
                                                     const GNode *resources,
                                                     ServicesModuleTomlValuePrintingMode mode,
                                                     gpointer user_data)
@@ -8114,12 +8265,9 @@ static int services_module_printing_resources_value(AlteratorCtlServicesModule *
     int ret                                   = 0;
     AlteratorCtlModuleInfoParser *info_parser = (AlteratorCtlModuleInfoParser *) module->gdbus_source->info_parser;
     GHashTable *resources_to_params           = (GHashTable *) user_data;
-    GNode *service_info                       = NULL;
     GNode *parameters_node                    = NULL;
     GPtrArray *groups[SERVICES_RESOURCE_GROUP_COUNT] = {0};
     gboolean printed_any_group                       = FALSE;
-    const gchar *header_left                         = _("Name");
-    const gchar *header_right                        = _("Value");
     GString *output                                  = g_string_new(NULL);
 
     if (!service_str_id)
@@ -8134,17 +8282,6 @@ static int services_module_printing_resources_value(AlteratorCtlServicesModule *
         ERR_EXIT();
     }
 
-    if (info_parser->alterator_ctl_module_info_parser_get_specified_object_data(info_parser,
-                                                                                module->gdbus_source,
-                                                                                service_str_id,
-                                                                                SERVICES_INTERFACE_NAME,
-                                                                                &service_info)
-        < 0)
-    {
-        g_printerr(_("Can't get service %s data for resources output.\n"), service_str_id);
-        ERR_EXIT();
-    }
-
     if (!service_info)
     {
         g_printerr(_("Can't print resources of service %s: empty service info.\n"), service_str_id);
@@ -8152,7 +8289,7 @@ static int services_module_printing_resources_value(AlteratorCtlServicesModule *
     }
 
     parameters_node = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-        info_parser, service_info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME);
+        info_parser, service_info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME, 2);
 
     for (gsize i = 0; i < SERVICES_RESOURCE_GROUP_COUNT; i++)
         groups[i] = g_ptr_array_new_with_free_func(services_module_resource_row_free);
@@ -8305,7 +8442,8 @@ static int services_module_printing_resources_value(AlteratorCtlServicesModule *
             {
                 GNode *parameter_node = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
                                                                                                        parameters_node,
-                                                                                                       linked_param_name);
+                                                                                                       linked_param_name,
+                                                                                                       -1);
 
                 if (parameter_node)
                 {
@@ -8353,7 +8491,7 @@ static int services_module_printing_resources_value(AlteratorCtlServicesModule *
 
         g_string_append_printf(output, "[%s]\n", _(services_module_resource_group_titles[group_index]));
 
-        GString *table = services_module_render_resources_ascii_table(header_left, header_right, rows);
+        GString *table = services_module_render_resources_ascii_table(rows);
         if (table)
         {
             g_string_append(output, table->str);
@@ -8373,9 +8511,6 @@ end:
     for (gsize i = 0; i < SERVICES_RESOURCE_GROUP_COUNT; i++)
         if (groups[i])
             g_ptr_array_unref(groups[i]);
-
-    if (service_info)
-        alterator_ctl_module_info_parser_result_tree_free(service_info);
 
     return ret;
 }
@@ -8472,97 +8607,26 @@ static void services_module_append_spaces(GString *buffer, gsize count)
         g_string_append_c(buffer, ' ');
 }
 
-static void services_module_append_ascii_border(GString *buffer, gsize left_width, gsize right_width, gchar fill)
-{
-    g_string_append_c(buffer, '+');
-    for (gsize i = 0; i < left_width + 2; i++)
-        g_string_append_c(buffer, fill);
-    g_string_append_c(buffer, '+');
-    for (gsize i = 0; i < right_width + 2; i++)
-        g_string_append_c(buffer, fill);
-    g_string_append_c(buffer, '+');
-    g_string_append_c(buffer, '\n');
-}
-
-static void services_module_append_ascii_row(
-    GString *buffer, gsize left_width, gsize right_width, const gchar *left, const gchar *right)
-{
-    const gchar *left_text  = left ? left : "";
-    const gchar *right_text = right ? right : "";
-
-    gsize left_len  = g_utf8_strlen(left_text, -1);
-    gsize right_len = g_utf8_strlen(right_text, -1);
-
-    g_string_append_c(buffer, '|');
-    g_string_append_c(buffer, ' ');
-    g_string_append(buffer, left_text);
-    if (left_width > left_len)
-        services_module_append_spaces(buffer, left_width - left_len);
-    g_string_append_c(buffer, ' ');
-    g_string_append_c(buffer, '|');
-    g_string_append_c(buffer, ' ');
-    g_string_append(buffer, right_text);
-    if (right_width > right_len)
-        services_module_append_spaces(buffer, right_width - right_len);
-    g_string_append_c(buffer, ' ');
-    g_string_append_c(buffer, '|');
-    g_string_append_c(buffer, '\n');
-}
-
-static GString *services_module_render_resources_ascii_table(const gchar *left_header,
-                                                             const gchar *right_header,
-                                                             const GPtrArray *rows)
+static GString *services_module_render_resources_ascii_table(const GPtrArray *rows)
 {
     if (!rows || !rows->len)
         return NULL;
 
-    gsize left_width  = g_utf8_strlen(left_header, -1);
-    gsize right_width = g_utf8_strlen(right_header, -1);
+    gsize left_width = 0;
 
     for (gsize i = 0; i < rows->len; i++)
     {
         services_module_resource_row_t *row = g_ptr_array_index(rows, i);
-        if (!row)
-            continue;
-
-        if (row->name)
-        {
-            gsize len = g_utf8_strlen(row->name, -1);
-            if (len > left_width)
-                left_width = len;
-        }
-
-        if (row->value)
-        {
-            gsize len = g_utf8_strlen(row->value, -1);
-            if (len > right_width)
-                right_width = len;
-        }
-
-        if (row->details)
-        {
-            for (gsize d = 0; d < row->details->len; d++)
-            {
-                gchar *detail = g_ptr_array_index(row->details, d);
-                if (!detail)
-                    continue;
-                gsize len = g_utf8_strlen(detail, -1);
-                if (len > left_width)
-                    left_width = len;
-            }
-        }
+        const gchar *name_text              = (row && row->name) ? row->name : "";
+        gsize len                           = g_utf8_strlen(name_text, -1);
+        if (len > left_width)
+            left_width = len;
     }
 
     if (left_width < SERVICES_MODULE_MIN_PARAMS_PATH_COLUMN_WIDTH)
         left_width = SERVICES_MODULE_MIN_PARAMS_PATH_COLUMN_WIDTH;
-    if (right_width < SERVICES_MODULE_MIN_PARAMS_VALUE_COLUMN_WIDTH)
-        right_width = SERVICES_MODULE_MIN_PARAMS_VALUE_COLUMN_WIDTH;
 
     GString *buffer = g_string_new(NULL);
-
-    services_module_append_ascii_border(buffer, left_width, right_width, '-');
-    services_module_append_ascii_row(buffer, left_width, right_width, left_header, right_header);
-    services_module_append_ascii_border(buffer, left_width, right_width, '=');
 
     for (gsize i = 0; i < rows->len; i++)
     {
@@ -8570,22 +8634,31 @@ static GString *services_module_render_resources_ascii_table(const gchar *left_h
         if (!row)
             continue;
 
-        services_module_append_ascii_row(buffer, left_width, right_width, row->name, row->value);
+        const gchar *name_text  = row->name ? row->name : "";
+        const gchar *value_text = row->value ? row->value : "";
+        gsize name_len          = g_utf8_strlen(name_text, -1);
 
-        if (row->details)
+        g_string_append(buffer, name_text);
+        if (left_width > name_len)
+            services_module_append_spaces(buffer, left_width - name_len);
+        g_string_append(buffer, "  ");
+        g_string_append(buffer, value_text);
+        g_string_append_c(buffer, '\n');
+
+        if (row->details && row->details->len)
         {
             for (gsize d = 0; d < row->details->len; d++)
             {
-                gchar *detail = g_ptr_array_index(row->details, d);
-                services_module_append_ascii_row(buffer, left_width, right_width, detail, "");
+                const gchar *detail_text = g_ptr_array_index(row->details, d);
+                if (!detail_text)
+                    continue;
+
+                g_string_append(buffer, "  ");
+                g_string_append(buffer, detail_text);
+                g_string_append_c(buffer, '\n');
             }
         }
-
-        if (i + 1 < rows->len)
-            services_module_append_ascii_border(buffer, left_width, right_width, '-');
     }
-
-    services_module_append_ascii_border(buffer, left_width, right_width, '-');
 
     return buffer;
 }
@@ -8632,14 +8705,14 @@ static int services_module_get_initial_params(AlteratorCtlServicesModule *module
 
     GNode *parameters = NULL;
     if (!(parameters = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-              info_parser, service_info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME)))
+              info_parser, service_info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME, 2)))
     {
         g_printerr(_("No service %s initial parameters info.\n"), service_str_id);
         ERR_EXIT();
     }
 
     GNode *resources = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-        info_parser, service_info, SERVICES_ALTERATOR_ENTRY_SERVICE_RESOURCES_TABLE_NAME);
+        info_parser, service_info, SERVICES_ALTERATOR_ENTRY_SERVICE_RESOURCES_TABLE_NAME, 2);
 
     if (resources && services_module_get_param_to_resource_table(module, resources, &params_to_resources) < 0)
         ERR_EXIT();
@@ -8741,14 +8814,17 @@ static int services_module_recursive_get_initial_params(AlteratorCtlServicesModu
 
     gboolean is_enum_simple_field = is_enum_field
                                     && !info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-                                        info_parser, parameter, SERVICES_ALTERATOR_ENTRY_SERVICE_PROPERTIES_TABLE_NAME);
-    gboolean is_composite_parameter = type_val ? streq(type_val->str_value, "object") : FALSE;
+                                        info_parser,
+                                        parameter,
+                                        SERVICES_ALTERATOR_ENTRY_SERVICE_PROPERTIES_TABLE_NAME,
+                                        2);
+    gboolean is_composite_parameter = is_enum_field || (type_val && streq(type_val->str_value, "object"));
 
-    gboolean is_enum = type_val ? streq(type_val->str_value, "enum") : FALSE;
+    gboolean is_enum = type_val && streq(type_val->str_value, "enum");
     gboolean is_enum_with_subparams
-        = is_enum ? info_parser->alterator_ctl_module_info_parser_find_table(
-                        info_parser, parameter, NULL, -1, SERVICES_ALTERATOR_ENTRY_SERVICE_PROPERTIES_TABLE_NAME, NULL)
-                  : FALSE;
+        = is_enum
+          && info_parser->alterator_ctl_module_info_parser_find_table(
+              info_parser, parameter, NULL, -1, SERVICES_ALTERATOR_ENTRY_SERVICE_PROPERTIES_TABLE_NAME, NULL);
 
     gboolean is_composite_array = FALSE;
     gboolean is_enum_array      = FALSE;
@@ -8769,7 +8845,8 @@ static int services_module_recursive_get_initial_params(AlteratorCtlServicesModu
     if (is_enum)
     {
         GNode *values = NULL;
-        if (!(values = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser, parameter, "values")))
+        if (!(values = info_parser
+                           ->alterator_ctl_module_info_parser_get_node_by_name(info_parser, parameter, "values", 2)))
             ERR_EXIT();
 
         toml_value *default_field_name
@@ -8818,12 +8895,13 @@ static int services_module_recursive_get_initial_params(AlteratorCtlServicesModu
                                 ? info_parser
                                       ->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
                                                                                           types,
-                                                                                          prototype_value->str_value)
+                                                                                          prototype_value->str_value,
+                                                                                          2)
                                 : parameter;
 
         GNode *properties = prototypes
                                 ? info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-                                      info_parser, prototypes, SERVICES_ALTERATOR_ENTRY_SERVICE_PROPERTIES_TABLE_NAME)
+                                      info_parser, prototypes, SERVICES_ALTERATOR_ENTRY_SERVICE_PROPERTIES_TABLE_NAME, 2)
                                 : NULL;
 
         if ((properties != NULL) && g_node_n_children(properties) > 0)
@@ -8931,7 +9009,8 @@ static int services_module_recursive_get_initial_params(AlteratorCtlServicesModu
     if (is_enum_array)
     {
         GNode *values = NULL;
-        if (!(values = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser, parameter, "values")))
+        if (!(values = info_parser
+                           ->alterator_ctl_module_info_parser_get_node_by_name(info_parser, parameter, "values", 2)))
         {
             g_printerr(_("Failed to get enum fields of \"%s\" array elements.\n"), param_name);
             ERR_EXIT();
@@ -8961,7 +9040,7 @@ static int services_module_recursive_get_initial_params(AlteratorCtlServicesModu
                     }
 
                     if (!(default_field_node = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-                              info_parser, values, default_field_name)))
+                              info_parser, values, default_field_name, 2)))
                     {
                         g_printerr(_("Failed to get enum fields of \"%s\" array element with index %lu.\n"),
                                    param_name,
@@ -9004,13 +9083,14 @@ static int services_module_recursive_get_initial_params(AlteratorCtlServicesModu
         {
             GNode *resources = NULL;
             if (!(resources = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-                      info_parser, service_info, SERVICES_ALTERATOR_ENTRY_SERVICE_RESOURCES_TABLE_NAME)))
+                      info_parser, service_info, SERVICES_ALTERATOR_ENTRY_SERVICE_RESOURCES_TABLE_NAME, -1)))
                 return ret;
 
             GNode *resource = NULL;
             if (!(resource = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
                                                                                             resources,
-                                                                                            resource_name)))
+                                                                                            resource_name,
+                                                                                            -1)))
             {
                 g_printerr(_("No service %s resources info.\n"), service_str_id);
                 ERR_EXIT();
@@ -9117,7 +9197,7 @@ static int services_module_get_params_context(AlteratorCtlServicesModule *module
 
     GNode *parameters = NULL;
     if (!(parameters = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-              info_parser, info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME)))
+              info_parser, info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME, -1)))
     {
         g_printerr(_("No service %s initial parameters info.\n"), service_str_id);
         ERR_EXIT();
@@ -9125,7 +9205,7 @@ static int services_module_get_params_context(AlteratorCtlServicesModule *module
 
     GNode *resources = NULL;
     if ((resources = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-             info_parser, info, SERVICES_ALTERATOR_ENTRY_SERVICE_RESOURCES_TABLE_NAME)))
+             info_parser, info, SERVICES_ALTERATOR_ENTRY_SERVICE_RESOURCES_TABLE_NAME, -1)))
     {
         if (services_module_get_param_to_resource_table(module, resources, &params_to_resources) < 0)
             ERR_EXIT();
@@ -9137,7 +9217,7 @@ static int services_module_get_params_context(AlteratorCtlServicesModule *module
         const gchar *param_name          = param_data->node_name;
         GNode *current_param_ctx         = NULL;
         if (!(current_param_ctx = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-                  info_parser, info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME)))
+                  info_parser, info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME, -1)))
         {
             g_printerr(_("No service %s context usage of %s parameter.\n"), service_str_id, param_name);
             ERR_EXIT();
@@ -9747,7 +9827,7 @@ static int services_module_get_service_tests(AlteratorCtlServicesModule *module,
     // No diag tool in service Alterator Entry
     GNode *diag_service_tools_node = NULL;
     if (!(diag_service_tools_node = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-              info_parser, service_info, SERVICES_ALTERATOR_ENTRY_SERVICE_DIAG_TOOLS_TABLE_NAME)))
+              info_parser, service_info, SERVICES_ALTERATOR_ENTRY_SERVICE_DIAG_TOOLS_TABLE_NAME, -1)))
         goto end;
 
     GHashTable *tools_names = g_hash_table_new(g_str_hash, g_str_equal);
@@ -9846,7 +9926,7 @@ static int services_module_get_service_tests(AlteratorCtlServicesModule *module,
         GNode *diag_tool_info       = g_hash_table_lookup(tests_info_table, path->str_value);
         GNode *diag_tool_tests_info = NULL;
         if (!(diag_tool_tests_info = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-                  info_parser, diag_tool_info, DIAG_ALTERATOR_ENTRY_SERVICE_DIAG_TESTS_TABLE_NAME)))
+                  info_parser, diag_tool_info, DIAG_ALTERATOR_ENTRY_SERVICE_DIAG_TESTS_TABLE_NAME, -1)))
         {
             g_printerr(_("Failed to get \"%s\" diag tool tests info.\n"), tool_name);
             ERR_EXIT();
@@ -10019,7 +10099,8 @@ static int diag_list_tests_call(AlteratorCtlModule *diag_module,
             GNode *test_node = NULL;
             if (!(test_node = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
                                                                                              tests_info,
-                                                                                             test_name)))
+                                                                                             test_name,
+                                                                                             -1)))
                 ERR_EXIT();
 
             g_hash_table_insert(tests_table,
@@ -10065,7 +10146,8 @@ static int diag_list_tests_call(AlteratorCtlModule *diag_module,
             GNode *test_node              = NULL;
             if (!(test_node = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
                                                                                              tests_info,
-                                                                                             another_mode_test_name)))
+                                                                                             another_mode_test_name,
+                                                                                             -1)))
                 ERR_EXIT();
 
             if (!g_hash_table_contains(original_mode_tests_table, another_mode_test_name))
@@ -10326,7 +10408,7 @@ static int services_module_get_diag_tools_info(AlteratorCtlServicesModule *modul
 
     GNode *diag_tools_node = NULL;
     if (!(diag_tools_node = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-              info_parser, module->info, SERVICES_ALTERATOR_ENTRY_SERVICE_DIAG_TOOLS_TABLE_NAME)))
+              info_parser, module->info, SERVICES_ALTERATOR_ENTRY_SERVICE_DIAG_TOOLS_TABLE_NAME, -1)))
     {
         g_printerr(_("Failed to get all service \"%s\" tools info. No diagnostics tools.\n"), service_str_id);
         ERR_EXIT();
@@ -10345,7 +10427,8 @@ static int services_module_get_diag_tools_info(AlteratorCtlServicesModule *modul
         GNode *tool_metadata_node = NULL;
         if (!(tool_metadata_node = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
                                                                                                   module->info,
-                                                                                                  tool_name)))
+                                                                                                  tool_name,
+                                                                                                  -1)))
         {
             g_printerr(_("Failed to get all service \"%s\" tools info. Tool \"%s\" doesn't exists.\n"),
                        service_str_id,
@@ -10680,9 +10763,8 @@ static int services_module_get_actual_resourse_value(AlteratorCtlServicesModule 
     }
 
     GNode *resource = NULL;
-    if (!(resource = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
-                                                                                    resources,
-                                                                                    resource_name)))
+    if (!(resource
+          = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser, resources, resource_name, -1)))
         goto end;
 
     toml_value *resource_value = NULL;
@@ -10976,7 +11058,7 @@ static int services_module_find_conflicting_resources_within_current_service(Alt
                                                               (GDestroyNotify) g_hash_table_destroy);
     GNode *resources                  = NULL;
     if (!(resources = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-              info_parser, module->info, SERVICES_ALTERATOR_ENTRY_SERVICE_RESOURCES_TABLE_NAME)))
+              info_parser, module->info, SERVICES_ALTERATOR_ENTRY_SERVICE_RESOURCES_TABLE_NAME, -1)))
         goto end;
 
     for (GNode *resource = resources->children; resource != NULL; resource = g_node_next_sibling(resource))
@@ -11108,7 +11190,7 @@ static int services_module_find_conflicting_services(AlteratorCtlServicesModule 
     }
 
     GNode *resources = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-        info_parser, service_info, SERVICES_ALTERATOR_ENTRY_SERVICE_RESOURCES_TABLE_NAME);
+        info_parser, service_info, SERVICES_ALTERATOR_ENTRY_SERVICE_RESOURCES_TABLE_NAME, 2);
 
     if (!resources || g_node_n_children(resources) == 0)
         goto end;
@@ -11176,7 +11258,7 @@ static int services_module_check_resources_conflicts(AlteratorCtlServicesModule 
 
     GNode *deployed_service_resources = NULL;
     if (!(deployed_service_resources = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-              info_parser, deployed_service_info, SERVICES_ALTERATOR_ENTRY_SERVICE_RESOURCES_TABLE_NAME)))
+              info_parser, deployed_service_info, SERVICES_ALTERATOR_ENTRY_SERVICE_RESOURCES_TABLE_NAME, -1)))
         goto end;
 
     JsonParser *deployed_service_parser    = NULL;
@@ -11322,7 +11404,7 @@ static int services_module_validate_json_params(AlteratorCtlServicesModule *modu
 
     GNode *service_alterator_entry_params = NULL;
     if (!(service_alterator_entry_params = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-              info_parser, service_alterator_entry, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME)))
+              info_parser, service_alterator_entry, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME, -1)))
     {
         g_printerr(_("It is not possible to validate parameters for a service that does not contain them.\n"));
         ERR_EXIT();
@@ -11337,7 +11419,7 @@ static int services_module_validate_json_params(AlteratorCtlServicesModule *modu
         JsonNodeType member_node_type = json_node_get_node_type(member_node);
         GNode *parameter_info         = NULL;
         if (!(parameter_info = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-                  info_parser, service_alterator_entry_params, member_name)))
+                  info_parser, service_alterator_entry_params, member_name, -1)))
         {
             g_printerr(_("Service %s validation parameters failed. The service doesn't have \"%s\" parameter.\n"),
                        service_str_id,

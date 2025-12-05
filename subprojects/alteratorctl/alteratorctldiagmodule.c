@@ -400,16 +400,15 @@ static int diag_module_get_test_display_name(AlteratorGDBusSource *gdbus_source,
 
     // Find the tests table
     if (!(tests_table = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-              info_parser, parsed_tool_alterator_entry, DIAG_ALTERATOR_ENTRY_TESTS_TABLE_NAME)))
+              info_parser, parsed_tool_alterator_entry, DIAG_ALTERATOR_ENTRY_TESTS_TABLE_NAME, -1)))
     {
         g_printerr(_("Can't find tests table for tool %s.\n"), tool_path);
         ERR_EXIT();
     }
 
     // Find the specific test node
-    if (!(test_node = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
-                                                                                     tests_table,
-                                                                                     test_name)))
+    if (!(test_node = info_parser
+                          ->alterator_ctl_module_info_parser_get_node_by_name(info_parser, tests_table, test_name, -1)))
     {
         g_printerr(_("Can't find test %s in tool %s.\n"), test_name, tool_path);
         ERR_EXIT();
@@ -1575,7 +1574,7 @@ static int diag_module_handle_list_tests_results(AlteratorCtlDiagModule *module,
         GNode *tests = NULL;
 
         if (!(tests = system_info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-                  system_info_parser, system_diag_tool_object, DIAG_ALTERATOR_ENTRY_TESTS_TABLE_NAME)))
+                  system_info_parser, system_diag_tool_object, DIAG_ALTERATOR_ENTRY_TESTS_TABLE_NAME, -1)))
         {
             g_printerr(_("Empty tests of diagnostic tool %s in system bus\n"), diag_tool_str_id);
             ERR_EXIT();
@@ -1606,7 +1605,7 @@ static int diag_module_handle_list_tests_results(AlteratorCtlDiagModule *module,
         GNode *tests = NULL;
 
         if (!(tests = session_info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-                  session_info_parser, session_diag_tool_object, DIAG_ALTERATOR_ENTRY_TESTS_TABLE_NAME)))
+                  session_info_parser, session_diag_tool_object, DIAG_ALTERATOR_ENTRY_TESTS_TABLE_NAME, -1)))
         {
             g_printerr(_("Empty tests of diagnostic tool %s in session bus\n"), diag_tool_str_id);
             ERR_EXIT();
@@ -2426,7 +2425,7 @@ static int diag_module_run_test(AlteratorCtlDiagModule *module,
     }
 
     g_variant_get(d_ctx->result, "(i)", result);
-    test_result test_result     = *result;
+    test_result test_result     = (*result) <= 2 ? *result : FAIL;
     const gchar *status_message = test_result == PASS ? _("[PASS]") : (test_result == FAIL ? _("[FAIL]") : _("[WARN]"));
     text_color status_color     = test_result == PASS ? GREEN : (test_result == FAIL ? RED : YELLOW);
     colored_status              = colorize_text(status_message, status_color);

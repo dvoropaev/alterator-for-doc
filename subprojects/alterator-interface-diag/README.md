@@ -1,19 +1,19 @@
-- [1. Интерфейсы org.altlinux.alterator.diagX](#1-интерфейсы-rubasealtalteratordiagx)
-	- [1.1. Специцикация интерфейса org.altlinux.alterator.diag1](#11-специцикация-интерфейса-rubasealtalteratordiag1)
-		- [1.1.1. Методы](#111-методы)
-			- [1.1.1.1. Info](#1111-info)
-			- [1.1.1.2. List](#1112-list)
-			- [1.1.1.3. Report](#1113-report)
-			- [1.1.1.4. Run](#1114-run)
-		- [1.1.2. Сигналы](#112-сигналы)
-			- [1.1.2.1. diag1\_stderr\_signal](#1121-diag1_stderr_signal)
-			- [1.1.2.2. diag1\_stdout\_signal](#1122-diag1_stdout_signal)
+- [1. Интерфейсы org.altlinux.alterator.diagX](#1-интерфейсы-org-altlinux-alterator-diagx)
+	- [1.1. Спецификация интерфейса org.altlinux.alterator.diag1](#1-1-спецификация-интерфейса-org-altlinux-alterator-diag1)
+		- [1.1.1. Методы](#1-1-1-методы)
+			- [1.1.1.1. Info](#1-1-1-1-info)
+			- [1.1.1.2. List](#1-1-1-2-list)
+			- [1.1.1.3. Report](#1-1-1-3-report)
+			- [1.1.1.4. Run](#1-1-1-4-run)
+		- [1.1.2. Сигналы](#1-1-2-сигналы)
+			- [1.1.2.1. diag1\_stderr\_signal](#1-1-2-1-diag1_stderr_signal)
+			- [1.1.2.2. diag1\_stdout\_signal](#1-1-2-2-diag1_stdout_signal)
 
 # 1. Интерфейсы org.altlinux.alterator.diagX
 
 Интерфейсы `diag` предназначены для взаимодействия с инструментами диагностики.
 
-## 1.1. Специцикация интерфейса org.altlinux.alterator.diag1
+## 1.1. Спецификация интерфейса org.altlinux.alterator.diag1
 
 Данный интерфейс должен быть реализован для каждого инструмента диагностики. 
 
@@ -23,7 +23,7 @@
 
 #### 1.1.1.1. Info
 
-Метод `Info () -> (Array of [Byte] stdout_bytes, Int32 response)` предназначен для предоставления информации об инструменте диагностики, представленном данным объектом, в формате [Alterator Entry](https://gitlab.basealt.space/alt/alterator-entry/-/blob/master/doc/README.md) (сущность типа `Diag`). Результатом выполнения метода является пара массива байтов `stdout_bytes`, который содержит Alterator Entry, и целочисленного числа `response`, отражающего код возврата метода. 
+Метод `Info () -> (Array of [Byte] stdout_bytes, Int32 response)` предназначен для предоставления информации об инструменте диагностики, представленном данным объектом, в формате [Alterator Entry](https://altlinux.space/alterator/alterator-entry/src/branch/master/doc#сущность-типа-diag-или-diagnostictool) (сущность типа `Diag`). Результатом выполнения метода является пара массива байтов `stdout_bytes`, который содержит Alterator Entry, и целочисленного числа `response`, отражающего код возврата метода. 
 
 #### 1.1.1.2. List
 
@@ -35,7 +35,16 @@
 
 #### 1.1.1.4. Run
 
-Метод `Run (String param) -> (Int32 response)` должен выполнять тест `param` данного инструмента. Входной строковый аргумент `param` позволяет указать название теста, а выходной параметр `response` &mdash; целое число, код возврата метода.
+Метод `Run (String param) -> (Int32 response)` должен выполнять тест `param` данного инструмента. Входной строковый аргумент `param` позволяет указать название теста, а выходной параметр `response` &mdash; целое число, код возврата метода.   
+Предусмотрены следующие коды возврата:
+
+| **Число** | **Значение**   |
+|:----------|:---------------|
+| `0`     	| успех 	     |
+| `2`       | предупреждение |
+| ...    	| ошибка         |
+
+
 
 ### 1.1.2. Сигналы
 

@@ -27,63 +27,68 @@
 <context>
     <name>ActionWizard</name>
     <message>
-        <location filename="../src/ui/wizard/ActionWizard.cpp" line="70"/>
+        <location filename="../src/ui/wizard/ActionWizard.cpp" line="86"/>
         <source>&amp;Import...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/ActionWizard.cpp" line="71"/>
-        <source>&amp;Export...</source>
+        <location filename="../src/ui/wizard/ActionWizard.cpp" line="87"/>
+        <source>&amp;Export parameters...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/ActionWizard.cpp" line="72"/>
+        <location filename="../src/ui/wizard/ActionWizard.cpp" line="88"/>
+        <source>&amp;Save journal...</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/wizard/ActionWizard.cpp" line="89"/>
         <source>Import previously saved options</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/ActionWizard.cpp" line="73"/>
+        <location filename="../src/ui/wizard/ActionWizard.cpp" line="90"/>
         <source>Save all the selected options for future reuse</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/ActionWizard.cpp" line="77"/>
+        <location filename="../src/ui/wizard/ActionWizard.cpp" line="94"/>
         <source>Import saved parameters</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/ActionWizard.cpp" line="159"/>
+        <location filename="../src/ui/wizard/ActionWizard.cpp" line="163"/>
         <source>Warning</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/ActionWizard.cpp" line="160"/>
+        <location filename="../src/ui/wizard/ActionWizard.cpp" line="164"/>
         <source>This file contains %1 for &quot;%2&quot;, but the wizard contains %3 for &quot;%4&quot;.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/ActionWizard.cpp" line="165"/>
+        <location filename="../src/ui/wizard/ActionWizard.cpp" line="169"/>
         <source>Do you want to continue importing?</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/ActionWizard.cpp" line="179"/>
-        <location filename="../src/ui/wizard/ActionWizard.cpp" line="192"/>
+        <location filename="../src/ui/wizard/ActionWizard.cpp" line="183"/>
+        <location filename="../src/ui/wizard/ActionWizard.cpp" line="196"/>
         <source>Cannot apply parameters</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/ActionWizard.cpp" line="180"/>
+        <location filename="../src/ui/wizard/ActionWizard.cpp" line="184"/>
         <source>Service is already deployed and it does not support force deployment.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/ActionWizard.cpp" line="193"/>
+        <location filename="../src/ui/wizard/ActionWizard.cpp" line="197"/>
         <source>&quot;%1&quot; is impossible because service is not deployed.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/ActionWizard.cpp" line="261"/>
+        <location filename="../src/ui/wizard/ActionWizard.cpp" line="264"/>
         <source>Export current parameters</source>
         <translation></translation>
     </message>
@@ -98,6 +103,19 @@
     <message>
         <location filename="../src/ui/wizard/03-parameters/forms/editors/detailed/ArrayEditor.ui" line="80"/>
         <source>Remove</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
+    <name>BoolEditor</name>
+    <message>
+        <location filename="../src/ui/wizard/03-parameters/forms/editors/compact/BoolEditor.cpp" line="12"/>
+        <source>Yes</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/wizard/03-parameters/forms/editors/compact/BoolEditor.cpp" line="12"/>
+        <source>No</source>
         <translation></translation>
     </message>
 </context>
@@ -329,49 +347,49 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/controller/Controller.cpp" line="265"/>
+        <location filename="../src/controller/Controller.cpp" line="268"/>
         <source>Starting service</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/controller/Controller.cpp" line="280"/>
-        <location filename="../src/controller/Controller.cpp" line="292"/>
-        <location filename="../src/controller/Controller.cpp" line="306"/>
+        <location filename="../src/controller/Controller.cpp" line="286"/>
+        <location filename="../src/controller/Controller.cpp" line="298"/>
+        <location filename="../src/controller/Controller.cpp" line="312"/>
         <source>Error</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/controller/Controller.cpp" line="280"/>
+        <location filename="../src/controller/Controller.cpp" line="286"/>
         <source>%1 failed.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/controller/Controller.cpp" line="317"/>
+        <location filename="../src/controller/Controller.cpp" line="323"/>
         <source>Premilinary diagnostics</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/controller/Controller.cpp" line="317"/>
+        <location filename="../src/controller/Controller.cpp" line="323"/>
         <source>Post-diagnostics</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/controller/Controller.cpp" line="363"/>
+        <location filename="../src/controller/Controller.cpp" line="369"/>
         <source>Diagnostic tool &quot;%1&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/controller/Controller.cpp" line="371"/>
+        <location filename="../src/controller/Controller.cpp" line="377"/>
         <source>Running test &quot;%1&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/controller/Controller.cpp" line="292"/>
+        <location filename="../src/controller/Controller.cpp" line="298"/>
         <source>Failed to start service</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/controller/Controller.cpp" line="306"/>
+        <location filename="../src/controller/Controller.cpp" line="312"/>
         <source>Failed to stop service</source>
         <translation></translation>
     </message>
@@ -390,8 +408,25 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/controller/DBusProxy.cpp" line="395"/>
-        <source>Test failed</source>
+        <location filename="../src/controller/DBusProxy.cpp" line="403"/>
+        <location filename="../src/controller/DBusProxy.cpp" line="407"/>
+        <location filename="../src/controller/DBusProxy.cpp" line="411"/>
+        <source>Test result:</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/controller/DBusProxy.cpp" line="403"/>
+        <source>Success</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/controller/DBusProxy.cpp" line="407"/>
+        <source>Warning</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/controller/DBusProxy.cpp" line="411"/>
+        <source>Error</source>
         <translation></translation>
     </message>
 </context>
@@ -543,7 +578,7 @@ You may want to undeploy the conflicting services, or reconfigure them, if their
     </message>
     <message>
         <location filename="../src/ui/wizard/05-progress/LogWidget.cpp" line="280"/>
-        <source>Export journal...</source>
+        <source>&amp;Save journal...</source>
         <translation></translation>
     </message>
     <message>
@@ -876,6 +911,19 @@ You may want to undeploy the conflicting services, or reconfigure them, if their
     </message>
 </context>
 <context>
+    <name>PasswordEditor</name>
+    <message>
+        <location filename="../src/ui/wizard/03-parameters/forms/editors/compact/PasswordEditor.cpp" line="19"/>
+        <source>Password</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/wizard/03-parameters/forms/editors/compact/PasswordEditor.cpp" line="20"/>
+        <source>Confirmation</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
     <name>QObject</name>
     <message>
         <location filename="../src/data/models/ResourceModel.cpp" line="154"/>
@@ -893,37 +941,37 @@ You may want to undeploy the conflicting services, or reconfigure them, if their
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/controller/Controller.cpp" line="405"/>
+        <location filename="../src/controller/Controller.cpp" line="415"/>
         <source>Configuration</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/controller/Controller.cpp" line="406"/>
+        <location filename="../src/controller/Controller.cpp" line="416"/>
         <source>Deployment</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/controller/Controller.cpp" line="407"/>
+        <location filename="../src/controller/Controller.cpp" line="417"/>
         <source>Undeployment</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/controller/Controller.cpp" line="408"/>
+        <location filename="../src/controller/Controller.cpp" line="418"/>
         <source>Diagnostic</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/controller/Controller.cpp" line="409"/>
+        <location filename="../src/controller/Controller.cpp" line="419"/>
         <source>Backup</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/controller/Controller.cpp" line="410"/>
+        <location filename="../src/controller/Controller.cpp" line="420"/>
         <source>Restore</source>
         <translation></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/data/Property.cpp" line="99"/>
+        <location filename="../src/data/Property.cpp" line="93"/>
         <source>List should have at least %n element</source>
         <translation>
             <numerusform>List should have at least %n element</numerusform>
@@ -931,7 +979,7 @@ You may want to undeploy the conflicting services, or reconfigure them, if their
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/data/Property.cpp" line="102"/>
+        <location filename="../src/data/Property.cpp" line="96"/>
         <source>List should not have more than %n element</source>
         <translation>
             <numerusform>List should not have more than %n element</numerusform>
@@ -939,64 +987,59 @@ You may want to undeploy the conflicting services, or reconfigure them, if their
         </translation>
     </message>
     <message>
-        <location filename="../src/data/Property.cpp" line="106"/>
-        <location filename="../src/data/Property.cpp" line="132"/>
+        <location filename="../src/data/Property.cpp" line="100"/>
+        <location filename="../src/data/Property.cpp" line="126"/>
         <source>Some of the items are invalid</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/data/Property.cpp" line="115"/>
+        <location filename="../src/data/Property.cpp" line="109"/>
         <source>One of variants should be selected</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/data/Property.cpp" line="118"/>
+        <location filename="../src/data/Property.cpp" line="112"/>
         <source>Additional data for the selected variant is not valid</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/data/Property.cpp" line="124"/>
+        <location filename="../src/data/Property.cpp" line="118"/>
         <source>More than one items are selected. This is an internal error. Please re-select an item.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/data/Property.cpp" line="141"/>
+        <location filename="../src/data/Property.cpp" line="135"/>
         <source>The string should not be empty</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/data/Property.cpp" line="144"/>
+        <location filename="../src/data/Property.cpp" line="138"/>
         <source>Invalid input</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/data/Property.cpp" line="154"/>
+        <location filename="../src/data/Property.cpp" line="141"/>
+        <source>Passwords not matching</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/data/Property.cpp" line="152"/>
         <source>The number should be between %1 and %2</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/data/Property.cpp" line="171"/>
+        <location filename="../src/data/Property.cpp" line="169"/>
         <source>Resource &apos;%0&apos; conflicts with &apos;%1&apos;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/data/Property.cpp" line="177"/>
+        <location filename="../src/data/Property.cpp" line="175"/>
         <source>Resource &apos;%0&apos; conflicts with &apos;%1&apos; of an already deployed service &apos;%2&apos;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/data/Property.cpp" line="204"/>
+        <location filename="../src/data/Property.cpp" line="202"/>
         <source>Item</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/ui/wizard/03-parameters/forms/editors/compact/PrimitiveEditor.cpp" line="118"/>
-        <source>Yes</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/ui/wizard/03-parameters/forms/editors/compact/PrimitiveEditor.cpp" line="118"/>
-        <source>No</source>
         <translation></translation>
     </message>
     <message>
@@ -1244,32 +1287,32 @@ Click to highlight it.</source>
 <context>
     <name>ServiceModel</name>
     <message>
-        <location filename="../src/data/models/ServiceModel.cpp" line="49"/>
+        <location filename="../src/data/models/ServiceModel.cpp" line="51"/>
         <source>Deployed</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/data/models/ServiceModel.cpp" line="49"/>
+        <location filename="../src/data/models/ServiceModel.cpp" line="51"/>
         <source>Not deployed</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/data/models/ServiceModel.cpp" line="51"/>
+        <location filename="../src/data/models/ServiceModel.cpp" line="53"/>
         <source>started</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/data/models/ServiceModel.cpp" line="51"/>
+        <location filename="../src/data/models/ServiceModel.cpp" line="53"/>
         <source>stopped</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/data/models/ServiceModel.cpp" line="64"/>
+        <location filename="../src/data/models/ServiceModel.cpp" line="66"/>
         <source>Service</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/data/models/ServiceModel.cpp" line="70"/>
+        <location filename="../src/data/models/ServiceModel.cpp" line="72"/>
         <source>State</source>
         <translation></translation>
     </message>

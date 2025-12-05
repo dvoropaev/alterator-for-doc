@@ -31,3 +31,6 @@ stdout_bytes = true
 exit_status = true
 stdout_byte_limit = 200000
 action_id = "Report"
+
+[methods.Run.environment.service_deploy_mode]
+[methods.List.environment.service_deploy_mode]

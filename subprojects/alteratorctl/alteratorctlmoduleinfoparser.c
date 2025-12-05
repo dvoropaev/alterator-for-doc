@@ -29,7 +29,10 @@ static int alterator_ctl_module_info_parser_create_names_by_dbus_paths_table(gpo
                                                                              gpointer gdbus_source,
                                                                              const gchar *iface);
 
-static GNode *alterator_ctl_module_info_parser_get_node_by_name(gpointer self, GNode *root, const gchar *name);
+static GNode *alterator_ctl_module_info_parser_get_node_by_name(gpointer self,
+                                                                GNode *root,
+                                                                const gchar *name,
+                                                                guint depth);
 
 static gboolean alterator_ctl_module_info_parser_find_table(
     gpointer self, GNode *root, GHashTable **result, guint depth, const gchar *first_table_name, ...);
@@ -297,7 +300,10 @@ end:
     return ret;
 }
 
-static GNode *alterator_ctl_module_info_parser_get_node_by_name(gpointer self, GNode *root, const gchar *name)
+static GNode *alterator_ctl_module_info_parser_get_node_by_name(gpointer self,
+                                                                GNode *root,
+                                                                const gchar *name,
+                                                                guint depth)
 {
     GNode *result = NULL;
     if (!self)
@@ -319,7 +325,7 @@ static GNode *alterator_ctl_module_info_parser_get_node_by_name(gpointer self, G
     }
 
     gpointer params[] = {(gpointer) &result, (gpointer) &name};
-    g_node_traverse(root, G_IN_ORDER, G_TRAVERSE_ALL, -1, alterator_ctl_module_info_parser_find_node_callback, params);
+    g_node_traverse(root, G_IN_ORDER, G_TRAVERSE_ALL, depth, alterator_ctl_module_info_parser_find_node_callback, params);
 
     return result;
 }

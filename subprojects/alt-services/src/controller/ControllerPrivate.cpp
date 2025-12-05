@@ -147,7 +147,8 @@ Parameter* findOverride(const QString& paramName, const QVariant& defaultValue) 
         auto& override = override_it->second;
         if (override->defaultValue()->get().isNull())
             override->defaultValue()->set(defaultValue);
-            return override;
+
+        return override;
     }
 
     return nullptr;
@@ -212,7 +213,7 @@ void buildDefault(const toml::value& data, Property::Value* value){
     }
 }
 
-bool buildAllowed(QString name, const toml::ordered_table& data, Property* property) {
+bool buildAllowed(const QString& name, const toml::ordered_table& data, Property* property) {
     switch ( property->valueType() ) {
         case Parameter::Type::String: {
             const std::string* pattern = nullptr;
@@ -250,7 +251,7 @@ bool buildAllowed(QString name, const toml::ordered_table& data, Property* prope
 PropertyPtr buildProperty(const QString& name, const toml::ordered_table& data, Property::Type parentType = Property::Type::Composite) noexcept;
 
 ParameterPtr buildParameter(const QString& name, const toml::ordered_table& data) noexcept;
-PropertyPtr getPrototype(Property::Type type, const toml::ordered_table& parameterData, QString name, Property::Type parentType = Property::Type::Composite){
+PropertyPtr getPrototype(Property::Type type, const toml::ordered_table& parameterData, const QString& name, Property::Type parentType = Property::Type::Composite){
     const std::string* prototypeName = nullptr;
 
     if ( type == Property::Type::Composite || type == Property::Type::Enum )
@@ -303,7 +304,7 @@ PropertyPtr getPrototype(Property::Type type, const toml::ordered_table& paramet
 
     if ( !buildAllowed(name, parameterData, res.get()) )
         return {};
-    return std::move(res);
+    return res;
 }
 
 PropertyPtr buildProperty(const QString& name, const toml::ordered_table& propData, Property::Type parentType) noexcept {
@@ -405,7 +406,7 @@ PropertyPtr buildProperty(const QString& name, const toml::ordered_table& propDa
         buildDefault(propData.at(keys::param::key_default), result->defaultValue());
     } catch (...){}
 
-    return std::move(result);
+    return result;
 }
 
 ParameterPtr buildParameter(const QString& name, const toml::ordered_table& data) noexcept {
@@ -525,7 +526,7 @@ ResourcePtr buildResource(const QString& name, const toml::ordered_table& res_da
     if ( overridingParameter )
         overridingParameter->setResource(result.get());
 
-    return std::move(result);
+    return result;
 }
 
 using TestFlags = std::map<QString, std::pair<DiagTool::Test::Modes, DiagTool::Test::Modes>>;

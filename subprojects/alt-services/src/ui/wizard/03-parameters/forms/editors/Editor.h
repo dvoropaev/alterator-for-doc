@@ -14,6 +14,14 @@ public:
     virtual void fill() = 0;
     inline const BaseForm& form() const { return m_form; }
 
+    bool isRequired() const
+    {
+        if ( auto parameter = dynamic_cast<Parameter*>(m_value->property()) )
+            return parameter->required() & m_form.contexts();
+
+        return m_value->property()->isRequired();
+    }
+
 signals:
     void aboutToChange();
     void changed();
@@ -24,18 +32,18 @@ protected:
         , m_form{form}
     {}
 
-    Editor(Editor& other)
+    explicit Editor(Editor& other)
         : m_value{other.value()}
         , m_form{other.m_form}
     {}
 
-    Property::Value* m_value;
-    QWidget* m_widget;
+    Property::Value* m_value{};
+    QWidget* m_widget{};
 
     const BaseForm& m_form;
 };
 
 using EditorPtr = std::unique_ptr<Editor>;
 
-EditorPtr createEditor(const BaseForm& form, Property::Value* value, QWidget* parent, Parameter::Contexts context, bool compact = false, bool array = false);
+EditorPtr createEditor(const BaseForm& form, Property::Value* value, QWidget* parent, bool compact = false, bool array = false);
 

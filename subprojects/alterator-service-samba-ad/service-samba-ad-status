@@ -51,7 +51,7 @@ get_mdb_size() {
     local db_name=
     local db_size=
     db_name="$(tdbdump $path_to_sam_db | grep sam.ldb.d | cut -f 2 -d ":" | cut -f 1 -d "\\" | cut -f 2 -d "/")"
-    db_size_bite=$(mdb_stat -ne "$path_to_db/CN=CONFIGURATION,$db_name" | grep "Map size" |  cut -f 5 -d " ")
+    db_size_bite=$(mdb_stat -ne "$path_to_db/$db_name" | grep "Map size" |  cut -f 5 -d " ")
     to_gigabyte=$((1024 * 1024 * 1024))
     db_size=$(echo "scale=0; $db_size_bite / $to_gigabyte" | bc)
     echo $db_size
@@ -78,7 +78,7 @@ get_site_name() {
     local site_name=
     local retval=0
 
-    domain_info="$(samba-tool domain info 127.0.0.1)" || retval=1
+    domain_info="$(samba-tool domain info 127.0.0.1 2>/dev/null)" || retval=1
     if [ $retval -ne 0 ]; then
         echo "Default-First-Site-Name"
     else
@@ -158,7 +158,7 @@ get_dns_backend() {
 
 get_forwarders_samba_internal() {
     local forwarders=
-    forwarders=$(grep '^\s*forwarders\s*=' "$SMB_CONF" | awk -F= '{gsub(/^[ \t]+|[ \t]+$/, "", $2); print $2}' | sed 's/\[//g; s/\]//g') || retval=1
+    forwarders=$(grep '^\s*dns forwarder\s*=' "$SMB_CONF" | awk -F= '{gsub(/^[ \t]+|[ \t]+$/, "", $2); print $2}' | sed 's/\[//g; s/\]//g') || retval=1
     if [ -z "$forwarders" ]; then
         forwarders=""
     fi
@@ -216,6 +216,19 @@ get_listen_on_bind9_ipv6() {
     return 0
 }
 
+get_dnssec_validation() {
+    local dnssec_validation=
+    dnssec_validation=$(grep '^\s*dnssec-validation\s*' /etc/bind/options.conf | awk '{gsub(/^[ \t]+|[ \t]+$/, "", $2); print $2}' | sed 's/;//g') || retval=1
+    case "$dnssec_validation" in
+        yes|true) dnssec_validation="true" ;;
+        no|false) dnssec_validation="false" ;;
+        *) ;;
+    esac
+
+    echo "$dnssec_validation"
+    return 0
+}
+
 update_bind_settings() {
     local key="$1"
     local value=$2
@@ -225,10 +238,31 @@ update_bind_settings() {
     tmp_file=$(mktemp)
 
     if [ "$is_array" = "true" ]; then
-        jq --arg key "$key" --arg value "$value" '.dnsSettings.bindSettings[$key] |= if $value == "" then [] else ($value | split(" ") | map(select(. != "")) | unique) end' "$STATUS_FILE" > "$tmp_file"
+        jq --arg key "$key" --arg value "$value" '.dnsSettings.dnsBackend.BIND9_DLZ.bindSettings.[$key] |= if $value == "" then [] else ($value | split(" ") | map(select(. != "")) | unique) end' "$STATUS_FILE" > "$tmp_file"
     else
-        jq --arg key "$key" --arg value "$value" '.dnsSettings.bindSettings.[$key] = $value' "$STATUS_FILE" > "$tmp_file"
+        jq --arg key "$key" --arg value "$value" '.dnsSettings.dnsBackend.BIND9_DLZ.bindSettings.[$key] = $value' "$STATUS_FILE" > "$tmp_file"
     fi
+
+    mv "$tmp_file" "$STATUS_FILE"
+
+    return 0
+}
+
+remove_array(){
+    local path="$1"
+    local tmp_file=
+    tmp_file=$(mktemp)
+
+    jq --arg p "$path" '
+        def path_to_array($p):
+            ($p | ltrimstr(".") | split(".")) ;
+
+        def remove_path($path):
+            delpaths([$path]);
+
+        (path_to_array($p)) as $pa
+        | remove_path($pa)
+    ' "$STATUS_FILE" > "$tmp_file"
 
     mv "$tmp_file" "$STATUS_FILE"
 
@@ -390,49 +424,71 @@ update_status() {
     local allowed_recursion_subnets=
     local retval=0
 
-    realm=$(get_realm) || retval=1
-    netBiosName="$(get_netbios_domain_name)" || retval=1
-    siteName="$(get_site_name)" || retval=1
-    functionalLevel="$(get_functional_level)" || retval=1
-    serverRole="$(get_server_role)" || retval=1
-    useRfc2307="$(get_rfc2307)" || retval=1
-    dnsBackend="$(get_dns_backend)" || retval=1
-    backendStore="$(get_samba_db_type)" || retval=1
-    deployed="$(get_deployed)" || retval=1
-    started="$(unit_enabled "$dnsBackend")" || retval=1
-    if [ "$backendStore" = "mdb" ]; then
-        backendStoreSize="$(get_mdb_size)" || retval=1
-        update_status_help "backendStoreSize" $backendStoreSize
-    fi
-    if [ "$dnsBackend" = "SAMBA_INTERNAL" ]; then
-        forwarders="$(get_forwarders_samba_internal)" || retval=1
+    if [ ! -f "$STATUS_FILE" ]; then
+        echo "{}" > "$STATUS_FILE"
     else
-        forwarders="$(get_forwarders_bind9_dlz)" || retval=1
-        listen_on_ipv4="$(get_listen_on_bind9_ipv4) "|| retval=1
-        listen_on_ipv6="$(get_listen_on_bind9_ipv6)" || retval=1
-        allowed_query_subnets="$(get_allowed_query_subnets)" || retval=1
-        allowed_recursion_subnets="$(get_allowed_recursion_subnets)" || retval=1
-        update_bind_settings "listenOn" "$listen_on_ipv4" "true"
-        update_bind_settings "listenOnV6" "$listen_on_ipv6" "true"
-        update_bind_settings "allowQuery" "$allowed_query_subnets" "true"
-        update_bind_settings "allowRecursion" "$allowed_recursion_subnets" "true"
+        realm=$(get_realm) || retval=1
+        netBiosName="$(get_netbios_domain_name)" || retval=1
+        
+        siteName="$(get_site_name)" || retval=1
+        functionalLevel="$(get_functional_level)" || retval=1
+        serverRole="$(get_server_role)" || retval=1
+        useRfc2307="$(get_rfc2307)" || retval=1
+        dnsBackend="$(get_dns_backend)" || retval=1
+        backendStore="$(get_samba_db_type)" || retval=1
+        deployed="$(get_deployed)" || retval=1
+        started="$(unit_enabled "$dnsBackend")" || retval=1
+        if [ "$backendStore" = "mdb" ]; then
+            backendStoreSize="$(get_mdb_size)" || retval=1
+            update_status_help "backendStoreSize" $backendStoreSize
+        fi
+        if [ "$dnsBackend" = "SAMBA_INTERNAL" ]; then
+            forwarders="$(get_forwarders_samba_internal)" || retval=1
+        else
+            forwarders="$(get_forwarders_bind9_dlz)" || retval=1
+            listen_on_ipv4="$(get_listen_on_bind9_ipv4) "|| retval=1
+            listen_on_ipv6="$(get_listen_on_bind9_ipv6)" || retval=1
+            allowed_query_subnets="$(get_allowed_query_subnets)" || retval=1
+            allowed_recursion_subnets="$(get_allowed_recursion_subnets)" || retval=1
+            dnssec_validation="$(get_dnssec_validation)" || retval=1
+            update_bind_settings "listenOn" "$listen_on_ipv4" "true"
+            update_bind_settings "listenOnV6" "$listen_on_ipv6" "true"
+            update_bind_settings "dnssecValidation" "$dnssec_validation"
+            if [ -n "$allowed_query_subnets" ]; then
+              update_bind_settings "allowQuery" "$allowed_query_subnets" "true"
+            else
+                remove_array "dnsSettings.dnsBackend.BIND9_DLZ.bindSettings.allowQuery"
+            fi
+            if [ -n "$allowed_recursion_subnets" ]; then
+              update_bind_settings "allowRecursion" "$allowed_recursion_subnets" "true"
+            else
+                remove_array "dnsSettings.dnsBackend.BIND9_DLZ.bindSettings.allowRecursion"
+            fi
+        fi
+        if [ $deployed = "true" ]; then
+            update_status_help "realm" "$realm"
+            update_status_help "netBiosName" "$netBiosName" 
+            update_status_help "siteName" "$siteName" 
+            update_enum_value "functionalLevel" "$functionalLevel" 
+            update_enum_value "serverRole" "$serverRole" 
+            update_status_help "useRfc2307" $useRfc2307
+            update_enum_value "backendStore" "$backendStore" 
+            update_enum_value  "dnsSettings.dnsBackend" "$dnsBackend"
+            update_status_help "deployed" $deployed
+            update_status_help "started" $started
+            if [ -n "$forwarders" ]; then   
+                update_status_help "forwarders" "$forwarders" "dnsSettings" "true"
+            else
+                remove_array "dnsSettings.forwarders"
+            fi
+        else
+            update_status_help "deployed" $deployed
+        fi
+        remove_bool_quotes
     fi
-
-    update_status_help "realm" "$realm"
-    update_status_help "netBiosName" "$netBiosName" 
-    update_status_help "siteName" "$siteName" 
-    update_enum_value "functionalLevel" "$functionalLevel" 
-    update_enum_value "serverRole" "$serverRole" 
-    update_status_help "useRfc2307" $useRfc2307
-    update_enum_value "backendStore" "$backendStore" 
-    update_enum_value  "dnsSettings.dnsBackend" "$dnsBackend"
-    update_status_help "deployed" $deployed
-    update_status_help "started" $started
-    update_status_help "forwarders" "$forwarders" "dnsSettings" "true"
-
-    remove_bool_quotes
 
     status_output="$(cat "$STATUS_FILE")"
+
     echo "$status_output"
 
     exit 0

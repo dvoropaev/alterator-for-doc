@@ -78,7 +78,10 @@ typedef struct
                                                                              gpointer gdbus_source,
                                                                              const gchar *iface);
 
-    GNode *(*alterator_ctl_module_info_parser_get_node_by_name)(gpointer self, GNode *root, const gchar *name);
+    GNode *(*alterator_ctl_module_info_parser_get_node_by_name)(gpointer self,
+                                                                GNode *root,
+                                                                const gchar *name,
+                                                                guint depth);
 
     // Depth = -1 -> unlimited depth
     gboolean (*alterator_ctl_module_info_parser_find_table)(

@@ -23,22 +23,22 @@ public:
 
     void setLocale(const QLocale& locale) const override;
 
-    inline const QString& dbusPath(){ return m_dbusPath; }
+    inline const QString& dbusPath() const { return m_dbusPath; }
 
-    const QIcon& icon();
+    const QIcon& icon() const;
 
-    inline bool isDiagMissing() {return m_diagNotFound;}
+    inline bool isDiagMissing() const {return m_diagNotFound;}
     inline bool isForceDeployable() const {return m_force_deployable;}
     inline bool isDeployed() const {return m_deployed;}
     inline bool isStarted() const {return m_started;}
 
-    const PtrVector<Parameter>& parameters();
-    const PtrVector<Resource>& resources();
-    const PtrVector<DiagTool>& diagTools();
+    const PtrVector<Parameter>& parameters() const;
+    const PtrVector<Resource>& resources() const;
+    const PtrVector<DiagTool>& diagTools() const;
 
-    QJsonObject getParameters(Parameter::Contexts ctx, bool excludePasswords = false);
+    QJsonObject getParameters(Parameter::Contexts ctx, bool excludePasswords = false) const;
 
-    bool hasConflict(Service* another, Resource* theirs, Resource** ours);
+    bool hasConflict(const Service* another, const Resource* theirs, const Resource** ours) const;
 
     bool tryFill(QJsonObject o, Parameter::Contexts ctx);
 
@@ -51,14 +51,14 @@ protected:
     friend class Controller;
     void setStatus(int code, const QByteArray& data);
 private:
+    class Private;
+    Private* d{};
+
     QString m_dbusPath;
     const bool m_force_deployable;
     bool m_deployed{false};
     bool m_started{false};
     bool m_diagNotFound{false};
-
-    class Private;
-    Private* d;
 };
 
 class DiagTool : public TranslatableObject {
@@ -81,7 +81,7 @@ public:
             , m_icon{QIcon::fromTheme(iconName)}
         {}
 
-        inline DiagTool* tool() { return m_tool; }
+        inline DiagTool* tool() const { return m_tool; }
 
         inline const Modes& mode()     const { return m_modes;    }
         inline const Modes& required() const { return m_required; }
@@ -122,8 +122,8 @@ public:
         : TranslatableObject{name,locales}
         , m_session{session}
         , m_path{path}
-        , m_parameters{std::move(parameters)}
         , m_tests{std::move(tests)}
+        , m_parameters{std::move(parameters)}
         , m_icon{QIcon::fromTheme(iconName)}
     {
         for ( const auto& test : m_tests )
@@ -147,12 +147,12 @@ public:
         );
     }
 
-    inline bool isMissingParams(){ return m_params_missing; }
+    inline bool isMissingParams() const { return m_params_missing; }
 
     void setLocale(const QLocale& locale) const override {
-        for ( auto& param : m_parameters )
+        for ( const auto& param : m_parameters )
             param->setLocale(locale);
-        for ( auto& test : m_tests )
+        for ( const auto& test : m_tests )
             test->setLocale(locale);
         TranslatableObject::setLocale(locale);
     }

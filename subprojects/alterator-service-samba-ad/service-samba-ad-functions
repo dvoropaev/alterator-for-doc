@@ -1,0 +1,253 @@
+#!/usr/bin/env bash
+# Samba active directory provision
+# Tool for provision samba active directory
+#
+# Copyright (C) 2024 Evgenii Sozonov <arzdez@altlinux.org>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# shellcheck disable=SC2034
+# shellcheck disable=SC1091
+# shellcheck disable=SC2086
+# shellcheck disable=SC2317
+# shellcheck disable=SC3037
+
+set -euo pipefail
+
+get_json_value() {
+    local json="$1"
+    local key="$2"
+    local path="${3:-.}"
+
+    echo "$json" | jq -r --arg k "$key" "$path[\$k]"
+}
+
+get_object_key() {
+    local json="$1"
+    local path="${2:-.}"
+
+    echo "$json" | jq -r "$path | keys_unsorted[0]"
+}
+
+backup_config() {
+    local config_file="$1"
+    local type="$2"
+    local is_bind_config="${3:-false}"
+    local backup_dir="/var/lib/alterator/service/samba-ad/config-backup"
+    local backup_file=
+
+    if [ "$is_bind_config" = "true" ]; then
+        if [ ! -d "$backup_dir/bind" ]; then
+            mkdir -p "$backup_dir/bind"
+        fi
+        backup_dir="$backup_dir/bind"
+    else
+        if [ ! -d "$backup_dir" ]; then
+            mkdir -p "$backup_dir"
+        fi
+    fi
+
+    backup_file="$backup_dir/$(basename $config_file).$type"
+
+    if [ -f "$config_file" ]; then
+        if [ "$is_bind_config" = "true" ]; then
+            cp -f "$config_file" "$backup_file"
+        else 
+            mv -u "$config_file" "$backup_file"
+        fi
+    else
+        echo "File $config_file not found, skipping backup."
+    fi
+
+    return 0
+}
+
+restore_config() {
+    local backup_file="$1"
+    local config_file="$2"
+    local type="$3"
+    local is_bind_config="${4:-false}"
+    local backup_dir="/var/lib/alterator/service/samba-ad/config-backup"
+    if [ "$is_bind_config" = "true" ]; then
+        backup_file="$backup_dir/bind/$(basename $config_file).$type"
+    else
+        backup_file="$backup_dir/$(basename $config_file).$type"
+    fi
+
+    if [ -f "$backup_file" ]; then
+        mv -uf "$backup_file" "$config_file"
+    else
+        echo "The backup file does not exist."
+    fi
+
+    return 0
+}
+
+remove_sensitive_data() {
+    local input_json="$1"
+
+    input_json="$(echo "$input_json" | jq 'del(.adminPassword)')"
+
+    echo "$input_json"
+    return 0
+}
+
+restore_bind_config() {
+    local backup_dir="/var/lib/alterator/service/samba-ad/config-backup/bind"
+    local bind_named_backup="$backup_dir/named.conf.original"
+    local bind_options_backup="$backup_dir/options.conf.original"
+    local bind_config_dir="/etc/bind"
+
+    if [ -f "$bind_named_backup" ]; then
+        mv -f "$bind_named_backup" "$bind_config_dir/named.conf"
+    else
+        echo "Backup $bind_named_backup not found, skipping restore of named.conf."
+    fi
+
+    if [ -f "$bind_options_backup" ]; then
+        mv -f "$bind_options_backup" "$bind_config_dir/named.options"
+    else
+        echo "Backup $bind_options_backup not found, skipping restore of named.options."
+    fi
+
+    chmod 644 "$bind_config_dir/named.conf"
+    chmod 644 "$bind_config_dir/options.conf"
+
+    return 0
+}
+
+reset_to_default() {
+    local backup_dir="/var/lib/alterator/service/samba-ad/config-backup"
+    local smb_backup="$backup_dir/smb.conf.original"
+    local krb5_backup="$backup_dir/krb5.conf.original"
+    local resolv_backup="$backup_dir/resolv.conf.original"
+    local status_file="/var/lib/alterator/service/samba-ad/status.json"
+    local dns_backend=
+
+    dns_backend="$(get_dns_backend)"
+    if [ "$dns_backend" = "BIND9_DLZ" ]; then
+        restore_bind_config
+    fi
+
+    rm -rf /var/lib/samba
+    rm -rf /var/cache/samba
+
+    if [ -f "$smb_backup" ]; then
+        mv -f "$smb_backup" /etc/samba/smb.conf
+    else
+        echo "Backup $smb_backup not found, skipping restore of /etc/samba/smb.conf."
+    fi
+
+    if [ -f "$krb5_backup" ]; then
+        mv -f "$krb5_backup" /etc/krb5.conf
+    else
+        echo "Backup $krb5_backup not found, skipping restore of /etc/krb5.conf."
+    fi
+
+    if [ -f "$resolv_backup" ]; then
+        mv -f "$resolv_backup" /etc/resolv.conf
+    else
+        echo "Backup $resolv_backup not found, skipping restore of /etc/resolv.conf."
+    fi
+
+    mkdir -p /var/lib/samba
+
+    chmod 644 /etc/samba/smb.conf
+    chmod 644 /etc/krb5.conf
+    chmod 644 /etc/resolv.conf
+
+    return 0
+}
+
+read_stdin() {
+    local input_json=
+
+    if [ -t 0 ]; then
+        echo "Reading from stdin..."
+        echo "Please provide JSON input:"
+        retval=1
+    else
+        while read -r line; do
+            input_json+="$line"
+        done
+    fi
+
+    echo "$input_json"
+
+    return 0
+}
+
+bind_is_installed() {
+    if rpm -q bind > /dev/null 2>&1; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+upper() {
+    echo -n "$1" | tr '[:lower:]' '[:upper:]'
+}
+
+set_hostname() {
+    local domain_realm="$1"
+    local retval=0
+    local hostname=
+
+    hostname="$(hostname -s)"
+
+    hostnamectl hostname "$hostname.$domain_realm" || retval=1
+
+    return $retval
+}
+
+edit_krb5_conf() {
+    local domain_realm="$1"
+    upper_realm="$(upper $domain_realm)"
+
+    cp -uf /var/lib/samba/private/krb5.conf /etc/krb5.conf
+    chmod 644 /etc/krb5.conf
+
+    ini_config_set /etc/krb5.conf "libdefaults" "dns_lookup_realm" "false"
+    ini_config_set /etc/krb5.conf "libdefaults" "dns_lookup_kdc" "true"
+    ini_config_set /etc/krb5.conf "libdefaults" "ticket_lifetime" "24h"
+    ini_config_set /etc/krb5.conf "libdefaults" "renew_lifetime" "7d"
+    ini_config_set /etc/krb5.conf "libdefaults" "forwardable" "true"
+    ini_config_set /etc/krb5.conf "libdefaults" "rdns" "false"
+    ini_config_set /etc/krb5.conf "libdefaults" "default_ccache_name" "KEYRING:persistent:%{uid}"
+
+    ini_config_set /etc/krb5.conf "domain_realm" "$domain_realm" "$upper_realm"
+
+    return 0
+}
+
+edit_resolv_conf() {
+    local domain_realm="$1"
+
+    cat <<EOF >/etc/resolv.conf
+search $domain_realm
+nameserver 127.0.0.1
+EOF
+    return 0
+}
+
+prepare_resolv_conf_to_join() {
+    local dc_ip="$1"
+    local domain_realm="$2"
+
+    cat <<EOF >/etc/resolv.conf
+search $domain_realm
+nameserver $dc_ip
+EOF
+    return 0
+}

@@ -2,7 +2,7 @@
 #include "ui_CompositeArrayItem.h"
 
 CompositeArrayItem::CompositeArrayItem(const BaseForm& form, Property::Value* value, QWidget *parent)
-    : EditorWrapper{createEditor(form, value, parent, {}, false, true)}
+    : EditorWrapper{createEditor(form, value, parent, false, true)}
     , ui(new Ui::CompositeArrayItem)
 {
     m_widget = new QWidget{parent};

@@ -172,6 +172,21 @@ set(PROJECT_SOURCES
     src/ui/wizard/03-parameters/forms/editors/compact/PrimitiveEditor.h
     src/ui/wizard/03-parameters/forms/editors/compact/PrimitiveEditor.cpp
 
+    src/ui/wizard/03-parameters/forms/editors/compact/IntEditor.h
+    src/ui/wizard/03-parameters/forms/editors/compact/IntEditor.cpp
+
+    src/ui/wizard/03-parameters/forms/editors/compact/StringEditor.h
+    src/ui/wizard/03-parameters/forms/editors/compact/StringEditor.cpp
+
+    src/ui/wizard/03-parameters/forms/editors/compact/PasswordEditor.h
+    src/ui/wizard/03-parameters/forms/editors/compact/PasswordEditor.cpp
+
+    src/ui/wizard/03-parameters/forms/editors/compact/EnumEditor.h
+    src/ui/wizard/03-parameters/forms/editors/compact/EnumEditor.cpp
+
+    src/ui/wizard/03-parameters/forms/editors/compact/BoolEditor.h
+    src/ui/wizard/03-parameters/forms/editors/compact/BoolEditor.cpp
+
     src/ui/wizard/03-parameters/forms/editors/detailed/CompositeEditor.h
     src/ui/wizard/03-parameters/forms/editors/detailed/CompositeEditor.cpp
 

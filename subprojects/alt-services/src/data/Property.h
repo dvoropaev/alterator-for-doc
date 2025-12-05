@@ -54,11 +54,6 @@ public:
     Property(Type type, std::vector<PropertyPtr>&& children) noexcept;
 
     /*
-     *  Enum value constructor.
-     */
-    Property(const QString& name, const Locales& locales, std::vector<PropertyPtr>&& children) noexcept;
-
-    /*
      *  Primitive prototype constructor.
      *  Prototype has no name.
      */
@@ -209,7 +204,7 @@ public:
      */
     inline QVariant get() const { return m_value; }
     inline void set(const QVariant &v) { m_value = v; };
-
+    inline void setConfirmation(const QString& s) { m_passwordConfirmation = s; };
 
     /*
      *  Makes a copy of a value with all its children.
@@ -236,6 +231,7 @@ private:
 
     bool m_enabled{false};
     QVariant m_value;
+    QString m_passwordConfirmation;
 
     Value* m_parent{nullptr};
     PtrVector<Value> m_children;

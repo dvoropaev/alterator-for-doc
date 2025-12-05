@@ -277,7 +277,7 @@ LogWidget::LogWidget(QWidget *parent)
 
     connect(d->m_search, &QAction::triggered, searchBar, &QWidget::show);
 
-    d->m_export = new QAction{QIcon::fromTheme(QIcon::ThemeIcon::DocumentSaveAs), tr("Export journal...")};
+    d->m_export = new QAction{QIcon::fromTheme(QIcon::ThemeIcon::DocumentSaveAs), tr("&Save journal...")};
 
     connect(qApp->controller(), &Controller::beginRefresh, this, [=]{d->m_export->setDisabled(true );});
     connect(qApp->controller(), &Controller::endRefresh,   this, [=]{d->m_export->setDisabled(false);});
@@ -367,16 +367,27 @@ void LogWidget::beginEntry(const QString& msg)
     d->m_lastTextItem = nullptr;
 }
 
-void LogWidget::endEntry(bool success)
+void LogWidget::endEntry(Controller::Result result)
 {
     auto scroller = d->withScroll();
 
     if ( d->m_lastEntryItem )
     {
-        d->m_lastEntryItem->setIcon(QIcon::fromTheme(success ? "dialog-ok" : "window-close"));
+        switch (result) {
+            case Controller::Result::Success:
+                d->m_lastEntryItem->setIcon(QIcon::fromTheme("dialog-ok"));
+            break;
 
-        if ( !success )
-            d->m_lastEntryItem->setForeground(QColor{255,0,0});
+            case Controller::Result::Warning:
+                d->m_lastEntryItem->setIcon(QIcon::fromTheme("dialog-warning"));
+                d->m_lastEntryItem->setForeground(QColor{127,127,0});
+            break;
+
+            case Controller::Result::Error:
+                d->m_lastEntryItem->setIcon(QIcon::fromTheme("window-close"));
+                d->m_lastEntryItem->setForeground(QColor{255,0,0});
+            break;
+        }
 
         d->m_lastEntryItem = d->m_lastEntryItem->parent();
         d->m_lastText = nullptr;

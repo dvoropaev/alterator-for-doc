@@ -86,6 +86,7 @@ update_named_conf_options() {
     local params_json="$1"
     local forwarders="$2"
     local keys
+
     keys=$(echo "$params_json" | jq -r 'keys[]')
 
     for key in $keys; do
@@ -124,10 +125,12 @@ update_named_conf_options() {
     done
 
     if [ -n "$forwarders" ]; then
+        local formatted_forwarders=
+        formatted_forwarders=$(echo "$forwarders" | sed -E 's/[[:space:]]*,[[:space:]]*/; /g; s/[[:space:]]*$//; s/^[[:space:]]*//')
         if grep -q "forwarders" "$NAMED_CONF_OPTIONS"; then
-            sed -i "s/forwarders\s*{[^}]*}/forwarders { $forwarders; }/" "$NAMED_CONF_OPTIONS"
+            sed -i "s/forwarders\s*{[^}]*}/forwarders { $formatted_forwarders; }/" "$NAMED_CONF_OPTIONS"
         else
-            sed -i "/options {/a\    forwarders { $forwarders; };" "$NAMED_CONF_OPTIONS"
+            sed -i "/options {/a\    forwarders { $formatted_forwarders; };" "$NAMED_CONF_OPTIONS"
         fi
     fi
 
@@ -141,45 +144,25 @@ remove_commented_lines() {
     return 0
 }
 
-backup_bind_config() {
-    local config_file="$1"
-    local type="$2"
-    local retval=0
-
-    mkdir -p /var/lib/alterator/service/samba-ad/config-backup/bind
-    local backup_file=
-
-    backup_file="/var/lib/alterator/service/samba-ad/config-backup/bind/$(basename $config_file).$type"
-    if [ -f "$backup_file" ]; then
-        echo "Backup file $backup_file already exists, skipping backup."
-    fi
-    if [ -f "$config_file" ]; then
-        cp -f "$config_file" "$backup_file" || retval=1
-    else
-        echo "File $config_file not found, skipping backup."
-    fi
-
-    return $retval
-}
-
 prepare_bind() {
     local input_json="$1"
     local forwarders="$2"
-    local path_to_bind_settings=".dnsSettings.bindSettings"
+    local path_to_bind_settings=".dnsSettings.dnsBackend.BIND9_DLZ.bindSettings"
     local retval=0
     local params_json
 
     params_json=$(echo "$input_json" | jq -c "$path_to_bind_settings")
 
-    backup_bind_config "$NAMED_CONF_OPTIONS" "original"
-    backup_bind_config "$NAMED_CONF" "original"
-    setup_kerberos
-    disable_bind_chroot
-    update_named_conf_options "$params_json" "$forwarders"
-    add_tkey_gssapi_keytab
-    add_samba_dns_conf
-    bind_ldb_modules_disable
-    remove_commented_lines
+    backup_config "$NAMED_CONF_OPTIONS" "original" true
+    backup_config "$NAMED_CONF" "original" true
+    remove_commented_lines || retval=1
+    setup_kerberos || retval=1
+    disable_bind_chroot || retval=1
+    update_named_conf_options "$params_json" "$forwarders" || retval=1
+    add_tkey_gssapi_keytab || retval=1
+    add_samba_dns_conf || retval=1
+    bind_ldb_modules_disable || retval=1
+    remove_commented_lines || retval=1
 
     return $retval
 }

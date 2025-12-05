@@ -62,8 +62,8 @@ public:
     /*
      * Save to json.
      */
-    QByteArray serialize();
+    QByteArray serialize() const;
 
 private:
-    QJsonObject saveTests(DiagTool::Test::Mode mode);
+    QJsonObject saveTests(DiagTool::Test::Mode mode) const;
 };

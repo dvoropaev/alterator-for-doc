@@ -66,34 +66,6 @@ ActionWizard::ActionWizard(QWidget *parent)
     setAttribute(Qt::WA_AlwaysShowToolTips);
     setWizardStyle(QWizard::ClassicStyle);
 
-
-    auto* importBtn = new QPushButton{QIcon::fromTheme(QIcon::ThemeIcon::DocumentOpen  ), tr("&Import..."), this};
-    auto* exportBtn = new QPushButton{QIcon::fromTheme(QIcon::ThemeIcon::DocumentSaveAs), tr("&Export..."), this};
-    importBtn->setToolTip(tr("Import previously saved options"));
-    exportBtn->setToolTip(tr("Save all the selected options for future reuse"));
-    connect(importBtn, &QPushButton::clicked, this, [this]
-    {
-        auto fileName = QFileDialog::getOpenFileName(this,
-            tr("Import saved parameters"),
-            QStandardPaths::writableLocation(QStandardPaths::HomeLocation),
-            "JSON files (*.json)"
-        );
-
-        if ( auto parameters = qApp->importParameters(fileName) )
-            open(parameters.value());
-    });
-    connect(exportBtn, &QPushButton::clicked, this, &ActionWizard::exportParameters);
-    setButton(ImportButton, importBtn);
-    setButton(ExportButton, exportBtn);
-    setOption(QWizard::HaveCustomButton1);
-    setOption(QWizard::HaveCustomButton2);
-
-    setButtonLayout({
-        ImportButton, ExportButton,
-        QWizard::Stretch,
-        QWizard::BackButton, QWizard::NextButton, QWizard::CommitButton, QWizard::FinishButton, QWizard::CancelButton
-    });
-
     d->m_initialPage       = new InitialPage{this};
     d-> m_preDiagPage      = new DiagSelectionPage{DiagTool::Test::Mode:: PreDeploy, this};
     d->m_postDiagPage      = new DiagSelectionPage{DiagTool::Test::Mode::PostDeploy, this};
@@ -111,30 +83,62 @@ ActionWizard::ActionWizard(QWidget *parent)
     setPage(Id::Confirmation,  d-> m_confirmationPage );
     setPage(Id::Progress,      d-> m_progressPage     );
 
+    auto* paramsImportBtn = new QPushButton{QIcon::fromTheme(QIcon::ThemeIcon::DocumentOpen  ), tr("&Import..."), this};
+    auto* paramsExportBtn = new QPushButton{QIcon::fromTheme(QIcon::ThemeIcon::DocumentSaveAs), tr("&Export parameters..."), this};
+    auto*    logExportBtn = new QPushButton{QIcon::fromTheme(QIcon::ThemeIcon::DocumentSaveAs), tr("&Save journal..."), this};
+    paramsImportBtn->setToolTip(tr("Import previously saved options"));
+    paramsExportBtn->setToolTip(tr("Save all the selected options for future reuse"));
+    connect(paramsImportBtn, &QPushButton::clicked, this, [this]
+    {
+        auto fileName = QFileDialog::getOpenFileName(this,
+            tr("Import saved parameters"),
+            QStandardPaths::writableLocation(QStandardPaths::HomeLocation),
+            "JSON files (*.json)"
+        );
+
+        if ( auto parameters = qApp->importParameters(fileName) )
+            open(parameters.value());
+    });
+    connect(paramsExportBtn, &QPushButton::clicked, this, &ActionWizard::exportParameters);
+    setButton(ParametersImportButton, paramsImportBtn);
+    setButton(ParametersExportButton, paramsExportBtn);
+    setButton(LogExportButton,           logExportBtn);
+    setOption(QWizard::HaveCustomButton1);
+    setOption(QWizard::HaveCustomButton2);
+    setOption(QWizard::HaveCustomButton3);
+
+    setButtonLayout({
+        ParametersImportButton, ParametersExportButton, LogExportButton,
+        QWizard::Stretch,
+        QWizard::BackButton, QWizard::NextButton, QWizard::CommitButton, QWizard::FinishButton, QWizard::CancelButton
+    });
+    connect(logExportBtn, &QPushButton::clicked, d->m_progressPage->exportAction(), &QAction::trigger);
+
     connect(this, &QWizard::currentIdChanged, this, [this](int id)
     {
-        button(ImportButton)->setHidden(id != Id::Initial);
-        button(ExportButton)->setHidden(id  < Id::Confirmation );
+        button(ParametersImportButton)->setHidden(id != Id::Initial);
+        button(ParametersExportButton)->setHidden(id  < Id::Confirmation );
+        button(       LogExportButton)->setHidden(id != Id::Progress );
 
         if ( id == Id::Progress )
         {
             button(QWizard::FinishButton)->setEnabled(false);
             button(QWizard::CancelButton)->setEnabled(false);
 
-            bool success = true;
-
             d->playfile.parameters = d->playfile.service->getParameters(d->playfile.action, false);
 
             if ( d->playfile.action == Parameter::Context::Deploy && d->playfile.service->isForceDeployable() )
                 d->playfile.parameters["force_deploy"] = d->playfile.options.force;
 
-            success = qApp->controller()->call(d->playfile);
+            button(LogExportButton)->setDisabled(true);
+            auto result = qApp->controller()->call(d->playfile);
+            button(LogExportButton)->setDisabled(false);
 
             // NOTE: if deploy succeeded but only post-diag failed, we can't go back anymore
             if ( d->playfile.action == Parameter::Context::Deploy )
-                button(QWizard::BackButton)->setEnabled( d->playfile.service->isDeployed() || !success);
+                button(QWizard::BackButton)->setEnabled( d->playfile.service->isDeployed() || result == Controller::Result::Error);
 
-            button(QWizard::FinishButton)->setEnabled(success);
+            button(QWizard::FinishButton)->setEnabled(result != Controller::Result::Error);
             button(QWizard::CancelButton)->setEnabled(true);
         }
     });

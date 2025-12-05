@@ -44,20 +44,20 @@ private:
 
 class ArrayEditor::Private {
 public:
-    Private(const BaseForm& form, Property::Value* value, QWidget* parent, Parameter::Contexts contexts)
-        : m_editor{createEditor(form, value->property()->prototype()->defaultValue(), parent, contexts, false, true)}
+    Private(const BaseForm& form, Property::Value* value, QWidget* parent)
+        : m_editor{createEditor(form, value->property()->prototype()->defaultValue(), parent, false, true)}
         , m_model{value}
     {}
 
-    ChildModel m_model;
     EditorPtr m_editor;
+    ChildModel m_model;
     Ui::ArrayEditor ui;
 };
 
 
-ArrayEditor::ArrayEditor(const BaseForm& form, Property::Value* value, QWidget *parent, Parameter::Contexts contexts)
+ArrayEditor::ArrayEditor(const BaseForm& form, Property::Value* value, QWidget *parent)
     : DetailedEditor{form, value}
-    , d{new Private{form, m_value, parent, contexts}}
+    , d{new Private{form, m_value, parent}}
 {
     m_widget = new QWidget{parent};
     d->ui.setupUi(m_widget);
@@ -113,13 +113,14 @@ QWidget* ArrayEditor::makeVisible(const Property::Value* value)
     return d->ui.listView;
 }
 
-bool ArrayEditor::checkSize(){
+bool ArrayEditor::checkSize()
+{
     auto rc = m_value->children().size();
     auto [min,max] = m_value->property()->allowed().toSize();
-    bool oor = min != max && rc < min || rc > max;
+    bool oor = min != max && (rc < static_cast<size_t>(min) || rc > static_cast<size_t>(max));
 
     d->ui.addButton->setEnabled(
-        rc < max &&
+        ( max == min || rc < static_cast<size_t>(max) ) &&
         !d->m_editor->value()->isInvalid(false /* NOTE: there is no possibility for subparameters to be resource-linked */)
     );
 

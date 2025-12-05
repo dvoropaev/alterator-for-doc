@@ -1,13 +1,19 @@
 #!/bin/bash
 #
-# Copyright (c) 2022-2023 Andrey Limachko <liannnix@altlinux.org>
+# Copyright (c) 2022-2025 Andrey Limachko <liannnix@altlinux.org>
 # Copyright (c) 2022-2023 Evgeny Sinelnikov <sin@altlinux.org>
 #
 # Active Directory domain environment diagnostic tool
 #
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
 # SPDX-License-Identifier: GPL-2.0-or-later
 #
 # shellcheck disable=SC2317
+# shellcheck disable=SC2329
 
 set -euo pipefail
 
@@ -497,7 +503,7 @@ _check_domain_controller() {
     domain_upper=$(echo "$DOMAIN_DOMAIN" | tr '[:lower:]' '[:upper:]')
     local kinit_realm="$hostname_upper\$\@$domain_upper"
     if is_root; then
-        KRB5CCNAME="FILE:/tmp/diag-domain-client_krb5cc_%{uid}"
+        KRB5CCNAME="FILE:/tmp/diag-domain-client_krb5cc_%{pid}"
         _command kinit -k "$kinit_realm" || retval=2
         if test "$retval" != "0"; then
             is_system_auth_local && return 2 || return 1

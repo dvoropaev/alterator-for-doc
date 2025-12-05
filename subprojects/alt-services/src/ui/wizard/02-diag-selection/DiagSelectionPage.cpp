@@ -44,8 +44,8 @@ void DiagSelectionPage::initializePage()
 {
     QWizardPage::initializePage();
 
-    d->ui.diagSelector->setMode(d->m_mode);
     d->ui.diagSelector->setService(wizard()->action().service, wizard()->action().options.prediagTests);
+    d->ui.diagSelector->setMode(d->m_mode);
 }
 
 bool DiagSelectionPage::isComplete() const

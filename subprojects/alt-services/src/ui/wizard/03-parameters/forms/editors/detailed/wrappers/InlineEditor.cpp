@@ -2,7 +2,7 @@
 #include "ui_InlineEditor.h"
 
 
-InlineEditor::InlineEditor(EditorPtr child, QWidget *parent, Parameter::Contexts contexts)
+InlineEditor::InlineEditor(EditorPtr child, QWidget *parent)
     : EditorWrapper{std::move(child)}
     , ui(new Ui::InlineEditor)
 {
@@ -10,7 +10,7 @@ InlineEditor::InlineEditor(EditorPtr child, QWidget *parent, Parameter::Contexts
     ui->setupUi(m_widget);
 
     ui->content->layout()->addWidget(m_editor->widget());
-    ui->title->setEditor(m_editor.get(), contexts);
+    ui->title->setEditor(m_editor.get());
     ui->indicator->setEditor(m_editor.get());
 }
 

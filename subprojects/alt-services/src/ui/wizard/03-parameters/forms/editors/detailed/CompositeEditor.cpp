@@ -16,7 +16,7 @@ void CompositeEditor::fill() {
     for ( auto& child : m_value->children() ) {
         if ( child->property()->isConstant() ) continue;
 
-        std::unique_ptr<DetailedEditor> editor = std::unique_ptr<DetailedEditor>(static_cast<DetailedEditor*>(createEditor(m_form, child.get(), m_widget, {}).release()));
+        std::unique_ptr<DetailedEditor> editor = std::unique_ptr<DetailedEditor>(static_cast<DetailedEditor*>(createEditor(m_form, child.get(), m_widget).release()));
         editor->fill();
         connect(editor.get(), &Editor::changed, this, &Editor::changed);
         m_widget->layout()->addWidget(editor->widget());
