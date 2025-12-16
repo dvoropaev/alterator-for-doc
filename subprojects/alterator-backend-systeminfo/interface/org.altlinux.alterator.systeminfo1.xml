@@ -3,116 +3,194 @@
   "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
 <node name="/" xmlns:doc="http://www.freedesktop.org/dbus/1.0/doc.dtd">
   <interface name="org.altlinux.alterator.systeminfo1">
-    <doc:summary>Expose systeminfo backend methods that provide system data by running /usr/lib/alterator/backends/systeminfo helpers; each method returns stdout and the underlying command response code.</doc:summary>
+    <doc:summary>Интерфейс org.altlinux.alterator.systeminfo1 предоставляет методы backend systeminfo, которые вызывают вспомогательные скрипты из /usr/lib/alterator/backends/systeminfo.</doc:summary>
+    <doc:detail>Каждый метод возвращает stdout вызова и код завершения выполняемой команды.</doc:detail>
     <method name="GetAll">
-      <doc:summary>Collect consolidated system data in key/value form.</doc:summary>
-      <doc:detail>Output format: lines KEY="value" ordered as HOSTNAME, OS_NAME, BRANCH, KERNEL, CPU, ARCH, GPU, MEMORY, DRIVE, MOTHERBOARD, MONITOR. Response: 0 — success, != 0 — error.</doc:detail>
-      <arg type="ay" name="stdout_bytes" direction="out"></arg>
-      <arg type="i" name="response" direction="out"></arg>
+      <doc:summary>Собирает сводные данные о системе в виде пар ключ/значение.</doc:summary>
+      <arg type="ay" name="stdout_bytes" direction="out">
+        <doc:summary>Стандартный вывод в байтах.</doc:summary>
+        <doc:detail>Формат: строки KEY="value" в порядке HOSTNAME, OS_NAME, BRANCH, KERNEL, CPU, ARCH, GPU, MEMORY, DRIVE, MOTHERBOARD, MONITOR.</doc:detail>
+      </arg>
+      <arg type="i" name="response" direction="out">
+        <doc:summary>Код возврата вспомогательной команды.</doc:summary>
+        <doc:detail>0 — успех, != 0 — ошибка.</doc:detail>
+      </arg>
     </method>
     <method name="GetCPU">
-      <doc:summary>Return CPU model, logical core count, and frequency via systeminfo cpu.</doc:summary>
-      <doc:detail>stdout_strings entries:
-1. model;
-2. logical cores;
-3. frequency in MHz.
-Response: 0 — success, != 0 — error.</doc:detail>
-      <arg type="as" name="stdout_strings" direction="out"></arg>
-      <arg type="i" name="response" direction="out"></arg>
+      <doc:summary>Выводит модель процессора, количество логических ядер и частоту через systeminfo cpu.</doc:summary>
+      <arg type="as" name="stdout_strings" direction="out">
+        <doc:summary>Строки стандартного вывода.</doc:summary>
+        <doc:detail>Порядок: модель; число логических ядер; частота в МГц.</doc:detail>
+      </arg>
+      <arg type="i" name="response" direction="out">
+        <doc:summary>Код возврата вспомогательной команды.</doc:summary>
+        <doc:detail>0 — успех, != 0 — ошибка.</doc:detail>
+      </arg>
     </method>
     <method name="GetHostName">
-      <doc:summary>Return the host name from systeminfo host-name.</doc:summary>
-      <doc:detail>stdout_strings carries a single hostname string produced by the hostname command. Response: 0 — success, != 0 — error.</doc:detail>
-      <arg type="as" name="stdout_strings" direction="out"></arg>
-      <arg type="i" name="response" direction="out"></arg>
+      <doc:summary>Возвращает имя узла через systeminfo host-name.</doc:summary>
+      <arg type="as" name="stdout_strings" direction="out">
+        <doc:summary>Строки стандартного вывода.</doc:summary>
+        <doc:detail>Единственная строка с именем узла, полученная командой hostname.</doc:detail>
+      </arg>
+      <arg type="i" name="response" direction="out">
+        <doc:summary>Код возврата вспомогательной команды.</doc:summary>
+        <doc:detail>0 — успех, != 0 — ошибка.</doc:detail>
+      </arg>
     </method>
     <method name="GetDrive">
-      <doc:summary>Return total storage size via systeminfo drive.</doc:summary>
-      <doc:detail>Computes the sum of partition sizes from /proc/partitions; stdout_strings holds the size in bytes. Response: 0 — success, != 0 — error.</doc:detail>
-      <arg type="as" name="stdout_strings" direction="out"></arg>
-      <arg type="i" name="response" direction="out"></arg>
+      <doc:summary>Возвращает суммарный объём накопителей через systeminfo drive.</doc:summary>
+      <arg type="as" name="stdout_strings" direction="out">
+        <doc:summary>Строки стандартного вывода.</doc:summary>
+        <doc:detail>Суммарный размер разделов из /proc/partitions в байтах.</doc:detail>
+      </arg>
+      <arg type="i" name="response" direction="out">
+        <doc:summary>Код возврата вспомогательной команды.</doc:summary>
+        <doc:detail>0 — успех, != 0 — ошибка.</doc:detail>
+      </arg>
     </method>
     <method name="GetGPU">
-      <doc:summary>List VGA adapters reported by systeminfo gpu.</doc:summary>
-      <doc:detail>Parses lspci output for VGA devices; stdout_strings contains adapter descriptions. Response: 0 — success, != 0 — error.</doc:detail>
-      <arg type="as" name="stdout_strings" direction="out"></arg>
-      <arg type="i" name="response" direction="out"></arg>
+      <doc:summary>Список видеоустройств (VGA) через systeminfo gpu.</doc:summary>
+      <arg type="as" name="stdout_strings" direction="out">
+        <doc:summary>Строки стандартного вывода.</doc:summary>
+        <doc:detail>Описания адаптеров из вывода lspci для устройств VGA.</doc:detail>
+      </arg>
+      <arg type="i" name="response" direction="out">
+        <doc:summary>Код возврата вспомогательной команды.</doc:summary>
+        <doc:detail>0 — успех, != 0 — ошибка.</doc:detail>
+      </arg>
     </method>
     <method name="GetMemory">
-      <doc:summary>Report RAM size using systeminfo memory.</doc:summary>
-      <doc:detail>Calculates MemTotal * 1024 from /proc/meminfo; stdout_strings returns the size in bytes. Response: 0 — success, != 0 — error.</doc:detail>
-      <arg type="as" name="stdout_strings" direction="out"></arg>
-      <arg type="i" name="response" direction="out"></arg>
+      <doc:summary>Отчёт об объёме оперативной памяти через systeminfo memory.</doc:summary>
+      <arg type="as" name="stdout_strings" direction="out">
+        <doc:summary>Строки стандартного вывода.</doc:summary>
+        <doc:detail>Значение MemTotal * 1024 из /proc/meminfo в байтах.</doc:detail>
+      </arg>
+      <arg type="i" name="response" direction="out">
+        <doc:summary>Код возврата вспомогательной команды.</doc:summary>
+        <doc:detail>0 — успех, != 0 — ошибка.</doc:detail>
+      </arg>
     </method>
     <method name="GetBranch">
-      <doc:summary>Return the distribution branch via systeminfo branch.</doc:summary>
-      <doc:detail>Provides the RPM macro %_priority_distbranch value for service use. Response: 0 — success, != 0 — error.</doc:detail>
-      <arg type="as" name="stdout_strings" direction="out"></arg>
-      <arg type="i" name="response" direction="out"></arg>
+      <doc:summary>Возвращает ветку дистрибутива через systeminfo branch.</doc:summary>
+      <arg type="as" name="stdout_strings" direction="out">
+        <doc:summary>Строки стандартного вывода.</doc:summary>
+        <doc:detail>Значение RPM-макроса %_priority_distbranch.</doc:detail>
+      </arg>
+      <arg type="i" name="response" direction="out">
+        <doc:summary>Код возврата вспомогательной команды.</doc:summary>
+        <doc:detail>0 — успех, != 0 — ошибка.</doc:detail>
+      </arg>
     </method>
     <method name="GetKernel">
-      <doc:summary>Return the kernel version via systeminfo kernel.</doc:summary>
-      <doc:detail>Reads /proc/sys/kernel/osrelease; stdout_strings holds the kernel release string. Response: 0 — success, != 0 — error.</doc:detail>
-      <arg type="as" name="stdout_strings" direction="out"></arg>
-      <arg type="i" name="response" direction="out"></arg>
+      <doc:summary>Возвращает версию ядра через systeminfo kernel.</doc:summary>
+      <arg type="as" name="stdout_strings" direction="out">
+        <doc:summary>Строки стандартного вывода.</doc:summary>
+        <doc:detail>Содержимое /proc/sys/kernel/osrelease.</doc:detail>
+      </arg>
+      <arg type="i" name="response" direction="out">
+        <doc:summary>Код возврата вспомогательной команды.</doc:summary>
+        <doc:detail>0 — успех, != 0 — ошибка.</doc:detail>
+      </arg>
     </method>
     <method name="GetOperationSystemName">
-      <doc:summary>Return a human-readable operating system name via systeminfo os-name.</doc:summary>
-      <doc:detail>Reads PRETTY_NAME from /etc/os-release; stdout_strings contains the display name. Response: 0 — success, != 0 — error.</doc:detail>
-      <arg type="as" name="stdout_strings" direction="out"></arg>
-      <arg type="i" name="response" direction="out"></arg>
+      <doc:summary>Возвращает человекочитаемое имя операционной системы через systeminfo os-name.</doc:summary>
+      <arg type="as" name="stdout_strings" direction="out">
+        <doc:summary>Строки стандартного вывода.</doc:summary>
+        <doc:detail>Значение PRETTY_NAME из /etc/os-release.</doc:detail>
+      </arg>
+      <arg type="i" name="response" direction="out">
+        <doc:summary>Код возврата вспомогательной команды.</doc:summary>
+        <doc:detail>0 — успех, != 0 — ошибка.</doc:detail>
+      </arg>
     </method>
     <method name="GetLicense">
-      <doc:summary>Return the license text selected by locale and edition via systeminfo os-license.</doc:summary>
-      <doc:detail>Search order: /usr/lib/alterator/backends/edition (when alterator-backend-edition-utils is present), then license.&lt;lang&gt;.html in /usr/share/alt-notes, /usr/share/alt-license, /var/lib/install3/licenses; falls back to license.all.html. LC_ALL is unset before execution. Response: 0 — success, != 0 — error.</doc:detail>
-      <arg type="ay" name="stdout_bytes" direction="out"></arg>
-      <arg type="i" name="response" direction="out"></arg>
+      <doc:summary>Возвращает текст лицензии, выбранный по локали и редакции через systeminfo os-license.</doc:summary>
+      <arg type="ay" name="stdout_bytes" direction="out">
+        <doc:summary>Стандартный вывод в байтах.</doc:summary>
+        <doc:detail>Алгоритм поиска: /usr/lib/alterator/backends/edition (при наличии alterator-backend-edition-utils), затем license.&lt;lang&gt;.html в /usr/share/alt-notes, /usr/share/alt-license, /var/lib/install3/licenses; далее license.all.html. Перед запуском сбрасывается LC_ALL.</doc:detail>
+      </arg>
+      <arg type="i" name="response" direction="out">
+        <doc:summary>Код возврата вспомогательной команды.</doc:summary>
+        <doc:detail>0 — успех, != 0 — ошибка.</doc:detail>
+      </arg>
     </method>
     <method name="GetReleaseNotes">
-      <doc:summary>Return release notes produced by systeminfo release-notes.</doc:summary>
-      <doc:detail>Emits HTML or plain-text notes; LC_ALL is unset. Response: 0 — success, != 0 — error.</doc:detail>
-      <arg type="ay" name="stdout_bytes" direction="out"></arg>
-      <arg type="i" name="response" direction="out"></arg>
+      <doc:summary>Возвращает примечания к выпуску через systeminfo release-notes.</doc:summary>
+      <arg type="ay" name="stdout_bytes" direction="out">
+        <doc:summary>Стандартный вывод в байтах.</doc:summary>
+        <doc:detail>HTML или текстовые примечания; перед запуском сбрасывается LC_ALL.</doc:detail>
+      </arg>
+      <arg type="i" name="response" direction="out">
+        <doc:summary>Код возврата вспомогательной команды.</doc:summary>
+        <doc:detail>0 — успех, != 0 — ошибка.</doc:detail>
+      </arg>
     </method>
     <method name="GetFinalNotes">
-      <doc:summary>Return installer final notes via systeminfo final-notes.</doc:summary>
-      <doc:detail>Provides final hints for installers; LC_ALL is unset. Response: 0 — success, != 0 — error.</doc:detail>
-      <arg type="ay" name="stdout_bytes" direction="out"></arg>
-      <arg type="i" name="response" direction="out"></arg>
+      <doc:summary>Возвращает заключительные заметки установщика через systeminfo final-notes.</doc:summary>
+      <arg type="ay" name="stdout_bytes" direction="out">
+        <doc:summary>Стандартный вывод в байтах.</doc:summary>
+        <doc:detail>Заключительные рекомендации установщика; перед запуском сбрасывается LC_ALL.</doc:detail>
+      </arg>
+      <arg type="i" name="response" direction="out">
+        <doc:summary>Код возврата вспомогательной команды.</doc:summary>
+        <doc:detail>0 — успех, != 0 — ошибка.</doc:detail>
+      </arg>
     </method>
     <method name="GetArch">
-      <doc:summary>Return system architecture via systeminfo arch.</doc:summary>
-      <doc:detail>Reads /proc/sys/kernel/arch; stdout_strings holds the architecture string such as x86_64. Response: 0 — success, != 0 — error.</doc:detail>
-      <arg type="as" name="stdout_strings" direction="out"></arg>
-      <arg type="i" name="response" direction="out"></arg>
+      <doc:summary>Возвращает архитектуру системы через systeminfo arch.</doc:summary>
+      <arg type="as" name="stdout_strings" direction="out">
+        <doc:summary>Строки стандартного вывода.</doc:summary>
+        <doc:detail>Содержимое /proc/sys/kernel/arch, например x86_64.</doc:detail>
+      </arg>
+      <arg type="i" name="response" direction="out">
+        <doc:summary>Код возврата вспомогательной команды.</doc:summary>
+        <doc:detail>0 — успех, != 0 — ошибка.</doc:detail>
+      </arg>
     </method>
     <method name="GetMonitor">
-      <doc:summary>List connected monitors and resolutions via systeminfo monitor.</doc:summary>
-      <doc:detail>Reads /sys/class/drm/*/modes and matches connectors; stdout_strings entries look like card0-HDMI-A-1 1920x1080. Response: 0 — success, != 0 — error.</doc:detail>
-      <arg type="as" name="stdout_strings" direction="out"></arg>
-      <arg type="i" name="response" direction="out"></arg>
+      <doc:summary>Перечисляет подключённые мониторы и разрешения через systeminfo monitor.</doc:summary>
+      <arg type="as" name="stdout_strings" direction="out">
+        <doc:summary>Строки стандартного вывода.</doc:summary>
+        <doc:detail>Данные /sys/class/drm/*/modes, строки вида card0-HDMI-A-1 1920x1080.</doc:detail>
+      </arg>
+      <arg type="i" name="response" direction="out">
+        <doc:summary>Код возврата вспомогательной команды.</doc:summary>
+        <doc:detail>0 — успех, != 0 — ошибка.</doc:detail>
+      </arg>
     </method>
     <method name="GetMotherboard">
-      <doc:summary>Return motherboard vendor, model, and version via systeminfo motherboard.</doc:summary>
-      <doc:detail>Combines /sys/devices/virtual/dmi/id/board_vendor, board_name, board_version. stdout_strings entries:
-1. vendor;
-2. model;
-3. version.
-Response: 0 — success, != 0 — error.</doc:detail>
-      <arg type="as" name="stdout_strings" direction="out"></arg>
-      <arg type="i" name="response" direction="out"></arg>
+      <doc:summary>Возвращает производителя, модель и версию материнской платы через systeminfo motherboard.</doc:summary>
+      <arg type="as" name="stdout_strings" direction="out">
+        <doc:summary>Строки стандартного вывода.</doc:summary>
+        <doc:detail>Объединённые значения /sys/devices/virtual/dmi/id/board_vendor, board_name, board_version по порядку: производитель; модель; версия.</doc:detail>
+      </arg>
+      <arg type="i" name="response" direction="out">
+        <doc:summary>Код возврата вспомогательной команды.</doc:summary>
+        <doc:detail>0 — успех, != 0 — ошибка.</doc:detail>
+      </arg>
     </method>
     <method name="GetLocale">
-      <doc:summary>Return the system locale via systeminfo locale.</doc:summary>
-      <doc:detail>Reads LANG from /etc/locale.conf; stdout_strings holds the locale string such as ru_RU.UTF-8. Response: 0 — success, != 0 — error.</doc:detail>
-      <arg type="as" name="stdout_strings" direction="out"></arg>
-      <arg type="i" name="response" direction="out"></arg>
+      <doc:summary>Возвращает системную локаль через systeminfo locale.</doc:summary>
+      <arg type="as" name="stdout_strings" direction="out">
+        <doc:summary>Строки стандартного вывода.</doc:summary>
+        <doc:detail>Значение LANG из /etc/locale.conf, например ru_RU.UTF-8.</doc:detail>
+      </arg>
+      <arg type="i" name="response" direction="out">
+        <doc:summary>Код возврата вспомогательной команды.</doc:summary>
+        <doc:detail>0 — успех, != 0 — ошибка.</doc:detail>
+      </arg>
     </method>
     <method name="ListDesktopEnvironments">
-      <doc:summary>List available desktop sessions via systeminfo list-desktop-environments.</doc:summary>
-      <doc:detail>Iterates .desktop entries for plasma, gnome, mate, cinnamon, xfce; stdout_strings may include CINNAMON, GNOME, KDE&lt;index&gt;, MATE, XFCE entries. Response: 0 — success, != 0 — error.</doc:detail>
-      <arg type="as" name="stdout_strings" direction="out"></arg>
-      <arg type="i" name="response" direction="out"></arg>
+      <doc:summary>Перечисляет доступные сеансы рабочих столов через systeminfo list-desktop-environments.</doc:summary>
+      <arg type="as" name="stdout_strings" direction="out">
+        <doc:summary>Строки стандартного вывода.</doc:summary>
+        <doc:detail>Обходит записи .desktop для plasma, gnome, mate, cinnamon, xfce; возможные значения: CINNAMON, GNOME, KDE5, KDE6, MATE, XFCE.</doc:detail>
+      </arg>
+      <arg type="i" name="response" direction="out">
+        <doc:summary>Код возврата вспомогательной команды.</doc:summary>
+        <doc:detail>0 — успех, != 0 — ошибка.</doc:detail>
+      </arg>
     </method>
   </interface>
 </node>
