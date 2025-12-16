@@ -3,91 +3,196 @@
   "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
 <node name="/" xmlns:doc="http://www.freedesktop.org/dbus/1.0/doc.dtd">
   <interface name="org.altlinux.alterator.apt1">
+    <doc:summary>Expose apt backend commands for package search, install, reinstall, and upgrade with streaming signals for long-running operations.</doc:summary>
     <method name="Info">
-      <arg type="ay" name="stdout_bytes" direction="out"></arg>
-      <arg type="i" name="response" direction="out"></arg>
+      <doc:summary>Return static descriptor of the apt backend object.</doc:summary>
+      <arg type="ay" name="stdout_bytes" direction="out">
+        <doc:summary>Contents of /usr/share/alterator/objects/apt.object.</doc:summary>
+        <doc:detail>TOML object definition with display_name and comments.</doc:detail>
+      </arg>
+      <arg type="i" name="response" direction="out">
+        <doc:summary>Exit code of the cat helper.</doc:summary>
+        <doc:detail>0 — success, != 0 — error.</doc:detail>
+      </arg>
     </method>
     <method name="UpdateAsync">
-      <arg type="i" name="response" direction="out"></arg>
+      <doc:summary>Run apt-get update in background; progress is emitted through signals.</doc:summary>
+      <arg type="i" name="response" direction="out">
+        <doc:summary>Exit code of apt-get update.</doc:summary>
+        <doc:detail>0 — success, != 0 — error.</doc:detail>
+      </arg>
     </method>
     <method name="ApplyAsync">
-      <arg type="s" name="exclude_pkgnames" direction="in"></arg>
-      <arg type="s" name="pkgnames" direction="in"></arg>
-      <arg type="i" name="response" direction="out"></arg>
+      <doc:summary>Apply install/remove transaction via apt-wrapper apply using pkgpriorities.</doc:summary>
+      <arg type="s" name="exclude_pkgnames" direction="in">
+        <doc:summary>Whitespace-separated package names to exclude from pkgpriorities.</doc:summary>
+        <doc:detail>Each name is converted to a newline list before pkgpriorities creation.</doc:detail>
+      </arg>
+      <arg type="s" name="pkgnames" direction="in">
+        <doc:summary>Whitespace-separated packages to process.</doc:summary>
+        <doc:detail>Names ending with "-" are removed; others are installed with apt-get install -y -q.</doc:detail>
+      </arg>
+      <arg type="i" name="response" direction="out">
+        <doc:summary>Exit code of apt-wrapper apply.</doc:summary>
+        <doc:detail>0 — success, != 0 — error.</doc:detail>
+      </arg>
     </method>
     <method name="ReinstallAsync">
-      <arg type="s" name="pkgnames" direction="in"></arg>
-      <arg type="i" name="response" direction="out"></arg>
+      <doc:summary>Reinstall packages asynchronously via apt-get reinstall -y -q.</doc:summary>
+      <arg type="s" name="pkgnames" direction="in">
+        <doc:summary>Whitespace-separated package names to reinstall.</doc:summary>
+      </arg>
+      <arg type="i" name="response" direction="out">
+        <doc:summary>Exit code of the reinstall command.</doc:summary>
+        <doc:detail>0 — success, != 0 — error.</doc:detail>
+      </arg>
     </method>
     <method name="ListAllPackages">
-      <arg type="as" name="stdout_strings" direction="out"></arg>
-      <arg type="as" name="stderr_strings" direction="out"></arg>
-      <arg type="i" name="response" direction="out"></arg>
+      <doc:summary>List all available package names using apt-cache search . --names-only.</doc:summary>
+      <arg type="as" name="stdout_strings" direction="out">
+        <doc:summary>Package names produced by apt-cache.</doc:summary>
+      </arg>
+      <arg type="as" name="stderr_strings" direction="out">
+        <doc:summary>Errors or warnings from apt-cache.</doc:summary>
+      </arg>
+      <arg type="i" name="response" direction="out">
+        <doc:summary>Exit code of the listall helper.</doc:summary>
+        <doc:detail>0 — success, != 0 — error.</doc:detail>
+      </arg>
     </method>
     <method name="Search">
-      <arg type="s" name="pattern" direction="in"></arg>
-      <arg type="as" name="stdout_strings" direction="out"></arg>
-      <arg type="as" name="stderr_strings" direction="out"></arg>
-      <arg type="i" name="response" direction="out"></arg>
+      <doc:summary>Search packages by pattern via apt-wrapper search (apt-cache search).</doc:summary>
+      <arg type="s" name="pattern" direction="in">
+        <doc:summary>Search expression passed to apt-cache search.</doc:summary>
+      </arg>
+      <arg type="as" name="stdout_strings" direction="out">
+        <doc:summary>Matching package names extracted from apt-cache output.</doc:summary>
+      </arg>
+      <arg type="as" name="stderr_strings" direction="out">
+        <doc:summary>Errors from the search command.</doc:summary>
+      </arg>
+      <arg type="i" name="response" direction="out">
+        <doc:summary>Exit code of the search helper.</doc:summary>
+        <doc:detail>0 — success, != 0 — error.</doc:detail>
+      </arg>
     </method>
     <method name="LastUpdate">
-      <arg type="as" name="stdout_strings" direction="out"></arg>
-      <arg type="as" name="stderr_strings" direction="out"></arg>
-      <arg type="i" name="response" direction="out"></arg>
+      <doc:summary>Report last update timestamp for /var/lib/apt/lists in UTC.</doc:summary>
+      <arg type="as" name="stdout_strings" direction="out">
+        <doc:summary>Single entry with date-time string (YYYY-MM-DD HH:MM:SS UTC).</doc:summary>
+      </arg>
+      <arg type="as" name="stderr_strings" direction="out">
+        <doc:summary>Errors when stat or parsing fails.</doc:summary>
+      </arg>
+      <arg type="i" name="response" direction="out">
+        <doc:summary>Exit code of the timestamp helper.</doc:summary>
+        <doc:detail>0 — success, != 0 — error.</doc:detail>
+      </arg>
     </method>
     <method name="LastDistUpgrade">
-      <arg type="as" name="stdout_strings" direction="out"></arg>
-      <arg type="as" name="stderr_strings" direction="out"></arg>
-      <arg type="i" name="response" direction="out"></arg>
+      <doc:summary>Return last dist-upgrade log entry from /var/log/alterator/apt/dist-upgrades.log.</doc:summary>
+      <arg type="as" name="stdout_strings" direction="out">
+        <doc:summary>Tail line with timestamp from dist-upgrades.log.</doc:summary>
+      </arg>
+      <arg type="as" name="stderr_strings" direction="out">
+        <doc:summary>Errors when the log is missing or unreadable.</doc:summary>
+      </arg>
+      <arg type="i" name="response" direction="out">
+        <doc:summary>Exit code of the log reader.</doc:summary>
+        <doc:detail>0 — success, != 0 — error.</doc:detail>
+      </arg>
     </method>
     <method name="CheckApply">
-      <arg type="s" name="pkgnames" direction="in"></arg>
-      <arg type="as" name="stdout_strings" direction="out"></arg>
-      <arg type="as" name="stderr_strings" direction="out"></arg>
-      <arg type="i" name="response" direction="out"></arg>
+      <doc:summary>Simulate install/remove transaction and return planned changes.</doc:summary>
+      <arg type="s" name="pkgnames" direction="in">
+        <doc:summary>Whitespace-separated packages for simulation.</doc:summary>
+        <doc:detail>Names ending with "-" are treated as removals.</doc:detail>
+      </arg>
+      <arg type="as" name="stdout_strings" direction="out">
+        <doc:summary>JSON line with install_packages, remove_packages, extra_remove_packages arrays.</doc:summary>
+      </arg>
+      <arg type="as" name="stderr_strings" direction="out">
+        <doc:summary>Diagnostic output from apt-get --just-print.</doc:summary>
+      </arg>
+      <arg type="i" name="response" direction="out">
+        <doc:summary>Exit code of the simulation.</doc:summary>
+        <doc:detail>0 — success, != 0 — error.</doc:detail>
+      </arg>
     </method>
     <method name="CheckReinstall">
-      <arg type="s" name="pkgnames" direction="in"></arg>
-      <arg type="as" name="stdout_strings" direction="out"></arg>
-      <arg type="as" name="stderr_strings" direction="out"></arg>
-      <arg type="i" name="response" direction="out"></arg>
+      <doc:summary>Simulate reinstall transaction for selected packages.</doc:summary>
+      <arg type="s" name="pkgnames" direction="in">
+        <doc:summary>Whitespace-separated package names to reinstall.</doc:summary>
+      </arg>
+      <arg type="as" name="stdout_strings" direction="out">
+        <doc:summary>Packages scheduled for installation from apt-get -s output.</doc:summary>
+      </arg>
+      <arg type="as" name="stderr_strings" direction="out">
+        <doc:summary>Packages scheduled for removal or warnings.</doc:summary>
+      </arg>
+      <arg type="i" name="response" direction="out">
+        <doc:summary>Exit code of the simulation.</doc:summary>
+        <doc:detail>0 — success, != 0 — error.</doc:detail>
+      </arg>
     </method>
     <method name="CheckDistUpgrade">
-      <arg type="as" name="stdout_strings" direction="out"></arg>
-      <arg type="as" name="stderr_strings" direction="out"></arg>
-      <arg type="i" name="response" direction="out"></arg>
+      <doc:summary>Simulate dist-upgrade and report planned installs/removals.</doc:summary>
+      <arg type="as" name="stdout_strings" direction="out">
+        <doc:summary>Packages planned for installation.</doc:summary>
+      </arg>
+      <arg type="as" name="stderr_strings" direction="out">
+        <doc:summary>Packages planned for removal or errors.</doc:summary>
+      </arg>
+      <arg type="i" name="response" direction="out">
+        <doc:summary>Exit code of apt-get dist-upgrade -s -q.</doc:summary>
+        <doc:detail>0 — success, != 0 — error.</doc:detail>
+      </arg>
     </method>
     <method name="DistUpgradeAsync">
-      <arg type="i" name="response" direction="out"></arg>
+      <doc:summary>Perform dist-upgrade asynchronously via apt-get dist-upgrade -y -q.</doc:summary>
+      <arg type="i" name="response" direction="out">
+        <doc:summary>Exit code of the upgrade command.</doc:summary>
+        <doc:detail>0 — success, != 0 — error.</doc:detail>
+      </arg>
     </method>
     <signal name="apt1_update_stderr_signal">
+      <doc:summary>stderr stream from apt-get update.</doc:summary>
       <arg type="s" name=""/>
     </signal>
     <signal name="apt1_update_stdout_signal">
+      <doc:summary>stdout stream from apt-get update.</doc:summary>
       <arg type="s" name=""/>
     </signal>
     <signal name="apt1_install_stderr_signal">
+      <doc:summary>stderr stream from apt-wrapper apply (install/remove).</doc:summary>
       <arg type="s" name=""/>
     </signal>
     <signal name="apt1_install_stdout_signal">
+      <doc:summary>stdout stream from apt-wrapper apply (install/remove).</doc:summary>
       <arg type="s" name=""/>
     </signal>
     <signal name="apt1_reinstall_stderr_signal">
+      <doc:summary>stderr stream from apt-get reinstall.</doc:summary>
       <arg type="s" name=""/>
     </signal>
     <signal name="apt1_reinstall_stdout_signal">
+      <doc:summary>stdout stream from apt-get reinstall.</doc:summary>
       <arg type="s" name=""/>
     </signal>
     <signal name="apt1_remove_stderr_signal">
+      <doc:summary>stderr stream from removal transactions.</doc:summary>
       <arg type="s" name=""/>
     </signal>
     <signal name="apt1_remove_stdout_signal">
+      <doc:summary>stdout stream from removal transactions.</doc:summary>
       <arg type="s" name=""/>
     </signal>
     <signal name="apt1_dist_upgrade_stderr_signal">
+      <doc:summary>stderr stream from apt-get dist-upgrade.</doc:summary>
       <arg type="s" name=""/>
     </signal>
     <signal name="apt1_dist_upgrade_stdout_signal">
+      <doc:summary>stdout stream from apt-get dist-upgrade.</doc:summary>
       <arg type="s" name=""/>
     </signal>
   </interface>
