@@ -136,6 +136,7 @@ static gboolean print_pseudo_graphic_tree           = FALSE;
 static gboolean print_simple_tree                   = FALSE;
 static gboolean print_list                          = FALSE;
 static gboolean ignore_sections                     = FALSE;
+static gboolean show_remaining                      = FALSE;
 static gboolean ignore_legend                       = FALSE;
 static gboolean no_apt_update                       = FALSE;
 static gboolean hide_installed_markers              = FALSE;
@@ -607,6 +608,147 @@ end:
     return ret;
 }
 
+static gpointer g_strdup_copy_func(gconstpointer src, gpointer data)
+{
+    if (!src)
+        return NULL;
+    return g_strdup(src);
+}
+
+GHashTable *calc_components_outside_sections(const GHashTable *components,
+                                             const GNode **sections,
+                                             gsize amonth_of_sections)
+{
+    GHashTable *result = g_hash_table_copy_table((GHashTable *) components, g_strdup_copy_func, NULL, NULL, NULL);
+    for (gsize section_index = 0; section_index < amonth_of_sections; section_index++)
+    {
+        toml_value *components_array
+            = g_hash_table_lookup(((alterator_entry_node *) sections[section_index]->data)->toml_pairs,
+                                  COMPONENTS_EDITION_SECTION_COMPONENTS_ARRAY_KEY_NAME);
+
+        GHashTable *section_components = g_hash_table_new(g_str_hash, g_str_equal);
+        for (int i = 0; i < components_array->array_length; i++)
+        {
+            gchar *component_name = ((gchar **) components_array->array)[i];
+            g_hash_table_add(section_components, component_name);
+            // Filter components from chosen section
+            if (g_hash_table_contains(result, component_name))
+                g_hash_table_remove(result, component_name);
+        }
+    }
+
+    return result;
+}
+
+static int print_components_section(AlteratorCtlComponentsModule *module,
+                                    const GNode *section,
+                                    gboolean print_other_section,
+                                    GHashTable *components_nodes_table,
+                                    GHashTable *categories_nodes_table,
+                                    gboolean is_first_section,
+                                    gboolean is_last_section)
+{
+    int ret             = 0;
+    gchar *section_name = NULL;
+    if (section)
+    {
+        section_name = ((alterator_entry_node *) section->data)->node_name;
+        if (chosen_sections && !g_strv_contains((const gchar *const *) chosen_sections, section_name))
+            return ret;
+    }
+
+    // Clear links before parsing next section
+    g_hash_table_foreach(components_nodes_table, components_module_delete_sections_categories_links, NULL);
+    g_hash_table_foreach(categories_nodes_table, components_module_delete_sections_categories_links, NULL);
+
+    // Restore default categories links
+    g_hash_table_foreach(categories_nodes_table, components_module_create_categories_links, categories_nodes_table);
+
+    // Clear categories installed status before parsing next section
+    g_hash_table_foreach(categories_nodes_table, components_module_reset_all_trees_category_installed_status, NULL);
+
+    if (!print_other_section)
+    {
+        toml_value *components_array = g_hash_table_lookup(((alterator_entry_node *) section->data)->toml_pairs,
+                                                           COMPONENTS_EDITION_SECTION_COMPONENTS_ARRAY_KEY_NAME);
+
+        {
+            GHashTable *section_components = g_hash_table_new(g_str_hash, g_str_equal);
+            for (int i = 0; i < components_array->array_length; i++)
+            {
+                gchar *component_name = ((gchar **) components_array->array)[i];
+                g_hash_table_add(section_components, component_name);
+            }
+
+            gpointer components_links_params[2] = {(gpointer) categories_nodes_table, (gpointer) section_components};
+            g_hash_table_foreach(components_nodes_table,
+                                 components_module_create_sections_categories_links,
+                                 components_links_params);
+
+            gpointer categories_links_params[2] = {(gpointer) categories_nodes_table, (gpointer) section_components};
+            g_hash_table_foreach(categories_nodes_table,
+                                 components_module_create_sections_categories_links,
+                                 categories_links_params);
+
+            g_hash_table_unref(section_components);
+        }
+    }
+    else
+    {
+        gpointer components_links_params[2] = {(gpointer) categories_nodes_table, (gpointer) components_nodes_table};
+        g_hash_table_foreach(components_nodes_table,
+                             components_module_create_sections_categories_links,
+                             components_links_params);
+
+        gpointer categories_links_params[2] = {(gpointer) categories_nodes_table, (gpointer) components_nodes_table};
+        g_hash_table_foreach(categories_nodes_table,
+                             components_module_create_sections_categories_links,
+                             categories_links_params);
+    }
+
+    GNode *section_result = g_node_new(NULL);
+    GHashTableIter iter;
+    g_hash_table_iter_init(&iter, categories_nodes_table);
+
+    gchar *node_name = NULL;
+    GNode *category  = NULL;
+
+    while (g_hash_table_iter_next(&iter, (gpointer) &node_name, (gpointer) &category))
+    {
+        components_module_tree_elem_t *category_data = (components_module_tree_elem_t *) category->data;
+        if (!category_data->category && category->children /* && !category->parent*/)
+            g_node_append(section_result, category);
+    }
+
+    gchar *locale_display_name = NULL;
+    if (!print_other_section
+        && components_module_get_section_display_name(module, (GNode *) section, &locale_display_name) < 0)
+    {
+        g_node_destroy(section_result);
+        ERR_EXIT();
+    }
+
+    components_module_sort_tree_elems_by_name(module, &section_result);
+    components_module_update_all_trees_elems_is_installed(section_result);
+
+    components_module_print_list_with_filters(module,
+                                              section_result,
+                                              !print_other_section ? locale_display_name : _("Remaining components"),
+                                              !print_other_section ? section_name : "remaining",
+                                              is_first_section,
+                                              is_last_section);
+
+    g_free(locale_display_name);
+
+    if (section_result->data)
+        alterator_ctl_module_info_parser_result_tree_free(section_result);
+    else
+        g_free(section_result);
+
+end:
+    return ret;
+}
+
 static int components_module_list_subcommand(AlteratorCtlComponentsModule *module, alteratorctl_ctx_t **ctx)
 {
     int ret                                   = 0;
@@ -840,67 +982,8 @@ static int components_module_list_subcommand(AlteratorCtlComponentsModule *modul
 
         for (int section_index = 0; section_index < amount_of_sections; section_index++)
         {
-            gchar *section_name = ((alterator_entry_node *) sections[section_index]->data)->node_name;
-            if (chosen_sections && !g_strv_contains((const gchar *const *) chosen_sections, section_name))
-                continue;
-
-            // Clear links before parsing next section
-            g_hash_table_foreach(components_nodes_table, components_module_delete_sections_categories_links, NULL);
-            g_hash_table_foreach(categories_nodes_table, components_module_delete_sections_categories_links, NULL);
-
-            // Restore default categories links
-            g_hash_table_foreach(categories_nodes_table,
-                                 components_module_create_categories_links,
-                                 categories_nodes_table);
-
-            // Clear categories installed status before parsing next section
-            g_hash_table_foreach(categories_nodes_table,
-                                 components_module_reset_all_trees_category_installed_status,
-                                 NULL);
-
-            toml_value *components_array
-                = g_hash_table_lookup(((alterator_entry_node *) sections[section_index]->data)->toml_pairs,
-                                      COMPONENTS_EDITION_SECTION_COMPONENTS_ARRAY_KEY_NAME);
-
-            GHashTable *section_components = g_hash_table_new(g_str_hash, g_str_equal);
-            for (int i = 0; i < components_array->array_length; i++)
-                g_hash_table_add(section_components, ((gchar **) components_array->array)[i]);
-
-            gpointer components_links_params[2] = {(gpointer) categories_nodes_table, (gpointer) section_components};
-            g_hash_table_foreach(components_nodes_table,
-                                 components_module_create_sections_categories_links,
-                                 components_links_params);
-
-            gpointer categories_links_params[2] = {(gpointer) categories_nodes_table, (gpointer) section_components};
-            g_hash_table_foreach(categories_nodes_table,
-                                 components_module_create_sections_categories_links,
-                                 categories_links_params);
-
-            g_hash_table_unref(section_components);
-
-            GNode *section_result = g_node_new(NULL);
-            GHashTableIter iter;
-            g_hash_table_iter_init(&iter, categories_nodes_table);
-
-            gchar *node_name = NULL;
-            GNode *category  = NULL;
-
-            while (g_hash_table_iter_next(&iter, (gpointer) &node_name, (gpointer) &category))
-            {
-                components_module_tree_elem_t *category_data = (components_module_tree_elem_t *) category->data;
-                if (!category_data->category && category->children /* && !category->parent*/)
-                    g_node_append(section_result, category);
-            }
-
-            gchar *locale_display_name = NULL;
-            if (components_module_get_section_display_name(module, sections[section_index], &locale_display_name) < 0)
-            {
-                g_node_destroy(section_result);
-                ERR_EXIT();
-            }
-
-            components_module_sort_tree_elems_by_name(module, &section_result);
-            components_module_update_all_trees_elems_is_installed(section_result);
+            GNode *section      = sections[section_index];
+            gchar *section_name = ((alterator_entry_node *) section->data)->node_name;
 
             gboolean is_first_section = FALSE;
             gboolean is_last_section  = FALSE;
@@ -914,23 +997,24 @@ static int components_module_list_subcommand(AlteratorCtlComponentsModule *modul
             else
             {
                 is_first_section = section_index == 0 ? TRUE : is_first_section;
-                is_last_section  = section_index == amount_of_sections - 1 ? TRUE : is_last_section;
+                is_last_section  = section_index == amount_of_sections - 1 && !show_remaining ? TRUE : is_last_section;
             }
 
-            components_module_print_list_with_filters(module,
-                                                      section_result,
-                                                      locale_display_name,
-                                                      section_name,
-                                                      is_first_section,
-                                                      is_last_section);
-
-            g_free(locale_display_name);
-
-            if (section_result->data)
-                alterator_ctl_module_info_parser_result_tree_free(section_result);
-            else
-                g_free(section_result);
+            if (print_components_section(module,
+                                         section,
+                                         FALSE,
+                                         components_nodes_table,
+                                         categories_nodes_table,
+                                         is_first_section,
+                                         is_last_section)
+                < 0)
+                ERR_EXIT();
         }
+
+        if (!ignore_sections && show_remaining
+            && print_components_section(module, NULL, TRUE, components_nodes_table, categories_nodes_table, FALSE, TRUE)
+                   < 0)
+            ERR_EXIT();
     }
     else
     {
@@ -1551,6 +1635,9 @@ static int components_module_parse_options(AlteratorCtlComponentsModule *module,
            {"ignore-sections", 'I', G_OPTION_FLAG_NONE, G_OPTION_ARG_NONE, &ignore_sections,
                                                     "Disable sections filter",
                                                     "LIST"},
+           {"show-remaining", 'r', G_OPTION_FLAG_NONE, G_OPTION_ARG_NONE, &show_remaining,
+                                                    "Printing remainning components",
+                                                    "LIST"},
            {"graphic-tree", 'g', G_OPTION_FLAG_NONE, G_OPTION_ARG_NONE, &print_pseudo_graphic_tree,
                                                     "Printing components and categories in preudo-graphic tree format",
                                                     "PSEUDO_GRAPHIC_TREE"},
@@ -1730,6 +1817,11 @@ static int components_module_parse_options(AlteratorCtlComponentsModule *module,
     else if (enable_display_name && no_display_name)
     {
         g_printerr(_("It is not possible to use options --enable-display-name and --no-display-name together.\n"));
+        ERR_EXIT();
+    }
+    else if (ignore_sections && show_remaining)
+    {
+        g_printerr(_("It is not possible to use options --ignore-sections and --show-remaining together.\n"));
         ERR_EXIT();
     }
     else if (enable_display_name && (name_only || path_only))
@@ -1962,12 +2054,15 @@ int components_module_print_help(gpointer self)
               "                              view without display names\n"));
     g_print(_("  -l, --list                  Print components with categories in a list view\n"
               "                              To printing display name, use the\n"
-              "                              --show-display-name option (valid for --list\n"
+              "                              `--show-display-name` option (valid for `--list`\n"
               "                              option only)\n"));
     g_print(_("  -i, --installed             Show only installed components\n"));
     g_print(_("  -u, --not-installed         Show only not installed components\n"));
     g_print(_("  -I, --ignore-sections       Print all components regardless of edition\n"
               "                              sections\n"));
+    g_print(_("  -r, --show-remaining        Display components that do not belong to any\n"
+              "                              category (cannot be used together with the\n"
+              "                              `--ignore-sections` option)\n"));
     g_print(_("  -L, --ignore-legend         Hide the description of the component output\n"
               "                              conventions\n"));
     g_print(_("  -H, --hide-installation-markers\n"

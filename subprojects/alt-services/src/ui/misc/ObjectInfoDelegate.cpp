@@ -2,7 +2,9 @@
 
 #include <QTextDocument>
 #include <QPainter>
-#include <QApplication>
+#include <QHelpEvent>
+#include <QToolTip>
+#include <QAbstractItemView>
 
 #include "app/ServicesApp.h"
 
@@ -59,8 +61,8 @@ ObjectInfoDelegate::ObjectInfoDelegate(QObject* parent)
     : QStyledItemDelegate{parent}
     , d{new Private}
 {
-    connect(ServicesApp::instance()->settings(), &AppSettings::tablesDetailedChanged, this, &ObjectInfoDelegate::setDetailed);
-    connect(ServicesApp::instance()->settings(), &AppSettings::tablesDetailedMultilineChanged, this, &ObjectInfoDelegate::setMultiline);
+    connect(qApp->settings(), &AppSettings::tablesDetailedChanged, this, &ObjectInfoDelegate::setDetailed);
+    connect(qApp->settings(), &AppSettings::tablesDetailedMultilineChanged, this, &ObjectInfoDelegate::setMultiline);
     setDetailed();
     setMultiline();
 }
@@ -141,6 +143,23 @@ void ObjectInfoDelegate::paint(QPainter* painter, const QStyleOptionViewItem& op
     }
 }
 
+bool ObjectInfoDelegate::helpEvent(QHelpEvent* event, QAbstractItemView* view,
+                                   const QStyleOptionViewItem& option, const QModelIndex& index)
+{
+    if ( event->type() == QEvent::ToolTip && index.isValid() )
+    {
+        QString tooltip = index.data(Qt::ToolTipRole).toString();
+        if ( !tooltip.isEmpty() && !Qt::mightBeRichText(tooltip) )
+        {
+            tooltip = QStringLiteral("<qt>%0</qt>").arg(tooltip);
+            QToolTip::showText(event->globalPos(), tooltip, view);
+            return true;
+        }
+    }
+
+    return QStyledItemDelegate::helpEvent(event, view, option, index);
+}
+
 void ObjectInfoDelegate::setColumnSize(int size)
 {
     d->m_column_size = size;
@@ -156,12 +175,12 @@ void ObjectInfoDelegate::setNeverDetailed(bool how)
 
 void ObjectInfoDelegate::setDetailed()
 {
-    d->m_detailed = ServicesApp::instance()->settings()->tablesDetailed();
+    d->m_detailed = qApp->settings()->tablesDetailed();
     emit sizeHintChanged({});
 }
 
 void ObjectInfoDelegate::setMultiline()
 {
-    d->m_multiline = ServicesApp::instance()->settings()->tablesDetailedMultiline();
+    d->m_multiline = qApp->settings()->tablesDetailedMultiline();
     emit sizeHintChanged({});
 }

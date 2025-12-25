@@ -172,6 +172,8 @@ AlteratorGDBusSource *alterator_gdbus_source_new(gboolean is_verbose, GBusType t
 
     object->info_parser = info_parser;
 
+    object->bus_type = type;
+
     //GDBusSourceClass *klass = GDBUS_SOURCE_GET_CLASS(object);
 
     object->call              = &call;

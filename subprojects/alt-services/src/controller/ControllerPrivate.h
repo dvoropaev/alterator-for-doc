@@ -18,4 +18,6 @@ public:
 
     QActionGroup m_table_mode_group;
     QList<QAction*> m_table_actions;
+
+    Controller::DiagErrorHandler* m_diag_error_handler{};
 };

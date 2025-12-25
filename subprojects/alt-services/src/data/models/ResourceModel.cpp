@@ -143,6 +143,9 @@ QVariant ResourceModel::data(const QModelIndex& index, int role) const
             f.setUnderline( override && index.column() == 0 );
             return f;
         }
+
+        case Qt::TextAlignmentRole:
+            return QVariant::fromValue(Qt::AlignTop | Qt::AlignLeft);
     }
 
     return {};

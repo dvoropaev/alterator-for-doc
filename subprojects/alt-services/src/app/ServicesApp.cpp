@@ -2,6 +2,7 @@
 
 #include "controller/Controller.h"
 #include "ui/MainWindow.h"
+#include "RichToolTipEventFilter.h"
 
 #include <QEvent>
 #include <QDragEnterEvent>
@@ -30,6 +31,8 @@ ServicesApp::ServicesApp(int& argc, char** argv)
     setOrganizationDomain("altlinux.org");
     setApplicationName("alt-services");
     setApplicationVersion(getApplicationVersion());
+
+    installEventFilter(new RichToolTipEventFilter{this});
 }
 
 ServicesApp::~ServicesApp() { delete d; }
@@ -179,7 +182,7 @@ std::optional<Action> ServicesApp::importParameters(const QString& fileName)
         CRITICAL( QObject::tr("File parse error"), QObject::tr("Unsupported format version."));
 
     auto name = object["service"].toString();
-    Service* service = ServicesApp::instance()->controller()->findByName( name );
+    Service* service = qApp->controller()->findByName( name );
 
     if ( !service ) {
         CRITICAL( QObject::tr("Error"), QObject::tr("Service \"%0\" does not exist").arg(name));

@@ -17,7 +17,6 @@ components = [
 	"moodle",
 	"nextcloud",
 	"mediawiki",
-	"yandex",
 ]
 
 [sections.education]

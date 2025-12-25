@@ -19,7 +19,7 @@ set -euo pipefail
 . shell-temp
 
 declare -r PROG_NAME="${0##*/}"
-declare -r VERSION="0.0.2"
+declare -r VERSION="0.4.4"
 
 declare -r PREDIAG_MODE="pre"
 declare -r POSTDIAG_MODE="post"
@@ -28,6 +28,7 @@ declare -r PREDIAG_IGNORE="ignore"
 declare -r PREDIAG_ONLY="only"
 declare -r PREDIAG_REVERSE="reverse"
 declare -r PREDIAG_NORMAL="normal"
+declare -r PREDIAG_REVERSE_WITH_WARNINGS="warning"
 
 global_retval=0
 task_list="$*"
@@ -163,6 +164,35 @@ task_show() {
     echo "$func"
 }
 
+# to make update_global_retval function simpler
+__switch_1_and_2() {
+    case "$1" in
+    1)
+        echo 2
+        ;;
+    2)
+        echo 1
+        ;;
+    *)
+        echo "$1"
+        ;;
+    esac
+}
+
+__update_global_retval() {
+    local a="$1"
+    local b="$2"
+    a="$(__switch_1_and_2 $a)"
+    b="$(__switch_1_and_2 $b)"
+    local retval=$((a > b ? a : b))
+    retval=$(__switch_1_and_2 $retval)
+    if [[ $retval > 2 ]]; then
+        global_retval=1
+    else
+        global_retval="$retval"
+    fi
+}
+
 task_run() {
     local retval=126
     local func="$1"
@@ -172,7 +202,6 @@ task_run() {
     fi
 
     $func && retval=0 || retval="$?"
-    test $retval = 0 || global_retval=1
 
     return "$retval"
 }
@@ -183,14 +212,28 @@ test_status() {
     local task="$2"
     local action_on_prediag="$3"
 
-    if [[ "$action_on_prediag" == "$PREDIAG_REVERSE" && "$service_deploy_mode" == "$PREDIAG_MODE" && ($retval == 0 || $retval == 1) ]]; then
-        if [[ "$retval" == 1 ]]; then
-            retval=0
-            global_retval=0
-        else
+    if [[ ("$action_on_prediag" == "$PREDIAG_REVERSE" || "$action_on_prediag" == "$PREDIAG_REVERSE_WITH_WARNINGS") && "$service_deploy_mode" == "$PREDIAG_MODE" ]]; then
+        case "$retval" in
+        0)
             retval=1
-            global_retval=1
-        fi
+            __update_global_retval $retval $global_retval
+            ;;
+        1)
+            retval=0
+            __update_global_retval $retval $global_retval
+            ;;
+        2)
+            if [ "$action_on_prediag" == "$PREDIAG_REVERSE_WITH_WARNINGS" ]; then
+                retval=0
+                __update_global_retval $retval $global_retval
+            fi
+            ;;
+        *)
+            __update_global_retval $retval $global_retval
+            ;;
+        esac
+    else
+        __update_global_retval $retval $global_retval
     fi
 
     case "$retval" in
@@ -557,7 +600,7 @@ __service_running() {
         echo -e "The service is not running, an error has occurred:\n$out"
         retval=1
     elif test "$(systemctl is-enabled "$service")" = "disabled"; then
-        echo -e "Warning. The service is not active:\n$out"
+        echo -e "The service is not active:\n$out"
         retval=2
     else
         echo -e "Error. Perhaps the service is missing:\n$out"
@@ -1113,13 +1156,13 @@ is_nslcd_service_disabled() {
 task is_domain_info_available "$PREDIAG_REVERSE"
 task is_hostname_correct "$PREDIAG_NORMAL"
 task is_hostname_static_and_transient "$PREDIAG_NORMAL"
-task is_not_empty_sysvol "$PREDIAG_REVERSE"
+task is_not_empty_sysvol "$PREDIAG_REVERSE_WITH_WARNINGS"
 task does_sysvol_contain_necessary_files "$PREDIAG_IGNORE"
 task is_samba_package_installed "$PREDIAG_NORMAL"
-task is_samba_service_running "$PREDIAG_REVERSE"
+task is_samba_service_running "$PREDIAG_REVERSE_WITH_WARNINGS"
 task is_resolve_local "$PREDIAG_IGNORE"
-task is_krb5_conf_file_exists "$PREDIAG_NORMAL"
-task is_smb_conf_file_exists "$PREDIAG_NORMAL"
+task is_krb5_conf_file_exists "$PREDIAG_IGNORE"
+task is_smb_conf_file_exists "$PREDIAG_IGNORE"
 task is_there_way_to_cache_kerberos_tickets "$PREDIAG_IGNORE"
 task is_sections_with_domain_name_in_krb5_empty "$PREDIAG_IGNORE"
 task is_dns_lookup_kdc_enabled "$PREDIAG_IGNORE"

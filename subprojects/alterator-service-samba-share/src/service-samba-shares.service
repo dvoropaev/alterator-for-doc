@@ -11,7 +11,7 @@ comment.ru = "Для управления общими папками Samba"
 enable_force_deploy = true
 no_default_diag = true
 
-# -------- STATUS: The list share ----------
+# STATUS
 [parameters.shares]
 display_name.en = "Samba Shares"
 display_name.ru = "Общие папки Samba"
@@ -51,7 +51,6 @@ display_name.en = "Allowed Users"
 display_name.ru = "Разрешённые пользователи"
 type = "string"
 
-# -------- Operation selector ----------
 [parameters.operation]
 display_name.en = "Choice operation"
 display_name.ru = "Выбор операции"
@@ -62,68 +61,54 @@ default = "create"
 context = ["configure"]
 required = ["configure"]
 
+# CREATE
 [parameters.operation.values.create]
 display_name.en = "Create"
 display_name.ru = "Создать"
-[parameters.operation.values.update]
-display_name.en = "Update"
-display_name.ru = "Изменить"
-[parameters.operation.values.delete]
-display_name.en = "Delete"
-display_name.ru = "Удалить"
 
-# -------- CREATE section ----------
-[parameters.create]
-display_name.en = "Create new share path"
-display_name.ru = "Создать новую общую папку"
-comment.en = "Required: name, path, owner, access type"
-comment.ru = "Обязательно: имя, путь, владелец, тип доступа"
-type = "object"
-context = ["configure"]
-
-[parameters.create.properties.share_name]
+[parameters.operation.values.create.properties.share_name]
 display_name.en = "Share Name"
 display_name.ru = "Имя общей папки"
 comment.en = "Unique name of the Samba share"
 comment.ru = "Уникальное имя общей папки Samba"
 type = "string"
 
-[parameters.create.properties.share_path]
+[parameters.operation.values.create.properties.share_path]
 display_name.en = "Share Path"
 display_name.ru = "Путь к папке"
 comment.en = "Filesystem path to the shared folder"
 comment.ru = "Путь к каталогу, который будет расшарен"
 type = "string"
 
-[parameters.create.properties.access_user]
+[parameters.operation.values.create.properties.access_user]
 display_name.en = "Owner (Access User)"
 display_name.ru = "Владелец (Пользователь)"
 comment.en = "User who will own the folder and have access"
 comment.ru = "Пользователь, которому принадлежит папка и который имеет доступ"
 type = "string"
 
-[parameters.create.properties.access_type]
+[parameters.operation.values.create.properties.access_type]
 display_name.en = "Access Type"
 display_name.ru = "Тип доступа"
 comment.en = "Access permission: read-only (ro) or read-write (rw)"
 comment.ru = "Тип доступа: только чтение (ro) или чтение и запись (rw)"
 type = "enum"
 default = "ro"
-[parameters.create.properties.access_type.values.ro]
+[parameters.operation.values.create.properties.access_type.values.ro]
 display_name.en = "Read-only"
 display_name.ru = "Только чтение"
-[parameters.create.properties.access_type.values.rw]
+[parameters.operation.values.create.properties.access_type.values.rw]
 display_name.en = "Read/Write"
 display_name.ru = "Чтение и запись"
 
-[parameters.create.properties.allowed_users]
+[parameters.operation.values.create.properties.allowed_users]
 display_name.en = "Allowed Users (comma-separated)"
 display_name.ru = "Разрешённые пользователи (через запятую)"
 comment.en = "Comma-separated list of users allowed to access this share"
 comment.ru = "Список пользователей с доступом к этой расшаренной папке (через запятую)"
 type = "string"
 
-[parameters.create.properties.anonymous_enabled]
+[parameters.operation.values.create.properties.anonymous_enabled]
 display_name.en = "Anonymous access (guest)"
 display_name.ru = "Анонимный доступ (guest)"
 comment.en = "Allow access without a password (guest ok)."
@@ -131,7 +116,7 @@ comment.ru = "Разрешить доступ без пароля (guest ok)."
 type = "boolean"
 default = false
 
-[parameters.create.properties.browsable]
+[parameters.operation.values.create.properties.browsable]
 display_name.en = "Show path in network"
 display_name.ru = "Показывать папку в сети"
 comment.en = "If enabled, the share will be visible in the Network list."
@@ -139,57 +124,53 @@ comment.ru = "Если включено — папка будет видна в 
 type = "boolean"
 default = true
 
-# -------- UPDATE section ----------
-[parameters.update]
-display_name.en = "Update existing share"
-display_name.ru = "Изменить существующую папку"
-comment.en = "Required: name. Fill only fields you want to change."
-comment.ru = "Обязательно: имя. Заполняйте только то, что нужно изменить."
-type = "object"
-context = ["configure"]
+# UPDATE
+[parameters.operation.values.update]
+display_name.en = "Update"
+display_name.ru = "Изменить"
 
-[parameters.update.properties.share_name]
+[parameters.operation.values.update.properties.share_name]
 display_name.en = "Share Name (required)"
 display_name.ru = "Имя общей папки (обязательно)"
 comment.en = "Unique name of the Samba share"
 comment.ru = "Уникальное имя общей папки Samba"
 type = "string"
 
-[parameters.update.properties.share_path]
+[parameters.operation.values.update.properties.share_path]
 display_name.en = "New Share Path"
 display_name.ru = "Новый путь к папке"
 comment.en = "Filesystem path to the shared folder"
 comment.ru = "Путь к каталогу, который будет расшарен"
 type = "string"
 
-[parameters.update.properties.access_user]
+[parameters.operation.values.update.properties.access_user]
 display_name.en = "New Owner (Access User)"
 display_name.ru = "Новый владелец (Пользователь)"
 comment.en = "User who will own the folder and have access"
 comment.ru = "Пользователь, которому принадлежит папка и который имеет доступ"
 type = "string"
 
-[parameters.update.properties.access_type]
+[parameters.operation.values.update.properties.access_type]
 display_name.en = "New Access Type"
 display_name.ru = "Новый тип доступа"
 comment.en = "Access permission: read-only (ro) or read-write (rw)"
 comment.ru = "Тип доступа: только чтение (ro) или чтение и запись (rw)"
 type = "enum"
-[parameters.update.properties.access_type.values.ro]
+[parameters.operation.values.update.properties.access_type.values.ro]
 display_name.en = "Read-only"
 display_name.ru = "Только чтение"
-[parameters.update.properties.access_type.values.rw]
+[parameters.operation.values.update.properties.access_type.values.rw]
 display_name.en = "Read/Write"
 display_name.ru = "Чтение и запись"
 
-[parameters.update.properties.allowed_users]
+[parameters.operation.values.update.properties.allowed_users]
 display_name.en = "New Allowed Users (comma-separated)"
 display_name.ru = "Новые разрешённые пользователи (через запятую)"
 comment.en = "Comma-separated list of users allowed to access this share"
 comment.ru = "Список пользователей с доступом к этой расшаренной папке (через запятую)"
 type = "string"
 
-[parameters.update.properties.delete_prev_allowed]
+[parameters.operation.values.update.properties.delete_prev_allowed]
 display_name.en = "Delete previous allowed users"
 display_name.ru = "Удалить прежних разрешённых"
 comment.en = "If enabled, replace previous allowed users with the new list. If disabled, merge new users with existing."
@@ -197,37 +178,33 @@ comment.ru = "Если включено — заменить прежних ра
 type = "boolean"
 default = false
 
-[parameters.update.properties.anonymous_enabled]
+[parameters.operation.values.update.properties.anonymous_enabled]
 display_name.en = "Anonymous access (guest)"
 display_name.ru = "Анонимный доступ (guest)"
 comment.en = "Turn on/off anonymous (guest) access for this share."
 comment.ru = "Включить/выключить анонимный (guest) доступ для этой папки."
 type = "boolean"
 
-[parameters.update.properties.browsable]
+[parameters.operation.values.update.properties.browsable]
 display_name.en = "Show path in network"
 display_name.ru = "Показывать папку в сети"
 comment.en = "Turn share visibility in Network on/off."
 comment.ru = "Включить или выключить видимость папки в разделе «Сеть»."
 type = "boolean"
 
-# -------- DELETE section ----------
-[parameters.delete]
-display_name.en = "Delete share"
-display_name.ru = "Удалить общую папку"
-comment.en = "Required: name"
-comment.ru = "Обязательно: имя"
-type = "object"
-context = ["configure"]
+# DELETE
+[parameters.operation.values.delete]
+display_name.en = "Delete"
+display_name.ru = "Удалить"
 
-[parameters.delete.properties.share_name]
+[parameters.operation.values.delete.properties.share_name]
 display_name.en = "Share Name (required)"
 display_name.ru = "Имя общей папки (обязательно)"
 comment.en = "Unique name of the Samba share"
 comment.ru = "Уникальное имя общей папки Samba"
 type = "string"
 
-# ---------------- Resources ----------------
+# Resources
 [resources.smb_conf]
 display_name.en = "Samba Configuration File"
 display_name.ru = "Конфигурационный файл Samba"
@@ -252,7 +229,6 @@ display_name.ru = "Сервис NetBIOS"
 type = "systemd_unit"
 unit_name.value = "nmb.service"
 
-# ------------------Backup Restore---------------
 [parameters.backup_name]
 display_name.ru = "Имя файла бэкапа"
 display_name.en = "Backup filename"

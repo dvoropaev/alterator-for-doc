@@ -38,7 +38,7 @@ public:
     }
 
     void importParameters(const QString& filename) {
-        if ( auto playfile = ServicesApp::instance()->importParameters(filename) )
+        if ( auto playfile = qApp->importParameters(filename) )
         {
             qApp->controller()->selectByPath(playfile->service->dbusPath());
             m_wizard.open(playfile.value());
@@ -81,18 +81,20 @@ MainWindow::MainWindow(QWidget *parent)
     d->setActionContext(d->ui.actionBackup    , Parameter::Context::Backup    );
     d->setActionContext(d->ui.actionRestore   , Parameter::Context::Restore   );
 
-    d->ui.menuView->addSection(tr("ToolBar"));
-    d->ui.toolBar->toggleViewAction()->setText(tr("Enable ToolBar"));
-    d->ui.menuView->addAction(d->ui.toolBar->toggleViewAction());
 
-    QMenu* toolIcon = d->ui.menuView->addMenu(tr("Buttons style"));
-    auto group = new QActionGroup{toolIcon};
+    { // toolbar style
+        d->ui.menuView->addSection(tr("ToolBar"));
+        d->ui.toolBar->toggleViewAction()->setText(tr("Enable ToolBar"));
+        d->ui.menuView->addAction(d->ui.toolBar->toggleViewAction());
 
-    group->setExclusive(true);
+        QMenu* toolIcon = d->ui.menuView->addMenu(tr("Buttons style"));
+        auto group = new QActionGroup{toolIcon};
 
-    auto savedStyle = ServicesApp::instance()->settings()->toolButtonStyle();
+        group->setExclusive(true);
 
-    d->ui.toolBar->setToolButtonStyle(savedStyle);
+        auto savedStyle = qApp->settings()->toolButtonStyle();
+
+        d->ui.toolBar->setToolButtonStyle(savedStyle);
 
 #define TOOLSTYLE(text, style) { \
     auto* action = toolIcon->addAction(text); \
@@ -101,18 +103,21 @@ MainWindow::MainWindow(QWidget *parent)
     action->setCheckable(true); \
     action->setChecked(style == savedStyle); }
 
-    TOOLSTYLE(tr("Icons only"),         Qt::ToolButtonIconOnly      )
-    TOOLSTYLE(tr("Text only"),          Qt::ToolButtonTextOnly      )
-    TOOLSTYLE(tr("Text beside icon"),   Qt::ToolButtonTextBesideIcon)
-    TOOLSTYLE(tr("Text under icon"),    Qt::ToolButtonTextUnderIcon )
+        TOOLSTYLE(tr("Icons only"),         Qt::ToolButtonIconOnly      )
+        TOOLSTYLE(tr("Text only"),          Qt::ToolButtonTextOnly      )
+        TOOLSTYLE(tr("Text beside icon"),   Qt::ToolButtonTextBesideIcon)
+        TOOLSTYLE(tr("Text under icon"),    Qt::ToolButtonTextUnderIcon )
 
 #undef TOOLSTYLE
 
-    connect(group, &QActionGroup::triggered, this, [this](QAction* a){
-        auto style = (Qt::ToolButtonStyle)a->data().toInt();
-        d->ui.toolBar->setToolButtonStyle(style);
-        ServicesApp::instance()->settings()->set_toolButtonStyle(style);
-    });
+        connect(group, &QActionGroup::triggered, this, [this](QAction* a){
+            auto style = (Qt::ToolButtonStyle)a->data().toInt();
+            d->ui.toolBar->setToolButtonStyle(style);
+            qApp->settings()->set_toolButtonStyle(style);
+        });
+    }
+
+    d->ui.menuView->addActions(qApp->controller()->tableActions());
 
     d->ui.actionRefreshCurrent->setDisabled(true);
 
@@ -122,7 +127,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(d->ui.actionQuit,  &QAction::triggered, QApplication::instance(), &QApplication::quit);
     connect(d->ui.actionAbout, &QAction::triggered, &d->m_about, &QDialog::open);
 
-    restoreState(ServicesApp::instance()->settings()->mainWindowState());
+    restoreState(qApp->settings()->mainWindowState());
 
 
     d->m_filter_model.setSourceModel(qApp->controller()->model());
@@ -237,7 +242,7 @@ void MainWindow::dropEvent(QDropEvent* event)
 
 void MainWindow::closeEvent(QCloseEvent* event)
 {
-    ServicesApp::instance()->settings()->set_mainWindowState(saveState());
+    qApp->settings()->set_mainWindowState(saveState());
     QMainWindow::closeEvent(event);
 }
 

@@ -12,10 +12,11 @@
 
 static int stdout_backup, stderr_backup;
 
-#define TEXT_COLOR_DEFAULT "\033[0m"
+#define TEXT_STYLE_DEFAULT "\033[0m"
 #define TEXT_COLOR_RED "\033[31m"
 #define TEXT_COLOR_GREEN "\033[32m"
 #define TEXT_COLOR_YELLOW "\033[33m"
+#define TEXT_STYLE_BOLD "\033[1m"
 
 #define SELF_PROCESS_STDIN_LINK_PATH "/proc/self/fd/0"
 
@@ -433,26 +434,30 @@ end:
     return ret;
 }
 
-gchar *colorize_text(const gchar *text, text_color color)
+gchar *stylize_text(const gchar *text, text_style style)
 {
     gchar *result = NULL;
 
-    switch (color)
+    switch (style)
     {
     case DEFAULT:
         result = g_strdup(text);
         break;
 
     case RED:
-        result = g_strconcat(TEXT_COLOR_RED, text, TEXT_COLOR_DEFAULT, NULL);
+        result = g_strconcat(TEXT_COLOR_RED, text, TEXT_STYLE_DEFAULT, NULL);
         break;
 
     case GREEN:
-        result = g_strconcat(TEXT_COLOR_GREEN, text, TEXT_COLOR_DEFAULT, NULL);
+        result = g_strconcat(TEXT_COLOR_GREEN, text, TEXT_STYLE_DEFAULT, NULL);
         break;
 
     case YELLOW:
-        result = g_strconcat(TEXT_COLOR_YELLOW, text, TEXT_COLOR_DEFAULT, NULL);
+        result = g_strconcat(TEXT_COLOR_YELLOW, text, TEXT_STYLE_DEFAULT, NULL);
+        break;
+
+    case BOLD:
+        result = g_strconcat(TEXT_STYLE_BOLD, text, TEXT_STYLE_DEFAULT, NULL);
         break;
     };
 

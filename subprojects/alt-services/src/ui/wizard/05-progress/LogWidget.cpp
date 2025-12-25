@@ -123,7 +123,6 @@ public slots:
     void next() override { move(true ); }
 
 };
-#include "LogWidget.moc"
 
 class AutoScroller {
     CustomTreeView& m_treeWidget;
@@ -141,11 +140,40 @@ public:
     }
 };
 
+class AutoResizableTextBrowser : public QTextBrowser {
+    Q_OBJECT
+public:
+    AutoResizableTextBrowser(QWidget* parent = nullptr)
+        : QTextBrowser{parent}
+    {
+        setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+        connect(document(), &QTextDocument::contentsChanged, this, &AutoResizableTextBrowser::adjust);
+    }
+
+signals:
+    void sizeChanged();
+
+protected:
+    void resizeEvent(QResizeEvent* event) override
+    {
+        QTextBrowser::resizeEvent(event);
+        adjust();
+    }
+
+private slots:
+    void adjust()
+    {
+        setMinimumHeight(document()->size().grownBy(contentsMargins()).height());
+        emit sizeChanged();
+    }
+};
+#include "LogWidget.moc"
+
 class LogWidget::Private {
 public:
     QStandardItem* m_lastEntryItem{};
     QStandardItem* m_lastTextItem{};
-    QTextBrowser* m_lastText{};
+    AutoResizableTextBrowser* m_lastText{};
     CustomTreeView* m_tree{};
     QStandardItemModel m_model;
     QAction* m_search{};
@@ -167,7 +195,8 @@ public:
 
             m_lastTextItem->setData(true, Qt::UserRole);
 
-            m_lastText = new QTextBrowser{m_tree};
+            m_lastText = new AutoResizableTextBrowser{m_tree};
+            connect(m_lastText, &AutoResizableTextBrowser::sizeChanged, m_tree, &QTreeView::doItemsLayout);
             m_lastText->setContextMenuPolicy(Qt::CustomContextMenu);
 
             connect(m_lastText, &QTextBrowser::customContextMenuRequested,
@@ -195,13 +224,11 @@ public:
             m_lastText->setLineWrapMode(QTextBrowser::LineWrapMode::WidgetWidth);
             m_lastText->setTextInteractionFlags(Qt::TextSelectableByMouse);
             m_tree->setIndexWidget(m_lastTextItem->index(), m_lastText);
-            if ( m_lastEntryItem )
-                m_tree->expand(m_lastEntryItem->index());
         }
 
         m_lastText->append(msg);
         m_lastTextItem->setData(m_lastTextItem->data(Qt::DisplayRole).toString() + msg, Qt::DisplayRole);
-        m_lastText->setMinimumHeight(m_lastText->document()->size().height());
+
         m_tree->doItemsLayout();
     }
 
@@ -303,6 +330,10 @@ LogWidget::LogWidget(QWidget *parent)
             {
                 auto head = doc.createElement("head");
                 {
+                    auto meta = doc.createElement("meta");
+                    meta.setAttribute("charset", "utf-8");
+                    head.appendChild(meta);
+
                     auto style = doc.createElement("style");
                     style.appendChild(doc.createTextNode(
 R"(
@@ -334,6 +365,7 @@ entry {
         }
 
         QTextStream s{&f};
+        s.setEncoding(QStringConverter::Utf8);
         doc.save(s, 2);
         s.flush();
         f.close();
@@ -373,17 +405,22 @@ void LogWidget::endEntry(Controller::Result result)
 
     if ( d->m_lastEntryItem )
     {
+        auto text = d->m_lastEntryItem->text();
         switch (result) {
             case Controller::Result::Success:
+                d->m_lastEntryItem->setText( tr("[Success]").append(' ').append(text) );
                 d->m_lastEntryItem->setIcon(QIcon::fromTheme("dialog-ok"));
             break;
 
             case Controller::Result::Warning:
+                d->m_lastEntryItem->setText( tr("[Warning]").append(' ').append(text) );
                 d->m_lastEntryItem->setIcon(QIcon::fromTheme("dialog-warning"));
                 d->m_lastEntryItem->setForeground(QColor{127,127,0});
             break;
 
+            case Controller::Result::ErrorIgnored:
             case Controller::Result::Error:
+                d->m_lastEntryItem->setText( tr("[Error]").append(' ').append(text) );
                 d->m_lastEntryItem->setIcon(QIcon::fromTheme("window-close"));
                 d->m_lastEntryItem->setForeground(QColor{255,0,0});
             break;

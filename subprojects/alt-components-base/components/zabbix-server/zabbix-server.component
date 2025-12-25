@@ -5,8 +5,12 @@ display_name.en = "Zabbix - server"
 display_name.ru = "Zabbix - сервер"
 
 [packages]
-zabbix-preinstall = {}
+"zabbix-phpfrontend-php8.4" = {}
+zabbix-server-mysql = {}
+zabbix-server-pgsql = {}
+"zabbix-phpfrontend-apache2-mod_php8.4" = {}
 
+# zabbix-preinstall = {}
 # zabbix-server-pgsql = {}
 # zabbix-server-mysql = {}
 # zabbix-phpfrontend-apache2 = {}

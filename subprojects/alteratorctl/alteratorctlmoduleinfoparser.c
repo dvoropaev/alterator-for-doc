@@ -403,7 +403,12 @@ static int alterator_ctl_module_info_parser_get_specified_object_data(
     if (source->alterator_gdbus_source_get_text_of_alterator_entry_by_path(source, path, iface, &alterator_entry_text)
         < 0)
     {
-        g_printerr(_("Can't parse alterator entry info. Can't get alterator entry text.\n"));
+        g_printerr(_("Can't get alterator entry text of object %s by interface %s%s.\n"),
+                   path,
+                   iface,
+                   source->bus_type == G_BUS_TYPE_SYSTEM
+                       ? _(" on system bus")
+                       : (source->bus_type == G_BUS_TYPE_SESSION ? _(" on session bus") : ""));
         ERR_EXIT();
     }
 
@@ -552,7 +557,8 @@ static GNode **alterator_ctl_module_info_parser_get_objects_data_priv(
     AlteratorCtlModuleInfoParserGetObjectsDataCallback callback)
 {
     GNode **result;
-    GHashTable *objects = NULL;
+    GHashTable *objects        = NULL;
+    GHashTable *parsed_by_path = NULL;
 
     AlteratorGDBusSource *source = (AlteratorGDBusSource *) gdbus_source;
 
@@ -565,38 +571,66 @@ static GNode **alterator_ctl_module_info_parser_get_objects_data_priv(
     if (!objects)
         return NULL;
 
-    *amount_of_objects = g_hash_table_size(objects);
-    if (!(*amount_of_objects))
+    gsize total = g_hash_table_size(objects);
+    if (!total)
     {
         g_hash_table_destroy(objects);
         return NULL;
     }
 
-    result = (GNode **) g_malloc0((*amount_of_objects) * sizeof(GNode *));
+    result         = g_new0(GNode *, total);
+    parsed_by_path = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, NULL);
 
     GHashTableIter iter;
     gpointer object_path = NULL, value = NULL;
     g_hash_table_iter_init(&iter, objects);
 
-    int node_index = 0;
+    gsize valid_objects_counts = 0;
     while (g_hash_table_iter_next(&iter, &object_path, &value))
     {
+        disable_output();
+        GNode *tmp = NULL;
         if (alterator_ctl_module_info_parser_get_specified_object_data(self,
                                                                        source,
                                                                        (const gchar *) object_path,
                                                                        iface,
-                                                                       &result[node_index])
+                                                                       &tmp)
             < 0)
         {
-            g_free(result);
-            return NULL;
+            enable_output();
+            if (total == 1)
+            {
+                g_hash_table_destroy(objects);
+                g_hash_table_destroy(parsed_by_path);
+                g_free(result);
+                return NULL;
+            }
+
+            if (tmp)
+                alterator_ctl_module_info_parser_result_tree_free(tmp);
+            continue;
         }
-        node_index++;
+        enable_output();
+
+        result[valid_objects_counts++] = tmp;
+        g_hash_table_insert(parsed_by_path, g_strdup((const gchar *) object_path), tmp);
     }
 
-    if (callback)
-        callback(self, result, objects, iface);
+    if (valid_objects_counts == 0)
+    {
+        g_hash_table_destroy(objects);
+        g_hash_table_destroy(parsed_by_path);
+        g_free(result);
+        return NULL;
+    }
 
+    result             = g_realloc_n(result, valid_objects_counts, sizeof(GNode *));
+    *amount_of_objects = valid_objects_counts;
+
+    if (callback)
+        callback(self, result, parsed_by_path, iface);
+
+    g_hash_table_destroy(parsed_by_path);
     g_hash_table_destroy(objects);
 
     return result;
@@ -887,26 +921,28 @@ static int alterator_ctl_module_info_parser_get_objects_names_callback(gpointer 
     gpointer path = NULL, value = NULL;
     g_hash_table_iter_init(&iter, objects_paths);
 
-    int node_index = 0;
     while (g_hash_table_iter_next(&iter, &path, &value))
     {
+        GNode *root = (GNode *) value;
+        if (!root)
+            continue;
+
         toml_value_traverse_ctx ctx;
         ctx.key                  = "name";
         ctx.value                = NULL;
         gpointer travers_data[2] = {&ctx, NULL};
-        if (!alterator_ctl_module_info_parser_find_value_callback(parsed_data[node_index], travers_data))
+        if (!alterator_ctl_module_info_parser_find_value_callback(root, travers_data))
         {
             g_printerr(_("Module info parser error: Object with path %s and iface %s has no name found.\n"),
                        (const gchar *) path,
                        iface);
 
-            alterator_ctl_module_info_parser_result_trees_free(parsed_data, node_index + 1);
+            alterator_ctl_module_info_parser_result_trees_free(parsed_data, 0);
             g_hash_table_destroy(info_parser->names_by_dbus_paths);
             ERR_EXIT();
         }
 
         g_hash_table_insert(info_parser->names_by_dbus_paths, g_strdup(ctx.value->str_value), g_strdup((gchar *) path));
-        node_index++;
     }
 
 end:

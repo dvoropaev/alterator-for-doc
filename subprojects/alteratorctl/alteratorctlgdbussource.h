@@ -31,6 +31,8 @@ typedef struct
 
     GDBusConnection *dbus_connection;
 
+    GBusType bus_type;
+
     AlteratorCtlModuleInfoParser *info_parser;
 
     void (*call)(gpointer self, dbus_ctx_t *dbus_ctx, GError **dbus_call_error);

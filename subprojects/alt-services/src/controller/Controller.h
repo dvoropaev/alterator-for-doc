@@ -24,7 +24,7 @@ public:
     QList<QAction*> tableActions();
 
     enum class Result
-    { Success, Warning, Error };
+    { Success, Warning, ErrorIgnored, Error };
 
     Result call(const Action& action);
     bool updateStatus(Service* service);
@@ -42,13 +42,21 @@ public:
     static const QString& actionName(Parameter::Context context);
     static const QIcon& actionIcon(Parameter::Context context);
 
+    class DiagErrorHandler {
+    public:
+        virtual Result handleError(DiagTool::Test* test, DiagTool::Test::Mode mode) = 0;
+        virtual ~DiagErrorHandler() = default;
+    };
+    void installDiagErrorHandler(DiagErrorHandler* handler);
 
 signals:
     void beginRefresh();
     void endRefresh();
     void select(int);
-    void actionBegin(const QString&);
-    void actionEnd(Result);
+    void operationBegin();
+    void operationEnd(Result, const Action&);
+    void stepBegin(const QString&);
+    void stepEnd(Result);
     void stdout(const QString&);
     void stderr(const QString&);
 

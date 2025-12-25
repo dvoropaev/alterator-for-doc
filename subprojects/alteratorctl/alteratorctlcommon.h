@@ -27,8 +27,9 @@ typedef enum
     DEFAULT,
     RED,
     GREEN,
-    YELLOW
-} text_color;
+    YELLOW,
+    BOLD
+} text_style;
 
 typedef enum is_tty_status
 {
@@ -221,7 +222,7 @@ int disable_output();
 
 int enable_output();
 
-gchar *colorize_text(const gchar *text, text_color color);
+gchar *stylize_text(const gchar *text, text_style style);
 
 gchar *call_bash_command(const gchar *cmd, GError **error);
 

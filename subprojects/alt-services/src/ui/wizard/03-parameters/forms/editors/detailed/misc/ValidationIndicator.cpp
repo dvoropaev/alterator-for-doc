@@ -6,6 +6,7 @@ ValidationIndicator::ValidationIndicator(QWidget* parent)
 {
     setMessageType(KMessageWidget::MessageType::Error);
     setCloseButtonVisible(false);
+    setPosition(KMessageWidget::Footer);
     setIcon(QIcon::fromTheme("dialog-error"));
 }
 
@@ -16,11 +17,19 @@ void ValidationIndicator::setEditor(Editor *e)
     validate();
 }
 
-void ValidationIndicator::validate(){
+void ValidationIndicator::validate()
+{
+    /*
+     *  NOTE: changed() may be emitted multiple times
+     *  per editing event, but animations are shown immediately for some reason
+     */
+
     if ( auto info = m_editor->value()->isInvalid(m_editor->form().action().options.force ) )
     {
         setText(info->message);
-        animatedShow();
+        //animatedShow();
+        show();
     } else
-        animatedHide();
+        hide();
+        //animatedHide();
 }

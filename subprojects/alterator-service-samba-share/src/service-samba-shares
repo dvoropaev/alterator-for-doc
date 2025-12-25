@@ -66,6 +66,7 @@ EOF
 [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]] && show_usage
 
 LOG_FILE="/var/log/samba-shares.log"
+DEPLOY_MARK="/var/lib/alterator/service/service-samba-share/deployed"
 
 log() {
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] [PID:$$] $1" >> "$LOG_FILE"
@@ -680,6 +681,9 @@ deploy_samba_share() {
   if command -v alterator-announce >/dev/null 2>&1; then
     alterator-announce "samba_shares" "deployed" || true
   fi
+  
+  mkdir -p "$(dirname "$DEPLOY_MARK")" || true
+  touch "$DEPLOY_MARK" || true
 
 cat <<EOF
 Samba successfully deployed. You can now share folders through the 'Settings' menu in alt-services.
@@ -734,6 +738,8 @@ undeploy_samba_share() {
   else
     log "Original smb.conf not found, restore skipped"
   fi
+
+  rm -f "$DEPLOY_MARK" || true
 
 cat <<EOF
 Samba disabled, smb.conf restored. Auto-backup created before undeploy.
@@ -790,17 +796,17 @@ status_samba_share() {
   smb_status=$(systemctl is-active smb.service 2>/dev/null || echo "inactive")
   nmb_status=$(systemctl is-active nmb.service 2>/dev/null || echo "inactive")
 
+  if [ -f "$DEPLOY_MARK" ]; then
+    deployed=true
+    state="deployed"
+  else
+    deployed=false
+    state="undeployed"
+  fi
+
   if [ "$smb_status" = "active" ] && [ "$nmb_status" = "active" ]; then
-    state="deployed"
-    deployed=true
-    started=true
-  elif [ "$smb_status" = "active" ] || [ "$nmb_status" = "active" ]; then
-    state="deployed"
-    deployed=true
     started=true
   else
-    state="undeployed"
-    deployed=false
     started=false
   fi
 
@@ -997,7 +1003,7 @@ enum_value() {
       end"
 }
 
-# ------------ MAIN SCRIPT ------------
+# MAIN
 
 [ "$EUID" -ne 0 ] && error "Root required"
 
@@ -1011,46 +1017,39 @@ if [ -z "$operation" ] && [ $# -gt 0 ]; then
 fi
 
 # CREATE  
-c_share_name=$(echo "$input" | jq -r '.create.share_name // empty')
-c_share_path=$(echo "$input" | jq -r '.create.share_path // empty')
-c_access_user=$(echo "$input" | jq -r '.create.access_user // empty')
-c_access_type=$(echo "$input" | enum_value '.create.access_type')
-c_allowed_users=$(echo "$input" | jq -r '.create.allowed_users // empty')
-c_anonymous_enabled=$(echo "$input" | jq -r '.create.anonymous_enabled // empty')
-c_browsable=$(echo "$input" | jq -r '.create.browsable // empty') 
+c_share_name=$(echo "$input" | jq -r '.operation.create.share_name // empty')
+c_share_path=$(echo "$input" | jq -r '.operation.create.share_path // empty')
+c_access_user=$(echo "$input" | jq -r '.operation.create.access_user // empty')
+c_access_type=$(echo "$input" | enum_value '.operation.create.access_type')
+c_allowed_users=$(echo "$input" | jq -r '.operation.create.allowed_users // empty')
+c_anonymous_enabled=$(echo "$input" | jq -r '.operation.create.anonymous_enabled // empty')
+c_browsable=$(echo "$input" | jq -r '.operation.create.browsable // empty') 
 
 # UPDATE
-u_share_name=$(echo "$input" | jq -r '.update.share_name // empty')
-u_share_path=$(echo "$input" | jq -r '.update.share_path // empty')
-u_access_user=$(echo "$input" | jq -r '.update.access_user // empty')
-u_access_type=$(echo "$input" | enum_value '.update.access_type')
-u_allowed_users=$(echo "$input" | jq -r '.update.allowed_users // empty')
-u_delete_prev_allowed=$(echo "$input" | jq -r '.update.delete_prev_allowed // empty')
+u_share_name=$(echo "$input" | jq -r '.operation.update.share_name // empty')
+u_share_path=$(echo "$input" | jq -r '.operation.update.share_path // empty')
+u_access_user=$(echo "$input" | jq -r '.operation.update.access_user // empty')
+u_access_type=$(echo "$input" | enum_value '.operation.update.access_type')
+u_allowed_users=$(echo "$input" | jq -r '.operation.update.allowed_users // empty')
+u_delete_prev_allowed=$(echo "$input" | jq -r '.operation.update.delete_prev_allowed // empty')
 case "${u_delete_prev_allowed,,}" in
   true|1|yes|on) u_delete_prev_allowed=true ;;
   *)             u_delete_prev_allowed=false ;;
 esac
 u_anonymous_enabled=$(
   echo "$input" | jq -r '
-    if .update.anonymous_enabled == null then
-      ""
-    elif .update.anonymous_enabled == true then
-      "true"
-    elif .update.anonymous_enabled == false then
-      "false"
+    if (.operation.update | has("anonymous_enabled")) then
+      (if .operation.update.anonymous_enabled then "true" else "false" end)
     else
       ""
     end
   '
 )
+
 u_browsable=$(
   echo "$input" | jq -r '
-    if .update.browsable == null then
-      ""
-    elif .update.browsable == true then
-      "true"
-    elif .update.browsable == false then
-      "false"
+    if (.operation.update | has("browsable")) then
+      (if .operation.update.browsable then "true" else "false" end)
     else
       ""
     end
@@ -1058,7 +1057,7 @@ u_browsable=$(
 )
 
 # DELETE
-d_share_name=$(echo "$input" | jq -r '.delete.share_name // empty')
+d_share_name=$(echo "$input" | jq -r '.operation.delete.share_name // empty')
 
 backup_name=$(echo "$input" | jq -r '.backup_name // empty')
 

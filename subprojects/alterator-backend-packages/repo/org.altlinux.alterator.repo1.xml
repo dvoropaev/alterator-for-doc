@@ -3,57 +3,24 @@
   "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
 <node name="/" xmlns:doc="http://www.freedesktop.org/dbus/1.0/doc.dtd">
   <interface name="org.altlinux.alterator.repo1">
-    <doc:summary>Expose repository management commands backed by apt-repo.</doc:summary>
     <method name="Info">
-      <doc:summary>Return static descriptor of the repo backend object.</doc:summary>
-      <arg type="ay" name="stdout_bytes" direction="out">
-        <doc:summary>Contents of /usr/share/alterator/objects/repo.object.</doc:summary>
-        <doc:detail>TOML object definition with display_name and comments.</doc:detail>
-      </arg>
-      <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of the cat helper.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
-      </arg>
+      <arg type="ay" name="stdout_bytes" direction="out"></arg>
+      <arg type="i" name="response" direction="out"></arg>
     </method>
     <method name="List">
-      <doc:summary>List configured repositories via apt-repo list.</doc:summary>
-      <arg type="as" name="stdout_strings" direction="out">
-        <doc:summary>Repository entries printed by apt-repo list.</doc:summary>
-      </arg>
-      <arg type="as" name="stderr_strings" direction="out">
-        <doc:summary>Errors from apt-repo list.</doc:summary>
-      </arg>
-      <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of the list command.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
-      </arg>
+      <arg type="as" name="stdout_strings" direction="out"></arg>
+      <arg type="as" name="stderr_strings" direction="out"></arg>
+      <arg type="i" name="response" direction="out"></arg>
     </method>
     <method name="Add">
-      <doc:summary>Add repository source via apt-repo add.</doc:summary>
-      <arg type="s" name="source" direction="in">
-        <doc:summary>Source definition passed directly to apt-repo add.</doc:summary>
-        <doc:detail>Supports file paths or URI strings accepted by apt-repo.</doc:detail>
-      </arg>
-      <arg type="as" name="stderr_strings" direction="out">
-        <doc:summary>apt-repo warnings or errors.</doc:summary>
-      </arg>
-      <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of the add command.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
-      </arg>
+      <arg type="s" name="source" direction="in"></arg>
+      <arg type="as" name="stderr_strings" direction="out"></arg>
+      <arg type="i" name="response" direction="out"></arg>
     </method>
     <method name="Remove">
-      <doc:summary>Remove repository source via apt-repo rm.</doc:summary>
-      <arg type="s" name="source" direction="in">
-        <doc:summary>Identifier or path of the repository to drop.</doc:summary>
-      </arg>
-      <arg type="as" name="stderr_strings" direction="out">
-        <doc:summary>apt-repo errors during removal.</doc:summary>
-      </arg>
-      <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of the remove command.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
-      </arg>
+      <arg type="s" name="source" direction="in"></arg>
+      <arg type="as" name="stderr_strings" direction="out"></arg>
+      <arg type="i" name="response" direction="out"></arg>
     </method>
   </interface>
 </node>

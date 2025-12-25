@@ -181,8 +181,8 @@ void ParametersPage::validateParameters()
         d->m_invalid = {};
 
     std::invoke( d->m_invalid
-                    ? &KMessageWidget::animatedShow
-                    : &KMessageWidget::animatedHide,
+                    ? &KMessageWidget::show
+                    : &KMessageWidget::hide,
                 d->ui.invalidParameterWarning );
 
     emit completeChanged();

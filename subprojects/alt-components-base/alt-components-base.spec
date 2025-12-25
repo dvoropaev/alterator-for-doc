@@ -1,7 +1,7 @@
 %define _unpackaged_files_terminate_build 1
 
 Name: alt-components-base
-Version: 0.9.5
+Version: 0.9.7
 Release: alt1
 
 Summary: Base set of ALT Distributions components
@@ -157,6 +157,17 @@ done
 %_alterator_datadir/editions/edition_education
 
 %changelog
+* Tue Dec 23 2025 Evgeny Sinelnikov <sin@altlinux.org> 0.9.7-alt1
+- components: change zabbix-server (thx Elena Mishina and Dmitriy Terekhin)
+- editions: fix the location of the elements in the final-notes
+  file closes #19 (thx Maria Fokanova)
+- editions: update final-notes for server add caption 'Documentation'
+  to QR codes add variable to indicate the current year in the
+  copyright for the Russian-language installation (thx Maria Fokanova)
+
+* Sat Dec 20 2025 Ajrat Makhmutov <rauty@altlinux.org> 0.9.6-alt1
+- Remove yandex from education edition.
+
 * Mon Dec 08 2025 Evgeny Sinelnikov <sin@altlinux.org> 0.9.5-alt1
 - editions: replace freeipa-server to main section from base (conflicts with
   samba-dc) in edition_domain.

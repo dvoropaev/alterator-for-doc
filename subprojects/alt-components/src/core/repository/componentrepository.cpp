@@ -116,13 +116,13 @@ void ComponentRepository::update()
         // NOTE(sheriffkorov): if object is valid
         if (!component.type.empty())
         {
+            // NOTE(sheriffkorov): I know, it's bad. Fix it later.
+            auto packages = std::set<Component::Package>();
             bool installed = true;
-            for (auto it = component.packages.begin(); it != component.packages.end();)
+            for (auto pkg : component.packages)
             {
-                auto pkg = *it;
                 if (!pkg.matchFilters(filterOptions))
                 {
-                    it = component.packages.erase(it);
                     continue;
                 }
 
@@ -132,8 +132,9 @@ void ComponentRepository::update()
                 }
                 pkg.installed = !notInstalledPackages.contains(pkg.name);
                 installed &= pkg.installed;
-                ++it;
+                packages.insert(std::move(pkg));
             }
+            component.packages = packages;
             if (component.packages.empty())
             {
                 installed = false;

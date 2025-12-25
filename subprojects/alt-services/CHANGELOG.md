@@ -7,14 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- tables are now compact by default
+- resource values are now top-aligned
+- added word-wrap for tooltips
+
+### Fixed
+- html journal displayed with wrong encoding in some browsers
+- brought back forgotten menu items in mainwindow
+- validation messages blinking while changing enum parameters
+
+## 0.1.9-alt1
+
 ### Added
 - password confirmation
+- an ability of selectively ignoring diagnostic test errors
+- a text message, representing operation result, on the "Progress" page
 
 ### Changed
 - improved wizard appearance and navigation
+- text log entries on "Progress" page are now collapsed by default
 
 ### Fixed
 - handling diagnostic "warning" result
+- log entries on the "Progress" had their own scrollbars on gtk3
+- tool/test names were not localized inside log on "Progress" page
 
 ## 0.1.8-alt1
 

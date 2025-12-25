@@ -2,10 +2,6 @@
 
 #include "../Page.h"
 
-namespace Ui {
-class ProgressPage;
-}
-
 class ProgressPage : public Page
 {
     Q_OBJECT
@@ -21,7 +17,7 @@ public:
 
     QAction* exportAction() const;
 
-
 private:
-    Ui::ProgressPage *ui;
+    class Private;
+    Private* d{};
 };

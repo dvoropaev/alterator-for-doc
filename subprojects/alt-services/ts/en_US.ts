@@ -347,49 +347,43 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/controller/Controller.cpp" line="268"/>
+        <location filename="../src/controller/Controller.cpp" line="270"/>
         <source>Starting service</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/controller/Controller.cpp" line="286"/>
-        <location filename="../src/controller/Controller.cpp" line="298"/>
-        <location filename="../src/controller/Controller.cpp" line="312"/>
+        <location filename="../src/controller/Controller.cpp" line="296"/>
+        <location filename="../src/controller/Controller.cpp" line="310"/>
         <source>Error</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/controller/Controller.cpp" line="286"/>
-        <source>%1 failed.</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/controller/Controller.cpp" line="323"/>
+        <location filename="../src/controller/Controller.cpp" line="321"/>
         <source>Premilinary diagnostics</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/controller/Controller.cpp" line="323"/>
+        <location filename="../src/controller/Controller.cpp" line="321"/>
         <source>Post-diagnostics</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/controller/Controller.cpp" line="369"/>
+        <location filename="../src/controller/Controller.cpp" line="367"/>
         <source>Diagnostic tool &quot;%1&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/controller/Controller.cpp" line="377"/>
+        <location filename="../src/controller/Controller.cpp" line="375"/>
         <source>Running test &quot;%1&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/controller/Controller.cpp" line="298"/>
+        <location filename="../src/controller/Controller.cpp" line="296"/>
         <source>Failed to start service</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/controller/Controller.cpp" line="312"/>
+        <location filename="../src/controller/Controller.cpp" line="310"/>
         <source>Failed to stop service</source>
         <translation></translation>
     </message>
@@ -487,8 +481,8 @@
 <context>
     <name>EditDelegate</name>
     <message>
-        <location filename="../src/ui/wizard/03-parameters/forms/CompactForm.cpp" line="155"/>
-        <location filename="../src/ui/wizard/03-parameters/forms/CompactForm.cpp" line="157"/>
+        <location filename="../src/ui/wizard/03-parameters/forms/CompactForm.cpp" line="161"/>
+        <location filename="../src/ui/wizard/03-parameters/forms/CompactForm.cpp" line="163"/>
         <source>Remove</source>
         <translation></translation>
     </message>
@@ -572,23 +566,38 @@ You may want to undeploy the conflicting services, or reconfigure them, if their
 <context>
     <name>LogWidget</name>
     <message>
-        <location filename="../src/ui/wizard/05-progress/LogWidget.cpp" line="274"/>
+        <location filename="../src/ui/wizard/05-progress/LogWidget.cpp" line="301"/>
         <source>&amp;Find...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/05-progress/LogWidget.cpp" line="280"/>
+        <location filename="../src/ui/wizard/05-progress/LogWidget.cpp" line="307"/>
         <source>&amp;Save journal...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/05-progress/LogWidget.cpp" line="288"/>
+        <location filename="../src/ui/wizard/05-progress/LogWidget.cpp" line="315"/>
         <source>Chose where to save journal</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/05-progress/LogWidget.cpp" line="291"/>
+        <location filename="../src/ui/wizard/05-progress/LogWidget.cpp" line="318"/>
         <source>HTML files (*.html)</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/wizard/05-progress/LogWidget.cpp" line="406"/>
+        <source>[Success]</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/wizard/05-progress/LogWidget.cpp" line="411"/>
+        <source>[Warning]</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/wizard/05-progress/LogWidget.cpp" line="418"/>
+        <source>[Error]</source>
         <translation></translation>
     </message>
 </context>
@@ -924,6 +933,44 @@ You may want to undeploy the conflicting services, or reconfigure them, if their
     </message>
 </context>
 <context>
+    <name>ProgressPage</name>
+    <message>
+        <location filename="../src/ui/wizard/05-progress/ProgressPage.cpp" line="74"/>
+        <source>Errors occured during operation</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/wizard/05-progress/ProgressPage.cpp" line="75"/>
+        <source>Operation performed successfully</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/wizard/05-progress/ProgressPage.cpp" line="89"/>
+        <source>Ignore</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/wizard/05-progress/ProgressPage.cpp" line="90"/>
+        <source>Ignore all</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/wizard/05-progress/ProgressPage.cpp" line="91"/>
+        <source>Abort</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/wizard/05-progress/ProgressPage.cpp" line="93"/>
+        <source>Ignore this error and continue</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/wizard/05-progress/ProgressPage.cpp" line="94"/>
+        <source>Ignore all errors and continue (do not show this message again)</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
     <name>QObject</name>
     <message>
         <location filename="../src/data/models/ResourceModel.cpp" line="154"/>
@@ -941,32 +988,32 @@ You may want to undeploy the conflicting services, or reconfigure them, if their
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/controller/Controller.cpp" line="415"/>
+        <location filename="../src/controller/Controller.cpp" line="424"/>
         <source>Configuration</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/controller/Controller.cpp" line="416"/>
+        <location filename="../src/controller/Controller.cpp" line="425"/>
         <source>Deployment</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/controller/Controller.cpp" line="417"/>
+        <location filename="../src/controller/Controller.cpp" line="426"/>
         <source>Undeployment</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/controller/Controller.cpp" line="418"/>
+        <location filename="../src/controller/Controller.cpp" line="427"/>
         <source>Diagnostic</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/controller/Controller.cpp" line="419"/>
+        <location filename="../src/controller/Controller.cpp" line="428"/>
         <source>Backup</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/controller/Controller.cpp" line="420"/>
+        <location filename="../src/controller/Controller.cpp" line="429"/>
         <source>Restore</source>
         <translation></translation>
     </message>
@@ -1206,6 +1253,11 @@ You may want to undeploy the conflicting services, or reconfigure them, if their
     <message>
         <location filename="../src/ui/wizard/ActionWizard.cpp" line="29"/>
         <source>Set diagnostic options</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/wizard/05-progress/ProgressPage.cpp" line="33"/>
+        <source>Warning: test &quot;%0&quot; failed!</source>
         <translation></translation>
     </message>
 </context>

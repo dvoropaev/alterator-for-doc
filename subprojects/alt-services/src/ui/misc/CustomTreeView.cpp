@@ -15,10 +15,10 @@ CustomTreeView::CustomTreeView(QWidget* parent)
     header()->setStretchLastSection(true);
     setUniformRowHeights(false);
 
-    connect(ServicesApp::instance()->settings(), &AppSettings::tablesDetailedMultilineChanged, this, [this]{
-        setWordWrap(ServicesApp::instance()->settings()->tablesDetailedMultiline());
+    connect(qApp->settings(), &AppSettings::tablesDetailedMultilineChanged, this, [this]{
+        setWordWrap(qApp->settings()->tablesDetailedMultiline());
     });
-    setWordWrap(ServicesApp::instance()->settings()->tablesDetailedMultiline());
+    setWordWrap(qApp->settings()->tablesDetailedMultiline());
 
     connect(header(), &QHeaderView::sectionResized, [this](int index, int oldSize, int newSize){
         if ( auto d = qobject_cast<ObjectInfoDelegate*>(itemDelegateForColumn(index)) )
@@ -26,7 +26,7 @@ CustomTreeView::CustomTreeView(QWidget* parent)
     });
 
     setContextMenuPolicy(Qt::ActionsContextMenu);
-    addActions(ServicesApp::instance()->controller()->tableActions());
+    addActions(qApp->controller()->tableActions());
 
 
     connect(this, &QAbstractItemView::clicked, this, [this](const QModelIndex& index){

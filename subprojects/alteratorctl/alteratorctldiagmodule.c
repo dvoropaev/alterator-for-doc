@@ -41,9 +41,9 @@ typedef enum
 
 typedef enum
 {
-    PASS,
-    FAIL,
-    WARN
+    PASS = 0,
+    WARN = 2,
+    SKIP = 102
 } test_result;
 
 typedef struct diag_data_t
@@ -2425,15 +2425,32 @@ static int diag_module_run_test(AlteratorCtlDiagModule *module,
     }
 
     g_variant_get(d_ctx->result, "(i)", result);
-    test_result test_result     = (*result) <= 2 ? *result : FAIL;
-    const gchar *status_message = test_result == PASS ? _("[PASS]") : (test_result == FAIL ? _("[FAIL]") : _("[WARN]"));
-    text_color status_color     = test_result == PASS ? GREEN : (test_result == FAIL ? RED : YELLOW);
-    colored_status              = colorize_text(status_message, status_color);
+    gchar *status_message = NULL;
+    switch (*result)
+    {
+    case PASS:
+        status_message = g_strdup(_("[PASS]"));
+        break;
+    case WARN:
+        status_message = g_strdup(_("[WARN]"));
+        break;
+    case SKIP:
+        status_message = g_strdup(_("[SKIP]"));
+        break;
+    default:
+        status_message = g_strdup(_("[FAIL]"));
+        break;
+    }
+
+    text_style status_color = (*result) == PASS || (*result) == SKIP ? GREEN : ((*result) == WARN ? YELLOW : RED);
+    colored_status          = stylize_text(status_message, status_color);
 
     if (run_data && run_data->log_buffer)
         g_string_append_printf(run_data->log_buffer, "%s: %s\n", status_message, output_name);
 
-    if (test_result == FAIL)
+    g_free(status_message);
+
+    if ((*result) != PASS && (*result) != WARN && (*result) != SKIP)
         g_printerr("%s: %s%s\n", colored_status, output_name, module->alterator_ctl_app->arguments->verbose ? "\n" : "");
     else
         g_print("%s: %s\%s\n", colored_status, output_name, module->alterator_ctl_app->arguments->verbose ? "\n" : "");

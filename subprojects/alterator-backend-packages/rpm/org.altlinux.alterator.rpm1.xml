@@ -3,88 +3,36 @@
   "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
 <node name="/" xmlns:doc="http://www.freedesktop.org/dbus/1.0/doc.dtd">
   <interface name="org.altlinux.alterator.rpm1">
-    <doc:summary>Expose rpm backend commands for listing, installing, and removing RPM packages.</doc:summary>
     <method name="Info">
-      <doc:summary>Return static descriptor of the rpm backend object.</doc:summary>
-      <arg type="ay" name="stdout_bytes" direction="out">
-        <doc:summary>Contents of /usr/share/alterator/objects/rpm.object.</doc:summary>
-        <doc:detail>TOML object definition with display_name and comments.</doc:detail>
-      </arg>
-      <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of the cat helper.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
-      </arg>
+      <arg type="ay" name="stdout_bytes" direction="out"></arg>
+      <arg type="i" name="response" direction="out"></arg>
     </method>
     <method name="List">
-      <doc:summary>List installed packages via rpm -qa with name, version, release, arch, and group.</doc:summary>
-      <arg type="as" name="stdout_strings" direction="out">
-        <doc:summary>Package entries formatted as “name version release arch group”.</doc:summary>
-      </arg>
-      <arg type="as" name="stderr_strings" direction="out">
-        <doc:summary>Errors from rpm -qa.</doc:summary>
-      </arg>
-      <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of the list command.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
-      </arg>
+      <arg type="as" name="stdout_strings" direction="out"></arg>
+      <arg type="as" name="stderr_strings" direction="out"></arg>
+      <arg type="i" name="response" direction="out"></arg>
     </method>
     <method name="Install">
-      <doc:summary>Install or upgrade a package file via rpm -U.</doc:summary>
-      <arg type="s" name="pkgpath" direction="in">
-        <doc:summary>Filesystem path to the RPM file.</doc:summary>
-      </arg>
-      <arg type="as" name="stderr_strings" direction="out">
-        <doc:summary>rpm installation errors.</doc:summary>
-      </arg>
-      <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of rpm -U.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
-      </arg>
+      <arg type="s" name="pkgpath" direction="in"></arg>
+      <arg type="as" name="stderr_strings" direction="out"></arg>
+      <arg type="i" name="response" direction="out"></arg>
     </method>
     <method name="Remove">
-      <doc:summary>Erase an installed package via rpm -e.</doc:summary>
-      <arg type="s" name="pkgname" direction="in">
-        <doc:summary>Name of the package to remove.</doc:summary>
-      </arg>
-      <arg type="as" name="stderr_strings" direction="out">
-        <doc:summary>rpm removal errors.</doc:summary>
-      </arg>
-      <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of rpm -e.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
-      </arg>
+      <arg type="s" name="pkgname" direction="in"></arg>
+      <arg type="as" name="stderr_strings" direction="out"></arg>
+      <arg type="i" name="response" direction="out"></arg>
     </method>
     <method name="PackageInfo">
-      <doc:summary>Show package metadata via rpm -qi.</doc:summary>
-      <arg type="s" name="pkgname" direction="in">
-        <doc:summary>Name of the installed package to query.</doc:summary>
-      </arg>
-      <arg type="as" name="stdout_strings" direction="out">
-        <doc:summary>rpm -qi output split into lines.</doc:summary>
-      </arg>
-      <arg type="as" name="stderr_strings" direction="out">
-        <doc:summary>rpm query errors.</doc:summary>
-      </arg>
-      <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of the query.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
-      </arg>
+      <arg type="s" name="pkgname" direction="in"></arg>
+      <arg type="as" name="stdout_strings" direction="out"></arg>
+      <arg type="as" name="stderr_strings" direction="out"></arg>
+      <arg type="i" name="response" direction="out"></arg>
     </method>
     <method name="Files">
-      <doc:summary>List files installed by a package via rpm -ql.</doc:summary>
-      <arg type="s" name="pkgname" direction="in">
-        <doc:summary>Name of the installed package.</doc:summary>
-      </arg>
-      <arg type="as" name="stdout_strings" direction="out">
-        <doc:summary>File paths reported by rpm -ql.</doc:summary>
-      </arg>
-      <arg type="as" name="stderr_strings" direction="out">
-        <doc:summary>rpm errors while reading the package database.</doc:summary>
-      </arg>
-      <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of the file listing.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
-      </arg>
+      <arg type="s" name="pkgname" direction="in"></arg>
+      <arg type="as" name="stdout_strings" direction="out"></arg>
+      <arg type="as" name="stderr_strings" direction="out"></arg>
+      <arg type="i" name="response" direction="out"></arg>
     </method>
   </interface>
 </node>

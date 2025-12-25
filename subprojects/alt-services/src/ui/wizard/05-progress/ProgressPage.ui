@@ -18,6 +18,32 @@
     <widget class="LogWidget" name="logWidget" native="true"/>
    </item>
    <item>
+    <widget class="KMessageWidget" name="diagErrorMessage">
+     <property name="text">
+      <string notr="true">Test failed!</string>
+     </property>
+     <property name="closeButtonVisible">
+      <bool>false</bool>
+     </property>
+     <property name="messageType">
+      <enum>KMessageWidget::MessageType::Error</enum>
+     </property>
+     <property name="icon">
+      <iconset theme="QIcon::ThemeIcon::DialogError"/>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="KMessageWidget" name="resultMessage">
+     <property name="text">
+      <string notr="true">operation result</string>
+     </property>
+     <property name="closeButtonVisible">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QProgressBar" name="progressBar">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -36,6 +62,11 @@
   </layout>
  </widget>
  <customwidgets>
+  <customwidget>
+   <class>KMessageWidget</class>
+   <extends>QFrame</extends>
+   <header>kmessagewidget.h</header>
+  </customwidget>
   <customwidget>
    <class>LogWidget</class>
    <extends>QWidget</extends>

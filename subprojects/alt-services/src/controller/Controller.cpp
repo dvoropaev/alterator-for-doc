@@ -126,15 +126,21 @@ Controller::Controller()
         d->m_table_mode_group.addAction(compact);
         d->m_table_mode_group.addAction(detailed);
 
-        ( ServicesApp::instance()->settings()->tablesDetailed()
+        ( qApp->settings()->tablesDetailed()
                 ? detailed
                 : compact )->setChecked(true);
-        connect(detailed, &QAction::toggled, ServicesApp::instance()->settings(), &AppSettings::set_tablesDetailed);
+        connect(detailed, &QAction::toggled, qApp->settings(), &AppSettings::set_tablesDetailed);
 
         detailed_multiline->setCheckable(true);
-        detailed_multiline->setChecked(ServicesApp::instance()->settings()->tablesDetailedMultiline());
+        detailed_multiline->setChecked(qApp->settings()->tablesDetailedMultiline());
         connect(detailed, &QAction::toggled, detailed_multiline, &QAction::setEnabled);
-        connect(detailed_multiline, &QAction::toggled, ServicesApp::instance()->settings(), &AppSettings::set_tablesDetailedMultiline);
+        if ( compact->isChecked() )
+        {
+            detailed_multiline->setEnabled(false);
+            detailed_multiline->setChecked(false);
+        }
+
+        connect(detailed_multiline, &QAction::toggled, qApp->settings(), &AppSettings::set_tablesDetailedMultiline);
     }
 }
 
@@ -216,6 +222,8 @@ Controller::Result Controller::call(const Action& action)
     Result result = Result::Success;
     ScopedLogCapture capture(this);
 
+    emit operationBegin();
+
     if (action.action == Parameter::Context::Diag)
     {
         /*
@@ -254,10 +262,10 @@ Controller::Result Controller::call(const Action& action)
 
             if ( result != Result::Error )
             {
-                emit actionBegin(actionName(action.action));
+                emit stepBegin(actionName(action.action));
                 bool mainResult = std::invoke( actions_.at(action.action), &d->m_datasource,
                                           action.service->dbusPath(), serializedParameters );
-                emit actionEnd(mainResult ? Result::Success : Result::Error);
+                emit stepEnd(mainResult ? Result::Success : Result::Error);
                 if ( !mainResult )
                     result = Result::Error;
                 updateStatus(action.service);
@@ -265,8 +273,8 @@ Controller::Result Controller::call(const Action& action)
 
             if ( result != Result::Error && action.options.autostart )
             {
-                emit actionBegin(tr("Starting service"));
-                emit actionEnd(start(action.service) ? Result::Success : Result::Error);
+                emit stepBegin(tr("Starting service"));
+                emit stepEnd(start(action.service) ? Result::Success : Result::Error);
             }
 
             if (result != Result::Error && action.options.postdiag)
@@ -281,11 +289,7 @@ Controller::Result Controller::call(const Action& action)
         catch (std::out_of_range&) { qCritical() << "not implemented"; }
     }
 
-    if ( result == Result::Error ) {
-        // Logs are visible in the wizard execution page.
-        QMessageBox::critical(QApplication::activeWindow(), tr("Error"), tr("%1 failed.").arg(actionName(action.action)));
-    }
-
+    emit operationEnd(result, action);
     return result;
 }
 
@@ -320,7 +324,7 @@ bool Controller::stop(Service* service)
 Controller::Result Controller::diag(Service* service, DiagTool::Test::Mode mode, const Action::TestSet& testSet)
 {
     emit beginRefresh();
-    emit actionBegin(mode == DiagTool::Test::Mode::PreDeploy ? tr("Premilinary diagnostics") : tr("Post-diagnostics"));
+    emit stepBegin(mode == DiagTool::Test::Mode::PreDeploy ? tr("Premilinary diagnostics") : tr("Post-diagnostics"));
 
     d->m_datasource.clearEnv();
 
@@ -366,7 +370,7 @@ Controller::Result Controller::diag(Service* service, DiagTool::Test::Mode mode,
     {
         if ( testSet.hasTool(tool.get()) || tool->hasRequiredTests(mode) )
         {
-            emit actionBegin(tr("Diagnostic tool \"%1\"").arg(tool->name()));
+            emit stepBegin(tr("Diagnostic tool \"%1\"").arg(tool->displayName()));
             Result toolRun = Result::Success;
 
             for ( const auto& test : tool->tests() )
@@ -374,23 +378,34 @@ Controller::Result Controller::diag(Service* service, DiagTool::Test::Mode mode,
                 if (!test->required().testFlag(mode) && !testSet.hasTest(test.get()) )
                     continue;
 
-                emit actionBegin(tr("Running test \"%1\"").arg(test->name()));
+                emit stepBegin(tr("Running test \"%1\"").arg(test->displayName()));
                 Result testRun = d->m_datasource.runDiag(tool->path(), test->name(), tool->session());
-                emit actionEnd(testRun);
+
+                emit stepEnd(testRun);
+
+                if ( testRun == Result::Error && d->m_diag_error_handler )
+                    testRun = d->m_diag_error_handler->handleError(test.get(), mode);
 
                 if ( testRun > toolRun )
                     toolRun = testRun;
+
+                if ( toolRun == Result::Error )
+                    break;
             }
 
-            emit actionEnd(toolRun);
+            emit stepEnd(toolRun);
 
             if ( toolRun > result )
                 result = toolRun;
+
+            if ( toolRun == Result::Error )
+                break;
         }
     }
 
-    emit actionEnd(result);
+    emit stepEnd(result);
     emit endRefresh();
+
     return result;
 }
 
@@ -433,6 +448,11 @@ const QIcon& Controller::actionIcon(Parameter::Context context)
         { Parameter::Context::Restore   , QIcon::fromTheme("edit-undo")},
     };
     return actionIcons.at(context);
+}
+
+void Controller::installDiagErrorHandler(DiagErrorHandler* handler)
+{
+    d->m_diag_error_handler = handler;
 }
 
 
