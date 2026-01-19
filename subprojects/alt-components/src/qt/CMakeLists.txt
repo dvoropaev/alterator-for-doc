@@ -125,6 +125,9 @@ qt_add_lrelease(TS_FILES ${TS_FILES}
 	OPTIONS -markuntranslated "Is not translated!" -nounfinished -removeidentical -compress
 )
 
+set(APP_ICONS_DIR "${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps")
+set(APP_ICON "${CMAKE_CURRENT_SOURCE_DIR}/resources/logo.svg")
+
 set(QRC_FILE "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.tr.qrc")
 file(WRITE ${QRC_FILE} "<!DOCTYPE RCC><RCC version=\"1.0\">\n<qresource prefix=\"/i18n\">\n")
 foreach(qm ${QM_FILES})
@@ -180,4 +183,10 @@ target_link_libraries(${PROJECT_NAME}
 	Qt${QT_VERSION_MAJOR}::Widgets
 	Qt${QT_VERSION_MAJOR}::Core
 	Qt${QT_VERSION_MAJOR}::Gui
+)
+
+install(
+    FILES ${APP_ICON}
+    DESTINATION ${APP_ICONS_DIR}
+    RENAME "alt-components.svg"
 )

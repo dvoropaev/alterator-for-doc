@@ -9,42 +9,40 @@ typedef struct
 {
     gboolean flag;
     gint index;
-    gint module_arg_offset; //Index relative to the module excluding options
-                            //Example: alteratorctl manager -v --help. -v - 1, --help - 2
+    gint module_arg_offset; // Index relative to the module excluding options
+                            // Example: alteratorctl manager -v --help. -v - 1, --help - 2
     int argc;
-    char **argv;
+    char** argv;
 } flag_callback_ctx_t;
 
 static flag_callback_ctx_t help = {FALSE, -1, -1, 0, NULL};
 
-alteratorctl_arguments_t *alteratorctl_arguments_init();
-void alteratorctl_add_module(alteratorctl_arguments_t *args, gchar *module);
-void alteratorctl_arguments_free(alteratorctl_arguments_t *args);
+alteratorctl_arguments_t* alteratorctl_arguments_init();
+void alteratorctl_add_module(alteratorctl_arguments_t* args, gchar* module);
+void alteratorctl_arguments_free(alteratorctl_arguments_t* args);
 
-static GObjectClass *alterator_ctl_app_parent_class = NULL;
-static void alterator_ctl_app_class_init(AlteratorCtlAppClass *klass);
-static void alterator_ctl_app_class_finalize(GObject *klass);
+static GObjectClass* alterator_ctl_app_parent_class = NULL;
+static void alterator_ctl_app_class_init(AlteratorCtlAppClass* klass);
+static void alterator_ctl_app_class_finalize(GObject* klass);
 
-static alterator_ctl_module_t *alterator_ctl_app_find_module(AlteratorCtlApp *app, gchar *module);
-static int alterator_ctl_app_list_modules(AlteratorCtlApp *app);
-static int alterator_ctl_app_parse_args(AlteratorCtlApp *alterator_ctl, int *argc, char **argv);
-static gboolean alterator_ctl_app_get_flag_first_index(const gchar *option_name,
-                                                       const gchar *value,
-                                                       gpointer data,
-                                                       GError **error);
+static alterator_ctl_module_t* alterator_ctl_app_find_module(AlteratorCtlApp* app, gchar* module);
+static int alterator_ctl_app_list_modules(AlteratorCtlApp* app);
+static int alterator_ctl_app_parse_args(AlteratorCtlApp* alterator_ctl, int* argc, char** argv);
+static gboolean alterator_ctl_app_get_flag_first_index(const gchar* option_name, const gchar* value,
+                                                       gpointer data, GError** error);
 
 static void alterator_ctl_print_help();
 
-alteratorctl_arguments_t *alteratorctl_arguments_init()
+alteratorctl_arguments_t* alteratorctl_arguments_init()
 {
-    alteratorctl_arguments_t *args = g_malloc0(sizeof(alteratorctl_arguments_t));
+    alteratorctl_arguments_t* args = g_malloc0(sizeof(alteratorctl_arguments_t));
     if (!args)
         return NULL;
 
     return args;
 }
 
-void alteratorctl_add_module(alteratorctl_arguments_t *args, gchar *module)
+void alteratorctl_add_module(alteratorctl_arguments_t* args, gchar* module)
 {
     if (!args || !module)
         return;
@@ -52,7 +50,7 @@ void alteratorctl_add_module(alteratorctl_arguments_t *args, gchar *module)
     args->module = strdup(module);
 }
 
-void alteratorctl_arguments_free(alteratorctl_arguments_t *args)
+void alteratorctl_arguments_free(alteratorctl_arguments_t* args)
 {
     if (args->module)
         g_free(args->module);
@@ -66,46 +64,45 @@ GType alterator_ctl_app_get_type(void)
 
     if (!alterator_ctl_app_type)
     {
-        static const GTypeInfo alterator_ctl_app_info = {sizeof(AlteratorCtlAppClass), /* class structure size */
-                                                         NULL,                         /* base class initializer */
-                                                         NULL,                         /* base class finalizer */
-                                                         (GClassInitFunc)
-                                                             alterator_ctl_app_class_init, /* class initializer */
-                                                         NULL,                             /* class finalizer */
-                                                         NULL,                             /* class data */
-                                                         sizeof(AlteratorCtlApp),          /* instance structure size */
-                                                         1,                                /* preallocated instances */
-                                                         NULL,                             /* instance initializers */
-                                                         NULL};
+        static const GTypeInfo alterator_ctl_app_info =
+            {sizeof(AlteratorCtlAppClass),                  /* class structure size */
+             NULL,                                          /* base class initializer */
+             NULL,                                          /* base class finalizer */
+             (GClassInitFunc) alterator_ctl_app_class_init, /* class initializer */
+             NULL,                                          /* class finalizer */
+             NULL,                                          /* class data */
+             sizeof(AlteratorCtlApp),                       /* instance structure size */
+             1,                                             /* preallocated instances */
+             NULL,                                          /* instance initializers */
+             NULL};
 
         alterator_ctl_app_type = g_type_register_static(G_TYPE_OBJECT, /* parent class */
-                                                        "AlteratorCtlApp",
-                                                        &alterator_ctl_app_info,
+                                                        "AlteratorCtlApp", &alterator_ctl_app_info,
                                                         0);
     }
 
     return alterator_ctl_app_type;
 }
 
-static void alterator_ctl_app_class_finalize(GObject *klass)
+static void alterator_ctl_app_class_finalize(GObject* klass)
 {
-    AlteratorCtlAppClass *obj = (AlteratorCtlAppClass *) klass;
+    AlteratorCtlAppClass* obj = (AlteratorCtlAppClass*) klass;
 
     G_OBJECT_CLASS(alterator_ctl_app_parent_class)->finalize(klass);
 }
 
-static void alterator_ctl_app_class_init(AlteratorCtlAppClass *klass)
+static void alterator_ctl_app_class_init(AlteratorCtlAppClass* klass)
 {
-    GObjectClass *obj_class = G_OBJECT_CLASS(klass);
+    GObjectClass* obj_class = G_OBJECT_CLASS(klass);
 
     obj_class->finalize = alterator_ctl_app_class_finalize;
 
     alterator_ctl_app_parent_class = g_type_class_peek_parent(klass);
 }
 
-AlteratorCtlApp *alterator_ctl_app_new(void)
+AlteratorCtlApp* alterator_ctl_app_new(void)
 {
-    AlteratorCtlApp *object = g_object_new(TYPE_ALTERATOR_CTL_APP, NULL);
+    AlteratorCtlApp* object = g_object_new(TYPE_ALTERATOR_CTL_APP, NULL);
 
     object->modules = g_hash_table_new(g_str_hash, g_str_equal);
 
@@ -114,50 +111,44 @@ AlteratorCtlApp *alterator_ctl_app_new(void)
     object->local_polkit_agent = NULL;
     object->local_agent_handle = NULL;
 
-    if (isatty_safe(STDIN_FILENO) != TTY && isatty_safe(STDOUT_FILENO) != TTY && isatty_safe(STDERR_FILENO) != TTY)
+    if (isatty_safe(STDIN_FILENO) != TTY && isatty_safe(STDOUT_FILENO) != TTY
+        && isatty_safe(STDERR_FILENO) != TTY)
         return object;
 
-    PolkitSubject *subject = NULL;
+    PolkitSubject* subject = NULL;
 
     subject = polkit_unix_process_new_for_owner(getpid(), 0, getuid());
 
-    GError *error = NULL;
+    GError* error = NULL;
     /* this will fail if we can't find a controlling terminal */
     object->local_polkit_agent = polkit_agent_text_listener_new(NULL, &error);
     if (subject && object->local_polkit_agent)
     {
-        GVariantBuilder *options_builder;
-        GVariant *options;
+        GVariantBuilder* options_builder;
+        GVariant* options;
 
         options_builder = g_variant_builder_new(G_VARIANT_TYPE("a{sv}"));
         g_variant_builder_add(options_builder, "{sv}", "fallback", g_variant_new_boolean(TRUE));
         options = g_variant_builder_end(options_builder);
 
-        object->local_agent_handle
-            = polkit_agent_listener_register_with_options(object->local_polkit_agent,
-                                                          POLKIT_AGENT_REGISTER_FLAGS_RUN_IN_THREAD,
-                                                          subject,
-                                                          NULL, /* object_path */
-                                                          options,
-                                                          NULL, /* GCancellable */
-                                                          &error);
+        object->local_agent_handle = polkit_agent_listener_register_with_options(
+            object->local_polkit_agent, POLKIT_AGENT_REGISTER_FLAGS_RUN_IN_THREAD, subject,
+            NULL,          /* object_path */
+            options, NULL, /* GCancellable */
+            &error);
         g_variant_builder_unref(options_builder);
 
         if (!object->local_agent_handle)
         {
             g_printerr(_("Error registering local authentication agent: %s (%s, %d)\n"),
-                       error->message,
-                       g_quark_to_string(error->domain),
-                       error->code);
+                       error->message, g_quark_to_string(error->domain), error->code);
             g_clear_error(&error);
         }
     }
     else
     {
-        g_printerr(_("Error creating textual authentication agent: %s (%s, %d)\n"),
-                   error->message,
-                   g_quark_to_string(error->domain),
-                   error->code);
+        g_printerr(_("Error creating textual authentication agent: %s (%s, %d)\n"), error->message,
+                   g_quark_to_string(error->domain), error->code);
         g_clear_error(&error);
     }
 
@@ -169,7 +160,7 @@ AlteratorCtlApp *alterator_ctl_app_new(void)
     return object;
 }
 
-void alterator_ctl_app_free(AlteratorCtlApp *alterator_ctl)
+void alterator_ctl_app_free(AlteratorCtlApp* alterator_ctl)
 {
     alteratorctl_arguments_free(alterator_ctl->arguments);
 
@@ -183,7 +174,7 @@ void alterator_ctl_app_free(AlteratorCtlApp *alterator_ctl)
     g_object_unref(alterator_ctl);
 }
 
-void alterator_ctl_register_module(AlteratorCtlApp *app, alterator_ctl_module_t *module)
+void alterator_ctl_register_module(AlteratorCtlApp* app, alterator_ctl_module_t* module)
 {
     if (g_hash_table_contains(app->modules, module->id))
         return;
@@ -191,12 +182,12 @@ void alterator_ctl_register_module(AlteratorCtlApp *app, alterator_ctl_module_t 
     g_hash_table_insert(app->modules, module->id, module);
 }
 
-static int alterator_ctl_app_parse_args(AlteratorCtlApp *alterator_ctl, int *argc, char **argv)
+static int alterator_ctl_app_parse_args(AlteratorCtlApp* alterator_ctl, int* argc, char** argv)
 {
     int ret = 0;
 
-    GError *error           = NULL;
-    GOptionContext *context = NULL;
+    GError* error           = NULL;
+    GOptionContext* context = NULL;
 
     gboolean verb    = FALSE;
     gboolean version = FALSE;
@@ -285,10 +276,8 @@ end:
     return ret;
 }
 
-static gboolean alterator_ctl_app_get_flag_first_index(const gchar *option_name,
-                                                       const gchar *value,
-                                                       gpointer data,
-                                                       GError **error)
+static gboolean alterator_ctl_app_get_flag_first_index(const gchar* option_name, const gchar* value,
+                                                       gpointer data, GError** error)
 {
     if (!help.flag)
         for (guint i = 0; i < help.argc; i++)
@@ -302,11 +291,11 @@ static gboolean alterator_ctl_app_get_flag_first_index(const gchar *option_name,
     return TRUE;
 }
 
-int alterator_ctl_app_run(AlteratorCtlApp *app, int argc, char **argv)
+int alterator_ctl_app_run(AlteratorCtlApp* app, int argc, char** argv)
 {
     int ret                             = 0;
-    alterator_ctl_module_t *module_info = NULL;
-    void *module                        = NULL;
+    alterator_ctl_module_t* module_info = NULL;
+    void* module                        = NULL;
 
     if (alterator_ctl_app_parse_args(app, &argc, argv) < 0)
         ERR_EXIT();
@@ -323,7 +312,7 @@ int alterator_ctl_app_run(AlteratorCtlApp *app, int argc, char **argv)
         break;
 
     case ALTERATORCTL_RUN_MODULE:
-        //TODO say, what module isn't found. List all registered modules??
+        // TODO say, what module isn't found. List all registered modules??
         app->arguments->module_help = help.flag;
         if (!(module_info = alterator_ctl_app_find_module(app, app->arguments->module)))
         {
@@ -334,7 +323,8 @@ int alterator_ctl_app_run(AlteratorCtlApp *app, int argc, char **argv)
 
         module = module_info->new_object_func(app);
 
-        AlteratorCtlModuleInterface *alterator_ctl_module = GET_ALTERATOR_CTL_MODULE_INTERFACE(module);
+        AlteratorCtlModuleInterface* alterator_ctl_module = GET_ALTERATOR_CTL_MODULE_INTERFACE(
+            module);
 
         ret = alterator_ctl_module->run_with_args(module, argc, argv);
 
@@ -347,11 +337,12 @@ end:
     return ret;
 }
 
-static alterator_ctl_module_t *alterator_ctl_app_find_module(AlteratorCtlApp *app, gchar *module)
+static alterator_ctl_module_t* alterator_ctl_app_find_module(AlteratorCtlApp* app, gchar* module)
 {
     if (g_hash_table_contains(app->modules, module))
     {
-        alterator_ctl_module_t *mod = (alterator_ctl_module_t *) g_hash_table_lookup(app->modules, module);
+        alterator_ctl_module_t* mod = (alterator_ctl_module_t*) g_hash_table_lookup(app->modules,
+                                                                                    module);
 
         return mod;
     }
@@ -377,13 +368,14 @@ static void alterator_ctl_print_help()
 
 static gint alterator_ctl_app_sort_modules_list(gconstpointer a, gconstpointer b)
 {
-    return g_utf8_collate((const gchar *) ((GPtrArray *) a)->pdata, (const gchar *) ((GPtrArray *) b)->pdata);
+    return g_utf8_collate((const gchar*) ((GPtrArray*) a)->pdata,
+                          (const gchar*) ((GPtrArray*) b)->pdata);
 }
 
-static int alterator_ctl_app_list_modules(AlteratorCtlApp *app)
+static int alterator_ctl_app_list_modules(AlteratorCtlApp* app)
 {
     int ret                = 0;
-    GPtrArray *sorted_list = NULL;
+    GPtrArray* sorted_list = NULL;
 
     if (!app)
     {
@@ -394,7 +386,7 @@ static int alterator_ctl_app_list_modules(AlteratorCtlApp *app)
     sorted_list = g_hash_table_get_keys_as_ptr_array(app->modules);
     g_ptr_array_sort(sorted_list, alterator_ctl_app_sort_modules_list);
     for (gsize i = 0; i < sorted_list->len; i++)
-        g_print("%s\n", ((gchar **) sorted_list->pdata)[i]);
+        g_print("%s\n", ((gchar**) sorted_list->pdata)[i]);
 
 end:
     if (sorted_list)
@@ -403,11 +395,12 @@ end:
     return ret;
 }
 
-int alterator_ctl_get_registered_module(AlteratorCtlApp *app, gchar *module_name, AlteratorCtlModule **module)
+int alterator_ctl_get_registered_module(AlteratorCtlApp* app, gchar* module_name,
+                                        AlteratorCtlModule** module)
 {
     int ret = 0;
 
-    alterator_ctl_module_t *module_info = alterator_ctl_app_find_module(app, module_name);
+    alterator_ctl_module_t* module_info = alterator_ctl_app_find_module(app, module_name);
 
     if (!module_info)
     {

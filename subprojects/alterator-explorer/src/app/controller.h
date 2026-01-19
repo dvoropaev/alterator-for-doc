@@ -37,6 +37,12 @@ public:
     Controller &operator=(const Controller &) = delete;
     Controller &operator=(Controller &&) = delete;
 
+    model::Model* model();
+
+signals:
+    void modelAboutToReload();
+    void modelReloaded();
+
 public slots:
     void moduleClicked(ao_builder::Object *obj);
     void switchBack();

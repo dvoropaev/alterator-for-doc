@@ -115,14 +115,14 @@ typedef enum deployment_status
 
 typedef struct param_info
 {
-    const gchar *name;
-    const gchar *linked_resource;
-    GHashTable *required;
-    GHashTable *usage_ctx;
+    const gchar* name;
+    const gchar* linked_resource;
+    GHashTable* required;
+    GHashTable* usage_ctx;
     gboolean constant;
 } param_info;
 
-static gboolean services_module_is_special_param(const gchar *name)
+static gboolean services_module_is_special_param(const gchar* name)
 {
     if (!name || !strlen(name))
         return FALSE;
@@ -144,20 +144,19 @@ typedef enum services_module_resource_group
 
 typedef struct services_module_resource_row
 {
-    gchar *name;
-    gchar *value;
-    GPtrArray *details;
+    gchar* name;
+    gchar* value;
+    GPtrArray* details;
 } services_module_resource_row_t;
 
-static const gchar *services_module_resource_group_titles[SERVICES_RESOURCE_GROUP_COUNT] = {N_("Directories"),
-                                                                                            N_("Files"),
-                                                                                            N_("Systemd units"),
-                                                                                            N_("Ports"),
-                                                                                            N_("Other resources")};
+static const gchar* services_module_resource_group_titles[SERVICES_RESOURCE_GROUP_COUNT] =
+    {N_("Directories"), N_("Files"), N_("Systemd units"), N_("Ports"), N_("Other resources")};
 
-static param_info *services_module_service_info_init(
-    const gchar *name, const gchar *linked_resource, GHashTable *required, GHashTable *ctx, gboolean constant);
-static void services_module_service_info_free(param_info *info);
+static param_info* services_module_service_info_init(const gchar* name,
+                                                     const gchar* linked_resource,
+                                                     GHashTable* required, GHashTable* ctx,
+                                                     gboolean constant);
+static void services_module_service_info_free(param_info* info);
 
 typedef enum
 {
@@ -168,50 +167,49 @@ typedef enum
 
 typedef struct
 {
-    gchar *name;
-    gchar *display_name;
-    gchar *description;
+    gchar* name;
+    gchar* display_name;
+    gchar* description;
     diag_tool_test_mode mode;
     gboolean is_required;
 } diag_tool_test_info;
 
-static diag_tool_test_info *services_module_service_diag_tool_test_info_init_from_node(
-    AlteratorCtlModuleInfoParser *info_parser, GNode *tool_info, gboolean is_requires, diag_tool_test_mode mode);
-static diag_tool_test_info *services_module_service_diag_tool_test_info_init(const gchar *name,
-                                                                             const gchar *display_name,
-                                                                             const gchar *description,
-                                                                             gboolean is_required,
-                                                                             diag_tool_test_mode mode);
-static void services_module_service_diag_tool_test_info_free(diag_tool_test_info *tool_tests);
+static diag_tool_test_info* services_module_service_diag_tool_test_info_init_from_node(
+    AlteratorCtlModuleInfoParser* info_parser, GNode* tool_info, gboolean is_requires,
+    diag_tool_test_mode mode);
+static diag_tool_test_info*
+services_module_service_diag_tool_test_info_init(const gchar* name, const gchar* display_name,
+                                                 const gchar* description, gboolean is_required,
+                                                 diag_tool_test_mode mode);
+static void services_module_service_diag_tool_test_info_free(diag_tool_test_info* tool_tests);
 
 typedef struct diag_tool_tests
 {
-    gchar *path;
-    GHashTable *all_tests;
-    GHashTable *required_tests;
+    gchar* path;
+    GHashTable* all_tests;
+    GHashTable* required_tests;
     GBusType bus_type;
-    gchar *entry_name;
-    gchar *diag_name;
-    gboolean (*is_no_tests)(struct diag_tool_tests *tool);
+    gchar* entry_name;
+    gchar* diag_name;
+    gboolean (*is_no_tests)(struct diag_tool_tests* tool);
 } diag_tool_tests;
 
-static diag_tool_tests *services_module_service_diag_tool_tests_init(const gchar *path,
-                                                                     GHashTable *all_tests,
-                                                                     GHashTable *required_only_tests,
-                                                                     GBusType bus_type);
-static void services_module_service_diag_tool_tests_free(diag_tool_tests *tool_tests);
-static gboolean services_module_service_diag_tool_tests_is_no_tests(struct diag_tool_tests *tool);
-static GPtrArray *services_module_get_sorted_string_keys(GHashTable *table);
+static diag_tool_tests*
+services_module_service_diag_tool_tests_init(const gchar* path, GHashTable* all_tests,
+                                             GHashTable* required_only_tests, GBusType bus_type);
+static void services_module_service_diag_tool_tests_free(diag_tool_tests* tool_tests);
+static gboolean services_module_service_diag_tool_tests_is_no_tests(struct diag_tool_tests* tool);
+static GPtrArray* services_module_get_sorted_string_keys(GHashTable* table);
 
 typedef struct
 {
     gboolean enabled;
-    GHashTable *tool_tests;
+    GHashTable* tool_tests;
 } ServicesPlayPlanDiag;
 
 struct ServicesPlayPlan
 {
-    gchar *service_name;
+    gchar* service_name;
     gint command_id;
     ServicesPlayPlanDiag prediag;
     ServicesPlayPlanDiag postdiag;
@@ -219,7 +217,7 @@ struct ServicesPlayPlan
     gboolean autostart;
     gboolean has_force;
     gboolean force;
-    GString *diag_log_buffer;
+    GString* diag_log_buffer;
 };
 
 typedef enum
@@ -229,46 +227,42 @@ typedef enum
     POST_CONFIGURE
 } play_diag_phase;
 
-static void services_play_plan_diag_clear(ServicesPlayPlanDiag *diag);
-static void services_play_plan_reset(AlteratorCtlServicesModule *module);
-static ServicesPlayPlan *services_play_plan_get(AlteratorCtlServicesModule *module,
-                                                gint command_id,
-                                                const gchar *service_str_id);
-static gboolean services_play_plan_requires_diag(const ServicesPlayPlan *plan);
-static int services_module_play_enable_force_deploy(AlteratorCtlServicesModule *module, const gchar *service_name);
-static gchar *services_module_json_params_to_text(JsonNode *params, const gchar *service_str_id);
-static int services_module_get_service_tests(AlteratorCtlServicesModule *module,
-                                             const gchar *service_str_id,
-                                             GNode *optional_service_info,
-                                             const GPtrArray *diag_env_vars,
-                                             gboolean all_modes,
-                                             GHashTable **result);
+static void services_play_plan_diag_clear(ServicesPlayPlanDiag* diag);
+static void services_play_plan_reset(AlteratorCtlServicesModule* module);
+static ServicesPlayPlan* services_play_plan_get(AlteratorCtlServicesModule* module, gint command_id,
+                                                const gchar* service_str_id);
+static gboolean services_play_plan_requires_diag(const ServicesPlayPlan* plan);
+static int services_module_play_enable_force_deploy(AlteratorCtlServicesModule* module,
+                                                    const gchar* service_name);
+static gchar* services_module_json_params_to_text(JsonNode* params, const gchar* service_str_id);
+static int services_module_get_service_tests(AlteratorCtlServicesModule* module,
+                                             const gchar* service_str_id,
+                                             GNode* optional_service_info,
+                                             const GPtrArray* diag_env_vars, gboolean all_modes,
+                                             GHashTable** result);
 
-static int services_module_maybe_save_diag_log(AlteratorCtlServicesModule *module,
-                                               const gchar *service_str_id,
-                                               play_diag_phase phase,
+static int services_module_maybe_save_diag_log(AlteratorCtlServicesModule* module,
+                                               const gchar* service_str_id, play_diag_phase phase,
                                                gboolean yes);
 
-static int services_module_is_deployed_from_status_ctx(AlteratorCtlServicesModule *module,
-                                                       alteratorctl_ctx_t **status_ctx,
-                                                       const gchar *service_str_id,
-                                                       deployment_status *result);
-static int services_module_run_test(AlteratorCtlServicesModule *module,
-                                    const gchar *service_str_id,
-                                    const gchar *diag_tool_name,
-                                    const gchar *test_name,
-                                    deployment_status deploy_mode,
-                                    GBusType bus_type);
+static int services_module_is_deployed_from_status_ctx(AlteratorCtlServicesModule* module,
+                                                       alteratorctl_ctx_t** status_ctx,
+                                                       const gchar* service_str_id,
+                                                       deployment_status* result);
+static int services_module_run_test(AlteratorCtlServicesModule* module, const gchar* service_str_id,
+                                    const gchar* diag_tool_name, const gchar* test_name,
+                                    deployment_status deploy_mode, GBusType bus_type);
 static gpointer g_strdup_copy_func(gconstpointer src, gpointer data);
 
 static gint services_module_sort_result(gconstpointer a, gconstpointer b);
 
 typedef struct evn_variable_t
 {
-    gchar *name;
-    gchar *value;
+    gchar* name;
+    gchar* value;
 } evn_variable_t;
-static gchar *services_module_get_service_path(AlteratorCtlServicesModule *module, const gchar *service_str_id)
+static gchar* services_module_get_service_path(AlteratorCtlServicesModule* module,
+                                               const gchar* service_str_id)
 {
     if (!service_str_id)
         return NULL;
@@ -276,12 +270,13 @@ static gchar *services_module_get_service_path(AlteratorCtlServicesModule *modul
     if (service_str_id[0] == '/')
         return g_strdup(service_str_id);
 
-    return g_strdup(module->gdbus_source->alterator_gdbus_source_get_path_by_name(module->gdbus_source,
-                                                                                  service_str_id,
-                                                                                  SERVICES_INTERFACE_NAME));
+    return g_strdup(
+        module->gdbus_source->alterator_gdbus_source_get_path_by_name(module->gdbus_source,
+                                                                      service_str_id,
+                                                                      SERVICES_INTERFACE_NAME));
 }
 
-static void services_play_plan_diag_clear(ServicesPlayPlanDiag *diag)
+static void services_play_plan_diag_clear(ServicesPlayPlanDiag* diag)
 {
     if (!diag)
         return;
@@ -294,7 +289,7 @@ static void services_play_plan_diag_clear(ServicesPlayPlanDiag *diag)
     }
 }
 
-static void services_play_plan_free(ServicesPlayPlan *plan)
+static void services_play_plan_free(ServicesPlayPlan* plan)
 {
     if (!plan)
         return;
@@ -307,7 +302,7 @@ static void services_play_plan_free(ServicesPlayPlan *plan)
     g_free(plan);
 }
 
-static void services_play_plan_reset(AlteratorCtlServicesModule *module)
+static void services_play_plan_reset(AlteratorCtlServicesModule* module)
 {
     if (!module)
         return;
@@ -319,9 +314,8 @@ static void services_play_plan_reset(AlteratorCtlServicesModule *module)
     }
 }
 
-static ServicesPlayPlan *services_play_plan_get(AlteratorCtlServicesModule *module,
-                                                gint command_id,
-                                                const gchar *service_str_id)
+static ServicesPlayPlan* services_play_plan_get(AlteratorCtlServicesModule* module, gint command_id,
+                                                const gchar* service_str_id)
 {
     if (!module || !module->play_plan || !service_str_id)
         return NULL;
@@ -335,17 +329,18 @@ static ServicesPlayPlan *services_play_plan_get(AlteratorCtlServicesModule *modu
     return module->play_plan;
 }
 
-static gboolean services_play_plan_requires_diag(const ServicesPlayPlan *plan)
+static gboolean services_play_plan_requires_diag(const ServicesPlayPlan* plan)
 {
     return plan && (plan->prediag.enabled || plan->postdiag.enabled);
 }
 
-static int services_module_play_enable_force_deploy(AlteratorCtlServicesModule *module, const gchar *service_name)
+static int services_module_play_enable_force_deploy(AlteratorCtlServicesModule* module,
+                                                    const gchar* service_name)
 {
     int ret                       = 0;
-    JsonObject *params_object     = NULL;
-    alterator_entry_node *entry   = NULL;
-    toml_value *force_deploy_flag = NULL;
+    JsonObject* params_object     = NULL;
+    alterator_entry_node* entry   = NULL;
+    toml_value* force_deploy_flag = NULL;
 
     if (!module || !service_name)
         ERR_EXIT();
@@ -369,25 +364,25 @@ static int services_module_play_enable_force_deploy(AlteratorCtlServicesModule *
         ERR_EXIT();
     }
 
-    entry             = (alterator_entry_node *) module->info->data;
-    force_deploy_flag = g_hash_table_lookup(entry->toml_pairs,
-                                            SERVICES_ALTERATOR_ENTRY_SERVICE_ENABLE_FORCE_DEPLOY_KEY_NAME);
-    if (!force_deploy_flag || force_deploy_flag->type != TOML_DATA_BOOL || force_deploy_flag->bool_value != TRUE)
+    entry             = (alterator_entry_node*) module->info->data;
+    force_deploy_flag = g_hash_table_lookup(
+        entry->toml_pairs, SERVICES_ALTERATOR_ENTRY_SERVICE_ENABLE_FORCE_DEPLOY_KEY_NAME);
+    if (!force_deploy_flag || force_deploy_flag->type != TOML_DATA_BOOL
+        || force_deploy_flag->bool_value != TRUE)
     {
         g_printerr(_("Force-deploy is not available for service \"%s\".\n"), service_name);
         ERR_EXIT();
     }
 
-    json_object_set_boolean_member(params_object,
-                                   SERVICES_ALTERATOR_ENTRY_SERVICE_DEFAULT_PARAM_FORCE_DEPLOY_KEY_NAME,
-                                   TRUE);
+    json_object_set_boolean_member(
+        params_object, SERVICES_ALTERATOR_ENTRY_SERVICE_DEFAULT_PARAM_FORCE_DEPLOY_KEY_NAME, TRUE);
 
 end:
     return ret;
 }
-static gboolean services_module_play_parse_diag_section(JsonObject *options_obj,
-                                                        const gchar *section_name,
-                                                        ServicesPlayPlanDiag *diag)
+static gboolean services_module_play_parse_diag_section(JsonObject* options_obj,
+                                                        const gchar* section_name,
+                                                        ServicesPlayPlanDiag* diag)
 {
     if (!diag)
         return FALSE;
@@ -397,12 +392,12 @@ static gboolean services_module_play_parse_diag_section(JsonObject *options_obj,
     if (!options_obj)
         return FALSE;
 
-    JsonNode *section_node = json_object_get_member(options_obj, section_name);
+    JsonNode* section_node = json_object_get_member(options_obj, section_name);
     if (!section_node || json_node_get_node_type(section_node) != JSON_NODE_OBJECT)
         return FALSE;
 
-    JsonObject *section_obj = json_node_get_object(section_node);
-    JsonNode *enable_node   = json_object_get_member(section_obj, "enable");
+    JsonObject* section_obj = json_node_get_object(section_node);
+    JsonNode* enable_node   = json_object_get_member(section_obj, "enable");
     if (!enable_node || json_node_get_value_type(enable_node) != G_TYPE_BOOLEAN)
         return FALSE;
 
@@ -410,19 +405,20 @@ static gboolean services_module_play_parse_diag_section(JsonObject *options_obj,
     if (!diag->enabled)
         return FALSE;
 
-    JsonNode *tests_node = json_object_get_member(section_obj, "options");
+    JsonNode* tests_node = json_object_get_member(section_obj, "options");
     if (!tests_node || json_node_get_node_type(tests_node) != JSON_NODE_OBJECT)
         return TRUE;
 
-    JsonObject *tests_obj = json_node_get_object(tests_node);
+    JsonObject* tests_obj = json_node_get_object(tests_node);
     if (!tests_obj)
         return TRUE;
 
-    diag->tool_tests = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, (GDestroyNotify) g_ptr_array_unref);
+    diag->tool_tests = g_hash_table_new_full(g_str_hash, g_str_equal, g_free,
+                                             (GDestroyNotify) g_ptr_array_unref);
 
     JsonObjectIter iter;
-    const gchar *tool_name = NULL;
-    JsonNode *tests_value  = NULL;
+    const gchar* tool_name = NULL;
+    JsonNode* tests_value  = NULL;
     json_object_iter_init(&iter, tests_obj);
     while (json_object_iter_next(&iter, &tool_name, &tests_value))
     {
@@ -432,17 +428,17 @@ static gboolean services_module_play_parse_diag_section(JsonObject *options_obj,
             continue;
         }
 
-        JsonArray *tests_array = json_node_get_array(tests_value);
+        JsonArray* tests_array = json_node_get_array(tests_value);
         if (!tests_array)
             continue;
 
-        GPtrArray *tests_ptr_array = g_ptr_array_new_with_free_func(g_free);
+        GPtrArray* tests_ptr_array = g_ptr_array_new_with_free_func(g_free);
         for (guint i = 0; i < json_array_get_length(tests_array); i++)
         {
-            JsonNode *test_node = json_array_get_element(tests_array, i);
+            JsonNode* test_node = json_array_get_element(tests_array, i);
             if (!test_node || json_node_get_value_type(test_node) != G_TYPE_STRING)
                 continue;
-            const gchar *test_name = json_node_get_string(test_node);
+            const gchar* test_name = json_node_get_string(test_node);
             if (!test_name || !strlen(test_name))
                 continue;
             g_ptr_array_add(tests_ptr_array, g_strdup(test_name));
@@ -454,14 +450,13 @@ static gboolean services_module_play_parse_diag_section(JsonObject *options_obj,
     return TRUE;
 }
 
-static int services_module_play_prepare_plan(AlteratorCtlServicesModule *module,
-                                             const gchar *service_name,
-                                             gint command_id,
-                                             JsonObject *options_obj)
+static int services_module_play_prepare_plan(AlteratorCtlServicesModule* module,
+                                             const gchar* service_name, gint command_id,
+                                             JsonObject* options_obj)
 {
     int ret                 = 0;
     gboolean has_plan_state = FALSE;
-    ServicesPlayPlan *plan  = NULL;
+    ServicesPlayPlan* plan  = NULL;
 
     services_play_plan_reset(module);
 
@@ -473,12 +468,14 @@ static int services_module_play_prepare_plan(AlteratorCtlServicesModule *module,
     plan->command_id      = command_id;
     plan->diag_log_buffer = g_string_new(NULL);
 
-    has_plan_state |= services_module_play_parse_diag_section(options_obj, "prediag", &plan->prediag);
-    has_plan_state |= services_module_play_parse_diag_section(options_obj, "postdiag", &plan->postdiag);
+    has_plan_state |= services_module_play_parse_diag_section(options_obj, "prediag",
+                                                              &plan->prediag);
+    has_plan_state |= services_module_play_parse_diag_section(options_obj, "postdiag",
+                                                              &plan->postdiag);
 
     if (command_id == SERVICES_DEPLOY)
     {
-        JsonNode *autostart_node = json_object_get_member(options_obj, "autostart");
+        JsonNode* autostart_node = json_object_get_member(options_obj, "autostart");
         if (autostart_node)
         {
             if (json_node_get_value_type(autostart_node) != G_TYPE_BOOLEAN)
@@ -492,7 +489,7 @@ static int services_module_play_prepare_plan(AlteratorCtlServicesModule *module,
             has_plan_state      = TRUE;
         }
 
-        JsonNode *force_node = json_object_get_member(options_obj, "force");
+        JsonNode* force_node = json_object_get_member(options_obj, "force");
         if (force_node)
         {
             if (json_node_get_value_type(force_node) != G_TYPE_BOOLEAN)
@@ -526,28 +523,30 @@ end:
     return ret;
 }
 
-static int services_module_play_set_parameter_env(AlteratorCtlServicesModule *module, const gchar *service_str_id)
+static int services_module_play_set_parameter_env(AlteratorCtlServicesModule* module,
+                                                  const gchar* service_str_id)
 {
     int ret = 0;
 
     if (!module || !module->json || json_node_get_node_type(module->json) != JSON_NODE_OBJECT)
         goto end;
 
-    JsonObject *params_object = json_node_get_object(module->json);
+    JsonObject* params_object = json_node_get_object(module->json);
     if (!params_object)
         goto end;
 
     JsonObjectIter iter;
-    const gchar *param_name = NULL;
-    JsonNode *param_node    = NULL;
+    const gchar* param_name = NULL;
+    JsonNode* param_node    = NULL;
     json_object_iter_init(&iter, params_object);
     while (json_object_iter_next(&iter, &param_name, &param_node))
     {
-        gchar *param_value = services_module_json_params_to_text(param_node, service_str_id);
+        gchar* param_value = services_module_json_params_to_text(param_node, service_str_id);
         if (!param_value)
             ERR_EXIT();
 
-        if (module->gdbus_source->alterator_gdbus_source_set_env_value(module->gdbus_source, param_name, param_value)
+        if (module->gdbus_source->alterator_gdbus_source_set_env_value(module->gdbus_source,
+                                                                       param_name, param_value)
             < 0)
         {
             g_free(param_value);
@@ -569,17 +568,18 @@ typedef enum
     SERVICES_PLAY_PROMPT_NONTTY
 } ServicesPlayPromptResult;
 
-static ServicesPlayPromptResult services_module_prompt_yes_no_play(const gchar *auto_yes_message,
-                                                                   const gchar *prompt_message,
+static ServicesPlayPromptResult services_module_prompt_yes_no_play(const gchar* auto_yes_message,
+                                                                   const gchar* prompt_message,
                                                                    gboolean yes_flag);
 
 static void print_diagnostics_tools_running_mode(deployment_status status)
 {
-    const gchar *diagnostic_mode_header = g_strdup_printf("  %s  ",
-                                                          status == DEPLOYED ? _("Running post-diagnostic tests:")
+    const gchar* diagnostic_mode_header = g_strdup_printf("  %s  ",
+                                                          status == DEPLOYED
+                                                              ? _("Running post-diagnostic tests:")
 
-                                                                             : _("Running pre-diagnostic tests:"));
-    const gchar *header_border_line     = g_strnfill(g_utf8_strlen(diagnostic_mode_header, -1), '=');
+                                                              : _("Running pre-diagnostic tests:"));
+    const gchar* header_border_line = g_strnfill(g_utf8_strlen(diagnostic_mode_header, -1), '=');
 
     g_print("\n%s\n", header_border_line);
     g_print("%s\n", diagnostic_mode_header);
@@ -589,11 +589,9 @@ static void print_diagnostics_tools_running_mode(deployment_status status)
     g_free((gpointer) diagnostic_mode_header);
 }
 
-static int services_module_play_run_diag(AlteratorCtlServicesModule *module,
-                                         const gchar *service_str_id,
-                                         ServicesPlayPlanDiag *diag,
-                                         deployment_status status,
-                                         gboolean confirm_on_fail,
+static int services_module_play_run_diag(AlteratorCtlServicesModule* module,
+                                         const gchar* service_str_id, ServicesPlayPlanDiag* diag,
+                                         deployment_status status, gboolean confirm_on_fail,
                                          play_diag_phase phase)
 {
     int ret = 0;
@@ -608,49 +606,51 @@ static int services_module_play_run_diag(AlteratorCtlServicesModule *module,
     {
     case PRE_DIAG:
         g_print(_("%sDiagnostic run requested pre-diagnostic in the \"%s\" service playfile.\n"),
-                yes ? "\n" : "",
-                service_str_id);
+                yes ? "\n" : "", service_str_id);
         break;
     case POST_DIAG:
         g_print(_("%sDiagnostic run requested post-diagnostic in the \"%s\" service playfile.\n"),
-                yes ? "\n" : "",
-                service_str_id);
+                yes ? "\n" : "", service_str_id);
         break;
     case POST_CONFIGURE:
-        g_print(_("%sDiagnostic run requested diagnostic after configuration in the \"%s\" service playfile.\n"),
-                yes ? "\n" : "",
-                service_str_id);
+        g_print(_("%sDiagnostic run requested diagnostic after configuration in the \"%s\" service "
+                  "playfile.\n"),
+                yes ? "\n" : "", service_str_id);
         break;
     default:
-        g_print(_("%sDiagnostic run requested in the \"%s\" service playfile.\n"), yes ? "\n" : "", service_str_id);
+        g_print(_("%sDiagnostic run requested in the \"%s\" service playfile.\n"), yes ? "\n" : "",
+                service_str_id);
         break;
     };
 
-    gchar *service_path = services_module_get_service_path(module, service_str_id);
+    gchar* service_path = services_module_get_service_path(module, service_str_id);
     if (!service_path || !strlen(service_path))
     {
         g_printerr(_("Failed to determine service path for diagnostics.\n"));
         ERR_EXIT();
     }
 
-    GPtrArray *diag_env_vars        = g_ptr_array_new();
+    GPtrArray* diag_env_vars        = g_ptr_array_new();
     evn_variable_t deploy_mode_env  = {.name  = SERVICES_DIAGNOSE_TESTS_ENV_VALUE_DEPLOY_MODE,
                                        .value = status != UNDEPLOYED ? "post" : "pre"};
-    evn_variable_t service_path_env = {.name = SERVICES_DIAGNOSE_TESTS_ENV_VALUE_SERVICE_PATH, .value = service_path};
+    evn_variable_t service_path_env = {.name  = SERVICES_DIAGNOSE_TESTS_ENV_VALUE_SERVICE_PATH,
+                                       .value = service_path};
     g_ptr_array_add(diag_env_vars, &deploy_mode_env);
     g_ptr_array_add(diag_env_vars, &service_path_env);
 
-    GHashTable *service_tests = NULL;
-    if (services_module_get_service_tests(module, service_str_id, NULL, diag_env_vars, FALSE, &service_tests) < 0)
+    GHashTable* service_tests = NULL;
+    if (services_module_get_service_tests(module, service_str_id, NULL, diag_env_vars, FALSE,
+                                          &service_tests)
+        < 0)
         ERR_EXIT();
 
     if (services_module_play_set_parameter_env(module, service_str_id) < 0)
         ERR_EXIT();
 
-    GHashTable *selected_tests = g_hash_table_new_full(g_str_hash,
-                                                       g_str_equal,
-                                                       (GDestroyNotify) g_free,
-                                                       (GDestroyNotify) services_module_service_diag_tool_tests_free);
+    GHashTable*
+        selected_tests = g_hash_table_new_full(g_str_hash, g_str_equal, (GDestroyNotify) g_free,
+                                               (GDestroyNotify)
+                                                   services_module_service_diag_tool_tests_free);
 
     /*
      * Build an alias map from playfile tool keys to canonical internal tool names.
@@ -659,7 +659,8 @@ static int services_module_play_run_diag(AlteratorCtlServicesModule *module,
      *   - the entry name itself (e.g. "tool1"), and
      *   - the diag tool logical name from .diag (e.g. "test_service1"), when available.
      */
-    GHashTable *tool_aliases = g_hash_table_new_full(g_str_hash, g_str_equal, (GDestroyNotify) g_free, NULL);
+    GHashTable* tool_aliases = g_hash_table_new_full(g_str_hash, g_str_equal,
+                                                     (GDestroyNotify) g_free, NULL);
     if (service_tests && g_hash_table_size(service_tests))
     {
         GHashTableIter alias_iter;
@@ -668,16 +669,17 @@ static int services_module_play_run_diag(AlteratorCtlServicesModule *module,
         g_hash_table_iter_init(&alias_iter, service_tests);
         while (g_hash_table_iter_next(&alias_iter, &alias_key, &alias_value))
         {
-            const gchar *entry_name   = (const gchar *) alias_key;
-            diag_tool_tests *tool     = (diag_tool_tests *) alias_value;
-            const gchar *canonical_id = entry_name;
+            const gchar* entry_name   = (const gchar*) alias_key;
+            diag_tool_tests* tool     = (diag_tool_tests*) alias_value;
+            const gchar* canonical_id = entry_name;
 
             if (canonical_id && strlen(canonical_id))
                 g_hash_table_insert(tool_aliases, g_strdup(canonical_id), (gpointer) canonical_id);
 
             if (tool && tool->diag_name && strlen(tool->diag_name)
                 && !g_hash_table_contains(tool_aliases, tool->diag_name))
-                g_hash_table_insert(tool_aliases, g_strdup(tool->diag_name), (gpointer) canonical_id);
+                g_hash_table_insert(tool_aliases, g_strdup(tool->diag_name),
+                                    (gpointer) canonical_id);
         }
     }
 
@@ -689,45 +691,47 @@ static int services_module_play_run_diag(AlteratorCtlServicesModule *module,
         g_hash_table_iter_init(&iter, diag->tool_tests);
         while (g_hash_table_iter_next(&iter, &tool_key, &tests))
         {
-            gchar *canonical_name       = NULL;
-            const gchar *requested_tool = (const gchar *) tool_key;
+            gchar* canonical_name       = NULL;
+            const gchar* requested_tool = (const gchar*) tool_key;
 
             if (tool_aliases)
-                canonical_name = (gchar *) g_hash_table_lookup(tool_aliases, requested_tool);
+                canonical_name = (gchar*) g_hash_table_lookup(tool_aliases, requested_tool);
 
             if (!canonical_name)
             {
-                g_printerr(_("Unknown diagnostic tool \"%s\" for service \"%s\".\n"), requested_tool, service_str_id);
+                g_printerr(_("Unknown diagnostic tool \"%s\" for service \"%s\".\n"),
+                           requested_tool, service_str_id);
                 continue;
             }
 
-            diag_tool_tests *source = g_hash_table_lookup(service_tests, canonical_name);
+            diag_tool_tests* source = g_hash_table_lookup(service_tests, canonical_name);
             if (!source)
             {
-                g_printerr(_("Unknown diagnostic tool \"%s\" for service \"%s\".\n"), requested_tool, service_str_id);
+                g_printerr(_("Unknown diagnostic tool \"%s\" for service \"%s\".\n"),
+                           requested_tool, service_str_id);
                 continue;
             }
 
-            GHashTable *selected_all   = g_hash_table_new_full(g_str_hash, g_str_equal, (GDestroyNotify) g_free, NULL);
-            GPtrArray *requested_tests = (GPtrArray *) tests;
+            GHashTable* selected_all   = g_hash_table_new_full(g_str_hash, g_str_equal,
+                                                               (GDestroyNotify) g_free, NULL);
+            GPtrArray* requested_tests = (GPtrArray*) tests;
             if (requested_tests)
             {
                 for (guint i = 0; i < requested_tests->len; i++)
                 {
-                    const gchar *test_name = requested_tests->pdata[i];
+                    const gchar* test_name = requested_tests->pdata[i];
                     if (g_hash_table_contains(source->all_tests, test_name))
                         g_hash_table_add(selected_all, g_strdup(test_name));
                     else
-                        g_printerr(_("Unknown diagnostic test \"%s\" in \"%s\" tool.\n"), test_name, requested_tool);
+                        g_printerr(_("Unknown diagnostic test \"%s\" in \"%s\" tool.\n"), test_name,
+                                   requested_tool);
                 }
             }
 
-            GHashTable *selected_required = g_hash_table_copy_table(source->required_tests,
-                                                                    g_strdup_copy_func,
-                                                                    NULL,
-                                                                    NULL,
+            GHashTable* selected_required = g_hash_table_copy_table(source->required_tests,
+                                                                    g_strdup_copy_func, NULL, NULL,
                                                                     NULL);
-            diag_tool_tests *clone        = services_module_service_diag_tool_tests_init(source->path,
+            diag_tool_tests* clone = services_module_service_diag_tool_tests_init(source->path,
                                                                                   selected_all,
                                                                                   selected_required,
                                                                                   source->bus_type);
@@ -744,14 +748,13 @@ static int services_module_play_run_diag(AlteratorCtlServicesModule *module,
         g_hash_table_iter_init(&iter, service_tests);
         while (g_hash_table_iter_next(&iter, &tool_name, &info_ptr))
         {
-            diag_tool_tests *source  = (diag_tool_tests *) info_ptr;
-            GHashTable *selected_all = g_hash_table_new_full(g_str_hash, g_str_equal, (GDestroyNotify) g_free, NULL);
-            GHashTable *selected_required = g_hash_table_copy_table(source->required_tests,
-                                                                    g_strdup_copy_func,
-                                                                    NULL,
-                                                                    NULL,
+            diag_tool_tests* source       = (diag_tool_tests*) info_ptr;
+            GHashTable* selected_all      = g_hash_table_new_full(g_str_hash, g_str_equal,
+                                                                  (GDestroyNotify) g_free, NULL);
+            GHashTable* selected_required = g_hash_table_copy_table(source->required_tests,
+                                                                    g_strdup_copy_func, NULL, NULL,
                                                                     NULL);
-            diag_tool_tests *clone        = services_module_service_diag_tool_tests_init(source->path,
+            diag_tool_tests* clone = services_module_service_diag_tool_tests_init(source->path,
                                                                                   selected_all,
                                                                                   selected_required,
                                                                                   source->bus_type);
@@ -767,21 +770,19 @@ static int services_module_play_run_diag(AlteratorCtlServicesModule *module,
     g_hash_table_iter_init(&required_iter, service_tests);
     while (g_hash_table_iter_next(&required_iter, &req_tool_name, &req_tool_ptr))
     {
-        diag_tool_tests *source = (diag_tool_tests *) req_tool_ptr;
+        diag_tool_tests* source = (diag_tool_tests*) req_tool_ptr;
         if (!source->required_tests || !g_hash_table_size(source->required_tests))
             continue;
 
-        diag_tool_tests *target = g_hash_table_lookup(selected_tests, req_tool_name);
+        diag_tool_tests* target = g_hash_table_lookup(selected_tests, req_tool_name);
         if (!target)
         {
-            GHashTable *selected_all = g_hash_table_new_full(g_str_hash, g_str_equal, (GDestroyNotify) g_free, NULL);
-            GHashTable *selected_required = g_hash_table_copy_table(source->required_tests,
-                                                                    g_strdup_copy_func,
-                                                                    NULL,
-                                                                    NULL,
+            GHashTable* selected_all      = g_hash_table_new_full(g_str_hash, g_str_equal,
+                                                                  (GDestroyNotify) g_free, NULL);
+            GHashTable* selected_required = g_hash_table_copy_table(source->required_tests,
+                                                                    g_strdup_copy_func, NULL, NULL,
                                                                     NULL);
-            target                        = services_module_service_diag_tool_tests_init(source->path,
-                                                                  selected_all,
+            target = services_module_service_diag_tool_tests_init(source->path, selected_all,
                                                                   selected_required,
                                                                   source->bus_type);
             g_hash_table_insert(selected_tests, g_strdup(req_tool_name), target);
@@ -789,18 +790,18 @@ static int services_module_play_run_diag(AlteratorCtlServicesModule *module,
             g_hash_table_unref(selected_required);
         }
 
-        GPtrArray *required_keys = g_hash_table_get_keys_as_ptr_array(source->required_tests);
+        GPtrArray* required_keys = g_hash_table_get_keys_as_ptr_array(source->required_tests);
         gboolean warned          = FALSE;
         for (gsize i = 0; i < required_keys->len; i++)
         {
-            const gchar *test = required_keys->pdata[i];
+            const gchar* test = required_keys->pdata[i];
             if (!g_hash_table_contains(target->all_tests, test))
             {
                 if (!warned)
                 {
-                    g_print(
-                        _("Playfile did not list all required tests for \"%s\"; they will be added automatically.\n"),
-                        (gchar *) req_tool_name);
+                    g_print(_("Playfile did not list all required tests for \"%s\"; they will be "
+                              "added automatically.\n"),
+                            (gchar*) req_tool_name);
                     warned = TRUE;
                 }
                 g_hash_table_add(target->all_tests, g_strdup(test));
@@ -816,14 +817,14 @@ static int services_module_play_run_diag(AlteratorCtlServicesModule *module,
     g_hash_table_iter_init(&run_iter, selected_tests);
     while (g_hash_table_iter_next(&run_iter, &run_tool_name, &run_tool_ptr))
     {
-        const gchar *tool_name     = (const gchar *) run_tool_name;
-        diag_tool_tests *selection = (diag_tool_tests *) run_tool_ptr;
-        diag_tool_tests *source    = g_hash_table_lookup(service_tests, tool_name);
+        const gchar* tool_name     = (const gchar*) run_tool_name;
+        diag_tool_tests* selection = (diag_tool_tests*) run_tool_ptr;
+        diag_tool_tests* source    = g_hash_table_lookup(service_tests, tool_name);
 
         if (!selection || !source)
             continue;
 
-        GPtrArray *tests_to_run = NULL;
+        GPtrArray* tests_to_run = NULL;
         if (selection->all_tests && g_hash_table_size(selection->all_tests))
             tests_to_run = services_module_get_sorted_string_keys(selection->all_tests);
         else if (source->required_tests && g_hash_table_size(source->required_tests))
@@ -843,7 +844,7 @@ static int services_module_play_run_diag(AlteratorCtlServicesModule *module,
             g_print("%s", _("<<< Tests on the session bus:\n"));
         for (gsize i = 0; i < tests_to_run->len; i++)
         {
-            const gchar *test_name = (const gchar *) tests_to_run->pdata[i];
+            const gchar* test_name = (const gchar*) tests_to_run->pdata[i];
             if (!test_name)
                 continue;
 
@@ -853,17 +854,14 @@ static int services_module_play_run_diag(AlteratorCtlServicesModule *module,
                 && g_strcmp0(module->play_plan->service_name, service_str_id) == 0)
             {
                 g_string_append_printf(module->play_plan->diag_log_buffer,
-                                       _("Running test \"%s\" from \"%s\".\n"),
-                                       test_name,
+                                       _("Running test \"%s\" from \"%s\".\n"), test_name,
                                        tool_name);
             }
 
-            int test_result = services_module_run_test(module,
-                                                       service_str_id,
-                                                       selection->path ? selection->path : tool_name,
-                                                       test_name,
-                                                       status,
-                                                       selection->bus_type);
+            int test_result = services_module_run_test(module, service_str_id,
+                                                       selection->path ? selection->path
+                                                                       : tool_name,
+                                                       test_name, status, selection->bus_type);
             if (test_result < 0)
             {
                 g_ptr_array_unref(tests_to_run);
@@ -880,15 +878,18 @@ static int services_module_play_run_diag(AlteratorCtlServicesModule *module,
         switch (phase)
         {
         case PRE_DIAG:
-            g_print(_("Some diagnostic tests failed before deploying service \"%s\".\n"), service_str_id);
+            g_print(_("Some diagnostic tests failed before deploying service \"%s\".\n"),
+                    service_str_id);
             break;
 
         case POST_DIAG:
-            g_print(_("Some diagnostic tests failed after deploying service \"%s\".\n"), service_str_id);
+            g_print(_("Some diagnostic tests failed after deploying service \"%s\".\n"),
+                    service_str_id);
             break;
 
         case POST_CONFIGURE:
-            g_print(_("Some diagnostic tests failed after configuring service \"%s\"."), service_str_id);
+            g_print(_("Some diagnostic tests failed after configuring service \"%s\"."),
+                    service_str_id);
             break;
 
         default:
@@ -898,10 +899,8 @@ static int services_module_play_run_diag(AlteratorCtlServicesModule *module,
 
         if (confirm_on_fail)
         {
-            ServicesPlayPromptResult prompt_result
-                = services_module_prompt_yes_no_play(_("Do you want to continue? [y/N] y\n"),
-                                                     _("Do you want to continue? [y/N] "),
-                                                     yes);
+            ServicesPlayPromptResult prompt_result = services_module_prompt_yes_no_play(
+                _("Do you want to continue? [y/N] y\n"), _("Do you want to continue? [y/N] "), yes);
 
             if (prompt_result != SERVICES_PLAY_PROMPT_YES)
             {
@@ -934,8 +933,8 @@ end:
     return ret;
 }
 
-static ServicesPlayPromptResult services_module_prompt_yes_no_play(const gchar *auto_yes_message,
-                                                                   const gchar *prompt_message,
+static ServicesPlayPromptResult services_module_prompt_yes_no_play(const gchar* auto_yes_message,
+                                                                   const gchar* prompt_message,
                                                                    gboolean yes_flag)
 {
     if (yes_flag)
@@ -967,12 +966,12 @@ static ServicesPlayPromptResult services_module_prompt_yes_no_play(const gchar *
     }
     g_print("\n");
 
-    return (response_char == 'y' || response_char == 'Y') ? SERVICES_PLAY_PROMPT_YES : SERVICES_PLAY_PROMPT_NO;
+    return (response_char == 'y' || response_char == 'Y') ? SERVICES_PLAY_PROMPT_YES
+                                                          : SERVICES_PLAY_PROMPT_NO;
 }
 
-static int services_module_maybe_save_diag_log(AlteratorCtlServicesModule *module,
-                                               const gchar *service_str_id,
-                                               play_diag_phase phase,
+static int services_module_maybe_save_diag_log(AlteratorCtlServicesModule* module,
+                                               const gchar* service_str_id, play_diag_phase phase,
                                                gboolean yes)
 {
     int ret = 0;
@@ -980,32 +979,31 @@ static int services_module_maybe_save_diag_log(AlteratorCtlServicesModule *modul
     if (!module || !module->play_plan || !service_str_id)
         goto end;
 
-    ServicesPlayPlan *plan = module->play_plan;
+    ServicesPlayPlan* plan = module->play_plan;
     if (!plan || g_strcmp0(plan->service_name, service_str_id) != 0)
         goto end;
 
     if (!plan->diag_log_buffer || plan->diag_log_buffer->len == 0)
         goto end;
 
-    ServicesPlayPromptResult prompt_result
-        = services_module_prompt_yes_no_play(_("Do you want to save diagnostics log to a file? [y/N] y\n\n"),
-                                             _("Do you want to save diagnostics log to a file? [y/N] "),
-                                             yes);
+    ServicesPlayPromptResult prompt_result = services_module_prompt_yes_no_play(
+        _("Do you want to save diagnostics log to a file? [y/N] y\n\n"),
+        _("Do you want to save diagnostics log to a file? [y/N] "), yes);
     if (prompt_result != SERVICES_PLAY_PROMPT_YES)
         goto end;
 
     /* Auto-generate filename: servicename-phase-ISO8601.log */
-    GDateTime *now = g_date_time_new_now_local();
+    GDateTime* now = g_date_time_new_now_local();
     if (!now)
         goto end;
 
-    gchar *timestamp = g_date_time_format(now, "%Y-%m-%dT%H:%M:%S");
+    gchar* timestamp = g_date_time_format(now, "%Y-%m-%dT%H:%M:%S");
     g_date_time_unref(now);
     if (!timestamp)
         goto end;
 
-    gchar *path       = NULL;
-    GString *file_buf = g_string_new(NULL);
+    gchar* path       = NULL;
+    GString* file_buf = g_string_new(NULL);
     switch (phase)
     {
     case PRE_DIAG:
@@ -1016,7 +1014,9 @@ static int services_module_maybe_save_diag_log(AlteratorCtlServicesModule *modul
         break;
     case POST_DIAG:
         path = g_strdup_printf("%s-postdiag-%s.log", service_str_id, timestamp);
-        g_string_append_printf(file_buf, _("Diagnostics log for service \"%s\" (after deployment)\n\n"), service_str_id);
+        g_string_append_printf(file_buf,
+                               _("Diagnostics log for service \"%s\" (after deployment)\n\n"),
+                               service_str_id);
         break;
     case POST_CONFIGURE:
         path = g_strdup_printf("%s-postconfigure-%s.log", service_str_id, timestamp);
@@ -1026,14 +1026,15 @@ static int services_module_maybe_save_diag_log(AlteratorCtlServicesModule *modul
         break;
     default:
         path = g_strdup_printf("%s-diag-%s.log", service_str_id, timestamp);
-        g_string_append_printf(file_buf, _("Diagnostics log for service \"%s\"\n\n"), service_str_id);
+        g_string_append_printf(file_buf, _("Diagnostics log for service \"%s\"\n\n"),
+                               service_str_id);
         break;
     };
     g_free(timestamp);
 
     g_string_append_len(file_buf, plan->diag_log_buffer->str, plan->diag_log_buffer->len);
 
-    GError *error = NULL;
+    GError* error = NULL;
     if (!g_file_set_contents(path, file_buf->str, file_buf->len, &error))
     {
         g_printerr(_("Failed to save diagnostics log to %s: %s\n"), path, error->message);
@@ -1053,54 +1054,48 @@ end:
 
 typedef struct services_module_subcommands_t
 {
-    char *subcommand;
+    char* subcommand;
     enum services_sub_commands id;
 } services_module_subcommands_t;
 
-static services_module_subcommands_t services_module_subcommands_list[] = {{"backup", SERVICES_BACKUP},
-                                                                           {"configure", SERVICES_CONFIGURE},
-                                                                           {"deploy", SERVICES_DEPLOY},
-                                                                           {"diagnose", SERVICES_DIAGNOSE},
-                                                                           {"info", SERVICES_INFO},
-                                                                           {"resources", SERVICES_RESOURCES},
-                                                                           {"restore", SERVICES_RESTORE},
-                                                                           {"status", SERVICES_STATUS},
-                                                                           {"start", SERVICES_START},
-                                                                           {"stop", SERVICES_STOP},
-                                                                           {"undeploy", SERVICES_UNDEPLOY},
-                                                                           {"list", SERVICES_LIST},
-                                                                           {"play", SERVICES_PLAY}};
+static services_module_subcommands_t services_module_subcommands_list[] =
+    {{"backup", SERVICES_BACKUP},     {"configure", SERVICES_CONFIGURE},
+     {"deploy", SERVICES_DEPLOY},     {"diagnose", SERVICES_DIAGNOSE},
+     {"info", SERVICES_INFO},         {"resources", SERVICES_RESOURCES},
+     {"restore", SERVICES_RESTORE},   {"status", SERVICES_STATUS},
+     {"start", SERVICES_START},       {"stop", SERVICES_STOP},
+     {"undeploy", SERVICES_UNDEPLOY}, {"list", SERVICES_LIST},
+     {"play", SERVICES_PLAY}};
 
 typedef struct service_names_t
 {
-    gchar *name;
-    gchar *display_name;
+    gchar* name;
+    gchar* display_name;
 } service_names_t;
 
-static service_names_t *service_names_init(const gchar *name, const gchar *display_name);
-static void service_names_free(service_names_t *service_names);
+static service_names_t* service_names_init(const gchar* name, const gchar* display_name);
+static void service_names_free(service_names_t* service_names);
 
 typedef struct service_display_entry
 {
-    gchar *label;
+    gchar* label;
     deployment_status status;
 } service_display_entry;
 
-static service_display_entry *service_display_entry_new(gchar *label, deployment_status status);
-static void service_display_entry_free(service_display_entry *entry);
+static service_display_entry* service_display_entry_new(gchar* label, deployment_status status);
+static void service_display_entry_free(service_display_entry* entry);
 static gint services_module_sort_entries(gconstpointer a, gconstpointer b);
-static gchar *services_module_build_service_label(AlteratorCtlServicesModule *module,
-                                                  const gchar *service_path,
-                                                  const service_names_t *service_names);
-static const gchar *services_module_status_text(deployment_status status);
-static const gchar *services_module_marker_shape_for_status(deployment_status status);
+static gchar* services_module_build_service_label(AlteratorCtlServicesModule* module,
+                                                  const gchar* service_path,
+                                                  const service_names_t* service_names);
+static const gchar* services_module_status_text(deployment_status status);
+static const gchar* services_module_marker_shape_for_status(deployment_status status);
 static text_style services_module_color_for_status(deployment_status status);
-static gchar *services_module_format_entry(const service_display_entry *entry,
-                                           gsize max_label_len,
+static gchar* services_module_format_entry(const service_display_entry* entry, gsize max_label_len,
                                            gboolean show_statuses);
 static void services_module_print_status_legend(void);
 
-static GObjectClass *services_module_parent_class = NULL;
+static GObjectClass* services_module_parent_class = NULL;
 static alterator_ctl_module_t services_module     = {0};
 gboolean is_dbus_call_error                       = FALSE;
 
@@ -1117,269 +1112,238 @@ static gboolean force_deploy          = FALSE;
 static gboolean run_all_tests         = FALSE;
 static gboolean no_default            = FALSE;
 static gboolean yes                   = FALSE;
-static gchar *json_params_filepath    = NULL;
-static GPtrArray *diagnostic_tests    = NULL;
+static gchar* json_params_filepath    = NULL;
+static GPtrArray* diagnostic_tests    = NULL;
 
 // Parsed diagnostics argumnets
-static GHashTable *service_tests = NULL;
+static GHashTable* service_tests = NULL;
 
-static void services_module_class_init(AlteratorCtlServicesModuleClass *klass);
-static void services_ctl_class_finalize(GObject *klass);
+static void services_module_class_init(AlteratorCtlServicesModuleClass* klass);
+static void services_ctl_class_finalize(GObject* klass);
 
 static void services_module_alterator_interface_init(gpointer iface, gpointer iface_data);
 static void services_module_alterator_interface_finalize(gpointer iface, gpointer iface_data);
 
-AlteratorCtlServicesModule *services_module_new(gpointer app);
-void services_module_free(AlteratorCtlServicesModule *module);
+AlteratorCtlServicesModule* services_module_new(gpointer app);
+void services_module_free(AlteratorCtlServicesModule* module);
 
-static void fill_command_hash_table(GHashTable *command);
+static void fill_command_hash_table(GHashTable* command);
 
 typedef struct
 {
-    gchar *default_value_str;
+    gchar* default_value_str;
     gsize min_array_size; // default 0
     gsize max_array_size; // default 0
     GOptionEntry option_entry;
     gboolean is_constant;
     gboolean is_array;
 } ParamEntry;
-static void services_module_parameter_entry_clear(ParamEntry *e);
+static void services_module_parameter_entry_clear(ParamEntry* e);
 
-static int services_module_parse_options(AlteratorCtlServicesModule *module, int *argc, char **argv);
-static gchar *services_module_get_parameters(gboolean disable_fallback);
-static gchar *services_module_parse_stdin_param(gboolean disable_fallback);
+static int services_module_parse_options(AlteratorCtlServicesModule* module, int* argc,
+                                         char** argv);
+static gchar* services_module_get_parameters(gboolean disable_fallback);
+static gchar* services_module_parse_stdin_param(gboolean disable_fallback);
 
-static int services_module_parse_diagnose_arguments(AlteratorCtlServicesModule *module,
-                                                    int argc,
-                                                    char **argv,
-                                                    gchar **params);
-static int services_module_parse_arguments(
-    AlteratorCtlServicesModule *module, int argc, char **argv, alteratorctl_ctx_t **ctx, gboolean *is_accepted);
-static int services_module_status_print_params(JsonObject *parameters, GString *prefix);
+static int services_module_parse_diagnose_arguments(AlteratorCtlServicesModule* module, int argc,
+                                                    char** argv, gchar** params);
+static int services_module_parse_arguments(AlteratorCtlServicesModule* module, int argc,
+                                           char** argv, alteratorctl_ctx_t** ctx,
+                                           gboolean* is_accepted);
+static int services_module_status_print_params(JsonObject* parameters, GString* prefix);
 
-static int services_module_parametrized_subcommand(AlteratorCtlServicesModule *module,
-                                                   alteratorctl_ctx_t **ctx,
-                                                   int command,
+static int services_module_parametrized_subcommand(AlteratorCtlServicesModule* module,
+                                                   alteratorctl_ctx_t** ctx, int command,
                                                    gboolean with_signals,
                                                    int required_deploy_state);
-static int services_module_diagnose_subcommand(AlteratorCtlServicesModule *module, alteratorctl_ctx_t **ctx);
-static int services_module_info_subcommand(AlteratorCtlServicesModule *module, alteratorctl_ctx_t **ctx);
-static int services_module_list_subcommand(AlteratorCtlServicesModule *module, alteratorctl_ctx_t **ctx);
-static int services_module_resources_subcommand(AlteratorCtlServicesModule *module, alteratorctl_ctx_t **ctx);
-static int services_module_status_subcommand(AlteratorCtlServicesModule *module,
-                                             alteratorctl_ctx_t **ctx,
+static int services_module_diagnose_subcommand(AlteratorCtlServicesModule* module,
+                                               alteratorctl_ctx_t** ctx);
+static int services_module_info_subcommand(AlteratorCtlServicesModule* module,
+                                           alteratorctl_ctx_t** ctx);
+static int services_module_list_subcommand(AlteratorCtlServicesModule* module,
+                                           alteratorctl_ctx_t** ctx);
+static int services_module_resources_subcommand(AlteratorCtlServicesModule* module,
+                                                alteratorctl_ctx_t** ctx);
+static int services_module_status_subcommand(AlteratorCtlServicesModule* module,
+                                             alteratorctl_ctx_t** ctx,
                                              gboolean suppress_missing_service_msg);
-static int services_module_start_subcommand(AlteratorCtlServicesModule *module, alteratorctl_ctx_t **ctx);
-static int services_module_stop_subcommand(AlteratorCtlServicesModule *module, alteratorctl_ctx_t **ctx);
+static int services_module_start_subcommand(AlteratorCtlServicesModule* module,
+                                            alteratorctl_ctx_t** ctx);
+static int services_module_stop_subcommand(AlteratorCtlServicesModule* module,
+                                           alteratorctl_ctx_t** ctx);
 
-static gboolean services_module_confirm_execution(AlteratorCtlServicesModule *module,
-                                                  alteratorctl_ctx_t **ctx,
-                                                  gint selected_subcommand,
-                                                  const gchar *command_name,
-                                                  const gchar *service_name,
-                                                  gchar **argv,
-                                                  gint actual_argc,
-                                                  GArray *options,
-                                                  gboolean *is_accepted,
-                                                  gboolean *yes_flag);
+static gboolean
+services_module_confirm_execution(AlteratorCtlServicesModule* module, alteratorctl_ctx_t** ctx,
+                                  gint selected_subcommand, const gchar* command_name,
+                                  const gchar* service_name, gchar** argv, gint actual_argc,
+                                  GArray* options, gboolean* is_accepted, gboolean* yes_flag);
 
-static int services_module_handle_results(AlteratorCtlServicesModule *module, alteratorctl_ctx_t **ctx);
-static int services_module_backup_handle_result(AlteratorCtlServicesModule *module, alteratorctl_ctx_t **ctx);
-static int services_module_configure_handle_result(AlteratorCtlServicesModule *module, alteratorctl_ctx_t **ctx);
-static int services_module_deploy_handle_result(AlteratorCtlServicesModule *module, alteratorctl_ctx_t **ctx);
-static int services_module_info_handle_result(AlteratorCtlServicesModule *module, alteratorctl_ctx_t **ctx);
-static int services_module_resources_handle_result(AlteratorCtlServicesModule *module, alteratorctl_ctx_t **ctx);
-static int services_module_restore_handle_result(AlteratorCtlServicesModule *module, alteratorctl_ctx_t **ctx);
-static int services_module_status_handle_result(AlteratorCtlServicesModule *module, alteratorctl_ctx_t **ctx);
-static int services_module_start_handle_result(AlteratorCtlServicesModule *module, alteratorctl_ctx_t **ctx);
-static int services_module_stop_handle_result(AlteratorCtlServicesModule *module, alteratorctl_ctx_t **ctx);
-static int services_module_undeploy_handle_result(AlteratorCtlServicesModule *module, alteratorctl_ctx_t **ctx);
+static int services_module_handle_results(AlteratorCtlServicesModule* module,
+                                          alteratorctl_ctx_t** ctx);
+static int services_module_backup_handle_result(AlteratorCtlServicesModule* module,
+                                                alteratorctl_ctx_t** ctx);
+static int services_module_configure_handle_result(AlteratorCtlServicesModule* module,
+                                                   alteratorctl_ctx_t** ctx);
+static int services_module_deploy_handle_result(AlteratorCtlServicesModule* module,
+                                                alteratorctl_ctx_t** ctx);
+static int services_module_info_handle_result(AlteratorCtlServicesModule* module,
+                                              alteratorctl_ctx_t** ctx);
+static int services_module_resources_handle_result(AlteratorCtlServicesModule* module,
+                                                   alteratorctl_ctx_t** ctx);
+static int services_module_restore_handle_result(AlteratorCtlServicesModule* module,
+                                                 alteratorctl_ctx_t** ctx);
+static int services_module_status_handle_result(AlteratorCtlServicesModule* module,
+                                                alteratorctl_ctx_t** ctx);
+static int services_module_start_handle_result(AlteratorCtlServicesModule* module,
+                                               alteratorctl_ctx_t** ctx);
+static int services_module_stop_handle_result(AlteratorCtlServicesModule* module,
+                                              alteratorctl_ctx_t** ctx);
+static int services_module_undeploy_handle_result(AlteratorCtlServicesModule* module,
+                                                  alteratorctl_ctx_t** ctx);
 
-static int services_module_status_get_json_node(AlteratorCtlServicesModule *module,
-                                                const gchar *service_str_id,
-                                                JsonNode **result);
+static int services_module_status_get_json_node(AlteratorCtlServicesModule* module,
+                                                const gchar* service_str_id, JsonNode** result);
 
-static int services_module_status_params_build_output(AlteratorCtlServicesModule *module,
-                                                      gchar *service_str_id,
-                                                      JsonObject *parameters,
-                                                      GNode *parameters_data,
-                                                      GString *prefix,
-                                                      GHashTable **result);
+static int services_module_status_params_build_output(AlteratorCtlServicesModule* module,
+                                                      gchar* service_str_id, JsonObject* parameters,
+                                                      GNode* parameters_data, GString* prefix,
+                                                      GHashTable** result);
 
 // Minimal secrets prefill: top-level required password strings and required
 // password children of present object/selected enum variant.
-static int services_fill_missing_passwords(AlteratorCtlServicesModule *module,
-                                           const gchar *service_name,
-                                           const gchar *const *contexts,
+static int services_fill_missing_passwords(AlteratorCtlServicesModule* module,
+                                           const gchar* service_name, GStrv contexts,
                                            gsize contexts_len);
 
-static int services_module_get_required_parameters_paths(AlteratorCtlServicesModule *module,
-                                                         const gchar *service_str_id,
-                                                         const gchar *context,
-                                                         GHashTable **result);
+static int services_module_get_required_parameters_paths(AlteratorCtlServicesModule* module,
+                                                         const gchar* service_str_id,
+                                                         const gchar* context, GHashTable** result);
 
-static int services_module_create_params_table(AlteratorCtlServicesModule *module,
-                                               GHashTable *stringified_params_data,
-                                               GHashTable *param_name_to_option_entry,
-                                               GHashTable *required_params_paths,
-                                               gboolean *is_missing_required,
-                                               GString **result);
+static int services_module_create_params_table(AlteratorCtlServicesModule* module,
+                                               GHashTable* stringified_params_data,
+                                               GHashTable* param_name_to_option_entry,
+                                               GHashTable* required_params_paths,
+                                               gboolean* is_missing_required, GString** result);
 
-static void services_module_run_stdout_simple_stream_handler(GDBusConnection *connection,
-                                                             const gchar *sender_name,
-                                                             const gchar *object_path,
-                                                             const gchar *interface_name,
-                                                             const gchar *signal_name,
-                                                             GVariant *parameters,
-                                                             gpointer user_data);
+static void services_module_run_stdout_simple_stream_handler(
+    GDBusConnection* connection, const gchar* sender_name, const gchar* object_path,
+    const gchar* interface_name, const gchar* signal_name, GVariant* parameters,
+    gpointer user_data);
 
-static void services_module_run_stderr_simple_stream_handler(GDBusConnection *connection,
-                                                             const gchar *sender_name,
-                                                             const gchar *object_path,
-                                                             const gchar *interface_name,
-                                                             const gchar *signal_name,
-                                                             GVariant *parameters,
-                                                             gpointer user_data);
+static void services_module_run_stderr_simple_stream_handler(
+    GDBusConnection* connection, const gchar* sender_name, const gchar* object_path,
+    const gchar* interface_name, const gchar* signal_name, GVariant* parameters,
+    gpointer user_data);
 
-static int services_module_print_list_with_filters(AlteratorCtlServicesModule *module, GHashTable *services);
-static int services_module_validate_object_and_iface(AlteratorCtlServicesModule *module,
-                                                     const gchar *object,
-                                                     const gchar *iface);
+static int services_module_print_list_with_filters(AlteratorCtlServicesModule* module,
+                                                   GHashTable* services);
+static int services_module_validate_object_and_iface(AlteratorCtlServicesModule* module,
+                                                     const gchar* object, const gchar* iface);
 static gint services_module_sort_options(gconstpointer a, gconstpointer b);
-static int services_module_get_display_name(AlteratorCtlServicesModule *module,
-                                            const gchar *elem_str_id,
-                                            GNode *data,
-                                            gchar **result);
+static int services_module_get_display_name(AlteratorCtlServicesModule* module,
+                                            const gchar* elem_str_id, GNode* data, gchar** result);
 
-static int services_module_status_result_get_service_params(AlteratorCtlServicesModule *module,
-                                                            alteratorctl_ctx_t **ctx,
-                                                            const gchar *service_str_id,
-                                                            gboolean initial_params,
-                                                            gchar *filtering_ctx,
-                                                            JsonNode **result,
-                                                            deployment_status *deploy_status,
-                                                            gboolean exclude_unset_params,
-                                                            GError **json_parse_error);
-typedef gchar *(*ServicesModuleTomlValuePrintingMode)(gchar *value_name, gpointer user_data);
+static int services_module_status_result_get_service_params(
+    AlteratorCtlServicesModule* module, alteratorctl_ctx_t** ctx, const gchar* service_str_id,
+    gboolean initial_params, gchar* filtering_ctx, JsonNode** result,
+    deployment_status* deploy_status, gboolean exclude_unset_params, GError** json_parse_error);
+typedef gchar* (*ServicesModuleTomlValuePrintingMode)(gchar* value_name, gpointer user_data);
 
-static gchar *services_module_print_resource_with_links_to_params(gchar *resource_name,
+static gchar* services_module_print_resource_with_links_to_params(gchar* resource_name,
                                                                   gpointer resource_to_param_table);
 
-static int services_module_printing_resources_value(AlteratorCtlServicesModule *module,
-                                                    const gchar *service_str_id,
-                                                    GNode *service_info,
-                                                    const GNode *resources,
+static int services_module_printing_resources_value(AlteratorCtlServicesModule* module,
+                                                    const gchar* service_str_id,
+                                                    GNode* service_info, const GNode* resources,
                                                     ServicesModuleTomlValuePrintingMode mode,
                                                     gpointer user_data);
 
-static gchar *services_module_get_localized_field(AlteratorCtlModuleInfoParser *info_parser,
-                                                  GNode *node,
-                                                  const gchar *table_name);
-static gchar *services_module_resource_value_to_string(const toml_value *value);
-static services_module_resource_group_t services_module_get_resource_group(const gchar *type_str);
-static GString *services_module_render_resources_ascii_table(const GPtrArray *rows);
+static gchar* services_module_get_localized_field(AlteratorCtlModuleInfoParser* info_parser,
+                                                  GNode* node, const gchar* table_name);
+static gchar* services_module_resource_value_to_string(const toml_value* value);
+static services_module_resource_group_t services_module_get_resource_group(const gchar* type_str);
+static GString* services_module_render_resources_ascii_table(const GPtrArray* rows);
 static void services_module_resource_row_free(gpointer data);
-static void services_module_append_spaces(GString *buffer, gsize count);
+static void services_module_append_spaces(GString* buffer, gsize count);
 
-static int services_module_get_initial_params(AlteratorCtlServicesModule *module,
-                                              const gchar *service_str_id,
-                                              JsonNode **result,
-                                              gboolean required_only,
-                                              gchar *required_only_context,
-                                              GHashTable **params_ctx,
+static int services_module_get_initial_params(AlteratorCtlServicesModule* module,
+                                              const gchar* service_str_id, JsonNode** result,
+                                              gboolean required_only, gchar* required_only_context,
+                                              GHashTable** params_ctx,
                                               gboolean exclude_unset_params);
 
-static int services_module_recursive_get_initial_params(AlteratorCtlServicesModule *module,
-                                                        const gchar *service_str_id,
-                                                        GNode *service_info,
-                                                        GNode *types,
-                                                        GNode *parameter,
-                                                        JsonNode **result,
-                                                        gboolean required_only,
-                                                        gchar *required_only_context,
-                                                        JsonObject **nested_object,
-                                                        GHashTable *params_to_resources,
-                                                        gboolean exclude_unset_params,
-                                                        gboolean constant_parent);
+static int services_module_recursive_get_initial_params(
+    AlteratorCtlServicesModule* module, const gchar* service_str_id, GNode* service_info,
+    GNode* types, GNode* parameter, JsonNode** result, gboolean required_only,
+    gchar* required_only_context, JsonObject** nested_object, GHashTable* params_to_resources,
+    gboolean exclude_unset_params, gboolean constant_parent);
 
-static int services_module_get_params_context(AlteratorCtlServicesModule *module,
-                                              const gchar *service_str_id,
-                                              GNode *info,
-                                              GHashTable **params_ctx);
+static int services_module_get_params_context(AlteratorCtlServicesModule* module,
+                                              const gchar* service_str_id, GNode* info,
+                                              GHashTable** params_ctx);
 
-static int services_module_get_param_to_resource_table(AlteratorCtlServicesModule *module,
-                                                       GNode *resources,
-                                                       GHashTable **result);
+static int services_module_get_param_to_resource_table(AlteratorCtlServicesModule* module,
+                                                       GNode* resources, GHashTable** result);
 
-static JsonNode *services_module_merge_json_data(JsonNode *first, JsonNode *second, const gchar *service_str_id);
+static JsonNode* services_module_merge_json_data(JsonNode* first, JsonNode* second,
+                                                 const gchar* service_str_id);
 
-static int services_module_recursive_merge_json_data(JsonNode *target, JsonNode *source, const gchar *service_str_id);
+static int services_module_recursive_merge_json_data(JsonNode* target, JsonNode* source,
+                                                     const gchar* service_str_id);
 
-static int services_module_recursive_filter_params_by_context(JsonNode *data,
-                                                              GHashTable *ctx_data,
-                                                              gchar *context_name,
+static int services_module_recursive_filter_params_by_context(JsonNode* data, GHashTable* ctx_data,
+                                                              gchar* context_name,
                                                               gboolean constants_only);
 
-static JsonNode *services_module_filter_params_by_context(JsonNode *data,
-                                                          GHashTable *ctx_data,
-                                                          gchar *context_name,
+static JsonNode* services_module_filter_params_by_context(JsonNode* data, GHashTable* ctx_data,
+                                                          gchar* context_name,
                                                           gboolean constants_only);
 
-static int service_module_get_list_of_deployed_services_with_params(AlteratorCtlServicesModule *module,
-                                                                    GList **result,
-                                                                    const gchar *skip_service_name);
+static int service_module_get_list_of_deployed_services_with_params(
+    AlteratorCtlServicesModule* module, GList** result, const gchar* skip_service_name);
 
-static int services_module_is_deployed(AlteratorCtlServicesModule *module,
-                                       const gchar *service_str_id,
-                                       deployment_status *result);
+static int services_module_is_deployed(AlteratorCtlServicesModule* module,
+                                       const gchar* service_str_id, deployment_status* result);
 
-static int services_module_get_diag_tests(AlteratorCtlServicesModule *module,
-                                          const gchar *service_str_id,
-                                          const gchar *diag_tool_path,
-                                          const gchar *diag_tool_table_name,
-                                          GBusType bus_type,
-                                          const GPtrArray *diag_env_vars,
-                                          gboolean all_modes,
-                                          GNode *diag_tests_info,
-                                          GHashTable **result);
+static int services_module_get_diag_tests(AlteratorCtlServicesModule* module,
+                                          const gchar* service_str_id, const gchar* diag_tool_path,
+                                          const gchar* diag_tool_table_name, GBusType bus_type,
+                                          const GPtrArray* diag_env_vars, gboolean all_modes,
+                                          GNode* diag_tests_info, GHashTable** result);
 
-static int services_module_get_diag_tools_info(AlteratorCtlServicesModule *module,
-                                               const gchar *service_str_id,
-                                               GHashTable *diag_tools_names,
-                                               GHashTable **tools_names_to_nodes);
+static int services_module_get_diag_tools_info(AlteratorCtlServicesModule* module,
+                                               const gchar* service_str_id,
+                                               GHashTable* diag_tools_names,
+                                               GHashTable** tools_names_to_nodes);
 
 // ret 1 if failed of getting info
-static int services_module_get_diag_info(AlteratorCtlServicesModule *module,
-                                         const gchar *service_str_id,
-                                         const gchar *service_diag_tool_entry_name,
-                                         const gchar *diag_tool_str_id,
-                                         GBusType bus_type,
-                                         GNode **result);
+static int services_module_get_diag_info(AlteratorCtlServicesModule* module,
+                                         const gchar* service_str_id,
+                                         const gchar* service_diag_tool_entry_name,
+                                         const gchar* diag_tool_str_id, GBusType bus_type,
+                                         GNode** result);
 
 // retval 1 if a resource of non-existent
-static int services_module_get_actual_resourse_value(AlteratorCtlServicesModule *module,
-                                                     const gchar *service_str_id,
-                                                     GNode *resources,
-                                                     JsonNode *parameters,
-                                                     const gchar *resource_name,
-                                                     toml_value **result);
+static int services_module_get_actual_resourse_value(AlteratorCtlServicesModule* module,
+                                                     const gchar* service_str_id, GNode* resources,
+                                                     JsonNode* parameters,
+                                                     const gchar* resource_name,
+                                                     toml_value** result);
 
-static gchar *services_module_strignify_toml_value(const toml_value *value);
+static gchar* services_module_strignify_toml_value(const toml_value* value);
 
-static int services_module_find_conflicting_resources_within_current_service(AlteratorCtlServicesModule *module,
-                                                                             const gchar *service_str_id,
-                                                                             JsonNode *parameters_node);
-static int services_module_find_conflicting_services(AlteratorCtlServicesModule *module, alteratorctl_ctx_t *ctx);
-static int services_module_check_resources_conflicts(AlteratorCtlServicesModule *module,
-                                                     const gchar *current_service_str_id,
-                                                     const GVariant *deployed_service_data,
-                                                     GNode *resources,
-                                                     JsonNode *parameters);
+static int services_module_find_conflicting_resources_within_current_service(
+    AlteratorCtlServicesModule* module, const gchar* service_str_id, JsonNode* parameters_node);
+static int services_module_find_conflicting_services(AlteratorCtlServicesModule* module,
+                                                     alteratorctl_ctx_t* ctx);
+static int services_module_check_resources_conflicts(AlteratorCtlServicesModule* module,
+                                                     const gchar* current_service_str_id,
+                                                     const GVariant* deployed_service_data,
+                                                     GNode* resources, JsonNode* parameters);
 
-static int services_module_validate_json_params(AlteratorCtlServicesModule *module,
-                                                JsonNode *params,
-                                                const gchar *service_str_id,
-                                                GNode *optional_service_info);
+static int services_module_validate_json_params(AlteratorCtlServicesModule* module,
+                                                JsonNode* params, const gchar* service_str_id,
+                                                GNode* optional_service_info);
 
 GType alterator_ctl_services_module_get_type(void)
 {
@@ -1387,54 +1351,55 @@ GType alterator_ctl_services_module_get_type(void)
 
     if (!services_module_type)
     {
-        static const GTypeInfo services_module_info
-            = {sizeof(AlteratorCtlServicesModuleClass),     /* class structure size */
-               NULL,                                        /* base class initializer */
-               NULL,                                        /* base class finalizer */
-               (GClassInitFunc) services_module_class_init, /* class initializer */
-               NULL,                                        /* class finalizer */
-               NULL,                                        /* class data */
-               sizeof(AlteratorCtlServicesModule),          /* instance structure size */
-               1,                                           /* preallocated instances */
-               NULL,                                        /* instance initializers */
-               NULL};
+        static const GTypeInfo services_module_info =
+            {sizeof(AlteratorCtlServicesModuleClass),     /* class structure size */
+             NULL,                                        /* base class initializer */
+             NULL,                                        /* base class finalizer */
+             (GClassInitFunc) services_module_class_init, /* class initializer */
+             NULL,                                        /* class finalizer */
+             NULL,                                        /* class data */
+             sizeof(AlteratorCtlServicesModule),          /* instance structure size */
+             1,                                           /* preallocated instances */
+             NULL,                                        /* instance initializers */
+             NULL};
 
         const GInterfaceInfo alterator_module_interface_info = {
-            (GInterfaceInitFunc) services_module_alterator_interface_init,         /* interface_init */
-            (GInterfaceFinalizeFunc) services_module_alterator_interface_finalize, /* interface_finalize */
-            NULL                                                                   /* interface_data */
+            (GInterfaceInitFunc) services_module_alterator_interface_init, /* interface_init */
+            (GInterfaceFinalizeFunc)
+                services_module_alterator_interface_finalize, /* interface_finalize */
+            NULL                                              /* interface_data */
         };
 
         services_module_type = g_type_register_static(G_TYPE_OBJECT, /* parent class */
                                                       "AlteratorCtlServicesModule",
-                                                      &services_module_info,
-                                                      0);
+                                                      &services_module_info, 0);
 
-        g_type_add_interface_static(services_module_type, TYPE_ALTERATOR_CTL_MODULE, &alterator_module_interface_info);
+        g_type_add_interface_static(services_module_type, TYPE_ALTERATOR_CTL_MODULE,
+                                    &alterator_module_interface_info);
     }
 
     return services_module_type;
 }
 
-static void services_module_class_init(AlteratorCtlServicesModuleClass *klass)
+static void services_module_class_init(AlteratorCtlServicesModuleClass* klass)
 {
-    GObjectClass *obj_class = G_OBJECT_CLASS(klass);
+    GObjectClass* obj_class = G_OBJECT_CLASS(klass);
 
     obj_class->finalize = services_ctl_class_finalize;
 
     services_module_parent_class = g_type_class_peek_parent(klass);
 }
 
-static void services_ctl_class_finalize(GObject *klass)
+static void services_ctl_class_finalize(GObject* klass)
 {
-    AlteratorCtlServicesModuleClass *obj = (AlteratorCtlServicesModuleClass *) klass;
+    AlteratorCtlServicesModuleClass* obj = (AlteratorCtlServicesModuleClass*) klass;
 
     G_OBJECT_CLASS(services_module_parent_class)->finalize(klass);
 }
 
 static void services_module_alterator_interface_init(gpointer iface, gpointer iface_data)
 {
-    AlteratorCtlModuleInterface *interface = iface;
+    AlteratorCtlModuleInterface* interface = iface;
 
     interface->run_with_args = services_module_run_with_args;
 
@@ -1445,18 +1410,18 @@ static void services_module_alterator_interface_init(gpointer iface, gpointer if
 
 static void services_module_alterator_interface_finalize(gpointer iface, gpointer iface_data) {}
 
-alterator_ctl_module_t *get_services_module()
+alterator_ctl_module_t* get_services_module()
 {
     static gsize services_ctl_module_init = 0;
     if (g_once_init_enter(&services_ctl_module_init))
     {
-        gsize module_id_size = g_strlcpy(services_module.id,
-                                         ALTERATOR_CTL_SERVICES_MODULE_NAME,
+        gsize module_id_size = g_strlcpy(services_module.id, ALTERATOR_CTL_SERVICES_MODULE_NAME,
                                          strlen(ALTERATOR_CTL_SERVICES_MODULE_NAME) + 1);
 
         if (module_id_size != strlen(ALTERATOR_CTL_SERVICES_MODULE_NAME))
         {
-            g_printerr(_("Internal error in get_services_module: unvaliable id of services module.\n"));
+            g_printerr(
+                _("Internal error in get_services_module: unvaliable id of services module.\n"));
             goto end;
         }
 
@@ -1474,16 +1439,17 @@ end:
     return NULL;
 }
 
-AlteratorCtlServicesModule *services_module_new(gpointer app)
+AlteratorCtlServicesModule* services_module_new(gpointer app)
 {
-    AlteratorCtlServicesModule *object = g_object_new(TYPE_ALTERATOR_CTL_SERVICES_MODULE, NULL);
+    AlteratorCtlServicesModule* object = g_object_new(TYPE_ALTERATOR_CTL_SERVICES_MODULE, NULL);
 
     object->commands = g_hash_table_new(g_str_hash, g_str_equal);
     fill_command_hash_table(object->commands);
 
-    object->alterator_ctl_app = (AlteratorCtlApp *) app;
+    object->alterator_ctl_app = (AlteratorCtlApp*) app;
 
-    object->gdbus_source = alterator_gdbus_source_new(object->alterator_ctl_app->arguments->verbose, G_BUS_TYPE_SYSTEM);
+    object->gdbus_source = alterator_gdbus_source_new(object->alterator_ctl_app->arguments->verbose,
+                                                      G_BUS_TYPE_SYSTEM);
 
     object->info = NULL;
 
@@ -1494,7 +1460,7 @@ AlteratorCtlServicesModule *services_module_new(gpointer app)
     return object;
 }
 
-void services_module_free(AlteratorCtlServicesModule *module)
+void services_module_free(AlteratorCtlServicesModule* module)
 {
     g_free(json_params_filepath);
 
@@ -1525,23 +1491,23 @@ void services_module_free(AlteratorCtlServicesModule *module)
     g_object_unref(module);
 }
 
-static void fill_command_hash_table(GHashTable *command)
+static void fill_command_hash_table(GHashTable* command)
 {
-    for (int i = 0; i < sizeof(services_module_subcommands_list) / sizeof(services_module_subcommands_t); i++)
-        g_hash_table_insert(command,
-                            services_module_subcommands_list[i].subcommand,
+    for (int i = 0;
+         i < sizeof(services_module_subcommands_list) / sizeof(services_module_subcommands_t); i++)
+        g_hash_table_insert(command, services_module_subcommands_list[i].subcommand,
                             &services_module_subcommands_list[i].id);
 }
 
-static service_names_t *service_names_init(const gchar *name, const gchar *display_name)
+static service_names_t* service_names_init(const gchar* name, const gchar* display_name)
 {
-    service_names_t *result = g_new0(service_names_t, 1);
+    service_names_t* result = g_new0(service_names_t, 1);
     result->name            = g_strdup(name);
     result->display_name    = g_strdup(display_name);
     return result;
 }
 
-static void service_names_free(service_names_t *service_names)
+static void service_names_free(service_names_t* service_names)
 {
     if (!service_names)
         return;
@@ -1550,17 +1516,17 @@ static void service_names_free(service_names_t *service_names)
     g_free(service_names);
 }
 
-int services_module_run_with_args(gpointer self, int argc, char **argv)
+int services_module_run_with_args(gpointer self, int argc, char** argv)
 {
     int ret                            = 0;
-    alteratorctl_ctx_t *ctx            = NULL;
-    AlteratorCtlServicesModule *module = ALTERATOR_CTL_SERVICES_MODULE(self);
+    alteratorctl_ctx_t* ctx            = NULL;
+    AlteratorCtlServicesModule* module = ALTERATOR_CTL_SERVICES_MODULE(self);
     gboolean is_accepted               = FALSE;
 
     if (!module)
     {
-        g_printerr(
-            _("Internal data error in services module with args: AlteratorCtlServicesModule *module is NULL.\n"));
+        g_printerr(_("Internal data error in services module with args: AlteratorCtlServicesModule "
+                     "*module is NULL.\n"));
         ERR_EXIT();
     }
 
@@ -1583,11 +1549,11 @@ end:
     return ret;
 }
 
-static int services_module_parse_options(AlteratorCtlServicesModule *module, int *argc, char **argv)
+static int services_module_parse_options(AlteratorCtlServicesModule* module, int* argc, char** argv)
 {
     int ret                            = 0;
-    GOptionContext *option_context     = NULL;
-    AlteratorCtlModuleInterface *iface = GET_ALTERATOR_CTL_MODULE_INTERFACE((void *) module);
+    GOptionContext* option_context     = NULL;
+    AlteratorCtlModuleInterface* iface = GET_ALTERATOR_CTL_MODULE_INTERFACE((void*) module);
 
     // clang-format off
     static GOptionEntry services_module_options[]
@@ -1625,7 +1591,7 @@ static int services_module_parse_options(AlteratorCtlServicesModule *module, int
 
     // clang-format on
 
-    GError *error  = NULL;
+    GError* error  = NULL;
     option_context = g_option_context_new("Dervices module options");
     g_option_context_set_ignore_unknown_options(option_context, TRUE);
     g_option_context_add_main_entries(option_context, services_module_options, NULL);
@@ -1651,28 +1617,32 @@ static int services_module_parse_options(AlteratorCtlServicesModule *module, int
     }
     else if (name_only & display_name_only)
     {
-        g_printerr(_("It is not possible to use options --name-only and --display-name-only together.\n"));
+        g_printerr(
+            _("It is not possible to use options --name-only and --display-name-only together.\n"));
         ERR_EXIT();
     }
     else if (display_name_only & path_only)
     {
-        g_printerr(_("It is not possible to use options --display-name-only and --path-only together.\n"));
+        g_printerr(
+            _("It is not possible to use options --display-name-only and --path-only together.\n"));
         ERR_EXIT();
     }
     else if (name_only & path_only & display_name_only)
     {
-        g_printerr(
-            _("It is not possible to use options --name-only and --path-only and --display-name-only together.\n"));
+        g_printerr(_("It is not possible to use options --name-only and --path-only and "
+                     "--display-name-only together.\n"));
         ERR_EXIT();
     }
     else if (display_name_only & no_display_name)
     {
-        g_printerr(_("It is not possible to use options --display-name-only and --no-display-name together.\n"));
+        g_printerr(_("It is not possible to use options --display-name-only and --no-display-name "
+                     "together.\n"));
         ERR_EXIT();
     }
     else if (module->alterator_ctl_app->arguments->verbose && display_name_only)
     {
-        g_printerr(_("It is not possible to use options --verbose and --display-name-only together.\n"));
+        g_printerr(
+            _("It is not possible to use options --verbose and --display-name-only together.\n"));
         ERR_EXIT();
     }
     else if (iface->get_command_id(module->commands, argv[2]) != SERVICES_DIAGNOSE
@@ -1693,7 +1663,8 @@ static int services_module_parse_options(AlteratorCtlServicesModule *module, int
     }
     else if (no_name && no_display_name)
     {
-        g_printerr(_("It is not possible to use options --no-name and --no-display-name together.\n"));
+        g_printerr(
+            _("It is not possible to use options --no-name and --no-display-name together.\n"));
         ERR_EXIT();
     }
     else if (no_name && module->alterator_ctl_app->arguments->verbose)
@@ -1711,29 +1682,31 @@ end:
     return ret;
 }
 
-static gchar *services_module_get_parameters(gboolean disable_fallback)
+static gchar* services_module_get_parameters(gboolean disable_fallback)
 {
-    gchar *result = NULL;
+    gchar* result = NULL;
     if (json_params_filepath)
     {
-        result = streq(json_params_filepath, "-") ? services_module_parse_stdin_param(disable_fallback)
-                                                  : read_file(json_params_filepath);
+        result = streq(json_params_filepath, "-")
+                     ? services_module_parse_stdin_param(disable_fallback)
+                     : read_file(json_params_filepath);
     }
 
     return result;
 }
 
-static gchar *services_module_parse_stdin_param(gboolean disable_fallback)
+static gchar* services_module_parse_stdin_param(gboolean disable_fallback)
 {
-    gchar *result             = NULL;
-    GIOChannel *stdin_channel = g_io_channel_unix_new(STDIN_FILENO); // stdin
+    gchar* result             = NULL;
+    GIOChannel* stdin_channel = g_io_channel_unix_new(STDIN_FILENO); // stdin
     gsize stdin_input_len     = 0;
     struct pollfd pfd         = {.fd = STDIN_FILENO, .events = POLLIN};
     int poll_result           = poll(&pfd, 1, 0); // non blocking
     if (poll_result == 1 && (pfd.revents & POLLIN))
     {
         g_io_channel_set_encoding(stdin_channel, "UTF-8", NULL); // UTF-8
-        if ((g_io_channel_read_to_end(stdin_channel, &result, &stdin_input_len, NULL) == G_IO_STATUS_NORMAL))
+        if ((g_io_channel_read_to_end(stdin_channel, &result, &stdin_input_len, NULL)
+             == G_IO_STATUS_NORMAL))
         {
             if (stdin_channel)
                 g_io_channel_unref(stdin_channel);
@@ -1754,26 +1727,25 @@ static gpointer g_strdup_copy_func(gconstpointer src, gpointer data)
     return g_strdup(src);
 }
 
-static int services_module_parse_diagnose_arguments(AlteratorCtlServicesModule *module,
-                                                    int argc,
-                                                    char **argv,
-                                                    gchar **params)
+static int services_module_parse_diagnose_arguments(AlteratorCtlServicesModule* module, int argc,
+                                                    char** argv, gchar** params)
 {
-    int ret               = 0;
-    gchar *service_str_id = argv[3];
-    gchar *service_path
-        = service_str_id[0] != '/'
-              ? g_strdup(module->gdbus_source->alterator_gdbus_source_get_path_by_name(module->gdbus_source,
-                                                                                       service_str_id,
-                                                                                       SERVICES_INTERFACE_NAME))
-              : g_strdup(service_str_id);
-    GHashTable *all_service_tests = NULL;
-    GPtrArray *diag_env_vars      = g_ptr_array_new();
+    int ret                       = 0;
+    gchar* service_str_id         = argv[3];
+    gchar* service_path           = service_str_id[0] != '/'
+                                        ? g_strdup(
+                                    module->gdbus_source->alterator_gdbus_source_get_path_by_name(
+                                        module->gdbus_source, service_str_id,
+                                        SERVICES_INTERFACE_NAME))
+                                        : g_strdup(service_str_id);
+    GHashTable* all_service_tests = NULL;
+    GPtrArray* diag_env_vars      = g_ptr_array_new();
 
     deployment_status status = UNDEPLOYED;
     if (services_module_is_deployed(module, service_str_id, &status) < 0)
     {
-        g_printerr(_("Error of parsing diagnose command arguments. Failed of getting \"%s\" service status.\n"),
+        g_printerr(_("Error of parsing diagnose command arguments. Failed of getting \"%s\" "
+                     "service status.\n"),
                    service_str_id);
         ERR_EXIT();
     }
@@ -1783,30 +1755,29 @@ static int services_module_parse_diagnose_arguments(AlteratorCtlServicesModule *
                                       .value = status != UNDEPLOYED ? "post" : "pre"};
     g_ptr_array_add(diag_env_vars, &deploy_mode_env);
 
-    evn_variable_t service_path_env = {.name = SERVICES_DIAGNOSE_TESTS_ENV_VALUE_SERVICE_PATH, .value = service_path};
+    evn_variable_t service_path_env = {.name  = SERVICES_DIAGNOSE_TESTS_ENV_VALUE_SERVICE_PATH,
+                                       .value = service_path};
     g_ptr_array_add(diag_env_vars, &service_path_env);
 
     // Get all test of specified service
-    if (services_module_get_service_tests(module,
-                                          service_str_id,
-                                          NULL,
-                                          diag_env_vars,
-                                          run_all_tests || module->alterator_ctl_app->arguments->module_help,
+    if (services_module_get_service_tests(module, service_str_id, NULL, diag_env_vars,
+                                          run_all_tests
+                                              || module->alterator_ctl_app->arguments->module_help,
                                           &all_service_tests)
         < 0)
         ERR_EXIT();
 
-    service_tests = g_hash_table_new_full(g_str_hash,
-                                          g_str_equal,
-                                          (GDestroyNotify) g_free,
-                                          (GDestroyNotify) services_module_service_diag_tool_tests_free);
+    service_tests = g_hash_table_new_full(g_str_hash, g_str_equal, (GDestroyNotify) g_free,
+                                          (GDestroyNotify)
+                                              services_module_service_diag_tool_tests_free);
 
     if (run_all_tests || module->alterator_ctl_app->arguments->module_help)
     {
         if (!g_hash_table_size(all_service_tests))
         {
             if (module->alterator_ctl_app->arguments->module_help)
-                g_printerr(_("Can't create help for \"services diagnose %s\" with empty dianostic tools tests.\n"),
+                g_printerr(_("Can't create help for \"services diagnose %s\" with empty dianostic "
+                             "tools tests.\n"),
                            service_str_id);
             else
                 g_printerr(_("service \"%s\" doesn't offer diagnostic tests.\n"), service_str_id);
@@ -1824,56 +1795,59 @@ static int services_module_parse_diagnose_arguments(AlteratorCtlServicesModule *
     }
 
     // Validation diagnose arguments
-    gchar *last_tool_name = NULL;
+    gchar* last_tool_name = NULL;
     for (gsize i = 4; i < argc; i++)
     {
         // Is a diag tool
         if (g_hash_table_contains(all_service_tests, argv[i]))
         {
-            gchar *tool_name                   = argv[i];
-            diag_tool_tests *current_tool_info = g_hash_table_lookup(all_service_tests, tool_name);
+            gchar* tool_name                   = argv[i];
+            diag_tool_tests* current_tool_info = g_hash_table_lookup(all_service_tests, tool_name);
             if (!current_tool_info)
             {
-                g_printerr(_("Error of parsing diagnose command arguments. Diagnostic tool \"%s\" of service \"%s\" "
+                g_printerr(_("Error of parsing diagnose command arguments. Diagnostic tool \"%s\" "
+                             "of service \"%s\" "
                              "doesn't exist.\n"),
-                           tool_name,
-                           service_str_id);
+                           tool_name, service_str_id);
                 ERR_EXIT();
             }
 
             if ((current_tool_info && !current_tool_info->all_tests)
                 || (current_tool_info && !g_hash_table_size(current_tool_info->all_tests)))
             {
-                g_printerr(_("Error of parsing diagnose command arguments. Diagnostic tool \"%s\" of service \"%s\" "
+                g_printerr(_("Error of parsing diagnose command arguments. Diagnostic tool \"%s\" "
+                             "of service \"%s\" "
                              "doesn't have "
                              "tests.\n"),
-                           tool_name,
-                           service_str_id);
+                           tool_name, service_str_id);
                 ERR_EXIT();
             }
 
-            // We add a structure to fill them with selected tests from argv, if structure doesn't exist now
-            diag_tool_tests *current_tool_tests = g_hash_table_lookup(service_tests, tool_name);
+            // We add a structure to fill them with selected tests from argv, if structure doesn't
+            // exist now
+            diag_tool_tests* current_tool_tests = g_hash_table_lookup(service_tests, tool_name);
             if (!current_tool_tests) // Add tool test to global hash-table with tools tests
             {
-                GHashTable *current_tool_all_tests_table = g_hash_table_new_full(g_str_hash,
+                GHashTable* current_tool_all_tests_table = g_hash_table_new_full(g_str_hash,
                                                                                  g_str_equal,
-                                                                                 (GDestroyNotify) g_free,
+                                                                                 (GDestroyNotify)
+                                                                                     g_free,
                                                                                  NULL);
-                GHashTable *current_tool_required_only_tests_table
-                    = g_hash_table_copy_table(current_tool_info->required_tests, g_strdup_copy_func, NULL, NULL, NULL);
+                GHashTable* current_tool_required_only_tests_table = g_hash_table_copy_table(
+                    current_tool_info->required_tests, g_strdup_copy_func, NULL, NULL, NULL);
 
-                current_tool_tests = services_module_service_diag_tool_tests_init(current_tool_info->path,
-                                                                                  current_tool_all_tests_table,
-                                                                                  current_tool_required_only_tests_table,
-                                                                                  current_tool_info->bus_type);
+                current_tool_tests = services_module_service_diag_tool_tests_init(
+                    current_tool_info->path, current_tool_all_tests_table,
+                    current_tool_required_only_tests_table, current_tool_info->bus_type);
                 g_hash_table_insert(service_tests, g_strdup(tool_name), current_tool_tests);
                 g_hash_table_unref(current_tool_all_tests_table);
                 g_hash_table_unref(current_tool_required_only_tests_table);
             }
             else
             {
-                g_printerr(_("The diagnostic tool name \"%s\" has already been specified before.\n"), tool_name);
+                g_printerr(_("The diagnostic tool name \"%s\" has already been specified "
+                             "before.\n"),
+                           tool_name);
                 ERR_EXIT();
             }
 
@@ -1890,20 +1864,21 @@ static int services_module_parse_diagnose_arguments(AlteratorCtlServicesModule *
             }
 
             // The test must be related to the last specified diagnostic tool
-            gchar *current_toolname            = last_tool_name;
-            gchar *test_name                   = argv[i];
-            diag_tool_tests *current_tool_info = g_hash_table_lookup(all_service_tests, current_toolname);
+            gchar* current_toolname            = last_tool_name;
+            gchar* test_name                   = argv[i];
+            diag_tool_tests* current_tool_info = g_hash_table_lookup(all_service_tests,
+                                                                     current_toolname);
             if (!g_hash_table_contains(current_tool_info->all_tests, test_name))
             {
-                g_printerr(_("Test \"%s\" of diagnostic tool \"%s\" either does not apply to \"%s-diag\" mode or does "
+                g_printerr(_("Test \"%s\" of diagnostic tool \"%s\" either does not apply to "
+                             "\"%s-diag\" mode or does "
                              "not exist.\n"),
-                           test_name,
-                           current_toolname,
-                           deploy_mode_env.value);
+                           test_name, current_toolname, deploy_mode_env.value);
                 ERR_EXIT();
             }
 
-            diag_tool_tests *current_tool_tests = g_hash_table_lookup(service_tests, current_toolname);
+            diag_tool_tests* current_tool_tests = g_hash_table_lookup(service_tests,
+                                                                      current_toolname);
             g_hash_table_add(current_tool_tests->all_tests, g_strdup(test_name));
         }
     }
@@ -1911,47 +1886,49 @@ static int services_module_parse_diagnose_arguments(AlteratorCtlServicesModule *
     // Append required tests
     GHashTableIter iter;
     g_hash_table_iter_init(&iter, all_service_tests);
-    gchar *tool_name           = NULL;
-    diag_tool_tests *tool_info = NULL;
-    while (g_hash_table_iter_next(&iter, (gpointer *) &tool_name, (gpointer) &tool_info))
+    gchar* tool_name           = NULL;
+    diag_tool_tests* tool_info = NULL;
+    while (g_hash_table_iter_next(&iter, (gpointer*) &tool_name, (gpointer) &tool_info))
     {
         // No required tests in current tool
         if (!g_hash_table_size(tool_info->required_tests))
             continue;
 
-        diag_tool_tests *tool_tests = g_hash_table_lookup(service_tests, tool_name);
+        diag_tool_tests* tool_tests = g_hash_table_lookup(service_tests, tool_name);
         if (!tool_tests) // Add tool test to global hash-table with tools tests
         {
-            GHashTable *current_tool_all_tests_table           = g_hash_table_new_full(g_str_hash,
-                                                                             g_str_equal,
-                                                                             (GDestroyNotify) g_free,
-                                                                             NULL);
-            GHashTable *current_tool_required_only_tests_table = g_hash_table_copy_table(tool_info->required_tests,
-                                                                                         g_strdup_copy_func,
-                                                                                         NULL,
-                                                                                         NULL,
-                                                                                         NULL);
+            GHashTable* current_tool_all_tests_table           = g_hash_table_new_full(g_str_hash,
+                                                                                       g_str_equal,
+                                                                                       (GDestroyNotify)
+                                                                                           g_free,
+                                                                                       NULL);
+            GHashTable* current_tool_required_only_tests_table = g_hash_table_copy_table(
+                tool_info->required_tests, g_strdup_copy_func, NULL, NULL, NULL);
 
-            gchar *tool_path = ((diag_tool_tests *) g_hash_table_lookup(all_service_tests, tool_name))->path;
-            tool_tests       = services_module_service_diag_tool_tests_init(tool_path,
-                                                                      current_tool_all_tests_table,
-                                                                      current_tool_required_only_tests_table,
-                                                                      tool_info->bus_type);
+            gchar* tool_path = ((diag_tool_tests*) g_hash_table_lookup(all_service_tests,
+                                                                       tool_name))
+                                   ->path;
+            tool_tests = services_module_service_diag_tool_tests_init(
+                tool_path, current_tool_all_tests_table, current_tool_required_only_tests_table,
+                tool_info->bus_type);
             g_hash_table_insert(service_tests, g_strdup(tool_name), tool_tests);
             g_hash_table_unref(current_tool_all_tests_table);
             g_hash_table_unref(current_tool_required_only_tests_table);
         }
 
-        GPtrArray *required_tests_array = g_hash_table_get_keys_as_ptr_array(tool_info->required_tests);
-        gboolean catches_first_missed   = FALSE;
+        GPtrArray* required_tests_array = g_hash_table_get_keys_as_ptr_array(
+            tool_info->required_tests);
+        gboolean catches_first_missed = FALSE;
         for (gsize i = 0; i < required_tests_array->len; i++)
         {
-            gchar *test = (gchar *) required_tests_array->pdata[i];
+            gchar* test = (gchar*) required_tests_array->pdata[i];
             if (!g_hash_table_contains(tool_tests->all_tests, test))
             {
                 if (!catches_first_missed)
                 {
-                    g_print(_("The following \"%s\" diagnostic tool tests will be run by default:\n"), tool_name);
+                    g_print(_("The following \"%s\" diagnostic tool tests will be run by "
+                              "default:\n"),
+                            tool_name);
                     catches_first_missed = TRUE;
                 }
 
@@ -1978,14 +1955,9 @@ end:
     return ret;
 }
 
-static int fill_node_recursive(AlteratorCtlServicesModule *module,
-                               JsonNode **node,
-                               gchar **path,
-                               int level,
-                               const gchar *value_str,
-                               GNode *parameter,
-                               gboolean is_array_member,
-                               gboolean is_enum_subparameter)
+static int fill_node_recursive(AlteratorCtlServicesModule* module, JsonNode** node, gchar** path,
+                               int level, const gchar* value_str, GNode* parameter,
+                               gboolean is_array_member, gboolean is_enum_subparameter)
 {
     int ret     = 0;
     GValue gval = G_VALUE_INIT;
@@ -1996,28 +1968,30 @@ static int fill_node_recursive(AlteratorCtlServicesModule *module,
         ERR_EXIT();
     }
 
-    AlteratorCtlModuleInfoParser *info_parser = module->gdbus_source->info_parser;
-    GNode *parameters                         = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
+    AlteratorCtlModuleInfoParser* info_parser = module->gdbus_source->info_parser;
+    GNode* parameters = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
         info_parser, module->info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME, 2);
 
     if (!parameter)
         parameter = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
                                                                                    parameters,
-                                                                                   path[level],
-                                                                                   2);
+                                                                                   path[level], 2);
 
     if (!parameter)
     {
-        g_printerr(_("Unknown parameter: '%s'.\n"), path[level]);
+        gchar* full_path = g_strjoinv(".", path);
+        g_printerr(_("Unknown parameter: '%s'.\n"), full_path);
+        g_free(full_path);
         ERR_EXIT();
     }
 
-    alterator_entry_node *param_data = parameter->data;
+    alterator_entry_node* param_data = parameter->data;
 
-    gchar *type_str = NULL;
+    gchar* type_str = NULL;
     if (!is_enum_subparameter)
     {
-        toml_value *type = g_hash_table_lookup(param_data->toml_pairs, is_array_member ? "array_type" : "type");
+        toml_value* type = g_hash_table_lookup(param_data->toml_pairs,
+                                               is_array_member ? "array_type" : "type");
         // TODO: check null
         type_str = type->str_value;
     }
@@ -2027,20 +2001,20 @@ static int fill_node_recursive(AlteratorCtlServicesModule *module,
         if (streq(type_str, "enum"))
         {
             // just create object if not exist and fill new defaults
-            JsonObject *enum_object = NULL;
+            JsonObject* enum_object = NULL;
             if (!*node)
             {
                 *node           = json_node_new(JSON_NODE_OBJECT);
-                JsonObject *obj = json_object_new();
+                JsonObject* obj = json_object_new();
                 json_node_set_object(*node, obj);
                 json_object_unref(obj);
             }
             enum_object = json_node_get_object(*node);
 
-            GList *names = json_object_get_members(enum_object);
+            GList* names = json_object_get_members(enum_object);
             if (names)
             {
-                for (GList *name = names; name; name = name->next)
+                for (GList* name = names; name; name = name->next)
                     if (!streq(value_str, name->data))
                         json_object_remove_member(enum_object, name->data);
 
@@ -2049,26 +2023,43 @@ static int fill_node_recursive(AlteratorCtlServicesModule *module,
 
             if (json_object_get_size(enum_object) == 0)
             {
-                JsonObject *member = json_object_new();
+                JsonObject* member = json_object_new();
                 json_object_set_object_member(enum_object, value_str, member);
 
-                JsonNode *child = json_object_get_member(enum_object, value_str);
+                JsonNode* child = json_object_get_member(enum_object, value_str);
 
-                GNode *parameters = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-                    info_parser, module->info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME, 2);
+                GNode* parameters = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
+                    info_parser, module->info,
+                    SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME, 2);
 
-                GNode *values = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
-                                                                                               parameter,
-                                                                                               "values",
-                                                                                               2);
-                GNode *value  = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
-                                                                                              values,
-                                                                                              value_str,
-                                                                                              2);
+                GNode* values = info_parser
+                                    ->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
+                                                                                        parameter,
+                                                                                        "values",
+                                                                                        2);
+                GNode* value = info_parser
+                                   ->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
+                                                                                       values,
+                                                                                       value_str,
+                                                                                       2);
+
+                if (!value)
+                {
+                    gchar* enum_full_path = g_strjoinv(".", path);
+                    if (value_str && g_utf8_strlen(value_str, -1))
+                        g_printerr(_("The selected value of enum `%s` - `%s` doesn't exist.\n"),
+                                   enum_full_path, value_str);
+                    else
+                        g_printerr(_("The selected value of enum `%s` is empty.\n"),
+                                   enum_full_path);
+                    g_free(enum_full_path);
+                    ERR_EXIT();
+                }
 
                 // fill new defaults.
-                services_module_recursive_get_initial_params(
-                    module, "", module->info, parameters, value, node, TRUE, NULL, NULL, NULL, FALSE, FALSE);
+                services_module_recursive_get_initial_params(module, "", module->info, parameters,
+                                                             value, node, TRUE, NULL, NULL, NULL,
+                                                             FALSE, FALSE);
             }
 
             goto end;
@@ -2081,7 +2072,7 @@ static int fill_node_recursive(AlteratorCtlServicesModule *module,
         {
             gval.g_type = G_TYPE_INT;
             int value   = atoi(value_str);
-            g_value_set_int(&gval, value); //TODO: check int valid
+            g_value_set_int(&gval, value); // TODO: check int valid
         }
         else if (streq(type_str, "string"))
         {
@@ -2101,8 +2092,9 @@ static int fill_node_recursive(AlteratorCtlServicesModule *module,
         }
         else
         {
-            gchar *path_str = g_strjoinv(".", path);
-            g_printerr(_("Internal error: invalid type of parameter '%s': '%s'.\n"), path_str, type_str);
+            gchar* path_str = g_strjoinv(".", path);
+            g_printerr(_("Internal error: invalid type of parameter '%s': '%s'.\n"), path_str,
+                       type_str);
             g_free(path_str);
             ERR_EXIT();
         }
@@ -2113,11 +2105,11 @@ static int fill_node_recursive(AlteratorCtlServicesModule *module,
     {
         if (is_enum_subparameter || streq(type_str, "object") || streq(type_str, "enum"))
         {
-            JsonObject *object = NULL;
+            JsonObject* object = NULL;
             if (!*node)
             {
                 *node           = json_node_new(JSON_NODE_OBJECT);
-                JsonObject *obj = json_object_new();
+                JsonObject* obj = json_object_new();
                 json_node_set_object(*node, obj);
                 json_object_unref(obj);
             }
@@ -2126,30 +2118,32 @@ static int fill_node_recursive(AlteratorCtlServicesModule *module,
 
             if (is_enum_subparameter || streq(type_str, "object"))
             {
-                toml_value *prototype = g_hash_table_lookup(param_data->toml_pairs, "prototype");
+                toml_value* prototype = g_hash_table_lookup(param_data->toml_pairs, "prototype");
                 if (prototype)
                 {
-                    parameter = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
-                                                                                               parameters,
-                                                                                               prototype->str_value,
-                                                                                               2);
+                    parameter = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
+                        info_parser, parameters, prototype->str_value, 2);
                 }
             }
 
-            GNode *children = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-                info_parser,
-                parameter,
-                streq(type_str, "enum") ? "values" : SERVICES_ALTERATOR_ENTRY_SERVICE_PROPERTIES_TABLE_NAME,
+            GNode* children = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
+                info_parser, parameter,
+                streq(type_str, "enum") ? "values"
+                                        : SERVICES_ALTERATOR_ENTRY_SERVICE_PROPERTIES_TABLE_NAME,
                 2);
-            GNode *child = children ? info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
-                                                                                                     children,
-                                                                                                     path[level + 1],
-                                                                                                     2)
-                                    : NULL;
+            GNode*
+                child = children
+                            ? info_parser
+                                  ->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
+                                                                                      children,
+                                                                                      path[level
+                                                                                           + 1],
+                                                                                      2)
+                            : NULL;
 
             if (is_enum_subparameter || streq(type_str, "object"))
             {
-                JsonNode *member = json_object_get_member(object, path[level + 1]);
+                JsonNode* member = json_object_get_member(object, path[level + 1]);
                 // Empty json param object (enum field withour subparameters)
                 if (member && json_node_is_null(member))
                 {
@@ -2157,22 +2151,24 @@ static int fill_node_recursive(AlteratorCtlServicesModule *module,
                     member = NULL;
                 }
 
-                ret = fill_node_recursive(module, &member, path, level + 1, value_str, child, FALSE, FALSE);
+                ret = fill_node_recursive(module, &member, path, level + 1, value_str, child, FALSE,
+                                          FALSE);
+                if (!is_enum_subparameter && !member)
+                    ERR_EXIT();
                 json_object_set_member(object, path[level + 1], member);
             }
             else // enum
             {
-                JsonNode *child_node = json_object_get_member(object, path[level + 1]);
+                JsonNode* child_node = json_object_get_member(object, path[level + 1]);
 
                 if (!child_node)
                 {
                     if (json_object_get_size(object))
                     {
-                        GList *names = json_object_get_members(object);
-                        g_printerr(
-                            _("Selected enum value is '%s', but you are trying to set another subparameter '%s'.\n"),
-                            (gchar *) names->data,
-                            path[level + 1]);
+                        GList* names = json_object_get_members(object);
+                        g_printerr(_("Selected enum value is '%s', but you are trying to set "
+                                     "another subparameter '%s'.\n"),
+                                   (gchar*) names->data, path[level + 1]);
                         g_list_free(names);
                         ERR_EXIT();
                     }
@@ -2187,35 +2183,39 @@ static int fill_node_recursive(AlteratorCtlServicesModule *module,
                 if (json_object_get_size(object) == 0)
                     json_object_set_object_member(object, path[level + 1], json_object_new());
 
-                fill_node_recursive(module, &child_node, path, level + 1, value_str, child, FALSE, TRUE);
+                fill_node_recursive(module, &child_node, path, level + 1, value_str, child, FALSE,
+                                    TRUE);
             }
         }
         else if (streq(type_str, "array"))
         {
-            JsonArray *array = NULL;
+            JsonArray* array = NULL;
             if (!*node)
             {
                 *node          = json_node_new(JSON_NODE_ARRAY);
-                JsonArray *arr = json_array_new();
+                JsonArray* arr = json_array_new();
                 json_node_set_array(*node, arr);
                 json_array_unref(arr);
             }
             array = json_node_get_array(*node);
 
-            gchar *end = NULL;
+            gchar* end = NULL;
             int index  = g_ascii_strtoll(path[level + 1], &end, 10);
             if (end == path[level + 1] || index < 0)
             {
-                gchar *path_str = g_strjoinv(".", path);
+                gchar* path_str = g_strjoinv(".", path);
                 g_printerr(_("%s: invalid index %s.\n"), path_str, path[level + 1]);
                 g_free(path_str);
                 ERR_EXIT();
             }
 
-            JsonNode *member = json_array_get_length(array) > index ? json_array_get_element(array, index) : NULL;
+            JsonNode* member = json_array_get_length(array) > index
+                                   ? json_array_get_element(array, index)
+                                   : NULL;
             gboolean add     = !member;
 
-            if ((ret = fill_node_recursive(module, &member, path, level + 1, value_str, parameter, TRUE, FALSE)))
+            if ((ret = fill_node_recursive(module, &member, path, level + 1, value_str, parameter,
+                                           TRUE, FALSE)))
                 goto end;
 
             if (add)
@@ -2223,8 +2223,9 @@ static int fill_node_recursive(AlteratorCtlServicesModule *module,
         }
         else
         {
-            gchar *path_str = g_strjoinv(".", path);
-            g_printerr(_("Internal error: invalid type of parameter '%s': '%s'.\n"), path_str, type_str);
+            gchar* path_str = g_strjoinv(".", path);
+            g_printerr(_("Internal error: invalid type of parameter '%s': '%s'.\n"), path_str,
+                       type_str);
             g_free(path_str);
             ERR_EXIT();
         }
@@ -2236,15 +2237,13 @@ end:
 }
 
 // Unset optional param if empty_value (--param_name=) in configure
-static int parse_parameter_argument(AlteratorCtlServicesModule *module,
-                                    const gchar *option_name,
-                                    const gchar *value,
-                                    gboolean unset)
+static int parse_parameter_argument(AlteratorCtlServicesModule* module, const gchar* option_name,
+                                    const gchar* value, gboolean unset)
 {
     int ret = 0;
 
-    AlteratorCtlModuleInfoParser *info_parser = module->gdbus_source->info_parser;
-    gchar **path                              = NULL;
+    AlteratorCtlModuleInfoParser* info_parser = module->gdbus_source->info_parser;
+    gchar** path                              = NULL;
 
     if (strlen(option_name) < 3 || option_name[0] != '-' || option_name[1] != '-')
     {
@@ -2252,7 +2251,7 @@ static int parse_parameter_argument(AlteratorCtlServicesModule *module,
         ERR_EXIT();
     }
 
-    GNode *parameters = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
+    GNode* parameters = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
         info_parser, module->info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME, 2);
 
     if (!module->json)
@@ -2261,7 +2260,7 @@ static int parse_parameter_argument(AlteratorCtlServicesModule *module,
         json_node_init_object(module->json, json_object_new());
     }
 
-    gchar *parameter_name = g_utf8_substring(option_name, 2, strlen(option_name));
+    gchar* parameter_name = g_utf8_substring(option_name, 2, strlen(option_name));
     path                  = g_strsplit_set(parameter_name, ".", -1);
     g_free(parameter_name);
 
@@ -2271,7 +2270,7 @@ static int parse_parameter_argument(AlteratorCtlServicesModule *module,
         ERR_EXIT();
     }
 
-    JsonNode *member = json_object_get_member(json_node_get_object(module->json), path[0]);
+    JsonNode* member = json_object_get_member(json_node_get_object(module->json), path[0]);
     if ((ret = fill_node_recursive(module, &member, path, 0, value, NULL, FALSE, FALSE)))
         goto end;
 
@@ -2279,13 +2278,14 @@ static int parse_parameter_argument(AlteratorCtlServicesModule *module,
     {
         if (unset)
         {
-            JsonNode *parent_node = module->json;
+            JsonNode* parent_node = module->json;
             for (gsize i = 1; i < g_strv_length(path); i++)
             {
                 parent_node = member;
                 member      = json_object_get_member(json_node_get_object(member), path[i]);
             }
-            json_object_remove_member(json_node_get_object(parent_node), path[g_strv_length(path) - 1]);
+            json_object_remove_member(json_node_get_object(parent_node),
+                                      path[g_strv_length(path) - 1]);
             goto end;
         }
         json_object_set_member(json_node_get_object(module->json), path[0], member);
@@ -2296,65 +2296,62 @@ end:
     return ret;
 }
 
-static gboolean schema_param_matches_contexts(alterator_entry_node *param_data,
-                                              const gchar *const *contexts,
+static gboolean schema_param_matches_contexts(alterator_entry_node* param_data, GStrv contexts,
                                               gsize contexts_len);
-static gboolean schema_param_required_in_contexts(alterator_entry_node *param_data,
-                                                  const gchar *const *contexts,
+static gboolean schema_param_required_in_contexts(alterator_entry_node* param_data, GStrv contexts,
                                                   gsize contexts_len);
-static gboolean schema_property_required_in_contexts(alterator_entry_node *param_data,
-                                                     const gchar *const *contexts,
-                                                     gsize contexts_len);
-static gchar *services_contexts_label(const gchar *const *contexts, gsize contexts_len);
+static gboolean schema_property_required_in_contexts(alterator_entry_node* param_data,
+                                                     GStrv contexts, gsize contexts_len);
+static gchar* services_contexts_label(GStrv contexts, gsize contexts_len);
 
-static gboolean schema_param_in_context(alterator_entry_node *param_data, const gchar *context)
+static gboolean schema_param_in_context(alterator_entry_node* param_data, const gchar* context)
 {
-    toml_value *ctx = g_hash_table_lookup(param_data->toml_pairs,
+    toml_value* ctx = g_hash_table_lookup(param_data->toml_pairs,
                                           SERVICES_ALTERATOR_ENTRY_SERVICE_PARAM_CONTEXT_KEY_NAME);
     if (ctx && ctx->array_length && ctx->array)
     {
         for (gsize i = 0; i < ctx->array_length; i++)
-            if (streq(context, ((gchar **) ctx->array)[i]))
+            if (streq(context, ((gchar**) ctx->array)[i]))
                 return TRUE;
         return FALSE;
     }
     return TRUE;
 }
 
-static gboolean schema_param_required_in_context(alterator_entry_node *param_data, const gchar *context)
+static gboolean schema_param_required_in_context(alterator_entry_node* param_data,
+                                                 const gchar* context)
 {
-    toml_value *required_val = g_hash_table_lookup(param_data->toml_pairs,
-                                                   SERVICES_ALTERATOR_ENTRY_SERVICE_PARAM_REQUIRED_KEY_NAME);
+    toml_value* required_val = g_hash_table_lookup(
+        param_data->toml_pairs, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAM_REQUIRED_KEY_NAME);
     if (!required_val)
         return FALSE;
     if (required_val->array_length && required_val->array)
     {
         for (gsize i = 0; i < required_val->array_length; i++)
-            if (streq(context, ((gchar **) required_val->array)[i]))
+            if (streq(context, ((gchar**) required_val->array)[i]))
                 return TRUE;
         return FALSE;
     }
     return required_val->type == TOML_DATA_BOOL && required_val->bool_value;
 }
 
-static gboolean schema_property_required(alterator_entry_node *param_data, const gchar *context)
+static gboolean schema_property_required(alterator_entry_node* param_data, const gchar* context)
 {
-    toml_value *required_val = g_hash_table_lookup(param_data->toml_pairs,
-                                                   SERVICES_ALTERATOR_ENTRY_SERVICE_PARAM_REQUIRED_KEY_NAME);
+    toml_value* required_val = g_hash_table_lookup(
+        param_data->toml_pairs, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAM_REQUIRED_KEY_NAME);
     if (!required_val)
         return FALSE;
     if (required_val->array_length && required_val->array)
     {
         for (gsize i = 0; i < required_val->array_length; i++)
-            if (streq(context, ((gchar **) required_val->array)[i]))
+            if (streq(context, ((gchar**) required_val->array)[i]))
                 return TRUE;
         return FALSE;
     }
     return required_val->type == TOML_DATA_BOOL && required_val->bool_value;
 }
 
-static gboolean schema_param_matches_contexts(alterator_entry_node *param_data,
-                                              const gchar *const *contexts,
+static gboolean schema_param_matches_contexts(alterator_entry_node* param_data, GStrv contexts,
                                               gsize contexts_len)
 {
     if (!contexts_len)
@@ -2367,8 +2364,7 @@ static gboolean schema_param_matches_contexts(alterator_entry_node *param_data,
     return FALSE;
 }
 
-static gboolean schema_param_required_in_contexts(alterator_entry_node *param_data,
-                                                  const gchar *const *contexts,
+static gboolean schema_param_required_in_contexts(alterator_entry_node* param_data, GStrv contexts,
                                                   gsize contexts_len)
 {
     if (!contexts_len)
@@ -2381,9 +2377,8 @@ static gboolean schema_param_required_in_contexts(alterator_entry_node *param_da
     return FALSE;
 }
 
-static gboolean schema_property_required_in_contexts(alterator_entry_node *param_data,
-                                                     const gchar *const *contexts,
-                                                     gsize contexts_len)
+static gboolean schema_property_required_in_contexts(alterator_entry_node* param_data,
+                                                     GStrv contexts, gsize contexts_len)
 {
     if (!contexts_len)
         return schema_property_required(param_data, NULL);
@@ -2395,7 +2390,7 @@ static gboolean schema_property_required_in_contexts(alterator_entry_node *param
     return FALSE;
 }
 
-static gchar *services_contexts_label(const gchar *const *contexts, gsize contexts_len)
+static gchar* services_contexts_label(GStrv contexts, gsize contexts_len)
 {
     if (!contexts_len || !contexts)
         return g_strdup("");
@@ -2403,10 +2398,10 @@ static gchar *services_contexts_label(const gchar *const *contexts, gsize contex
     if (contexts_len == 1)
         return g_strdup(contexts[0] ? contexts[0] : "");
 
-    GString *buffer = g_string_new(NULL);
+    GString* buffer = g_string_new(NULL);
     for (gsize i = 0; i < contexts_len; i++)
     {
-        const gchar *ctx = contexts[i];
+        const gchar* ctx = contexts[i];
         if (!ctx || !strlen(ctx))
             continue;
         if (buffer->len)
@@ -2420,56 +2415,53 @@ static gchar *services_contexts_label(const gchar *const *contexts, gsize contex
     return g_string_free(buffer, FALSE);
 }
 
-static gboolean schema_is_constant(alterator_entry_node *param_data)
+static gboolean schema_is_constant(alterator_entry_node* param_data)
 {
-    toml_value *constant = g_hash_table_lookup(param_data->toml_pairs,
-                                               SERVICES_ALTERATOR_ENTRY_SERVICE_PARAM_CONSTANT_KEY_NAME);
+    toml_value*
+        constant = g_hash_table_lookup(param_data->toml_pairs,
+                                       SERVICES_ALTERATOR_ENTRY_SERVICE_PARAM_CONSTANT_KEY_NAME);
     return (constant && constant->bool_value);
 }
 
-static const gchar *schema_type_name(AlteratorCtlModuleInfoParser *info_parser, GNode *parameter)
+static const gchar* schema_type_name(AlteratorCtlModuleInfoParser* info_parser, GNode* parameter)
 {
-    toml_value *type = NULL;
-    info_parser->alterator_ctl_module_info_parser_find_value(info_parser, parameter, &type, "type", NULL);
+    toml_value* type = NULL;
+    info_parser->alterator_ctl_module_info_parser_find_value(info_parser, parameter, &type, "type",
+                                                             NULL);
     return type ? type->str_value : NULL;
 }
 
-static gboolean schema_is_password_string(AlteratorCtlModuleInfoParser *info_parser, GNode *parameter)
+static gboolean schema_is_password_string(AlteratorCtlModuleInfoParser* info_parser,
+                                          GNode* parameter)
 {
-    alterator_entry_node *param_data = parameter->data;
-    const gchar *type_name           = schema_type_name(info_parser, parameter);
+    alterator_entry_node* param_data = parameter->data;
+    const gchar* type_name           = schema_type_name(info_parser, parameter);
     if (!type_name || !streq(type_name, "string"))
         return FALSE;
-    toml_value *password = g_hash_table_lookup(param_data->toml_pairs, "password");
+    toml_value* password = g_hash_table_lookup(param_data->toml_pairs, "password");
     return (password && password->type == TOML_DATA_BOOL && password->bool_value);
 }
 
-static int validate_json_recursive(AlteratorCtlServicesModule *module,
-                                   const gchar *service_name,
-                                   JsonNode *node,
-                                   GNode *parameter,
-                                   const gchar *const *contexts,
-                                   gsize contexts_len,
-                                   gchar *prefix,
-                                   GString **out,
-                                   gboolean is_array_member,
-                                   gboolean is_enum_subparameter,
+static int validate_json_recursive(AlteratorCtlServicesModule* module, const gchar* service_name,
+                                   JsonNode* node, GNode* parameter, GStrv contexts,
+                                   gsize contexts_len, gchar* prefix, GString** out,
+                                   gboolean is_array_member, gboolean is_enum_subparameter,
                                    gboolean skip_unset_passwords)
 {
     int ret = 0;
 
-    AlteratorCtlModuleInfoParser *info_parser = module->gdbus_source->info_parser;
-    alterator_entry_node *param_data          = parameter->data;
-    gchar *path = prefix ? (is_array_member ? g_strdup(prefix) : g_strconcat(prefix, ".", param_data->node_name, NULL))
-                         : g_strdup(param_data->node_name);
+    AlteratorCtlModuleInfoParser* info_parser = module->gdbus_source->info_parser;
+    alterator_entry_node* param_data          = parameter->data;
+    gchar* path                               = prefix ? (is_array_member ? g_strdup(prefix)
+                                                                          : g_strconcat(prefix, ".", param_data->node_name, NULL))
+                                                       : g_strdup(param_data->node_name);
 
-    gchar *type_str = NULL;
+    gchar* type_str = NULL;
     {
-        toml_value *type = NULL;
-        info_parser->alterator_ctl_module_info_parser_find_value(info_parser,
-                                                                 parameter,
-                                                                 &type,
-                                                                 is_array_member ? "array_type" : "type",
+        toml_value* type = NULL;
+        info_parser->alterator_ctl_module_info_parser_find_value(info_parser, parameter, &type,
+                                                                 is_array_member ? "array_type"
+                                                                                 : "type",
                                                                  NULL);
 
         if (type)
@@ -2478,16 +2470,16 @@ static int validate_json_recursive(AlteratorCtlServicesModule *module,
 
     // skip constants
     {
-        toml_value *constant = g_hash_table_lookup(param_data->toml_pairs,
-                                                   SERVICES_ALTERATOR_ENTRY_SERVICE_PARAM_CONSTANT_KEY_NAME);
+        toml_value* constant = g_hash_table_lookup(
+            param_data->toml_pairs, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAM_CONSTANT_KEY_NAME);
         if (constant && constant->bool_value)
             goto end;
     }
 
-    gboolean match               = schema_param_matches_contexts(param_data, contexts, contexts_len);
-    gboolean required            = schema_param_required_in_contexts(param_data, contexts, contexts_len);
-    gboolean is_password         = schema_is_password_string(info_parser, parameter);
-    const gchar *primary_context = (contexts_len && contexts && contexts[0]) ? contexts[0] : "";
+    gboolean match       = schema_param_matches_contexts(param_data, contexts, contexts_len);
+    gboolean required    = schema_param_required_in_contexts(param_data, contexts, contexts_len);
+    gboolean is_password = schema_is_password_string(info_parser, parameter);
+    const gchar* primary_context = (contexts_len && contexts && contexts[0]) ? contexts[0] : "";
 
     if (node)
     {
@@ -2495,8 +2487,9 @@ static int validate_json_recursive(AlteratorCtlServicesModule *module,
         {
             if (out)
             {
-                gchar *ctx_label = services_contexts_label(contexts, contexts_len);
-                g_string_append_printf(*out, _("Parameter '%s' does not belong to context '%s'.\n"), path, ctx_label);
+                gchar* ctx_label = services_contexts_label(contexts, contexts_len);
+                g_string_append_printf(*out, _("Parameter '%s' does not belong to context '%s'.\n"),
+                                       path, ctx_label);
                 g_free(ctx_label);
             }
             ERR_EXIT();
@@ -2522,37 +2515,33 @@ static int validate_json_recursive(AlteratorCtlServicesModule *module,
 
     if (is_enum_subparameter || streq(type_str, "object"))
     {
-        toml_value *prototype = g_hash_table_lookup(param_data->toml_pairs, "prototype");
+        toml_value* prototype = g_hash_table_lookup(param_data->toml_pairs, "prototype");
         if (prototype)
         {
-            GNode *parameters = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-                info_parser, module->info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME, 2);
-            parameter = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
-                                                                                       parameters,
-                                                                                       prototype->str_value,
-                                                                                       2);
+            GNode* parameters = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
+                info_parser, module->info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME,
+                2);
+            parameter = info_parser
+                            ->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
+                                                                                parameters,
+                                                                                prototype
+                                                                                    ->str_value,
+                                                                                2);
         }
 
-        GNode *children = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
+        GNode* children = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
             info_parser, parameter, SERVICES_ALTERATOR_ENTRY_SERVICE_PROPERTIES_TABLE_NAME, 2);
 
         if (children)
         {
-            for (GNode *child = children->children; child != NULL; child = child->next)
+            for (GNode* child = children->children; child != NULL; child = child->next)
             {
-                alterator_entry_node *child_data = child->data;
-                JsonNode *child_node = json_object_get_member(json_node_get_object(node), child_data->node_name);
+                alterator_entry_node* child_data = child->data;
+                JsonNode* child_node = json_object_get_member(json_node_get_object(node),
+                                                              child_data->node_name);
 
-                if (validate_json_recursive(module,
-                                            service_name,
-                                            child_node,
-                                            child,
-                                            contexts,
-                                            contexts_len,
-                                            path,
-                                            out,
-                                            FALSE,
-                                            FALSE,
+                if (validate_json_recursive(module, service_name, child_node, child, contexts,
+                                            contexts_len, path, out, FALSE, FALSE,
                                             skip_unset_passwords)
                     < 0)
                     ERR_EXIT();
@@ -2570,47 +2559,38 @@ static int validate_json_recursive(AlteratorCtlServicesModule *module,
     }
     else if (streq(type_str, "array"))
     {
-        JsonArray *array = json_node_get_array(node);
+        JsonArray* array = json_node_get_array(node);
 
-        toml_value *min = g_hash_table_lookup(param_data->toml_pairs, "array_min");
-        toml_value *max = g_hash_table_lookup(param_data->toml_pairs, "array_max");
+        toml_value* min = g_hash_table_lookup(param_data->toml_pairs, "array_min");
+        toml_value* max = g_hash_table_lookup(param_data->toml_pairs, "array_max");
 
         int len = json_array_get_length(array);
 
         if (min && min->double_value > len)
         {
             if (out)
-                g_string_append_printf(*out, _("%s should have at least %i items.\n"), path, (int) min->double_value);
+                g_string_append_printf(*out, _("%s should have at least %i items.\n"), path,
+                                       (int) min->double_value);
             ERR_EXIT();
         }
 
         if (max && max->double_value < len)
         {
             if (out)
-                g_string_append_printf(*out,
-                                       _("%s should not have more items than %i.\n"),
-                                       path,
+                g_string_append_printf(*out, _("%s should not have more items than %i.\n"), path,
                                        (int) max->double_value);
             ERR_EXIT();
         }
 
         for (int i = 0; i < len; ++i)
         {
-            gchar *suffix = g_strdup_printf(".%i", i);
-            gchar *path_  = g_strconcat(path, suffix, NULL);
+            gchar* suffix = g_strdup_printf(".%i", i);
+            gchar* path_  = g_strconcat(path, suffix, NULL);
             g_free(suffix);
 
-            ret = validate_json_recursive(module,
-                                          service_name,
-                                          json_array_get_element(array, i),
-                                          parameter,
-                                          contexts,
-                                          contexts_len,
-                                          path_,
-                                          out,
-                                          TRUE,
-                                          FALSE,
-                                          skip_unset_passwords);
+            ret = validate_json_recursive(module, service_name, json_array_get_element(array, i),
+                                          parameter, contexts, contexts_len, path_, out, TRUE,
+                                          FALSE, skip_unset_passwords);
             g_free(path_);
 
             if (ret < 0)
@@ -2621,48 +2601,51 @@ static int validate_json_recursive(AlteratorCtlServicesModule *module,
     {
         int value = json_node_get_int(node);
 
-        toml_value *min = g_hash_table_lookup(param_data->toml_pairs, "min");
-        toml_value *max = g_hash_table_lookup(param_data->toml_pairs, "max");
+        toml_value* min = g_hash_table_lookup(param_data->toml_pairs, "min");
+        toml_value* max = g_hash_table_lookup(param_data->toml_pairs, "max");
 
         if (min && min->double_value > value)
         {
             if (out)
-                g_string_append_printf(*out, _("%s should not be less than %i.\n"), path, (int) min->double_value);
+                g_string_append_printf(*out, _("%s should not be less than %i.\n"), path,
+                                       (int) min->double_value);
             ERR_EXIT();
         }
 
         if (max && max->double_value < value)
         {
             if (out)
-                g_string_append_printf(*out, _("%s should be less than %i.\n"), path, (int) max->double_value);
+                g_string_append_printf(*out, _("%s should be less than %i.\n"), path,
+                                       (int) max->double_value);
             ERR_EXIT();
         }
     }
     else if (streq(type_str, "string"))
     {
-        const gchar *value_str = json_node_get_string(node);
+        const gchar* value_str = json_node_get_string(node);
 
-        toml_value *pattern = g_hash_table_lookup(param_data->toml_pairs, "pattern");
+        toml_value* pattern = g_hash_table_lookup(param_data->toml_pairs, "pattern");
 
         if (!value_str || !strlen(value_str))
         {
             if (out)
-                g_string_append_printf(*out, _("The parameter %s value must not be empty.\n"), path);
+                g_string_append_printf(*out, _("The parameter %s value must not be empty.\n"),
+                                       path);
             ERR_EXIT();
         }
 
         if (pattern)
         {
-            GRegex *string_param_pattern = g_regex_new(pattern->str_value, 0, 0, NULL);
-            GMatchInfo *match_info       = NULL;
+            GRegex* string_param_pattern = g_regex_new(pattern->str_value, 0, 0, NULL);
+            GMatchInfo* match_info       = NULL;
             g_regex_match(string_param_pattern, value_str, 0, &match_info);
             if (!g_match_info_matches(match_info))
             {
                 if (out)
                     g_string_append_printf(*out,
-                                           _("The parameter %s value doesn't match the pattern %s.\n"),
-                                           path,
-                                           pattern->str_value);
+                                           _("The parameter %s value doesn't match the pattern "
+                                             "%s.\n"),
+                                           path, pattern->str_value);
                 g_match_info_free(match_info);
                 g_regex_unref(string_param_pattern);
                 ERR_EXIT();
@@ -2673,13 +2656,14 @@ static int validate_json_recursive(AlteratorCtlServicesModule *module,
     }
     else if (streq(type_str, "enum"))
     {
-        JsonObject *enum_object = json_node_get_object(node);
+        JsonObject* enum_object = json_node_get_object(node);
 
         switch (json_object_get_size(enum_object))
         {
         case 0:
             if (out)
-                g_string_append_printf(*out, _("One variant of enum \"%s\" should be selected.\n"), path);
+                g_string_append_printf(*out, _("One variant of enum \"%s\" should be selected.\n"),
+                                       path);
             ERR_EXIT();
 
         case 1:
@@ -2687,23 +2671,24 @@ static int validate_json_recursive(AlteratorCtlServicesModule *module,
 
         default:
             if (out)
-                g_string_append_printf(*out, _("Only one variant of enum \"%s\" may be selected.\n"), path);
+                g_string_append_printf(*out,
+                                       _("Only one variant of enum \"%s\" may be selected.\n"),
+                                       path);
             ERR_EXIT();
         }
 
         // There will be one element, since enum can only have one value.
-        GList *enum_field_name = json_object_get_members(enum_object);
-        gchar *field_name      = (gchar *) enum_field_name->data;
+        GList* enum_field_name = json_object_get_members(enum_object);
+        gchar* field_name      = (gchar*) enum_field_name->data;
         g_list_free(enum_field_name);
 
-        GNode *values = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
+        GNode* values = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
                                                                                        parameter,
-                                                                                       "values",
+                                                                                       "values", 2);
+        GNode* value  = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
+                                                                                       values,
+                                                                                       field_name,
                                                                                        2);
-        GNode *value  = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
-                                                                                      values,
-                                                                                      field_name,
-                                                                                      2);
 
         if (!value)
         {
@@ -2711,37 +2696,23 @@ static int validate_json_recursive(AlteratorCtlServicesModule *module,
                 g_string_append_printf(*out,
                                        _("The value '%s' for enum '%s' does not exist. "
                                          "Run '%s %s --help' to see the list of valid values.\n"),
-                                       field_name,
-                                       path,
-                                       primary_context,
-                                       service_name);
+                                       field_name, path, primary_context, service_name);
             ERR_EXIT();
         }
 
-        JsonNode *current_value_node = json_object_get_member(enum_object, field_name);
+        JsonNode* current_value_node = json_object_get_member(enum_object, field_name);
         if (json_node_get_node_type(current_value_node) != JSON_NODE_OBJECT)
         {
             if (out)
-                g_string_append_printf(
-                    *out,
-                    _("The enum '%s' does not exist. Run '%s %s --help' to see the list of valid parameters.\n"),
-                    path,
-                    primary_context,
-                    service_name);
+                g_string_append_printf(*out,
+                                       _("The enum '%s' does not exist. Run '%s %s --help' to see "
+                                         "the list of valid parameters.\n"),
+                                       path, primary_context, service_name);
             ERR_EXIT();
         }
 
-        ret = validate_json_recursive(module,
-                                      service_name,
-                                      current_value_node,
-                                      value,
-                                      contexts,
-                                      contexts_len,
-                                      path,
-                                      out,
-                                      FALSE,
-                                      TRUE,
-                                      skip_unset_passwords);
+        ret = validate_json_recursive(module, service_name, current_value_node, value, contexts,
+                                      contexts_len, path, out, FALSE, TRUE, skip_unset_passwords);
     }
 
 end:
@@ -2749,11 +2720,8 @@ end:
     return ret;
 }
 
-static int validate_json(AlteratorCtlServicesModule *module,
-                         const gchar *service_name,
-                         const gchar *const *contexts,
-                         gsize contexts_len,
-                         GString **out,
+static int validate_json(AlteratorCtlServicesModule* module, const gchar* service_name,
+                         GStrv contexts, gsize contexts_len, GString** out,
                          gboolean skip_unset_passwords)
 {
     int ret = 0;
@@ -2761,26 +2729,19 @@ static int validate_json(AlteratorCtlServicesModule *module,
     if (out && *out == NULL)
         *out = g_string_new("");
 
-    AlteratorCtlModuleInfoParser *info_parser = (AlteratorCtlModuleInfoParser *) module->gdbus_source->info_parser;
+    AlteratorCtlModuleInfoParser* info_parser = (AlteratorCtlModuleInfoParser*)
+                                                    module->gdbus_source->info_parser;
 
-    GNode *parameters = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
+    GNode* parameters = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
         info_parser, module->info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME, 2);
 
-    for (GNode *parameter = parameters->children; parameter != NULL; parameter = parameter->next)
+    for (GNode* parameter = parameters->children; parameter != NULL; parameter = parameter->next)
     {
-        alterator_entry_node *param_data = parameter->data;
-        JsonNode *node = json_object_get_member(json_node_get_object(module->json), param_data->node_name);
-        if (validate_json_recursive(module,
-                                    service_name,
-                                    node,
-                                    parameter,
-                                    contexts,
-                                    contexts_len,
-                                    NULL,
-                                    out,
-                                    FALSE,
-                                    FALSE,
-                                    skip_unset_passwords)
+        alterator_entry_node* param_data = parameter->data;
+        JsonNode* node = json_object_get_member(json_node_get_object(module->json),
+                                                param_data->node_name);
+        if (validate_json_recursive(module, service_name, node, parameter, contexts, contexts_len,
+                                    NULL, out, FALSE, FALSE, skip_unset_passwords)
             < 0)
             ERR_EXIT();
     }
@@ -2789,9 +2750,10 @@ end:
     return ret;
 }
 
-static gchar *password_compose_label(const gchar *base_path, const gchar *field_name, const gchar *subfield_name)
+static gchar* password_compose_label(const gchar* base_path, const gchar* field_name,
+                                     const gchar* subfield_name)
 {
-    GString *label_builder = g_string_new(NULL);
+    GString* label_builder = g_string_new(NULL);
     if (base_path && strlen(base_path))
         g_string_append(label_builder, base_path);
     if (field_name && strlen(field_name))
@@ -2809,17 +2771,17 @@ static gchar *password_compose_label(const gchar *base_path, const gchar *field_
     return g_string_free(label_builder, FALSE);
 }
 
-static gboolean prompt_and_set_password(JsonObject *object, const gchar *key, const gchar *label)
+static gboolean prompt_and_set_password(JsonObject* object, const gchar* key, const gchar* label)
 {
-    JsonNode *node              = json_object_get_member(object, key);
-    const gchar *existing_value = (node && json_node_get_node_type(node) == JSON_NODE_VALUE)
+    JsonNode* node              = json_object_get_member(object, key);
+    const gchar* existing_value = (node && json_node_get_node_type(node) == JSON_NODE_VALUE)
                                       ? json_node_get_string(node)
                                       : NULL;
     if (existing_value && strlen(existing_value))
         return TRUE;
 
-    gchar *secret = NULL;
-    GError *error = NULL;
+    gchar* secret = NULL;
+    GError* error = NULL;
     if (!(isatty_safe(STDIN_FILENO)))
     {
         g_printerr(_("Cannot prompt for password: standard input is not a TTY.\n"));
@@ -2846,25 +2808,24 @@ static gboolean prompt_and_set_password(JsonObject *object, const gchar *key, co
     return TRUE;
 }
 
-static gboolean fill_object_passwords(AlteratorCtlModuleInfoParser *info_parser,
-                                      GNode *object_schema,
-                                      JsonObject *object_json,
-                                      const gchar *base_path,
-                                      const gchar *const *contexts,
-                                      gsize contexts_len)
+static gboolean fill_object_passwords(AlteratorCtlModuleInfoParser* info_parser,
+                                      GNode* object_schema, JsonObject* object_json,
+                                      const gchar* base_path, GStrv contexts, gsize contexts_len)
 {
-    GNode *children = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
+    GNode* children = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
         info_parser, object_schema, SERVICES_ALTERATOR_ENTRY_SERVICE_PROPERTIES_TABLE_NAME, 2);
-    for (GNode *child = children ? children->children : NULL; child != NULL; child = child->next)
+    for (GNode* child = children ? children->children : NULL; child != NULL; child = child->next)
     {
-        alterator_entry_node *child_data = child->data;
-        if (schema_is_constant(child_data) || !schema_property_required_in_contexts(child_data, contexts, contexts_len))
+        alterator_entry_node* child_data = child->data;
+        if (schema_is_constant(child_data)
+            || !schema_property_required_in_contexts(child_data, contexts, contexts_len))
             continue;
         if (!schema_is_password_string(info_parser, child))
             continue;
 
-        gchar *label                       = password_compose_label(base_path, child_data->node_name, NULL);
-        gboolean password_set_successfully = prompt_and_set_password(object_json, child_data->node_name, label);
+        gchar* label = password_compose_label(base_path, child_data->node_name, NULL);
+        gboolean password_set_successfully = prompt_and_set_password(object_json,
+                                                                     child_data->node_name, label);
         g_free(label);
         if (!password_set_successfully)
             return FALSE;
@@ -2872,66 +2833,64 @@ static gboolean fill_object_passwords(AlteratorCtlModuleInfoParser *info_parser,
     return TRUE;
 }
 
-static gboolean fill_enum_passwords(AlteratorCtlModuleInfoParser *info_parser,
-                                    GNode *enum_schema,
-                                    JsonObject *enum_json,
-                                    const gchar *param_name,
-                                    const gchar *const *contexts,
+static gboolean fill_enum_passwords(AlteratorCtlModuleInfoParser* info_parser, GNode* enum_schema,
+                                    JsonObject* enum_json, const gchar* param_name, GStrv contexts,
                                     gsize contexts_len)
 {
     if (!json_object_get_size(enum_json))
         return TRUE;
 
-    GList *members = json_object_get_members(enum_json);
-    gchar *variant = members ? (gchar *) members->data : NULL;
+    GList* members = json_object_get_members(enum_json);
+    gchar* variant = members ? (gchar*) members->data : NULL;
     g_list_free(members);
     if (!variant)
         return TRUE;
 
-    JsonNode *variant_node = json_object_get_member(enum_json, variant);
+    JsonNode* variant_node = json_object_get_member(enum_json, variant);
     if (!variant_node || json_node_get_node_type(variant_node) != JSON_NODE_OBJECT)
         return TRUE;
-    JsonObject *variant_obj = json_node_get_object(variant_node);
+    JsonObject* variant_obj = json_node_get_object(variant_node);
 
-    GNode *values         = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
+    GNode* values = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
                                                                                    enum_schema,
-                                                                                   "values",
-                                                                                   2);
-    GNode *variant_schema = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
-                                                                                           values,
-                                                                                           variant,
-                                                                                           2);
+                                                                                   "values", 2);
+    GNode* variant_schema = info_parser
+                                ->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
+                                                                                    values, variant,
+                                                                                    2);
     if (!variant_schema)
         return TRUE;
 
-    gchar *variant_label = password_compose_label(param_name, variant, NULL);
-    gboolean passwords_filled_successfully
-        = fill_object_passwords(info_parser, variant_schema, variant_obj, variant_label, contexts, contexts_len);
+    gchar* variant_label                   = password_compose_label(param_name, variant, NULL);
+    gboolean passwords_filled_successfully = fill_object_passwords(info_parser, variant_schema,
+                                                                   variant_obj, variant_label,
+                                                                   contexts, contexts_len);
     g_free(variant_label);
     return passwords_filled_successfully;
 }
 
-static int services_fill_missing_passwords(AlteratorCtlServicesModule *module,
-                                           const gchar *service_name,
-                                           const gchar *const *contexts,
+static int services_fill_missing_passwords(AlteratorCtlServicesModule* module,
+                                           const gchar* service_name, GStrv contexts,
                                            gsize contexts_len)
 {
     int ret                                   = 0;
-    AlteratorCtlModuleInfoParser *info_parser = module->gdbus_source->info_parser;
+    AlteratorCtlModuleInfoParser* info_parser = module->gdbus_source->info_parser;
     if (!module->json || !module->info)
         goto end;
 
-    JsonObject *root  = json_node_get_object(module->json);
-    GNode *parameters = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
+    JsonObject* root  = json_node_get_object(module->json);
+    GNode* parameters = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
         info_parser, module->info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME, 2);
 
-    for (GNode *parameter = parameters ? parameters->children : NULL; parameter != NULL; parameter = parameter->next)
+    for (GNode* parameter = parameters ? parameters->children : NULL; parameter != NULL;
+         parameter        = parameter->next)
     {
-        alterator_entry_node *param_data = parameter->data;
-        if (schema_is_constant(param_data) || !schema_param_matches_contexts(param_data, contexts, contexts_len))
+        alterator_entry_node* param_data = parameter->data;
+        if (schema_is_constant(param_data)
+            || !schema_param_matches_contexts(param_data, contexts, contexts_len))
             continue;
 
-        const gchar *type_name = schema_type_name(info_parser, parameter);
+        const gchar* type_name = schema_type_name(info_parser, parameter);
         if (!type_name)
             continue;
 
@@ -2948,22 +2907,24 @@ static int services_fill_missing_passwords(AlteratorCtlServicesModule *module,
 
         if (streq(type_name, "object"))
         {
-            JsonNode *obj_node = json_object_get_member(root, param_data->node_name);
+            JsonNode* obj_node = json_object_get_member(root, param_data->node_name);
             if (!obj_node || json_node_get_node_type(obj_node) != JSON_NODE_OBJECT)
                 continue;
-            JsonObject *object_json = json_node_get_object(obj_node);
-            if (!fill_object_passwords(info_parser, parameter, object_json, param_data->node_name, contexts, contexts_len))
+            JsonObject* object_json = json_node_get_object(obj_node);
+            if (!fill_object_passwords(info_parser, parameter, object_json, param_data->node_name,
+                                       contexts, contexts_len))
                 ERR_EXIT();
             continue;
         }
 
         if (streq(type_name, "enum"))
         {
-            JsonNode *enum_node = json_object_get_member(root, param_data->node_name);
+            JsonNode* enum_node = json_object_get_member(root, param_data->node_name);
             if (!enum_node || json_node_get_node_type(enum_node) != JSON_NODE_OBJECT)
                 continue;
-            JsonObject *enum_json = json_node_get_object(enum_node);
-            if (!fill_enum_passwords(info_parser, parameter, enum_json, param_data->node_name, contexts, contexts_len))
+            JsonObject* enum_json = json_node_get_object(enum_node);
+            if (!fill_enum_passwords(info_parser, parameter, enum_json, param_data->node_name,
+                                     contexts, contexts_len))
                 ERR_EXIT();
             continue;
         }
@@ -2973,23 +2934,17 @@ end:
     return ret;
 }
 
-static int services_module_build_contextual_arguments_recursive(AlteratorCtlServicesModule *module,
-                                                                GArray **option_array,
-                                                                GNode *parameters,
-                                                                GNode *parameter,
-                                                                const gchar **selected_contexts,
-                                                                gchar *prefix,
-                                                                gchar *description_prefix,
-                                                                ParamEntry *parent_array_entry,
-                                                                gboolean is_array_item,
-                                                                gboolean is_enum_subparameter,
-                                                                gboolean constant_parent)
+static int services_module_build_contextual_arguments_recursive(
+    AlteratorCtlServicesModule* module, GArray** option_array, GNode* parameters, GNode* parameter,
+    const gchar** selected_contexts, gchar* prefix, gchar* description_prefix,
+    ParamEntry* parent_array_entry, gboolean is_array_item, gboolean is_enum_subparameter,
+    gboolean constant_parent)
 {
     int ret                    = 0;
     int enum_subparameters_len = 0;
 
-    AlteratorCtlModuleInfoParser *info_parser = module->gdbus_source->info_parser;
-    alterator_entry_node *param_data          = parameter->data;
+    AlteratorCtlModuleInfoParser* info_parser = module->gdbus_source->info_parser;
+    alterator_entry_node* param_data          = parameter->data;
 
     ParamEntry param_entry;
     memset(&param_entry, 0, sizeof(param_entry));
@@ -3000,30 +2955,32 @@ static int services_module_build_contextual_arguments_recursive(AlteratorCtlServ
         ERR_EXIT();
     }
 
-    gchar *path = prefix ? (is_array_item ? g_strdup(prefix) : g_strconcat(prefix, ".", param_data->node_name, NULL))
+    gchar* path = prefix ? (is_array_item ? g_strdup(prefix)
+                                          : g_strconcat(prefix, ".", param_data->node_name, NULL))
                          : g_strdup(param_data->node_name);
 
-    toml_value *constant = g_hash_table_lookup(param_data->toml_pairs,
-                                               SERVICES_ALTERATOR_ENTRY_SERVICE_PARAM_CONSTANT_KEY_NAME);
+    toml_value*
+        constant = g_hash_table_lookup(param_data->toml_pairs,
+                                       SERVICES_ALTERATOR_ENTRY_SERVICE_PARAM_CONSTANT_KEY_NAME);
 
     // filter by context
     if (!prefix)
     {
         gboolean match = FALSE;
 
-        toml_value *context_arr = g_hash_table_lookup(param_data->toml_pairs,
-                                                      SERVICES_ALTERATOR_ENTRY_SERVICE_PARAM_CONTEXT_KEY_NAME);
+        toml_value* context_arr = g_hash_table_lookup(
+            param_data->toml_pairs, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAM_CONTEXT_KEY_NAME);
 
         if (context_arr && context_arr->array_length && context_arr->array)
         {
             for (gsize i = 0; i < context_arr->array_length; i++)
             {
-                for (gsize j = 0; j < g_strv_length((gchar **) selected_contexts); j++)
-                    if (!streq(selected_contexts[j], ((gchar **) context_arr->array)[i]))
-                        continue;
+                for (gsize j = 0; j < g_strv_length((gchar**) selected_contexts); j++)
+                    if (streq(selected_contexts[j], ((gchar**) context_arr->array)[i]))
+                        match = TRUE;
 
-                match = TRUE;
-                break;
+                if (match)
+                    break;
             }
         }
         else
@@ -3033,13 +2990,11 @@ static int services_module_build_contextual_arguments_recursive(AlteratorCtlServ
             goto end;
     }
 
-    gchar *type_str = NULL;
+    gchar* type_str = NULL;
     {
-        toml_value *type = NULL;
+        toml_value* type = NULL;
         info_parser->alterator_ctl_module_info_parser_find_value(
-            info_parser,
-            parameter,
-            &type,
+            info_parser, parameter, &type,
             is_array_item ? SERVICES_ALTERATOR_ENTRY_SERVICE_DEFAULT_PARAM_ARRAY_TYPE_KEY_NAME
                           : SERVICES_ALTERATOR_ENTRY_SERVICE_DEFAULT_PARAM_TYPE_KEY_NAME,
             NULL);
@@ -3047,15 +3002,15 @@ static int services_module_build_contextual_arguments_recursive(AlteratorCtlServ
             type_str = type->str_value;
     }
 
-    gchar *description     = g_strdup(description_prefix);
-    gchar *comment         = NULL;
-    gchar *arg_description = NULL;
+    gchar* description     = g_strdup(description_prefix);
+    gchar* comment         = NULL;
+    gchar* arg_description = NULL;
 
     gboolean required = FALSE;
     // TODO: add to description
     {
-        toml_value *required_val = g_hash_table_lookup(param_data->toml_pairs,
-                                                       SERVICES_ALTERATOR_ENTRY_SERVICE_PARAM_REQUIRED_KEY_NAME);
+        toml_value* required_val = g_hash_table_lookup(
+            param_data->toml_pairs, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAM_REQUIRED_KEY_NAME);
 
         if (required_val)
         {
@@ -3063,8 +3018,8 @@ static int services_module_build_contextual_arguments_recursive(AlteratorCtlServ
             {
                 for (gsize i = 0; i < required_val->array_length; i++)
                 {
-                    for (gsize j = 0; j < g_strv_length((gchar **) selected_contexts); j++)
-                        if (!streq(selected_contexts[j], ((gchar **) required_val->array)[i]))
+                    for (gsize j = 0; j < g_strv_length((gchar**) selected_contexts); j++)
+                        if (!streq(selected_contexts[j], ((gchar**) required_val->array)[i]))
                             continue;
 
                     required = TRUE;
@@ -3077,38 +3032,37 @@ static int services_module_build_contextual_arguments_recursive(AlteratorCtlServ
     }
 
     // Add default values info into description
-    toml_value *default_value = g_hash_table_lookup(param_data->toml_pairs,
-                                                    SERVICES_ALTERATOR_ENTRY_SERVICE_DEFAULT_PARAM_VALUE_KEY_NAME);
+    toml_value* default_value = g_hash_table_lookup(
+        param_data->toml_pairs, SERVICES_ALTERATOR_ENTRY_SERVICE_DEFAULT_PARAM_VALUE_KEY_NAME);
 
     if (is_enum_subparameter || streq(type_str, "object"))
     {
         {
-            toml_value *prototype = g_hash_table_lookup(param_data->toml_pairs, "prototype");
+            toml_value* prototype = g_hash_table_lookup(param_data->toml_pairs, "prototype");
             if (prototype)
-                parameter = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
-                                                                                           parameters,
-                                                                                           prototype->str_value,
-                                                                                           2);
+                parameter = info_parser
+                                ->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
+                                                                                    parameters,
+                                                                                    prototype
+                                                                                        ->str_value,
+                                                                                    2);
         }
 
-        GNode *children = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
+        GNode* children = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
             info_parser, parameter, SERVICES_ALTERATOR_ENTRY_SERVICE_PROPERTIES_TABLE_NAME, 2);
 
         if (!children)
             goto end;
 
-        for (GNode *child = children->children; child != NULL; child = child->next)
-            if (services_module_build_contextual_arguments_recursive(module,
-                                                                     option_array,
-                                                                     parameters,
-                                                                     child,
-                                                                     selected_contexts,
-                                                                     path,
-                                                                     description,
-                                                                     NULL,
+        for (GNode* child = children->children; child != NULL; child = child->next)
+            if (services_module_build_contextual_arguments_recursive(module, option_array,
+                                                                     parameters, child,
+                                                                     selected_contexts, path,
+                                                                     description, NULL, FALSE,
                                                                      FALSE,
-                                                                     FALSE,
-                                                                     constant && constant->bool_value || constant_parent)
+                                                                     constant
+                                                                             && constant->bool_value
+                                                                         || constant_parent)
                 < 0)
                 ret = -1;
 
@@ -3119,16 +3073,16 @@ static int services_module_build_contextual_arguments_recursive(AlteratorCtlServ
         int min = 0;
         int max = INT_MAX;
 
-        toml_value *min_node = g_hash_table_lookup(param_data->toml_pairs, "array_min");
+        toml_value* min_node = g_hash_table_lookup(param_data->toml_pairs, "array_min");
         if (min_node)
             min = min_node->double_value;
 
-        toml_value *max_node = g_hash_table_lookup(param_data->toml_pairs, "array_max");
+        toml_value* max_node = g_hash_table_lookup(param_data->toml_pairs, "array_max");
         if (max_node)
             max = max_node->double_value;
 
-        gchar *max_str          = max == INT_MAX ? g_strdup("...") : g_strdup_printf("%i", max - 1);
-        gchar *path_with_suffix = g_strdup_printf("%s.<%i-%s>", path, 0, max_str);
+        gchar* max_str          = max == INT_MAX ? g_strdup("...") : g_strdup_printf("%i", max - 1);
+        gchar* path_with_suffix = g_strdup_printf("%s.<%i-%s>", path, 0, max_str);
         g_free(max_str);
 
         param_entry.is_array       = TRUE;
@@ -3138,11 +3092,11 @@ static int services_module_build_contextual_arguments_recursive(AlteratorCtlServ
         { // Pack default values into ParamEntry
             if (default_value)
             {
-                toml_value *default_values_type
-                    = g_hash_table_lookup(param_data->toml_pairs,
-                                          SERVICES_ALTERATOR_ENTRY_SERVICE_DEFAULT_PARAM_ARRAY_TYPE_KEY_NAME);
+                toml_value* default_values_type = g_hash_table_lookup(
+                    param_data->toml_pairs,
+                    SERVICES_ALTERATOR_ENTRY_SERVICE_DEFAULT_PARAM_ARRAY_TYPE_KEY_NAME);
 
-                GString *default_value_str = g_string_new(NULL);
+                GString* default_value_str = g_string_new(NULL);
                 for (gsize i = 0; i < default_value->array_length; i++)
                 {
                     if (i == 0)
@@ -3152,27 +3106,22 @@ static int services_module_build_contextual_arguments_recursive(AlteratorCtlServ
 
                     if (streq(default_values_type->str_value, "integer"))
                     {
-                        gint *array = (gint *) default_value->array;
-                        g_string_append_printf(default_value_str,
-                                               "%i%s",
-                                               array[i],
+                        gint* array = (gint*) default_value->array;
+                        g_string_append_printf(default_value_str, "%i%s", array[i],
                                                i != default_value->array_length - 1 ? ", " : "]");
                     }
                     else if (streq(default_values_type->str_value, "boolean"))
                     {
-                        gboolean *array = (gboolean *) default_value->array;
-                        g_string_append_printf(default_value_str,
-                                               "%s%s",
+                        gboolean* array = (gboolean*) default_value->array;
+                        g_string_append_printf(default_value_str, "%s%s",
                                                array[i] ? "true" : "false",
                                                i != default_value->array_length - 1 ? ",\n" : "]");
                     }
                     else if (streq(default_values_type->str_value, "string")
                              || streq(default_values_type->str_value, "enum"))
                     {
-                        gchar **array = (gchar **) default_value->array;
-                        g_string_append_printf(default_value_str,
-                                               "\"%s\"%s",
-                                               array[i],
+                        gchar** array = (gchar**) default_value->array;
+                        g_string_append_printf(default_value_str, "\"%s\"%s", array[i],
                                                i != default_value->array_length - 1 ? ", " : "]");
                     }
                 }
@@ -3180,17 +3129,12 @@ static int services_module_build_contextual_arguments_recursive(AlteratorCtlServ
             }
         }
 
-        services_module_build_contextual_arguments_recursive(module,
-                                                             option_array,
-                                                             parameters,
-                                                             parameter,
-                                                             selected_contexts,
-                                                             path_with_suffix,
-                                                             description,
-                                                             &param_entry,
-                                                             TRUE,
-                                                             FALSE,
-                                                             constant && constant->bool_value || constant_parent);
+        services_module_build_contextual_arguments_recursive(module, option_array, parameters,
+                                                             parameter, selected_contexts,
+                                                             path_with_suffix, description,
+                                                             &param_entry, TRUE, FALSE,
+                                                             constant && constant->bool_value
+                                                                 || constant_parent);
         g_free(path_with_suffix);
         goto end;
     }
@@ -3199,18 +3143,18 @@ static int services_module_build_contextual_arguments_recursive(AlteratorCtlServ
         int min = INT_MIN;
         int max = INT_MAX;
 
-        toml_value *min_node = g_hash_table_lookup(param_data->toml_pairs, "min");
+        toml_value* min_node = g_hash_table_lookup(param_data->toml_pairs, "min");
         if (min_node)
             min = min_node->double_value;
 
-        toml_value *max_node = g_hash_table_lookup(param_data->toml_pairs, "max");
+        toml_value* max_node = g_hash_table_lookup(param_data->toml_pairs, "max");
         if (max_node)
             max = max_node->double_value;
 
         if (min_node || max_node)
         {
-            gchar *min_str = min_node ? g_strdup_printf("%i", min) : g_strdup("...");
-            gchar *max_str = max_node ? g_strdup_printf("%i", max) : g_strdup("...");
+            gchar* min_str = min_node ? g_strdup_printf("%i", min) : g_strdup("...");
+            gchar* max_str = max_node ? g_strdup_printf("%i", max) : g_strdup("...");
 
             arg_description = g_strdup_printf("<%s-%s>", min_str, max_str);
 
@@ -3222,7 +3166,8 @@ static int services_module_build_contextual_arguments_recursive(AlteratorCtlServ
 
         param_entry.is_array          = FALSE;
         param_entry.default_value_str = default_value && default_value->type == TOML_DATA_DOUBLE
-                                            ? g_strdup_printf("%i", (gint) default_value->double_value)
+                                            ? g_strdup_printf("%i",
+                                                              (gint) default_value->double_value)
                                             : NULL;
     }
     else if (streq(type_str, "string"))
@@ -3236,35 +3181,30 @@ static int services_module_build_contextual_arguments_recursive(AlteratorCtlServ
     else if (streq(type_str, "enum"))
     {
         param_entry.is_array = FALSE;
-        GArray *values_array = g_array_new(TRUE, FALSE, sizeof(gchar *));
-        GNode *values        = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
+        GArray* values_array = g_array_new(TRUE, FALSE, sizeof(gchar*));
+        GNode* values = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
                                                                                        parameter,
-                                                                                       "values",
-                                                                                       2);
+                                                                                       "values", 2);
 
         enum_subparameters_len = (*option_array)->len;
 
-        for (GNode *value = values->children; value != NULL; value = value->next)
+        for (GNode* value = values->children; value != NULL; value = value->next)
         {
-            gchar *value_name = ((alterator_entry_node *) value->data)->node_name;
+            gchar* value_name = ((alterator_entry_node*) value->data)->node_name;
             g_array_append_val(values_array, value_name);
 
-            if (services_module_build_contextual_arguments_recursive(module,
-                                                                     option_array,
-                                                                     parameters,
-                                                                     value,
-                                                                     selected_contexts,
-                                                                     path,
-                                                                     description,
-                                                                     NULL,
-                                                                     FALSE,
-                                                                     TRUE,
-                                                                     constant && constant->bool_value || constant_parent)
+            if (services_module_build_contextual_arguments_recursive(module, option_array,
+                                                                     parameters, value,
+                                                                     selected_contexts, path,
+                                                                     description, NULL, FALSE, TRUE,
+                                                                     constant
+                                                                             && constant->bool_value
+                                                                         || constant_parent)
                 < 0)
                 ret = -1;
         }
 
-        gchar *values_joined = g_strjoinv("|", (gchar **) values_array->data);
+        gchar* values_joined = g_strjoinv("|", (gchar**) values_array->data);
         arg_description      = g_strconcat("<", values_joined, ">", NULL);
         g_free(values_joined);
 
@@ -3278,7 +3218,9 @@ static int services_module_build_contextual_arguments_recursive(AlteratorCtlServ
     {
         param_entry.is_array          = FALSE;
         param_entry.default_value_str = default_value && default_value->type == TOML_DATA_BOOL
-                                            ? g_strdup_printf("%s", default_value->bool_value ? "true" : "false")
+                                            ? g_strdup_printf("%s", default_value->bool_value
+                                                                        ? "true"
+                                                                        : "false")
                                             : NULL;
         arg_description               = g_strdup("<true|false>");
     }
@@ -3289,24 +3231,20 @@ static int services_module_build_contextual_arguments_recursive(AlteratorCtlServ
     }
 
     { // get localized fields
-        gchar *locale = alterator_ctl_get_language();
+        gchar* locale = alterator_ctl_get_language();
 
-        GHashTable *display_name = NULL;
-        if (info_parser
-                ->alterator_ctl_module_info_parser_find_table(info_parser,
-                                                              parameter,
-                                                              &display_name,
-                                                              -1,
-                                                              SERVICES_ALTERATOR_ENTRY_SERVICE_DISPLAY_NAME_TABLE_NAME,
-                                                              NULL))
+        GHashTable* display_name = NULL;
+        if (info_parser->alterator_ctl_module_info_parser_find_table(
+                info_parser, parameter, &display_name, -1,
+                SERVICES_ALTERATOR_ENTRY_SERVICE_DISPLAY_NAME_TABLE_NAME, NULL))
         {
-            toml_value *display_name_locale_value = g_hash_table_lookup(display_name, locale);
+            toml_value* display_name_locale_value = g_hash_table_lookup(display_name, locale);
             if (!display_name_locale_value)
-                display_name_locale_value = g_hash_table_lookup(display_name, LOCALE_FALLBACK);
+                display_name_locale_value = g_hash_table_lookup(display_name, LANG_FALLBACK);
 
             if (description && g_utf8_strlen(description, -1))
             {
-                gchar *tmp  = description;
+                gchar* tmp  = description;
                 description = g_strconcat(tmp, display_name_locale_value->str_value, "\n", NULL);
                 g_free(tmp);
             }
@@ -3314,24 +3252,20 @@ static int services_module_build_contextual_arguments_recursive(AlteratorCtlServ
                 description = g_strdup_printf("%s\n", display_name_locale_value->str_value);
         }
 
-        GHashTable *comment_table = NULL;
-        if (info_parser
-                ->alterator_ctl_module_info_parser_find_table(info_parser,
-                                                              parameter,
-                                                              &comment_table,
-                                                              -1,
-                                                              SERVICES_ALTERATOR_ENTRY_SERVICE_COMMENT_NAME_TABLE_NAME,
-                                                              NULL))
+        GHashTable* comment_table = NULL;
+        if (info_parser->alterator_ctl_module_info_parser_find_table(
+                info_parser, parameter, &comment_table, -1,
+                SERVICES_ALTERATOR_ENTRY_SERVICE_COMMENT_NAME_TABLE_NAME, NULL))
         {
-            toml_value *comment_locale_value = g_hash_table_lookup(comment_table, locale);
+            toml_value* comment_locale_value = g_hash_table_lookup(comment_table, locale);
             if (!comment_locale_value)
-                comment_locale_value = g_hash_table_lookup(comment_table, LOCALE_FALLBACK);
+                comment_locale_value = g_hash_table_lookup(comment_table, LANG_FALLBACK);
 
             comment = comment_locale_value->str_value;
 
             if (description && g_utf8_strlen(description, -1))
             {
-                gchar *tmp  = description;
+                gchar* tmp  = description;
                 description = g_strconcat(tmp, comment, "\n", NULL);
                 g_free(tmp);
             }
@@ -3343,8 +3277,8 @@ static int services_module_build_contextual_arguments_recursive(AlteratorCtlServ
     } // get localized fields
     // TODO: append value constraints & localized enum values
 
-    GOptionEntry option_entry
-        = {g_strdup(path), 0, G_OPTION_FLAG_NONE, G_OPTION_ARG_NONE, NULL, description, arg_description};
+    GOptionEntry option_entry = {g_strdup(path), 0,           G_OPTION_FLAG_NONE, G_OPTION_ARG_NONE,
+                                 NULL,           description, arg_description};
 
     if (parent_array_entry)
     {
@@ -3377,15 +3311,15 @@ end:
     return ret;
 }
 
-static void services_module_parameter_entry_clear(ParamEntry *e)
+static void services_module_parameter_entry_clear(ParamEntry* e)
 {
     g_free(e->default_value_str);
-    g_free((gchar *) e->option_entry.long_name);
-    g_free((gchar *) e->option_entry.arg_description);
-    g_free((gchar *) e->option_entry.description);
+    g_free((gchar*) e->option_entry.long_name);
+    g_free((gchar*) e->option_entry.arg_description);
+    g_free((gchar*) e->option_entry.description);
 }
 
-static gchar *get_context_from_command_id(enum services_sub_commands command)
+static gchar* get_context_from_command_id(enum services_sub_commands command)
 {
     switch (command)
     {
@@ -3406,7 +3340,7 @@ static gchar *get_context_from_command_id(enum services_sub_commands command)
     }
 }
 
-static gint get_command_id_from_context(const gchar *context)
+static gint get_command_id_from_context(const gchar* context)
 {
     if (!context)
         return -1;
@@ -3425,14 +3359,14 @@ static gint get_command_id_from_context(const gchar *context)
     return -1;
 }
 
-static int services_module_build_param_options(AlteratorCtlServicesModule *module,
-                                               const gchar *service_name,
-                                               int command,
-                                               GArray **result)
+static int services_module_build_param_options(AlteratorCtlServicesModule* module,
+                                               const gchar* service_name, int command,
+                                               GArray** result)
 {
     int ret                                   = 0;
-    AlteratorCtlModuleInfoParser *info_parser = (AlteratorCtlModuleInfoParser *) module->gdbus_source->info_parser;
-    gchar *context                            = NULL;
+    AlteratorCtlModuleInfoParser* info_parser = (AlteratorCtlModuleInfoParser*)
+                                                    module->gdbus_source->info_parser;
+    gchar* context = NULL;
     if (!result)
     {
         g_printerr(_("Can't save parsed parameters to empty variable.\n"));
@@ -3444,26 +3378,24 @@ static int services_module_build_param_options(AlteratorCtlServicesModule *modul
 
     if (!module->info)
     {
-        g_printerr(_("Error processing service %s parameters: empty service info.\n"), service_name);
+        g_printerr(_("Error processing service %s parameters: empty service info.\n"),
+                   service_name);
         ERR_EXIT();
     }
 
-    GNode *parameters = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
+    GNode* parameters = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
         info_parser, module->info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME, 2);
 
-    const gchar *contexts[3] = {get_context_from_command_id(command), NULL, NULL};
+    const gchar* contexts[3] = {get_context_from_command_id(command), NULL, NULL};
     if (services_play_plan_requires_diag(module->play_plan))
         contexts[1] = SERVICES_CONTEXT_DIAG;
 
     if (command == SERVICES_DEPLOY)
     {
-        toml_value *force_deploy_allowed = NULL;
-        info_parser
-            ->alterator_ctl_module_info_parser_find_value(info_parser,
-                                                          module->info,
-                                                          &force_deploy_allowed,
-                                                          SERVICES_ALTERATOR_ENTRY_SERVICE_ENABLE_FORCE_DEPLOY_KEY_NAME,
-                                                          NULL);
+        toml_value* force_deploy_allowed = NULL;
+        info_parser->alterator_ctl_module_info_parser_find_value(
+            info_parser, module->info, &force_deploy_allowed,
+            SERVICES_ALTERATOR_ENTRY_SERVICE_ENABLE_FORCE_DEPLOY_KEY_NAME, NULL);
         if (force_deploy_allowed && force_deploy_allowed->bool_value)
         {
             GOptionEntry force_e = {g_strdup("force-deploy"),
@@ -3479,33 +3411,31 @@ static int services_module_build_param_options(AlteratorCtlServicesModule *modul
         }
     }
 
-    for (GNode *parameter = parameters->children; parameter != NULL; parameter = parameter->next)
-        services_module_build_contextual_arguments_recursive(
-            module, result, parameters, parameter, contexts, NULL, NULL, NULL, FALSE, FALSE, FALSE);
+    for (GNode* parameter = parameters->children; parameter != NULL; parameter = parameter->next)
+        services_module_build_contextual_arguments_recursive(module, result, parameters, parameter,
+                                                             contexts, NULL, NULL, NULL, FALSE,
+                                                             FALSE, FALSE);
 
 end:
     return ret;
 }
 
-static int services_module_parse_contextual_arguments(AlteratorCtlServicesModule *module,
-                                                      const gchar *service_name,
-                                                      int command,
-                                                      int *argc,
-                                                      char **argv,
-                                                      alteratorctl_ctx_t *ctx,
-                                                      GArray **result)
+static int services_module_parse_contextual_arguments(AlteratorCtlServicesModule* module,
+                                                      const gchar* service_name, int command,
+                                                      int* argc, char** argv,
+                                                      alteratorctl_ctx_t* ctx, GArray** result)
 {
     int ret                                = 0;
-    GString *params_options                = g_string_new("");
-    gchar *context                         = NULL;
-    GError *error                          = NULL;
-    GOptionContext *option_context         = NULL;
-    GOptionGroup *contextual_params        = NULL;
-    JsonNode *defaults                     = NULL;
-    JsonNode *current_defaults             = NULL;
-    JsonNode *defaults_filtered            = NULL;
-    JsonNode *current_defaults_filtered    = NULL;
-    alteratorctl_ctx_t *service_status_ctx = NULL;
+    GString* params_options                = g_string_new("");
+    gchar* context                         = NULL;
+    GError* error                          = NULL;
+    GOptionContext* option_context         = NULL;
+    GOptionGroup* contextual_params        = NULL;
+    JsonNode* defaults                     = NULL;
+    JsonNode* current_defaults             = NULL;
+    JsonNode* defaults_filtered            = NULL;
+    JsonNode* current_defaults_filtered    = NULL;
+    alteratorctl_ctx_t* service_status_ctx = NULL;
 
     context = get_context_from_command_id(command);
 
@@ -3515,37 +3445,30 @@ static int services_module_parse_contextual_arguments(AlteratorCtlServicesModule
     option_context = g_option_context_new(context);
     g_option_context_set_ignore_unknown_options(option_context, TRUE);
 
-    gchar *contextual_params_description = g_strconcat("'", context, "' parameters:", NULL);
-    contextual_params                    = g_option_group_new(context, contextual_params_description, "", module, NULL);
+    gchar* contextual_params_description = g_strconcat("'", context, "' parameters:", NULL);
+    contextual_params = g_option_group_new(context, contextual_params_description, "", module,
+                                           NULL);
     g_free(contextual_params_description);
 
-    GArray *option_entries = g_array_new(TRUE, FALSE, sizeof(GOptionEntry));
+    GArray* option_entries = g_array_new(TRUE, FALSE, sizeof(GOptionEntry));
     for (gsize i = 0; i < (*result)->len; i++)
     {
-        GOptionEntry entry = ((ParamEntry *) (*result)->data)[i].option_entry;
-        GOptionEntry copy  = {entry.long_name,
-                              entry.short_name,
-                              entry.flags,
-                              entry.arg,
-                              entry.arg_data,
-                              entry.description,
-                              entry.arg_description};
+        GOptionEntry entry = ((ParamEntry*) (*result)->data)[i].option_entry;
+        GOptionEntry copy  = {entry.long_name, entry.short_name,  entry.flags,          entry.arg,
+                              entry.arg_data,  entry.description, entry.arg_description};
         g_array_append_val(option_entries, copy);
     }
-    g_option_group_add_entries(contextual_params, (GOptionEntry *) option_entries->data);
+    g_option_group_add_entries(contextual_params, (GOptionEntry*) option_entries->data);
     g_array_unref(option_entries);
 
-    GOptionEntry main_entries[]
-        = {{"help", 'h', G_OPTION_FLAG_NONE, G_OPTION_ARG_NONE, NULL, "Show usage help\n", NULL},
-           {"no-default",
-            0,
-            G_OPTION_FLAG_NONE,
-            G_OPTION_ARG_NONE,
-            &no_default,
-            "do not use default value if parameter is not set",
-            NULL},
-           {"yes", 'y', G_OPTION_FLAG_NONE, G_OPTION_ARG_NONE, &yes, "Assume \"yes\" to all queries\n", NULL},
-           {NULL}};
+    GOptionEntry main_entries[] = {{"help", 'h', G_OPTION_FLAG_NONE, G_OPTION_ARG_NONE, NULL,
+                                    "Show usage help\n", NULL},
+                                   {"no-default", 0, G_OPTION_FLAG_NONE, G_OPTION_ARG_NONE,
+                                    &no_default, "do not use default value if parameter is not set",
+                                    NULL},
+                                   {"yes", 'y', G_OPTION_FLAG_NONE, G_OPTION_ARG_NONE, &yes,
+                                    "Assume \"yes\" to all queries\n", NULL},
+                                   {NULL}};
 
     g_option_context_add_main_entries(option_context, main_entries, NULL);
 
@@ -3568,31 +3491,35 @@ static int services_module_parse_contextual_arguments(AlteratorCtlServicesModule
 
     // merge defaults
     {
-        GHashTable *params_ctx = NULL;
+        GHashTable* params_ctx = NULL;
 
         defaults = json_node_new(JSON_NODE_OBJECT);
         {
-            JsonObject *obj = json_object_new();
+            JsonObject* obj = json_object_new();
             json_node_set_object(defaults, obj);
             json_object_unref(obj);
         }
 
-        if (services_module_get_initial_params(
-                module, service_name, &defaults, TRUE, get_context_from_command_id(command), &params_ctx, TRUE)
+        if (services_module_get_initial_params(module, service_name, &defaults, TRUE,
+                                               get_context_from_command_id(command), &params_ctx,
+                                               TRUE)
             < 0)
             ERR_EXIT();
 
-        defaults_filtered = services_module_filter_params_by_context(defaults, params_ctx, context, no_default);
+        defaults_filtered = services_module_filter_params_by_context(defaults, params_ctx, context,
+                                                                     no_default);
 
-        service_status_ctx = alteratorctl_ctx_init_services(SERVICES_STATUS, service_name, NULL, NULL, NULL);
+        service_status_ctx = alteratorctl_ctx_init_services(SERVICES_STATUS, service_name, NULL,
+                                                            NULL, NULL);
 
         if (no_default)
         {
-            JsonNode *status_node = NULL;
+            JsonNode* status_node = NULL;
             if (services_module_status_get_json_node(module, service_name, &status_node) < 0)
                 ERR_EXIT();
 
-            module->json = services_module_filter_params_by_context(status_node, params_ctx, context, no_default);
+            module->json = services_module_filter_params_by_context(status_node, params_ctx,
+                                                                    context, no_default);
             json_node_unref(status_node);
         }
         else
@@ -3602,20 +3529,16 @@ static int services_module_parse_contextual_arguments(AlteratorCtlServicesModule
 
             current_defaults = json_node_new(JSON_NODE_OBJECT);
             {
-                JsonObject *obj = json_object_new();
+                JsonObject* obj = json_object_new();
                 json_node_set_object(current_defaults, obj);
                 json_object_unref(obj);
             }
 
-            if (services_module_status_result_get_service_params(module,
-                                                                 &service_status_ctx,
+            if (services_module_status_result_get_service_params(module, &service_status_ctx,
                                                                  service_name,
                                                                  command != SERVICES_CONFIGURE,
-                                                                 context,
-                                                                 &current_defaults,
-                                                                 NULL,
-                                                                 TRUE,
-                                                                 NULL)
+                                                                 context, &current_defaults, NULL,
+                                                                 TRUE, NULL)
                 < 0)
                 ERR_EXIT();
 
@@ -3633,19 +3556,20 @@ static int services_module_parse_contextual_arguments(AlteratorCtlServicesModule
         // checking and approving force deploy mode
         if (force_deploy)
         {
-            toml_value *is_enable_force_deploy = NULL;
-            if (!(is_enable_force_deploy
-                  = g_hash_table_lookup(((alterator_entry_node *) module->info->data)->toml_pairs,
-                                        SERVICES_ALTERATOR_ENTRY_SERVICE_ENABLE_FORCE_DEPLOY_KEY_NAME))
-                || is_enable_force_deploy->type != TOML_DATA_BOOL || is_enable_force_deploy->bool_value != TRUE)
+            toml_value* is_enable_force_deploy = NULL;
+            if (!(is_enable_force_deploy = g_hash_table_lookup(
+                      ((alterator_entry_node*) module->info->data)->toml_pairs,
+                      SERVICES_ALTERATOR_ENTRY_SERVICE_ENABLE_FORCE_DEPLOY_KEY_NAME))
+                || is_enable_force_deploy->type != TOML_DATA_BOOL
+                || is_enable_force_deploy->bool_value != TRUE)
             {
                 g_printerr(_("Force-deploy is not available for service \"%s\".\n"), service_name);
                 ERR_EXIT();
             }
 
-            json_object_set_boolean_member(json_node_get_object(module->json),
-                                           SERVICES_ALTERATOR_ENTRY_SERVICE_DEFAULT_PARAM_FORCE_DEPLOY_KEY_NAME,
-                                           TRUE);
+            json_object_set_boolean_member(
+                json_node_get_object(module->json),
+                SERVICES_ALTERATOR_ENTRY_SERVICE_DEFAULT_PARAM_FORCE_DEPLOY_KEY_NAME, TRUE);
         }
 
         g_hash_table_destroy(params_ctx);
@@ -3660,11 +3584,11 @@ static int services_module_parse_contextual_arguments(AlteratorCtlServicesModule
             ERR_EXIT();
         }
 
-        gchar *input_json_parameters = services_module_get_parameters(TRUE);
+        gchar* input_json_parameters = services_module_get_parameters(TRUE);
 
         if (input_json_parameters)
         {
-            JsonParser *parser = json_parser_new();
+            JsonParser* parser = json_parser_new();
             if (!json_parser_load_from_data(parser, input_json_parameters, -1, &error))
             {
                 g_printerr(_("Invalid input json data.\n"));
@@ -3672,10 +3596,11 @@ static int services_module_parse_contextual_arguments(AlteratorCtlServicesModule
                 ERR_EXIT();
             }
 
-            JsonNode *input_json     = json_parser_get_root(parser);
-            JsonNode *parameters_tmp = NULL;
+            JsonNode* input_json     = json_parser_get_root(parser);
+            JsonNode* parameters_tmp = NULL;
 
-            if (!(parameters_tmp = services_module_merge_json_data(module->json, input_json, service_name)))
+            if (!(parameters_tmp = services_module_merge_json_data(module->json, input_json,
+                                                                   service_name)))
                 ERR_EXIT();
             else
             {
@@ -3691,11 +3616,10 @@ static int services_module_parse_contextual_arguments(AlteratorCtlServicesModule
     {
         for (int i = 4; i < *argc; ++i)
         {
-            gchar **data = g_strsplit_set(argv[i], "=", 2);
-            if (parse_parameter_argument(module,
-                                         data[0],
-                                         data[1],
-                                         command == SERVICES_CONFIGURE && !g_utf8_strlen(data[1], -1))
+            gchar** data = g_strsplit_set(argv[i], "=", 2);
+            if (parse_parameter_argument(module, data[0], data[1],
+                                         command == SERVICES_CONFIGURE
+                                             && !g_utf8_strlen(data[1], -1))
                 < 0)
             {
                 g_strfreev(data);
@@ -3735,17 +3659,17 @@ end:
 }
 
 // TODO: Apply wherever there is similar logic!
-static gchar *make_description_readable(gchar *oririnal, gsize margin_from_border, gsize max_length)
+static gchar* make_description_readable(gchar* oririnal, gsize margin_from_border, gsize max_length)
 {
     if (!oririnal || !strlen(oririnal))
         return NULL;
 
-    GString *result       = g_string_new(NULL);
-    gchar **words         = g_strsplit(oririnal, " ", -1);
+    GString* result       = g_string_new(NULL);
+    gchar** words         = g_strsplit(oririnal, " ", -1);
     gsize current_row_len = margin_from_border;
     for (gsize w = 0; g_strv_length(words); w++)
     {
-        gchar *word = words[w];
+        gchar* word = words[w];
         if (!word)
             break;
 
@@ -3760,7 +3684,7 @@ static gchar *make_description_readable(gchar *oririnal, gsize margin_from_borde
         }
         else if (possible_length > max_length)
         {
-            gchar *margin_str = g_strnfill(margin_from_border, ' ');
+            gchar* margin_str = g_strnfill(margin_from_border, ' ');
             g_string_append_printf(result, "\n%s%s", margin_str, word);
             current_row_len = margin_from_border + g_utf8_strlen(word, -1);
             g_free(margin_str);
@@ -3769,7 +3693,7 @@ static gchar *make_description_readable(gchar *oririnal, gsize margin_from_borde
         {
             if (current_row_len == margin_from_border && result->len != 0)
             {
-                gchar *margin_str = g_strnfill(margin_from_border, ' ');
+                gchar* margin_str = g_strnfill(margin_from_border, ' ');
                 g_string_append_printf(result, "%s%s", margin_str, word);
                 g_free(margin_str);
             }
@@ -3785,24 +3709,24 @@ static gchar *make_description_readable(gchar *oririnal, gsize margin_from_borde
     return g_string_free(result, FALSE);
 }
 
-static int services_module_create_command_usage_help(const gchar *service_name,
-                                                     const gchar *context,
-                                                     GArray *options,
-                                                     GString **result)
+static int services_module_create_command_usage_help(const gchar* service_name,
+                                                     const gchar* context, GArray* options,
+                                                     GString** result)
 {
     int ret                 = 0;
-    GString *options_string = g_string_new("");
+    GString* options_string = g_string_new("");
     if (!options)
     {
-        g_printerr(_("Failed to create service \"%s %s\" usage help. Empty options data.\n"), service_name, context);
+        g_printerr(_("Failed to create service \"%s %s\" usage help. Empty options data.\n"),
+                   service_name, context);
         ERR_EXIT();
     }
 
     if (!result)
     {
-        g_printerr(_("Failed to create service \"%s %s\" usage help. Nowhere to save the result.\n"),
-                   service_name,
-                   context);
+        g_printerr(_("Failed to create service \"%s %s\" usage help. Nowhere to save the "
+                     "result.\n"),
+                   service_name, context);
         ERR_EXIT();
     }
 
@@ -3810,7 +3734,7 @@ static int services_module_create_command_usage_help(const gchar *service_name,
 
     for (gsize i = 0; i < options->len; i++)
     {
-        ParamEntry param_entry = ((ParamEntry *) options->data)[i];
+        ParamEntry param_entry = ((ParamEntry*) options->data)[i];
         if (param_entry.is_constant)
             continue;
 
@@ -3818,60 +3742,68 @@ static int services_module_create_command_usage_help(const gchar *service_name,
             continue;
 
         GOptionEntry entry           = param_entry.option_entry;
-        const gchar *path            = entry.long_name;
-        const gchar *arg_description = entry.arg_description;
-        const gchar *description     = g_strdup(entry.description);
+        const gchar* path            = entry.long_name;
+        const gchar* arg_description = entry.arg_description;
+        const gchar* description     = g_strdup(entry.description);
 
         { // Append new data in description
-            const gchar *default_value_str = param_entry.default_value_str;
+            const gchar* default_value_str = param_entry.default_value_str;
             gsize min_size                 = param_entry.min_array_size;
             gsize max_size                 = param_entry.max_array_size;
-            GString *new_description       = g_string_new(NULL);
+            GString* new_description       = g_string_new(NULL);
 
             if (min_size > 0)
-                g_string_append_printf(new_description, _("Minimum number of array elements: %lu\n"), min_size);
+                g_string_append_printf(new_description,
+                                       _("Minimum number of array elements: %lu\n"), min_size);
 
             if (max_size != 0 && max_size != INT_MAX)
-                g_string_append_printf(new_description, _("Maximum number of array elements: %lu\n"), max_size);
+                g_string_append_printf(new_description,
+                                       _("Maximum number of array elements: %lu\n"), max_size);
 
             if (default_value_str && g_utf8_strlen(default_value_str, -1))
-                g_string_append_printf(new_description, _("Default value: %s\n"), default_value_str);
+                g_string_append_printf(new_description, _("Default value: %s\n"),
+                                       default_value_str);
             g_string_append(new_description, description);
-            g_free((gchar *) description);
+            g_free((gchar*) description);
             description = g_string_free(new_description, FALSE);
         }
 
-        gchar *header       = g_strdup_printf("  --%s=%s", path, arg_description);
+        gchar* header       = g_strdup_printf("  --%s=%s", path, arg_description);
         gsize header_length = g_utf8_strlen(header, -1);
         g_string_append(options_string, header);
 
         if (header_length >= SERVICES_MODULE_MAX_USAGE_HELP_DESCRIPTIONS_MARGIN)
         {
             g_string_append_c(options_string, '\n');
-            gchar *margin = g_strnfill(SERVICES_MODULE_MAX_USAGE_HELP_DESCRIPTIONS_MARGIN - 1, ' ');
+            gchar* margin = g_strnfill(SERVICES_MODULE_MAX_USAGE_HELP_DESCRIPTIONS_MARGIN - 1, ' ');
             g_string_append(options_string, margin);
             g_free(margin);
         }
         else
         {
-            gchar *margin_str = g_strnfill(SERVICES_MODULE_MAX_USAGE_HELP_DESCRIPTIONS_MARGIN - header_length - 1, ' ');
+            gchar* margin_str = g_strnfill(SERVICES_MODULE_MAX_USAGE_HELP_DESCRIPTIONS_MARGIN
+                                               - header_length - 1,
+                                           ' ');
             g_string_append(options_string, margin_str);
             g_free(margin_str);
         }
 
-        gchar **description_parts = g_strsplit(description, "\n", -1);
+        gchar** description_parts = g_strsplit(description, "\n", -1);
         for (gsize part_idx = 0; part_idx < g_strv_length(description_parts); part_idx++)
         {
-            gchar **words = g_strsplit(description_parts[part_idx], " ", -1);
+            gchar** words = g_strsplit(description_parts[part_idx], " ", -1);
 
-            gsize current_col = (header_length >= SERVICES_MODULE_MAX_USAGE_HELP_DESCRIPTIONS_MARGIN)
+            gsize current_col = (header_length
+                                 >= SERVICES_MODULE_MAX_USAGE_HELP_DESCRIPTIONS_MARGIN)
                                     ? SERVICES_MODULE_MAX_USAGE_HELP_DESCRIPTIONS_MARGIN
                                     : SERVICES_MODULE_MAX_USAGE_HELP_DESCRIPTIONS_MARGIN;
 
             // Have a comment
             if (part_idx > 0)
             {
-                gchar *margin_str = g_strnfill(SERVICES_MODULE_MAX_USAGE_HELP_DESCRIPTIONS_MARGIN - 1, ' ');
+                gchar* margin_str = g_strnfill(SERVICES_MODULE_MAX_USAGE_HELP_DESCRIPTIONS_MARGIN
+                                                   - 1,
+                                               ' ');
                 g_string_append(options_string, margin_str);
                 g_free(margin_str);
             }
@@ -3885,14 +3817,17 @@ static int services_module_create_command_usage_help(const gchar *service_name,
                 if (streq(words[w], "  "))
                     continue;
 
-                gsize break_line_idx = (options_string->len && options_string->str[options_string->len - 1] != '\n')
+                gsize break_line_idx = (options_string->len
+                                        && options_string->str[options_string->len - 1] != '\n')
                                            ? 1
                                            : 0;
 
-                if (current_col + break_line_idx + word_length > SERVICES_MODULE_MAX_USAGE_HELP_STRING_LENGTH)
+                if (current_col + break_line_idx + word_length
+                    > SERVICES_MODULE_MAX_USAGE_HELP_STRING_LENGTH)
                 {
                     g_string_append_c(options_string, '\n');
-                    gchar *margin = g_strnfill(SERVICES_MODULE_MAX_USAGE_HELP_DESCRIPTIONS_MARGIN, ' ');
+                    gchar* margin = g_strnfill(SERVICES_MODULE_MAX_USAGE_HELP_DESCRIPTIONS_MARGIN,
+                                               ' ');
                     g_string_append(options_string, margin);
                     g_free(margin);
                     current_col    = SERVICES_MODULE_MAX_USAGE_HELP_DESCRIPTIONS_MARGIN;
@@ -3928,68 +3863,71 @@ static int services_module_create_command_usage_help(const gchar *service_name,
         g_string_append_printf(*result, _("Diagnostics tools of %s service:\n"), service_name);
 
         // Printing tools with tests section
-        gchar *margin_from_border = g_strnfill(SERVICES_MODULE_MAX_USAGE_HELP_DESCRIPTIONS_MARGIN, ' ');
+        gchar* margin_from_border = g_strnfill(SERVICES_MODULE_MAX_USAGE_HELP_DESCRIPTIONS_MARGIN,
+                                               ' ');
         GHashTableIter tools_iter;
         g_hash_table_iter_init(&tools_iter, service_tests);
-        gchar *tool_name            = NULL;
-        diag_tool_tests *tool_tests = NULL;
+        gchar* tool_name            = NULL;
+        diag_tool_tests* tool_tests = NULL;
         while (g_hash_table_iter_next(&tools_iter, (gpointer) &tool_name, (gpointer) &tool_tests))
         {
             g_string_append_printf(*result, "  %s\n", tool_name);
-            g_string_append_printf(*result,
-                                   _("  %s diagnostics tests in %s bus:\n"),
-                                   tool_name,
-                                   tool_tests->bus_type == G_BUS_TYPE_SYSTEM ? _("system") : _("serssion"));
+            g_string_append_printf(*result, _("  %s diagnostics tests in %s bus:\n"), tool_name,
+                                   tool_tests->bus_type == G_BUS_TYPE_SYSTEM ? _("system")
+                                                                             : _("serssion"));
 
-            GPtrArray *test_names = g_hash_table_get_keys_as_ptr_array(tool_tests->all_tests);
+            GPtrArray* test_names = g_hash_table_get_keys_as_ptr_array(tool_tests->all_tests);
             g_ptr_array_sort(test_names, services_module_sort_result);
             for (gsize i = 0; i < test_names->len; i++)
             {
-                gchar *test_name               = ((gchar **) test_names->pdata)[i];
-                diag_tool_test_info *tool_test = g_hash_table_lookup(tool_tests->all_tests, test_name);
+                gchar* test_name               = ((gchar**) test_names->pdata)[i];
+                diag_tool_test_info* tool_test = g_hash_table_lookup(tool_tests->all_tests,
+                                                                     test_name);
 
-                gchar *margin_from_test = NULL;
+                gchar* margin_from_test = NULL;
                 {
-                    gint64 margin_from_test_length = SERVICES_MODULE_MAX_USAGE_HELP_DESCRIPTIONS_MARGIN - strlen("    ")
-                                                     - strlen(test_name);
+                    gint64
+                        margin_from_test_length = SERVICES_MODULE_MAX_USAGE_HELP_DESCRIPTIONS_MARGIN
+                                                  - strlen("    ") - strlen(test_name);
 
                     if (margin_from_test_length > 0)
                         margin_from_test = g_strnfill(margin_from_test_length, ' ');
                     else
                     {
-                        gchar *tmp       = g_strnfill(SERVICES_MODULE_MAX_USAGE_HELP_DESCRIPTIONS_MARGIN, ' ');
+                        gchar* tmp = g_strnfill(SERVICES_MODULE_MAX_USAGE_HELP_DESCRIPTIONS_MARGIN,
+                                                ' ');
                         margin_from_test = g_strconcat("\n", tmp, NULL);
                         g_free(tmp);
                     }
                 }
-                gchar *formated_display_name
-                    = make_description_readable(tool_test->display_name,
-                                                SERVICES_MODULE_MAX_USAGE_HELP_DESCRIPTIONS_MARGIN,
-                                                SERVICES_MODULE_MAX_USAGE_HELP_STRING_LENGTH);
-                g_string_append_printf(*result, "    %s%s%s\n", test_name, margin_from_test, formated_display_name);
+                gchar* formated_display_name = make_description_readable(
+                    tool_test->display_name, SERVICES_MODULE_MAX_USAGE_HELP_DESCRIPTIONS_MARGIN,
+                    SERVICES_MODULE_MAX_USAGE_HELP_STRING_LENGTH);
+                g_string_append_printf(*result, "    %s%s%s\n", test_name, margin_from_test,
+                                       formated_display_name);
                 g_free(formated_display_name);
                 if (tool_test->description)
                 {
-                    gchar *formated_description
-                        = make_description_readable(tool_test->description,
-                                                    SERVICES_MODULE_MAX_USAGE_HELP_DESCRIPTIONS_MARGIN,
-                                                    SERVICES_MODULE_MAX_USAGE_HELP_STRING_LENGTH);
-                    g_string_append_printf(*result, "%s%s\n", margin_from_border, formated_description);
+                    gchar* formated_description = make_description_readable(
+                        tool_test->description, SERVICES_MODULE_MAX_USAGE_HELP_DESCRIPTIONS_MARGIN,
+                        SERVICES_MODULE_MAX_USAGE_HELP_STRING_LENGTH);
+                    g_string_append_printf(*result, "%s%s\n", margin_from_border,
+                                           formated_description);
                     g_free(formated_description);
                 }
-                gchar *avaliable_modes = g_strconcat(tool_test->is_required ? _("Required") : _("Optional"),
-                                                     ". ",
-                                                     tool_test->mode == PRE_DIAG_MODE
-                                                         ? _("Can be run in pre-diagnostic mode\n")
-                                                         : (tool_test->mode == POST_DIAG_MODE
-                                                                ? _("Can be run in post-diagnostic mode\n")
-                                                                : _("Can be run in pre- and post-diagnostic modes\n")),
-                                                     NULL);
-                gchar *formated_additional_info
-                    = make_description_readable(avaliable_modes,
-                                                SERVICES_MODULE_MAX_USAGE_HELP_DESCRIPTIONS_MARGIN,
-                                                SERVICES_MODULE_MAX_USAGE_HELP_STRING_LENGTH);
-                g_string_append_printf(*result, "%s%s\n", margin_from_border, formated_additional_info);
+                gchar* avaliable_modes =
+                    g_strconcat(tool_test->is_required ? _("Required") : _("Optional"), ". ",
+                                tool_test->mode == PRE_DIAG_MODE
+                                    ? _("Can be run in pre-diagnostic mode\n")
+                                    : (tool_test->mode == POST_DIAG_MODE
+                                           ? _("Can be run in post-diagnostic mode\n")
+                                           : _("Can be run in pre- and post-diagnostic modes\n")),
+                                NULL);
+                gchar* formated_additional_info = make_description_readable(
+                    avaliable_modes, SERVICES_MODULE_MAX_USAGE_HELP_DESCRIPTIONS_MARGIN,
+                    SERVICES_MODULE_MAX_USAGE_HELP_STRING_LENGTH);
+                g_string_append_printf(*result, "%s%s\n", margin_from_border,
+                                       formated_additional_info);
                 g_free(avaliable_modes);
             }
             g_ptr_array_unref(test_names);
@@ -3997,7 +3935,9 @@ static int services_module_create_command_usage_help(const gchar *service_name,
         g_free(margin_from_border);
     }
     else
-        g_string_append_printf(*result, _("  alteratorctl %s [OPTIONS] [PARAMETERS [arguments]]\n\n"), context);
+        g_string_append_printf(*result,
+                               _("  alteratorctl %s [OPTIONS] [PARAMETERS [arguments]]\n\n"),
+                               context);
 
     if (options_string->len)
     {
@@ -4007,24 +3947,26 @@ static int services_module_create_command_usage_help(const gchar *service_name,
 
     g_string_append(*result, _("Options:\n"));
     if (streq(context, "diagnose"))
-        g_string_append(*result,
-                        _("  -a, --all                   Run all diagnostics tests in current mode\n"
-                          "                              (pre- or postdiagnostic)\n"));
+        g_string_append(*result, _("  -a, --all                   Run all diagnostics tests in "
+                                   "current mode\n"
+                                   "                              (pre- or postdiagnostic)\n"));
     for (gsize i = 0; i < options->len; i++)
-        if (streq(context, "deploy") && streq(((ParamEntry *) options->data)[i].option_entry.long_name, "force-deploy"))
+        if (streq(context, "deploy")
+            && streq(((ParamEntry*) options->data)[i].option_entry.long_name, "force-deploy"))
             g_string_append(*result, _("  -f, --force-deploy          Force deploy service\n"));
-    g_string_append(*result, _("  -y, --yes                   Assume Yes to all queries and do not prompt\n"));
-    g_string_append(*result, _("  --no-default                Do not use default value if parameter is not set\n"));
+    g_string_append(*result, _("  -y, --yes                   Assume Yes to all queries and do not "
+                               "prompt\n"));
+    g_string_append(*result, _("  --no-default                Do not use default value if "
+                               "parameter is not set\n"));
     g_string_append_printf(*result,
                            _("  -h, --help                  Show \"%s\" command of\n"
                              "                              \"%s\" service usage help\n"),
-                           context,
-                           service_name);
+                           context, service_name);
     if (streq(context, "configure"))
     {
         g_string_append_c(*result, '\n');
-        g_string_append(*result,
-                        _("If you want to reset an optional parameter that has been set, simply omit it's value:\n"));
+        g_string_append(*result, _("If you want to reset an optional parameter that has been set, "
+                                   "simply omit it's value:\n"));
         g_string_append(*result, "  alteratorctl services configure <deployed service> --param=\n");
     }
 
@@ -4034,47 +3976,43 @@ end:
     return ret;
 }
 
-static GOptionEntry *g_param_option_entry_dup(GOptionEntry *entry)
+static GOptionEntry* g_param_option_entry_dup(GOptionEntry* entry)
 {
     if (!entry)
         return NULL;
-    GOptionEntry *result    = g_new0(GOptionEntry, 1);
+    GOptionEntry* result    = g_new0(GOptionEntry, 1);
     result->long_name       = g_strdup(entry->long_name);
     result->description     = g_strdup(entry->description);
     result->arg_description = g_strdup(entry->arg_description);
     return result;
 }
 
-static void g_param_option_entry_free(GOptionEntry *entry)
+static void g_param_option_entry_free(GOptionEntry* entry)
 {
     if (!entry)
         return;
-    g_free((gchar *) entry->long_name);
-    g_free((gchar *) entry->description);
-    g_free((gchar *) entry->arg_description);
+    g_free((gchar*) entry->long_name);
+    g_free((gchar*) entry->description);
+    g_free((gchar*) entry->arg_description);
     g_free(entry);
 }
 
-static int services_module_confirm_execution(AlteratorCtlServicesModule *module,
-                                             alteratorctl_ctx_t **ctx,
-                                             gint selected_subcommand,
-                                             const gchar *command_name,
-                                             const gchar *service_name,
-                                             gchar **argv,
-                                             gint actual_argc,
-                                             GArray *options,
-                                             gboolean *is_accepted,
-                                             gboolean *yes_flag)
+static int services_module_confirm_execution(AlteratorCtlServicesModule* module,
+                                             alteratorctl_ctx_t** ctx, gint selected_subcommand,
+                                             const gchar* command_name, const gchar* service_name,
+                                             gchar** argv, gint actual_argc, GArray* options,
+                                             gboolean* is_accepted, gboolean* yes_flag)
 {
     int ret                              = 0;
-    GHashTable *parameters_output_data   = NULL;
-    GHashTable *required_params_paths    = NULL;
-    GHashTable *long_name_to_description = NULL;
-    GString *options_line                = NULL;
-    GString *output_str                  = NULL;
-    GString *header_text                 = NULL;
-    GString *display_text                = NULL;
-    GString *validation_str              = NULL;
+    GHashTable* parameters_output_data   = NULL;
+    GHashTable* required_params_paths    = NULL;
+    GHashTable* long_name_to_description = NULL;
+    GString* options_line                = NULL;
+    GString* output_str                  = NULL;
+    GString* header_text                 = NULL;
+    GString* display_text                = NULL;
+    GString* validation_str              = NULL;
+    GStrv validation_contexts            = NULL;
     gboolean assume_yes                  = yes_flag && *yes_flag;
 
     if (!module || !ctx || !*ctx || !command_name || !service_name || !is_accepted || !yes_flag)
@@ -4083,18 +4021,19 @@ static int services_module_confirm_execution(AlteratorCtlServicesModule *module,
         ERR_EXIT();
     }
 
-    AlteratorCtlModuleInfoParser *info_parser = module->gdbus_source->info_parser;
+    AlteratorCtlModuleInfoParser* info_parser = module->gdbus_source->info_parser;
     if (!info_parser)
     {
         g_printerr(_("Internal error: services info parser is not initialized.\n"));
         ERR_EXIT();
     }
 
-    GNode *parameters_data = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
+    GNode* parameters_data = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
         info_parser, module->info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME, 2);
     if (!parameters_data)
     {
-        g_printerr(_("Error processing service %s parameters: empty service info.\n"), service_name);
+        g_printerr(_("Error processing service %s parameters: empty service info.\n"),
+                   service_name);
         ERR_EXIT();
     }
 
@@ -4104,22 +4043,25 @@ static int services_module_confirm_execution(AlteratorCtlServicesModule *module,
         ERR_EXIT();
     }
 
-    JsonNode *parameters_node     = module->json;
-    JsonObject *parameters_object = json_node_get_object(parameters_node);
+    JsonNode* parameters_node     = module->json;
+    JsonObject* parameters_object = json_node_get_object(parameters_node);
 
-    const gchar *validation_contexts[] = {get_context_from_command_id(selected_subcommand)};
+    {
+        GStrvBuilder* builder = g_strv_builder_new();
+        g_strv_builder_add(builder, get_context_from_command_id(selected_subcommand));
+        if (module->play_plan && services_play_plan_requires_diag(module->play_plan))
+            g_strv_builder_add(builder, SERVICES_CONTEXT_DIAG);
+        validation_contexts = g_strv_builder_unref_to_strv(builder);
+    }
 
-    gboolean is_valid = (validate_json(module,
-                                       service_name,
-                                       validation_contexts,
-                                       G_N_ELEMENTS(validation_contexts),
-                                       &validation_str,
-                                       TRUE)
+    gboolean is_valid = (validate_json(module, service_name, validation_contexts,
+                                       g_strv_length(validation_contexts), &validation_str, TRUE)
                          == 0);
 
     if (is_valid)
     {
-        if (services_fill_missing_passwords(module, service_name, validation_contexts, G_N_ELEMENTS(validation_contexts))
+        if (services_fill_missing_passwords(module, service_name, validation_contexts,
+                                            g_strv_length(validation_contexts))
             < 0)
             ERR_EXIT();
 
@@ -4129,72 +4071,64 @@ static int services_module_confirm_execution(AlteratorCtlServicesModule *module,
             validation_str = NULL;
         }
 
-        is_valid = (validate_json(module,
-                                  service_name,
-                                  validation_contexts,
-                                  G_N_ELEMENTS(validation_contexts),
-                                  &validation_str,
-                                  FALSE)
+        is_valid = (validate_json(module, service_name, validation_contexts,
+                                  g_strv_length(validation_contexts), &validation_str, FALSE)
                     == 0);
     }
 
-    if (services_module_status_params_build_output(module,
-                                                   (gchar *) service_name,
-                                                   parameters_object,
-                                                   parameters_data,
-                                                   NULL,
-                                                   &parameters_output_data)
+    if (services_module_status_params_build_output(module, (gchar*) service_name, parameters_object,
+                                                   parameters_data, NULL, &parameters_output_data)
         < 0)
         ERR_EXIT();
 
     if (options && options->len)
     {
-        long_name_to_description = g_hash_table_new_full(g_str_hash,
-                                                         g_str_equal,
-                                                         NULL,
-                                                         (GDestroyNotify) g_param_option_entry_free);
+        long_name_to_description = g_hash_table_new_full(g_str_hash, g_str_equal, NULL,
+                                                         (GDestroyNotify)
+                                                             g_param_option_entry_free);
         for (gsize i = 0; i < options->len; i++)
         {
-            GOptionEntry entry = ((ParamEntry *) options->data)[i].option_entry;
-            g_hash_table_insert(long_name_to_description, (gchar *) entry.long_name, g_param_option_entry_dup(&entry));
+            GOptionEntry entry = ((ParamEntry*) options->data)[i].option_entry;
+            g_hash_table_insert(long_name_to_description, (gchar*) entry.long_name,
+                                g_param_option_entry_dup(&entry));
         }
     }
 
-    if (services_module_get_required_parameters_paths(module,
-                                                      service_name,
-                                                      get_context_from_command_id(selected_subcommand),
+    if (services_module_get_required_parameters_paths(module, service_name,
+                                                      get_context_from_command_id(
+                                                          selected_subcommand),
                                                       &required_params_paths)
         < 0)
         ERR_EXIT();
 
     gboolean is_missing_required = FALSE;
-    if (services_module_create_params_table(module,
-                                            parameters_output_data,
-                                            long_name_to_description,
-                                            required_params_paths,
-                                            &is_missing_required,
-                                            &output_str)
+    if (services_module_create_params_table(module, parameters_output_data,
+                                            long_name_to_description, required_params_paths,
+                                            &is_missing_required, &output_str)
         < 0)
         ERR_EXIT();
 
-    if (!is_missing_required && is_valid)
+    if (!is_missing_required && is_valid
+        && (selected_subcommand == SERVICES_CONFIGURE || selected_subcommand == SERVICES_DEPLOY))
     {
-        if (services_module_find_conflicting_resources_within_current_service(module, service_name, parameters_node) < 0)
+        g_print(_("Checking resources conflicts...\n"));
+
+        if (selected_subcommand != SERVICES_CONFIGURE
+            && services_module_find_conflicting_resources_within_current_service(module,
+                                                                                 service_name,
+                                                                                 parameters_node)
+                   < 0)
             ERR_EXIT();
 
-        if (selected_subcommand == SERVICES_CONFIGURE || selected_subcommand == SERVICES_DEPLOY)
-        {
-            g_print(_("Checking resources conflicts...\n"));
-            if (services_module_find_conflicting_services(module, *ctx) < 0)
-                ERR_EXIT();
-        }
+        if (services_module_find_conflicting_services(module, *ctx) < 0)
+            ERR_EXIT();
     }
 
     options_line = g_string_new("");
     if (argv && actual_argc > 4)
         for (gint i = 4; i < actual_argc; i++)
             g_string_append_printf(options_line, " %s", argv[i]);
-    const gchar *options_suffix = options_line->len ? options_line->str : "";
+    const gchar* options_suffix = options_line->len ? options_line->str : "";
 
     header_text  = g_string_new(NULL);
     display_text = g_string_new(NULL);
@@ -4202,18 +4136,17 @@ static int services_module_confirm_execution(AlteratorCtlServicesModule *module,
     if (!is_missing_required && !assume_yes)
     {
         g_string_append_printf(header_text,
-                               output_str ? _("Continue executing \"%s %s%s\" with these parameters?\n\n")
-                                          : _("Continue executing \"%s %s%s\"?\n"),
-                               command_name,
-                               service_name,
-                               options_suffix);
+                               output_str
+                                   ? _("Continue executing \"%s %s%s\" with these parameters?\n\n")
+                                   : _("Continue executing \"%s %s%s\"?\n"),
+                               command_name, service_name, options_suffix);
     }
     else if (is_missing_required)
     {
-        g_printerr(_("Check the specified parameters for the %s service. Required parameters that are not set "
+        g_printerr(_("Check the specified parameters for the %s service. Required parameters that "
+                     "are not set "
                      "are marked with \"*\" and must be provided when running the %s command.\n"),
-                   service_name,
-                   command_name);
+                   service_name, command_name);
     }
 
     g_string_append(display_text, header_text->str);
@@ -4229,9 +4162,10 @@ static int services_module_confirm_execution(AlteratorCtlServicesModule *module,
         ERR_EXIT();
     }
 
-    ServicesPlayPromptResult prompt_result = services_module_prompt_yes_no_play(_("Do you want to continue? [y/N] y\n"),
-                                                                                _("Do you want to continue? [y/N] "),
-                                                                                assume_yes);
+    ServicesPlayPromptResult
+        prompt_result = services_module_prompt_yes_no_play(_("Do you want to continue? [y/N] y\n"),
+                                                           _("Do you want to continue? [y/N] "),
+                                                           assume_yes);
 
     *is_accepted = (prompt_result == SERVICES_PLAY_PROMPT_YES);
 
@@ -4239,8 +4173,9 @@ static int services_module_confirm_execution(AlteratorCtlServicesModule *module,
     {
         g_variant_unref((*ctx)->parameters);
 
-        gchar *input_json_parameters = services_module_json_params_to_text(module->json, service_name);
-        gchar *tmp                   = input_json_parameters;
+        gchar* input_json_parameters = services_module_json_params_to_text(module->json,
+                                                                           service_name);
+        gchar* tmp                   = input_json_parameters;
         input_json_parameters        = g_strconcat(input_json_parameters, "\n", NULL);
         g_free(tmp);
 
@@ -4261,6 +4196,8 @@ end:
         g_string_free(output_str, TRUE);
     if (validation_str)
         g_string_free(validation_str, TRUE);
+    if (validation_contexts)
+        g_strfreev(validation_contexts);
     if (long_name_to_description)
         g_hash_table_destroy(long_name_to_description);
     if (parameters_output_data)
@@ -4271,25 +4208,27 @@ end:
     return ret;
 }
 
-static int services_module_parse_arguments(
-    AlteratorCtlServicesModule *module, int argc, char **argv, alteratorctl_ctx_t **ctx, gboolean *is_accepted)
+static int services_module_parse_arguments(AlteratorCtlServicesModule* module, int argc,
+                                           char** argv, alteratorctl_ctx_t** ctx,
+                                           gboolean* is_accepted)
 {
     int ret                                   = 0;
-    GString *command_help                     = NULL;
-    gchar *input                              = NULL;
-    gchar *play_raw_json                      = NULL;
-    gchar *play_json_text_parameters          = NULL;
-    const gchar *play_service_from_json       = NULL;
-    AlteratorCtlModuleInterface *iface        = GET_ALTERATOR_CTL_MODULE_INTERFACE((void *) module);
-    AlteratorCtlModuleInfoParser *info_parser = module->gdbus_source->info_parser;
-    GArray *options                           = NULL;
-    JsonParser *play_parser                   = NULL;
+    GString* command_help                     = NULL;
+    gchar* input                              = NULL;
+    gchar* play_raw_json                      = NULL;
+    gchar* play_json_text_parameters          = NULL;
+    const gchar* play_service_from_json       = NULL;
+    AlteratorCtlModuleInterface* iface        = GET_ALTERATOR_CTL_MODULE_INTERFACE((void*) module);
+    AlteratorCtlModuleInfoParser* info_parser = module->gdbus_source->info_parser;
+    GArray* options                           = NULL;
+    JsonParser* play_parser                   = NULL;
 
     gboolean help = module->alterator_ctl_app->arguments->module_help;
 
     if (!iface)
     {
-        g_printerr(_("Internal error in services module while parsing arguments: *iface is NULL.\n"));
+        g_printerr(
+            _("Internal error in services module while parsing arguments: *iface is NULL.\n"));
         ERR_EXIT();
     }
 
@@ -4338,19 +4277,20 @@ static int services_module_parse_arguments(
             ERR_EXIT();
         }
 
-        gchar *filepath               = argv[3];
-        JsonNode *root                = NULL;
-        JsonObject *root_obj          = NULL;
-        JsonNode *svc_node            = NULL; // service
-        JsonNode *act_node            = NULL; // action
-        JsonNode *vers_node           = NULL; // version
-        JsonNode *params_node         = NULL; // parameters
-        JsonNode *options_node        = NULL; // options
-        const gchar *action_from_json = NULL;
+        gchar* filepath               = argv[3];
+        JsonNode* root                = NULL;
+        JsonObject* root_obj          = NULL;
+        JsonNode* svc_node            = NULL; // service
+        JsonNode* act_node            = NULL; // action
+        JsonNode* vers_node           = NULL; // version
+        JsonNode* params_node         = NULL; // parameters
+        JsonNode* options_node        = NULL; // options
+        const gchar* action_from_json = NULL;
         gint playfile_version         = 1;
 
         // read JSON from file or stdin
-        play_raw_json = streq(filepath, "-") ? services_module_parse_stdin_param(TRUE) : read_file(filepath);
+        play_raw_json = streq(filepath, "-") ? services_module_parse_stdin_param(TRUE)
+                                             : read_file(filepath);
         if (!play_raw_json)
         {
             g_printerr(_("Invalid or empty input json data.\n"));
@@ -4386,7 +4326,8 @@ static int services_module_parse_arguments(
         if (!act_node || json_node_get_value_type(act_node) != G_TYPE_STRING)
         {
             if (json_object_has_member(root_obj, "context"))
-                g_printerr(_("This playfile uses outdated file format that's unsupported. Please export the playfile "
+                g_printerr(_("This playfile uses outdated file format that's unsupported. Please "
+                             "export the playfile "
                              "from a newer version of Alt-Services.\n"));
             else
                 g_printerr(_("Invalid input json data. Missing or invalid 'action'.\n"));
@@ -4418,7 +4359,8 @@ static int services_module_parse_arguments(
         selected_subcommand = get_command_id_from_context(action_from_json);
         if (selected_subcommand == -1)
         {
-            g_printerr(_("Unsupported action '%s' in services play. Only the following actions are supported: "
+            g_printerr(_("Unsupported action '%s' in services play. Only the following actions are "
+                         "supported: "
                          "'deploy', 'undeploy', 'configure', 'backup' and 'restore'.\n"),
                        action_from_json ? action_from_json : "");
             ERR_EXIT();
@@ -4426,11 +4368,9 @@ static int services_module_parse_arguments(
 
         // Load service info for validation
         if (!module->info
-            && info_parser->alterator_ctl_module_info_parser_get_specified_object_data(info_parser,
-                                                                                       module->gdbus_source,
-                                                                                       play_service_from_json,
-                                                                                       SERVICES_INTERFACE_NAME,
-                                                                                       &module->info)
+            && info_parser->alterator_ctl_module_info_parser_get_specified_object_data(
+                   info_parser, module->gdbus_source, play_service_from_json,
+                   SERVICES_INTERFACE_NAME, &module->info)
                    < 0)
         {
             g_printerr(_("Failed of parsing service \"%s\" info.\n"), play_service_from_json);
@@ -4444,48 +4384,38 @@ static int services_module_parse_arguments(
             module->json = NULL;
         }
         module->json            = json_node_copy(params_node);
-        JsonObject *options_obj = (options_node && json_node_get_node_type(options_node) == JSON_NODE_OBJECT)
+        JsonObject* options_obj = (options_node
+                                   && json_node_get_node_type(options_node) == JSON_NODE_OBJECT)
                                       ? json_node_get_object(options_node)
                                       : NULL;
-        if (services_module_play_prepare_plan(module, play_service_from_json, selected_subcommand, options_obj) < 0)
+        if (services_module_play_prepare_plan(module, play_service_from_json, selected_subcommand,
+                                              options_obj)
+            < 0)
             ERR_EXIT();
-        {
-            const gchar *context_for_validation = get_context_from_command_id(selected_subcommand);
-            const gchar *validation_contexts[2];
-            gsize validation_contexts_len                  = 0;
-            validation_contexts[validation_contexts_len++] = context_for_validation;
-            if (services_play_plan_requires_diag(module->play_plan))
-                validation_contexts[validation_contexts_len++] = SERVICES_CONTEXT_DIAG;
-        }
 
         // Stringify parameters JSON (with passwords injected)
-        play_json_text_parameters = services_module_json_params_to_text(module->json, play_service_from_json);
+        play_json_text_parameters = services_module_json_params_to_text(module->json,
+                                                                        play_service_from_json);
         if (!play_json_text_parameters)
             ERR_EXIT();
 
         // Build parameter options for confirmation table
-        if (services_module_build_param_options(module, play_service_from_json, selected_subcommand, &options) < 0)
+        if (services_module_build_param_options(module, play_service_from_json, selected_subcommand,
+                                                &options)
+            < 0)
             ERR_EXIT();
 
         // Map play action to command and create context
-        *ctx = alteratorctl_ctx_init_services(selected_subcommand,
-                                              play_service_from_json,
-                                              play_json_text_parameters,
-                                              NULL,
-                                              NULL);
+        *ctx = alteratorctl_ctx_init_services(selected_subcommand, play_service_from_json,
+                                              play_json_text_parameters, NULL, NULL);
         if (!*ctx)
             ERR_EXIT();
 
-        if (services_module_confirm_execution(module,
-                                              ctx,
-                                              selected_subcommand,
-                                              services_module_subcommands_list[selected_subcommand].subcommand,
-                                              play_service_from_json,
-                                              argv,
-                                              argc,
-                                              options,
-                                              is_accepted,
-                                              &yes)
+        if (services_module_confirm_execution(module, ctx, selected_subcommand,
+                                              services_module_subcommands_list[selected_subcommand]
+                                                  .subcommand,
+                                              play_service_from_json, argv, argc, options,
+                                              is_accepted, &yes)
             < 0)
             ERR_EXIT();
 
@@ -4513,7 +4443,7 @@ static int services_module_parse_arguments(
         break;
     }
 
-    gchar *service = NULL;
+    gchar* service = NULL;
 
     if (selected_subcommand == SERVICES_LIST)
     {
@@ -4522,13 +4452,15 @@ static int services_module_parse_arguments(
             g_print(_("List services\n"));
             g_print(_("Usage:\n  services list\n\n"));
             g_print(_("Options:\n"));
-            g_print(_("  -v, --verbose               Add services paths to services list output\n"));
+            g_print(
+                _("  -v, --verbose               Add services paths to services list output\n"));
             g_print(_("  -d, --display-name-only     Show only services display names\n"));
             g_print(_("  -D, --no-display-name       Show services without display names\n"));
             g_print(_("  -p, --path-only             Show only services objects paths on D-Bus\n"));
             g_print(_("  -n, --name-only             Show only services objects names\n"));
-            g_print(_("  -E, --except-status-markers Show services list without deploy and running\n"
-                      "                              state markers\n"));
+            g_print(
+                _("  -E, --except-status-markers Show services list without deploy and running\n"
+                  "                              state markers\n"));
             g_print(_("  -N, --no-name               Hide services names\n"));
             g_print(_("  -H, --hide-markers-legend   Hide the legend of status tokens\n"));
             g_print(_("  -h, --help                  Show services list comand usage help\n\n"));
@@ -4575,8 +4507,9 @@ static int services_module_parse_arguments(
 
         if (argc >= 4)
             service = argv[3];
-        else if (command_in_context || selected_subcommand == SERVICES_INFO || selected_subcommand == SERVICES_STATUS
-                 || selected_subcommand == SERVICES_START || selected_subcommand == SERVICES_STOP
+        else if (command_in_context || selected_subcommand == SERVICES_INFO
+                 || selected_subcommand == SERVICES_STATUS || selected_subcommand == SERVICES_START
+                 || selected_subcommand == SERVICES_STOP
                  || selected_subcommand == SERVICES_RESOURCES)
         {
             g_printerr(_("No service specified.\n"));
@@ -4618,11 +4551,9 @@ static int services_module_parse_arguments(
         if (command_in_context)
         {
             if (!module->info
-                && info_parser->alterator_ctl_module_info_parser_get_specified_object_data(info_parser,
-                                                                                           module->gdbus_source,
-                                                                                           service,
-                                                                                           SERVICES_INTERFACE_NAME,
-                                                                                           &module->info)
+                && info_parser->alterator_ctl_module_info_parser_get_specified_object_data(
+                       info_parser, module->gdbus_source, service, SERVICES_INTERFACE_NAME,
+                       &module->info)
                        < 0)
             {
                 g_printerr(_("Failed of parsing service \"%s\" info.\n"), service);
@@ -4635,7 +4566,7 @@ static int services_module_parse_arguments(
                 {
                     // Create argv without params, only tools and tests
                     gint tools_tests_argc                  = 0;
-                    GStrvBuilder *tools_tests_argv_builder = g_strv_builder_new();
+                    GStrvBuilder* tools_tests_argv_builder = g_strv_builder_new();
                     for (gsize i = 0; i < argc; i++)
                     {
                         if (argv[i][0] == '-')
@@ -4643,8 +4574,11 @@ static int services_module_parse_arguments(
                         g_strv_builder_add(tools_tests_argv_builder, argv[i]);
                         tools_tests_argc++;
                     }
-                    gchar **tools_tests_argv = g_strv_builder_unref_to_strv(tools_tests_argv_builder);
-                    if (services_module_parse_diagnose_arguments(module, tools_tests_argc, tools_tests_argv, &input) < 0)
+                    gchar** tools_tests_argv = g_strv_builder_unref_to_strv(
+                        tools_tests_argv_builder);
+                    if (services_module_parse_diagnose_arguments(module, tools_tests_argc,
+                                                                 tools_tests_argv, &input)
+                        < 0)
                     {
                         g_strfreev(tools_tests_argv);
                         ERR_EXIT();
@@ -4662,13 +4596,13 @@ static int services_module_parse_arguments(
         else if (selected_subcommand == SERVICES_STATUS)
         {
             if (!module->info
-                && info_parser->alterator_ctl_module_info_parser_get_specified_object_data(info_parser,
-                                                                                           module->gdbus_source,
-                                                                                           service,
-                                                                                           SERVICES_INTERFACE_NAME,
-                                                                                           &module->info))
+                && info_parser->alterator_ctl_module_info_parser_get_specified_object_data(
+                    info_parser, module->gdbus_source, service, SERVICES_INTERFACE_NAME,
+                    &module->info))
             {
-                g_printerr(_("Failed to execute \"%s\" status. Error getting service alterator entry info.\n"), service);
+                g_printerr(_("Failed to execute \"%s\" status. Error getting service alterator "
+                             "entry info.\n"),
+                           service);
                 ERR_EXIT();
             }
         }
@@ -4682,7 +4616,7 @@ static int services_module_parse_arguments(
         {
             // Create argv without tools and tests, only params
             actual_argc                            = 0;
-            GStrvBuilder *tools_tests_argv_builder = g_strv_builder_new();
+            GStrvBuilder* tools_tests_argv_builder = g_strv_builder_new();
             gboolean has_parameters                = FALSE;
             for (gsize i = 0; i < argc; i++)
             {
@@ -4702,9 +4636,10 @@ static int services_module_parse_arguments(
                 g_strv_builder_add(tools_tests_argv_builder, argv[i]);
                 actual_argc++;
             }
-            gchar **tools_tests_argv = g_strv_builder_unref_to_strv(tools_tests_argv_builder);
-            if (services_module_parse_contextual_arguments(
-                    module, service, selected_subcommand, &actual_argc, tools_tests_argv, *ctx, &options)
+            gchar** tools_tests_argv = g_strv_builder_unref_to_strv(tools_tests_argv_builder);
+            if (services_module_parse_contextual_arguments(module, service, selected_subcommand,
+                                                           &actual_argc, tools_tests_argv, *ctx,
+                                                           &options)
                 < 0)
             {
                 g_strfreev(tools_tests_argv);
@@ -4712,21 +4647,22 @@ static int services_module_parse_arguments(
             }
             g_strfreev(tools_tests_argv);
         }
-        else if (services_module_parse_contextual_arguments(
-                     module, service, selected_subcommand, &actual_argc, argv, *ctx, &options)
+        else if (services_module_parse_contextual_arguments(module, service, selected_subcommand,
+                                                            &actual_argc, argv, *ctx, &options)
                  < 0)
             ERR_EXIT();
 
         if (help)
         {
-            if (services_module_create_command_usage_help(service, argv[2], options, &command_help) < 0)
+            if (services_module_create_command_usage_help(service, argv[2], options, &command_help)
+                < 0)
                 ERR_EXIT();
             g_print("%s\n", command_help->str);
             goto end;
         }
 
-        if (services_module_confirm_execution(
-                module, ctx, selected_subcommand, argv[2], service, argv, actual_argc, options, is_accepted, &yes)
+        if (services_module_confirm_execution(module, ctx, selected_subcommand, argv[2], service,
+                                              argv, actual_argc, options, is_accepted, &yes)
             < 0)
             ERR_EXIT();
 
@@ -4754,8 +4690,8 @@ end:
 int services_module_run(gpointer self, gpointer data)
 {
     int ret                            = 0;
-    AlteratorCtlModuleInterface *iface = GET_ALTERATOR_CTL_MODULE_INTERFACE(self);
-    AlteratorCtlServicesModule *module = ALTERATOR_CTL_SERVICES_MODULE(self);
+    AlteratorCtlModuleInterface* iface = GET_ALTERATOR_CTL_MODULE_INTERFACE(self);
+    AlteratorCtlServicesModule* module = ALTERATOR_CTL_SERVICES_MODULE(self);
 
     if (module->alterator_ctl_app->arguments->module_help)
         goto end;
@@ -4766,7 +4702,7 @@ int services_module_run(gpointer self, gpointer data)
         ERR_EXIT();
     }
 
-    alteratorctl_ctx_t *ctx = (alteratorctl_ctx_t *) data;
+    alteratorctl_ctx_t* ctx = (alteratorctl_ctx_t*) data;
 
     int command_id = g_variant_get_int32(ctx->subcommands_ids);
     switch (command_id)
@@ -4805,11 +4741,14 @@ int services_module_run(gpointer self, gpointer data)
     case SERVICES_CONFIGURE:
     case SERVICES_UNDEPLOY:
     case SERVICES_BACKUP:
-    case SERVICES_RESTORE: {
-        gboolean with_signals     = command_id == SERVICES_DEPLOY || command_id == SERVICES_UNDEPLOY;
+    case SERVICES_RESTORE:
+    {
+        gboolean with_signals = command_id == SERVICES_DEPLOY || command_id == SERVICES_UNDEPLOY;
         int required_deploy_state = command_id == SERVICES_DEPLOY ? (force_deploy ? -1 : 0) : 1;
 
-        if (services_module_parametrized_subcommand(module, &ctx, command_id, with_signals, required_deploy_state) < 0)
+        if (services_module_parametrized_subcommand(module, &ctx, command_id, with_signals,
+                                                    required_deploy_state)
+            < 0)
             ERR_EXIT();
         break;
     }
@@ -4835,23 +4774,21 @@ end:
  *    >  0 - service should be undeployed
  *    >  1 - service should be deployed
  */
-static int services_module_parametrized_subcommand(AlteratorCtlServicesModule *module,
-                                                   alteratorctl_ctx_t **ctx,
-                                                   int command,
-                                                   gboolean with_signals,
-                                                   int required_deploy_state)
+static int services_module_parametrized_subcommand(AlteratorCtlServicesModule* module,
+                                                   alteratorctl_ctx_t** ctx, int command,
+                                                   gboolean with_signals, int required_deploy_state)
 {
     int ret                                = 0;
-    gchar *service_str_id                  = NULL;
-    gchar *input_json_parameters           = NULL;
-    dbus_ctx_t *dbus_ctx                   = NULL;
-    GError *dbus_call_error                = NULL;
-    JsonParser *parser                     = NULL;
-    alteratorctl_ctx_t *service_status_ctx = NULL;
-    GVariant *exit_code                    = NULL;
-    GPtrArray *signals                     = NULL;
-    subscribe_signals_t *stdout_signal     = NULL;
-    subscribe_signals_t *stderr_signal     = NULL;
+    gchar* service_str_id                  = NULL;
+    gchar* input_json_parameters           = NULL;
+    dbus_ctx_t* dbus_ctx                   = NULL;
+    GError* dbus_call_error                = NULL;
+    JsonParser* parser                     = NULL;
+    alteratorctl_ctx_t* service_status_ctx = NULL;
+    GVariant* exit_code                    = NULL;
+    GPtrArray* signals                     = NULL;
+    subscribe_signals_t* stdout_signal     = NULL;
+    subscribe_signals_t* stderr_signal     = NULL;
 
     if (!module)
     {
@@ -4866,7 +4803,7 @@ static int services_module_parametrized_subcommand(AlteratorCtlServicesModule *m
         ERR_EXIT();
     }
 
-    ServicesPlayPlan *play_plan      = NULL;
+    ServicesPlayPlan* play_plan      = NULL;
     gboolean effective_force         = force_deploy;
     int effective_required_state     = required_deploy_state;
     deployment_status current_status = UNDEPLOYED;
@@ -4887,8 +4824,9 @@ static int services_module_parametrized_subcommand(AlteratorCtlServicesModule *m
 
         if (effective_required_state != service_deployed)
         {
-            g_printerr(service_deployed ? _("This command can not be used on a deployed service.\n")
-                                        : _("This command can only be used on a deployed service.\n"));
+            g_printerr(service_deployed
+                           ? _("This command can not be used on a deployed service.\n")
+                           : _("This command can only be used on a deployed service.\n"));
             ERR_EXIT();
         }
     }
@@ -4901,7 +4839,8 @@ static int services_module_parametrized_subcommand(AlteratorCtlServicesModule *m
                              && (command == SERVICES_DEPLOY || command == SERVICES_CONFIGURE);
 
     if (need_prediag)
-        if (services_module_play_run_diag(module, service_str_id, &play_plan->prediag, current_status, TRUE, PRE_DIAG)
+        if (services_module_play_run_diag(module, service_str_id, &play_plan->prediag,
+                                          current_status, TRUE, PRE_DIAG)
             < 0)
             ERR_EXIT();
 
@@ -4912,7 +4851,7 @@ static int services_module_parametrized_subcommand(AlteratorCtlServicesModule *m
     }
     else
     {
-        gchar *tmp            = input_json_parameters;
+        gchar* tmp            = input_json_parameters;
         input_json_parameters = g_strconcat(input_json_parameters, "\n", NULL);
         g_free(tmp);
     }
@@ -4925,7 +4864,7 @@ static int services_module_parametrized_subcommand(AlteratorCtlServicesModule *m
         ERR_EXIT();
     }
 
-    gchar *method = NULL;
+    gchar* method = NULL;
 
     switch (command)
     {
@@ -4949,11 +4888,8 @@ static int services_module_parametrized_subcommand(AlteratorCtlServicesModule *m
         ERR_EXIT();
     }
 
-    dbus_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME,
-                             service_str_id,
-                             SERVICES_INTERFACE_NAME,
-                             method,
-                             module->alterator_ctl_app->arguments->verbose);
+    dbus_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME, service_str_id, SERVICES_INTERFACE_NAME,
+                             method, module->alterator_ctl_app->arguments->verbose);
 
     dbus_ctx->parameters = g_variant_new("(s)", input_json_parameters);
     dbus_ctx->reply_type = G_VARIANT_TYPE("(i)");
@@ -4990,7 +4926,8 @@ static int services_module_parametrized_subcommand(AlteratorCtlServicesModule *m
         g_ptr_array_add(signals, stdout_signal);
         g_ptr_array_add(signals, stderr_signal);
 
-        module->gdbus_source->call_with_signals(module->gdbus_source, dbus_ctx, signals, &dbus_call_error);
+        module->gdbus_source->call_with_signals(module->gdbus_source, dbus_ctx, signals,
+                                                &dbus_call_error);
     }
     else
     {
@@ -5014,7 +4951,8 @@ static int services_module_parametrized_subcommand(AlteratorCtlServicesModule *m
             ERR_EXIT();
         play_diag_phase phase = command == SERVICES_CONFIGURE ? POST_CONFIGURE : POST_DIAG;
         if (command == SERVICES_DEPLOY && updated_status == DEPLOYED)
-            if (services_module_play_run_diag(module, service_str_id, &play_plan->postdiag, updated_status, FALSE, phase)
+            if (services_module_play_run_diag(module, service_str_id, &play_plan->postdiag,
+                                              updated_status, FALSE, phase)
                 < 0)
                 ERR_EXIT();
     }
@@ -5050,19 +4988,22 @@ end:
     return ret;
 }
 
-static int services_module_is_deployed_from_status_ctx(AlteratorCtlServicesModule *module,
-                                                       alteratorctl_ctx_t **status_ctx,
-                                                       const gchar *service_str_id,
-                                                       deployment_status *result)
+static int services_module_is_deployed_from_status_ctx(AlteratorCtlServicesModule* module,
+                                                       alteratorctl_ctx_t** status_ctx,
+                                                       const gchar* service_str_id,
+                                                       deployment_status* result)
 {
     int ret = 0;
 
     if (!module)
     {
         if (service_str_id && strlen(service_str_id))
-            g_printerr(_("Can't get deploy status of %s service. The services module doesn't exist.\n"), service_str_id);
+            g_printerr(_("Can't get deploy status of %s service. The services module doesn't "
+                         "exist.\n"),
+                       service_str_id);
         else
-            g_printerr(_("Can't get deploy status of unknown service. The services module doesn't exist.\n"));
+            g_printerr(_("Can't get deploy status of unknown service. The services module doesn't "
+                         "exist.\n"));
         ERR_EXIT();
     }
 
@@ -5074,18 +5015,21 @@ static int services_module_is_deployed_from_status_ctx(AlteratorCtlServicesModul
 
     if (!result)
     {
-        g_printerr(_("Can't get deploy status of %s service. There is nowhere to save the result.\n"), service_str_id);
+        g_printerr(_("Can't get deploy status of %s service. There is nowhere to save the "
+                     "result.\n"),
+                   service_str_id);
         ERR_EXIT();
     }
 
     if (!status_ctx || !*status_ctx || !(*status_ctx)->results)
     {
-        g_printerr(_("Failed to get %s service status. No result of services status command.\n"), service_str_id);
+        g_printerr(_("Failed to get %s service status. No result of services status command.\n"),
+                   service_str_id);
         ERR_EXIT();
     }
 
-    if (services_module_status_result_get_service_params(
-            module, status_ctx, service_str_id, FALSE, NULL, NULL, result, FALSE, NULL)
+    if (services_module_status_result_get_service_params(module, status_ctx, service_str_id, FALSE,
+                                                         NULL, NULL, result, FALSE, NULL)
         < 0)
         ERR_EXIT();
 
@@ -5093,30 +5037,33 @@ end:
     return ret;
 }
 
-static int services_module_diagnose_subcommand(AlteratorCtlServicesModule *module, alteratorctl_ctx_t **ctx)
+static int services_module_diagnose_subcommand(AlteratorCtlServicesModule* module,
+                                               alteratorctl_ctx_t** ctx)
 {
     int ret                                = 0;
-    dbus_ctx_t *dbus_ctx                   = NULL;
-    gchar *service_str_id                  = NULL;
-    gchar *service_path                    = NULL;
-    gchar *diag_input_params               = NULL;
-    alteratorctl_ctx_t *service_status_ctx = NULL;
-    JsonParser *parser                     = NULL;
-    JsonNode *parsed_parameters            = NULL;
-    JsonNode *current_parameters_tmp       = NULL;
-    JsonNode *service_current_params       = json_node_new(JSON_NODE_OBJECT);
-    JsonObject *current_parameters_object  = json_object_new();
+    dbus_ctx_t* dbus_ctx                   = NULL;
+    gchar* service_str_id                  = NULL;
+    gchar* service_path                    = NULL;
+    gchar* diag_input_params               = NULL;
+    alteratorctl_ctx_t* service_status_ctx = NULL;
+    JsonParser* parser                     = NULL;
+    JsonNode* parsed_parameters            = NULL;
+    JsonNode* current_parameters_tmp       = NULL;
+    JsonNode* service_current_params       = json_node_new(JSON_NODE_OBJECT);
+    JsonObject* current_parameters_object  = json_object_new();
     json_node_set_object(service_current_params, current_parameters_object);
 
-    alteratorctl_ctx_t *diag_ctx = NULL;
+    alteratorctl_ctx_t* diag_ctx = NULL;
 
     if (!module)
     {
-        g_printerr(_("Can't run services diagnostics tests. *AlteratorCtlServicesModule is NULL.\n"));
+        g_printerr(
+            _("Can't run services diagnostics tests. *AlteratorCtlServicesModule is NULL.\n"));
         ERR_EXIT();
     }
 
-    AlteratorCtlModuleInfoParser *info_parser = (AlteratorCtlModuleInfoParser *) module->gdbus_source->info_parser;
+    AlteratorCtlModuleInfoParser* info_parser = (AlteratorCtlModuleInfoParser*)
+                                                    module->gdbus_source->info_parser;
 
     g_variant_get((*ctx)->parameters, "(msms)", &service_str_id, &diag_input_params);
     if (!service_str_id)
@@ -5127,14 +5074,17 @@ static int services_module_diagnose_subcommand(AlteratorCtlServicesModule *modul
 
     if (!module->info)
     {
-        g_printerr(_("Can't run diagnostics tests in \"%s\" service. Service info is empty.\n"), service_str_id);
+        g_printerr(_("Can't run diagnostics tests in \"%s\" service. Service info is empty.\n"),
+                   service_str_id);
         ERR_EXIT();
     }
 
     service_path = service_str_id[0] != '/'
-                       ? g_strdup(module->gdbus_source->alterator_gdbus_source_get_path_by_name(module->gdbus_source,
-                                                                                                service_str_id,
-                                                                                                SERVICES_INTERFACE_NAME))
+                       ? g_strdup(
+                             module->gdbus_source
+                                 ->alterator_gdbus_source_get_path_by_name(module->gdbus_source,
+                                                                           service_str_id,
+                                                                           SERVICES_INTERFACE_NAME))
                        : g_strdup(service_path);
 
     if (!diag_input_params)
@@ -5144,7 +5094,7 @@ static int services_module_diagnose_subcommand(AlteratorCtlServicesModule *modul
     }
     else
     {
-        gchar *tmp        = diag_input_params;
+        gchar* tmp        = diag_input_params;
         diag_input_params = g_strconcat(tmp, "\n", NULL);
         g_free(tmp);
     }
@@ -5153,20 +5103,34 @@ static int services_module_diagnose_subcommand(AlteratorCtlServicesModule *modul
     parser = json_parser_new();
     if (!json_parser_load_from_data(parser, diag_input_params, -1, NULL))
     {
-        g_printerr(_("Invalid input json data for run \"%s\" service diagnostics tests.\n"), service_str_id);
+        g_printerr(_("Invalid input json data for run \"%s\" service diagnostics tests.\n"),
+                   service_str_id);
         ERR_EXIT();
     }
 
-    service_status_ctx = alteratorctl_ctx_init_services(SERVICES_STATUS, service_str_id, NULL, NULL, NULL);
+    service_status_ctx = alteratorctl_ctx_init_services(SERVICES_STATUS, service_str_id, NULL, NULL,
+                                                        NULL);
 
     if (services_module_status_subcommand(module, &service_status_ctx, FALSE) < 0)
         ERR_EXIT();
 
     deployment_status status = UNDEPLOYED;
-    if (services_module_status_result_get_service_params(
-            module, &service_status_ctx, service_str_id, FALSE, "diag", &service_current_params, &status, TRUE, NULL)
+    if (services_module_status_result_get_service_params(module, &service_status_ctx,
+                                                         service_str_id, FALSE, NULL,
+                                                         &service_current_params, &status, TRUE,
+                                                         NULL)
         < 0)
         ERR_EXIT();
+
+    // NOTE: Filter separately after receiving the state
+    {
+        GHashTable* params_ctx = NULL;
+        if (services_module_get_params_context(module, service_str_id, module->info, &params_ctx)
+            < 0)
+            ERR_EXIT();
+        services_module_filter_params_by_context(service_current_params, params_ctx, "diag", FALSE);
+        g_hash_table_destroy(params_ctx);
+    }
 
     parsed_parameters = json_parser_get_root(parser);
     if (!(current_parameters_tmp = services_module_merge_json_data(service_current_params,
@@ -5184,23 +5148,24 @@ static int services_module_diagnose_subcommand(AlteratorCtlServicesModule *modul
 
     if (!JSON_NODE_HOLDS_OBJECT(parsed_parameters))
     {
-        g_printerr(_("Failed to send parameters to diagnostic tests of \"%s\" service.\n"), service_str_id);
+        g_printerr(_("Failed to send parameters to diagnostic tests of \"%s\" service.\n"),
+                   service_str_id);
         ERR_EXIT();
     }
 
     JsonObjectIter object_json_iter;
-    JsonObject *params_object           = json_node_get_object(parsed_parameters);
-    const gchar *param_member_node_name = NULL;
-    JsonNode *param_member_node         = NULL;
+    JsonObject* params_object           = json_node_get_object(parsed_parameters);
+    const gchar* param_member_node_name = NULL;
+    JsonNode* param_member_node         = NULL;
     json_object_iter_init(&object_json_iter, params_object);
     while (json_object_iter_next(&object_json_iter, &param_member_node_name, &param_member_node))
     {
-        gchar *param_member_node_str = NULL;
-        if (!(param_member_node_str = services_module_json_params_to_text(param_member_node, service_str_id)))
+        gchar* param_member_node_str = NULL;
+        if (!(param_member_node_str = services_module_json_params_to_text(param_member_node,
+                                                                          service_str_id)))
         {
             g_printerr(_("Failed to send %s parameter to diagnostic tests in \"%s\" service.\n"),
-                       param_member_node_name,
-                       service_str_id);
+                       param_member_node_name, service_str_id);
             ERR_EXIT();
         }
 
@@ -5223,29 +5188,34 @@ static int services_module_diagnose_subcommand(AlteratorCtlServicesModule *modul
     {
         if (!tool_name || !strlen(tool_name) || !tool_tests)
         {
-            g_printerr(_("Failed to run \"%s\" service diagnostics tests. Invalid tests data.\n"), service_str_id);
+            g_printerr(_("Failed to run \"%s\" service diagnostics tests. Invalid tests data.\n"),
+                       service_str_id);
             ERR_EXIT();
         }
 
-        diag_tool_tests *test = (diag_tool_tests *) tool_tests;
+        diag_tool_tests* test = (diag_tool_tests*) tool_tests;
         if (!test || !test->all_tests || !g_hash_table_size(test->all_tests))
         {
-            g_printerr(_("Failed to run \"%s\" service diagnostics tests. Empty tests data.\n"), service_str_id);
+            g_printerr(_("Failed to run \"%s\" service diagnostics tests. Empty tests data.\n"),
+                       service_str_id);
             ERR_EXIT();
         }
 
-        GNode *tool_info = NULL;
+        GNode* tool_info = NULL;
         if (!name_only
-            && services_module_get_diag_info(module, service_str_id, tool_name, test->path, test->bus_type, &tool_info)
+            && services_module_get_diag_info(module, service_str_id, tool_name, test->path,
+                                             test->bus_type, &tool_info)
                    < 0)
             ERR_EXIT();
 
-        GNode *tests_node = NULL;
+        GNode* tests_node = NULL;
         if (!name_only
             && !(tests_node = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-                     info_parser, tool_info, DIAG_ALTERATOR_ENTRY_SERVICE_DIAG_TESTS_TABLE_NAME, -1)))
+                     info_parser, tool_info, DIAG_ALTERATOR_ENTRY_SERVICE_DIAG_TESTS_TABLE_NAME,
+                     -1)))
         {
-            g_printerr(_("Failed to get tests display names in \"%s\" diagnostic tool.\n"), (gchar *) tool_name);
+            g_printerr(_("Failed to get tests display names in \"%s\" diagnostic tool.\n"),
+                       (gchar*) tool_name);
             ERR_EXIT();
         }
 
@@ -5259,41 +5229,44 @@ static int services_module_diagnose_subcommand(AlteratorCtlServicesModule *modul
                 g_print("%s", _("<<< Tests on the session bus:\n"));
             for (gsize i = 0; i < diagnostic_tests->len; i++)
             {
-                if (!g_hash_table_contains(test->all_tests, diagnostic_tests->pdata[i]))
+                diag_tool_test_info* test_info = NULL;
+                if (!(test_info = g_hash_table_lookup(test->all_tests, diagnostic_tests->pdata[i])))
                 {
                     g_printerr(_("Can't run non-existent \"%s\" test in \"%s\" service.\n"),
-                               (gchar *) diagnostic_tests->pdata[i],
-                               service_str_id);
+                               (gchar*) diagnostic_tests->pdata[i], service_str_id);
                     ERR_EXIT();
                 }
 
-                gchar *test_display_name = NULL;
+                if (test_info->mode == PRE_DIAG_MODE && status != UNDEPLOYED)
+                    continue;
+                else if (test_info->mode == POST_DIAG_MODE && status == UNDEPLOYED)
+                    continue;
 
-                GNode *test_node = NULL;
+                gchar* test_display_name = NULL;
+
+                GNode* test_node = NULL;
                 if (!name_only
                     && !(test_node = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
                              info_parser, tests_node, diagnostic_tests->pdata[i], -1)))
                 {
-                    g_printerr(_("Failed to get tests display names in \"%s\" diagnostic tool.\n"), (gchar *) tool_name);
+                    g_printerr(_("Failed to get tests display names in \"%s\" diagnostic tool.\n"),
+                               (gchar*) tool_name);
                     ERR_EXIT();
                 }
 
                 if (!name_only
-                    && services_module_get_display_name(module, diagnostic_tests->pdata[i], test_node, &test_display_name)
+                    && services_module_get_display_name(module, diagnostic_tests->pdata[i],
+                                                        test_node, &test_display_name)
                            < 0)
                     ERR_EXIT();
 
                 if (name_only)
-                    g_print(_("Running test \"%s\"\n"), (gchar *) diagnostic_tests->pdata[i]);
+                    g_print(_("Running test \"%s\"\n"), (gchar*) diagnostic_tests->pdata[i]);
                 else
                     g_print(_("Running test \"%s\"\n"), test_display_name);
 
-                if (services_module_run_test(module,
-                                             service_str_id,
-                                             tool_name,
-                                             diagnostic_tests->pdata[i],
-                                             status,
-                                             test->bus_type)
+                if (services_module_run_test(module, service_str_id, tool_name,
+                                             diagnostic_tests->pdata[i], status, test->bus_type)
                     < 0)
                 {
                     g_free(test_display_name);
@@ -5320,14 +5293,18 @@ static int services_module_diagnose_subcommand(AlteratorCtlServicesModule *modul
             g_print("%s", _("<<< Tests on the session bus:\n"));
 
         for (gsize i = 0; i < diagnostic_tests->len; i++)
-            if (services_module_run_test(module,
-                                         service_str_id,
-                                         test->path,
-                                         diagnostic_tests->pdata[i],
-                                         status,
-                                         test->bus_type)
+        {
+            diag_tool_test_info* test_info = g_hash_table_lookup(test->all_tests,
+                                                                 diagnostic_tests->pdata[i]);
+            if (test_info->mode == PRE_DIAG_MODE && status != UNDEPLOYED)
+                continue;
+            else if (test_info->mode == POST_DIAG_MODE && status == UNDEPLOYED)
+                continue;
+            if (services_module_run_test(module, service_str_id, test->path,
+                                         diagnostic_tests->pdata[i], status, test->bus_type)
                 < 0)
                 ERR_EXIT();
+        }
     }
 
 end:
@@ -5361,12 +5338,13 @@ end:
     return ret;
 }
 
-static int services_module_info_subcommand(AlteratorCtlServicesModule *module, alteratorctl_ctx_t **ctx)
+static int services_module_info_subcommand(AlteratorCtlServicesModule* module,
+                                           alteratorctl_ctx_t** ctx)
 {
     int ret                 = 0;
-    gchar *service_str_id   = NULL;
-    dbus_ctx_t *d_ctx       = NULL;
-    GError *dbus_call_error = NULL;
+    gchar* service_str_id   = NULL;
+    dbus_ctx_t* d_ctx       = NULL;
+    GError* dbus_call_error = NULL;
 
     g_variant_get((*ctx)->parameters, "(msms)", &service_str_id, NULL);
     if (!service_str_id)
@@ -5375,14 +5353,12 @@ static int services_module_info_subcommand(AlteratorCtlServicesModule *module, a
         ERR_EXIT();
     }
 
-    if (services_module_validate_object_and_iface(module, service_str_id, SERVICES_INTERFACE_NAME) < 0)
+    if (services_module_validate_object_and_iface(module, service_str_id, SERVICES_INTERFACE_NAME)
+        < 0)
         ERR_EXIT();
 
-    d_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME,
-                          service_str_id,
-                          SERVICES_INTERFACE_NAME,
-                          SERVICES_INFO_METHOD_NAME,
-                          module->alterator_ctl_app->arguments->verbose);
+    d_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME, service_str_id, SERVICES_INTERFACE_NAME,
+                          SERVICES_INFO_METHOD_NAME, module->alterator_ctl_app->arguments->verbose);
 
     d_ctx->reply_type = G_VARIANT_TYPE("(ayi)");
 
@@ -5421,12 +5397,15 @@ end:
     return ret;
 }
 
-static int services_module_list_subcommand(AlteratorCtlServicesModule *module, alteratorctl_ctx_t **ctx)
+static int services_module_list_subcommand(AlteratorCtlServicesModule* module,
+                                           alteratorctl_ctx_t** ctx)
 {
-    int ret                    = 0;
-    GHashTable *services_table = NULL;
-    GHashTable *result_table = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, (GDestroyNotify) service_names_free);
-    AlteratorCtlModuleInfoParser *info_parser = (AlteratorCtlModuleInfoParser *) module->gdbus_source->info_parser;
+    int ret                                   = 0;
+    GHashTable* services_table                = NULL;
+    GHashTable* result_table                  = g_hash_table_new_full(g_str_hash, g_str_equal, NULL,
+                                                                      (GDestroyNotify) service_names_free);
+    AlteratorCtlModuleInfoParser* info_parser = (AlteratorCtlModuleInfoParser*)
+                                                    module->gdbus_source->info_parser;
 
     module->gdbus_source->alterator_gdbus_source_get_iface_objects(module->gdbus_source,
                                                                    SERVICES_INTERFACE_NAME,
@@ -5439,18 +5418,16 @@ static int services_module_list_subcommand(AlteratorCtlServicesModule *module, a
 
     GHashTableIter iter;
     g_hash_table_iter_init(&iter, services_table);
-    gchar *service_path = NULL;
-    while (g_hash_table_iter_next(&iter, (gpointer *) &service_path, NULL))
+    gchar* service_path = NULL;
+    while (g_hash_table_iter_next(&iter, (gpointer*) &service_path, NULL))
     {
-        gchar *alterator_entry_text = NULL;
-        if (module->gdbus_source->alterator_gdbus_source_get_text_of_alterator_entry_by_path(module->gdbus_source,
-                                                                                             service_path,
-                                                                                             SERVICES_INTERFACE_NAME,
-                                                                                             &alterator_entry_text)
+        gchar* alterator_entry_text = NULL;
+        if (module->gdbus_source->alterator_gdbus_source_get_text_of_alterator_entry_by_path(
+                module->gdbus_source, service_path, SERVICES_INTERFACE_NAME, &alterator_entry_text)
             < 0)
             continue;
 
-        GNode *parsed_info = NULL;
+        GNode* parsed_info = NULL;
         if (info_parser->alterator_ctl_module_info_parser_get_data_from_text(info_parser,
                                                                              module->gdbus_source,
                                                                              alterator_entry_text,
@@ -5462,12 +5439,13 @@ static int services_module_list_subcommand(AlteratorCtlServicesModule *module, a
             continue;
         }
 
-        toml_value *toml_name = g_hash_table_lookup(((alterator_entry_node *) parsed_info->data)->toml_pairs,
+        toml_value* toml_name = g_hash_table_lookup(((alterator_entry_node*) parsed_info->data)
+                                                        ->toml_pairs,
                                                     SERVICES_ALTERATOR_ENTRY_SERVICE_NAME_KEY_NAME);
 
-        gchar *display_name = NULL;
+        gchar* display_name = NULL;
         services_module_get_display_name(module, service_path, parsed_info, &display_name);
-        service_names_t *service_names = service_names_init(toml_name->str_value, display_name);
+        service_names_t* service_names = service_names_init(toml_name->str_value, display_name);
         g_free(display_name);
         g_hash_table_insert(result_table, service_path, service_names);
 
@@ -5488,16 +5466,18 @@ end:
     return ret;
 }
 
-static int services_module_resources_subcommand(AlteratorCtlServicesModule *module, alteratorctl_ctx_t **ctx)
+static int services_module_resources_subcommand(AlteratorCtlServicesModule* module,
+                                                alteratorctl_ctx_t** ctx)
 {
     int ret                                   = 0;
-    alteratorctl_ctx_t *service_info_ctx      = NULL;
-    gchar *service_str_id                     = NULL;
-    GVariant *info_array                      = NULL;
-    GVariant *exit_code                       = NULL;
-    gchar *info_str                           = NULL;
-    GNode *parsed_info                        = NULL;
-    AlteratorCtlModuleInfoParser *info_parser = (AlteratorCtlModuleInfoParser *) module->gdbus_source->info_parser;
+    alteratorctl_ctx_t* service_info_ctx      = NULL;
+    gchar* service_str_id                     = NULL;
+    GVariant* info_array                      = NULL;
+    GVariant* exit_code                       = NULL;
+    gchar* info_str                           = NULL;
+    GNode* parsed_info                        = NULL;
+    AlteratorCtlModuleInfoParser* info_parser = (AlteratorCtlModuleInfoParser*)
+                                                    module->gdbus_source->info_parser;
 
     g_variant_get((*ctx)->parameters, "(msms)", &service_str_id, NULL);
     if (!service_str_id)
@@ -5506,7 +5486,8 @@ static int services_module_resources_subcommand(AlteratorCtlServicesModule *modu
         ERR_EXIT();
     }
 
-    service_info_ctx = alteratorctl_ctx_init_services(SERVICES_INFO, service_str_id, NULL, NULL, NULL);
+    service_info_ctx = alteratorctl_ctx_init_services(SERVICES_INFO, service_str_id, NULL, NULL,
+                                                      NULL);
     if (services_module_info_subcommand(module, &service_info_ctx) < 0)
         ERR_EXIT();
 
@@ -5545,17 +5526,17 @@ static int services_module_resources_subcommand(AlteratorCtlServicesModule *modu
 
     if (info_parser->alterator_ctl_module_info_parser_get_data_from_text(module,
                                                                          module->gdbus_source,
-                                                                         info_str,
-                                                                         &parsed_info)
+                                                                         info_str, &parsed_info)
         < 0)
     {
         g_printerr(_("Parsing of service %s information failed.\n"), service_str_id);
         ERR_EXIT();
     }
 
-    GNode *resources = NULL;
-    if (!(resources = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-              module, parsed_info, SERVICES_ALTERATOR_ENTRY_SERVICE_RESOURCES_TABLE_NAME, -1)))
+    GNode* resources = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
+        module, parsed_info, SERVICES_ALTERATOR_ENTRY_SERVICE_RESOURCES_TABLE_NAME, -1);
+
+    if (!resources || !resources->children)
     {
         g_print(_("No resources of service %s.\n"), service_str_id);
         goto end;
@@ -5567,10 +5548,8 @@ static int services_module_resources_subcommand(AlteratorCtlServicesModule *modu
 
     // Parse JSON parameters of deployed service for getting resource linked params
     {
-        alteratorctl_ctx_t *status_ctx = alteratorctl_ctx_init_services(SERVICES_STATUS,
-                                                                        service_str_id,
-                                                                        NULL,
-                                                                        NULL,
+        alteratorctl_ctx_t* status_ctx = alteratorctl_ctx_init_services(SERVICES_STATUS,
+                                                                        service_str_id, NULL, NULL,
                                                                         NULL);
 
         if (services_module_status_subcommand(module, &status_ctx, FALSE) < 0)
@@ -5579,8 +5558,9 @@ static int services_module_resources_subcommand(AlteratorCtlServicesModule *modu
         module->json = json_node_new(JSON_NODE_OBJECT);
         json_node_init_object(module->json, json_object_new());
 
-        if (services_module_status_result_get_service_params(
-                module, &status_ctx, service_str_id, FALSE, NULL, &module->json, NULL, FALSE, NULL)
+        if (services_module_status_result_get_service_params(module, &status_ctx, service_str_id,
+                                                             FALSE, NULL, &module->json, NULL,
+                                                             FALSE, NULL)
             < 0)
             ERR_EXIT();
     }
@@ -5605,14 +5585,14 @@ end:
     return ret;
 }
 
-static int services_module_status_subcommand(AlteratorCtlServicesModule *module,
-                                             alteratorctl_ctx_t **ctx,
+static int services_module_status_subcommand(AlteratorCtlServicesModule* module,
+                                             alteratorctl_ctx_t** ctx,
                                              gboolean suppress_missing_service_msg)
 {
     int ret                 = 0;
-    gchar *service_str_id   = NULL;
-    dbus_ctx_t *dbus_ctx    = NULL;
-    GError *dbus_call_error = NULL;
+    gchar* service_str_id   = NULL;
+    dbus_ctx_t* dbus_ctx    = NULL;
+    GError* dbus_call_error = NULL;
 
     if (!module)
     {
@@ -5627,12 +5607,11 @@ static int services_module_status_subcommand(AlteratorCtlServicesModule *module,
         ERR_EXIT();
     }
 
-    if (services_module_validate_object_and_iface(module, service_str_id, SERVICES_INTERFACE_NAME) < 0)
+    if (services_module_validate_object_and_iface(module, service_str_id, SERVICES_INTERFACE_NAME)
+        < 0)
         ERR_EXIT();
 
-    dbus_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME,
-                             service_str_id,
-                             SERVICES_INTERFACE_NAME,
+    dbus_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME, service_str_id, SERVICES_INTERFACE_NAME,
                              SERVICES_STATUS_NAME_METHOD_NAME,
                              module->alterator_ctl_app->arguments->verbose);
 
@@ -5679,14 +5658,15 @@ end:
     return ret;
 }
 
-static int services_module_start_subcommand(AlteratorCtlServicesModule *module, alteratorctl_ctx_t **ctx)
+static int services_module_start_subcommand(AlteratorCtlServicesModule* module,
+                                            alteratorctl_ctx_t** ctx)
 {
     int ret                                = 0;
-    gchar *service_str_id                  = NULL;
-    dbus_ctx_t *dbus_ctx                   = NULL;
-    GError *dbus_call_error                = NULL;
-    alteratorctl_ctx_t *service_status_ctx = NULL;
-    GVariant *exit_code                    = NULL;
+    gchar* service_str_id                  = NULL;
+    dbus_ctx_t* dbus_ctx                   = NULL;
+    GError* dbus_call_error                = NULL;
+    alteratorctl_ctx_t* service_status_ctx = NULL;
+    GVariant* exit_code                    = NULL;
 
     if (!module)
     {
@@ -5701,7 +5681,8 @@ static int services_module_start_subcommand(AlteratorCtlServicesModule *module, 
         ERR_EXIT();
     }
 
-    service_status_ctx = alteratorctl_ctx_init_services(SERVICES_STATUS, service_str_id, NULL, NULL, NULL);
+    service_status_ctx = alteratorctl_ctx_init_services(SERVICES_STATUS, service_str_id, NULL, NULL,
+                                                        NULL);
 
     if (services_module_status_subcommand(module, &service_status_ctx, FALSE) < 0)
         ERR_EXIT();
@@ -5726,7 +5707,9 @@ static int services_module_start_subcommand(AlteratorCtlServicesModule *module, 
     }
 
     deployment_status service_status = UNDEPLOYED;
-    if (services_module_is_deployed_from_status_ctx(module, &service_status_ctx, service_str_id, &service_status) < 0)
+    if (services_module_is_deployed_from_status_ctx(module, &service_status_ctx, service_str_id,
+                                                    &service_status)
+        < 0)
         ERR_EXIT();
 
     if (service_status == UNDEPLOYED)
@@ -5740,12 +5723,11 @@ static int services_module_start_subcommand(AlteratorCtlServicesModule *module, 
         ERR_EXIT();
     }
 
-    if (services_module_validate_object_and_iface(module, service_str_id, SERVICES_INTERFACE_NAME) < 0)
+    if (services_module_validate_object_and_iface(module, service_str_id, SERVICES_INTERFACE_NAME)
+        < 0)
         ERR_EXIT();
 
-    dbus_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME,
-                             service_str_id,
-                             SERVICES_INTERFACE_NAME,
+    dbus_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME, service_str_id, SERVICES_INTERFACE_NAME,
                              SERVICES_START_NAME_METHOD_NAME,
                              module->alterator_ctl_app->arguments->verbose);
 
@@ -5796,14 +5778,15 @@ end:
     return ret;
 }
 
-static int services_module_stop_subcommand(AlteratorCtlServicesModule *module, alteratorctl_ctx_t **ctx)
+static int services_module_stop_subcommand(AlteratorCtlServicesModule* module,
+                                           alteratorctl_ctx_t** ctx)
 {
     int ret                                = 0;
-    gchar *service_str_id                  = NULL;
-    dbus_ctx_t *dbus_ctx                   = NULL;
-    GError *dbus_call_error                = NULL;
-    alteratorctl_ctx_t *service_status_ctx = NULL;
-    GVariant *exit_code                    = NULL;
+    gchar* service_str_id                  = NULL;
+    dbus_ctx_t* dbus_ctx                   = NULL;
+    GError* dbus_call_error                = NULL;
+    alteratorctl_ctx_t* service_status_ctx = NULL;
+    GVariant* exit_code                    = NULL;
 
     if (!module)
     {
@@ -5818,10 +5801,12 @@ static int services_module_stop_subcommand(AlteratorCtlServicesModule *module, a
         ERR_EXIT();
     }
 
-    if (services_module_validate_object_and_iface(module, service_str_id, SERVICES_INTERFACE_NAME) < 0)
+    if (services_module_validate_object_and_iface(module, service_str_id, SERVICES_INTERFACE_NAME)
+        < 0)
         ERR_EXIT();
 
-    service_status_ctx = alteratorctl_ctx_init_services(SERVICES_STATUS, service_str_id, NULL, NULL, NULL);
+    service_status_ctx = alteratorctl_ctx_init_services(SERVICES_STATUS, service_str_id, NULL, NULL,
+                                                        NULL);
 
     if (services_module_status_subcommand(module, &service_status_ctx, FALSE) < 0)
         ERR_EXIT();
@@ -5846,7 +5831,9 @@ static int services_module_stop_subcommand(AlteratorCtlServicesModule *module, a
     }
 
     deployment_status service_status = UNDEPLOYED;
-    if (services_module_is_deployed_from_status_ctx(module, &service_status_ctx, service_str_id, &service_status) < 0)
+    if (services_module_is_deployed_from_status_ctx(module, &service_status_ctx, service_str_id,
+                                                    &service_status)
+        < 0)
         ERR_EXIT();
 
     if (service_status == UNDEPLOYED)
@@ -5860,9 +5847,7 @@ static int services_module_stop_subcommand(AlteratorCtlServicesModule *module, a
         ERR_EXIT();
     }
 
-    dbus_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME,
-                             service_str_id,
-                             SERVICES_INTERFACE_NAME,
+    dbus_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME, service_str_id, SERVICES_INTERFACE_NAME,
                              SERVICES_STOP_NAME_METHOD_NAME,
                              module->alterator_ctl_app->arguments->verbose);
 
@@ -5913,7 +5898,8 @@ end:
     return ret;
 }
 
-static int services_module_handle_results(AlteratorCtlServicesModule *module, alteratorctl_ctx_t **ctx)
+static int services_module_handle_results(AlteratorCtlServicesModule* module,
+                                          alteratorctl_ctx_t** ctx)
 {
     int ret = 0;
     if (!module)
@@ -5999,12 +5985,13 @@ end:
     return ret;
 }
 
-static int services_module_backup_handle_result(AlteratorCtlServicesModule *module, alteratorctl_ctx_t **ctx)
+static int services_module_backup_handle_result(AlteratorCtlServicesModule* module,
+                                                alteratorctl_ctx_t** ctx)
 {
     int ret                     = 0;
-    const gchar *service_str_id = NULL;
-    GVariant *exit_code         = NULL;
-    GError *error               = NULL;
+    const gchar* service_str_id = NULL;
+    GVariant* exit_code         = NULL;
+    GError* error               = NULL;
 
     g_variant_get((*ctx)->parameters, "(msms)", &service_str_id, NULL);
     if (!service_str_id)
@@ -6041,7 +6028,7 @@ static int services_module_backup_handle_result(AlteratorCtlServicesModule *modu
     }
 
 end:
-    g_free((gchar *) service_str_id);
+    g_free((gchar*) service_str_id);
 
     if (exit_code)
         g_variant_unref(exit_code);
@@ -6051,12 +6038,13 @@ end:
     return ret;
 }
 
-static int services_module_configure_handle_result(AlteratorCtlServicesModule *module, alteratorctl_ctx_t **ctx)
+static int services_module_configure_handle_result(AlteratorCtlServicesModule* module,
+                                                   alteratorctl_ctx_t** ctx)
 {
     int ret                     = 0;
-    const gchar *service_str_id = NULL;
-    GVariant *exit_code         = NULL;
-    GError *error               = NULL;
+    const gchar* service_str_id = NULL;
+    GVariant* exit_code         = NULL;
+    GError* error               = NULL;
 
     g_variant_get((*ctx)->parameters, "(msms)", &service_str_id, NULL);
     if (!service_str_id)
@@ -6081,7 +6069,8 @@ static int services_module_configure_handle_result(AlteratorCtlServicesModule *m
 
     if (!exit_code)
     {
-        g_printerr(_("Can't get service %s configure result: exit code is empty.\n"), service_str_id);
+        g_printerr(_("Can't get service %s configure result: exit code is empty.\n"),
+                   service_str_id);
         ERR_EXIT();
     }
 
@@ -6093,7 +6082,7 @@ static int services_module_configure_handle_result(AlteratorCtlServicesModule *m
     }
 
 end:
-    g_free((gchar *) service_str_id);
+    g_free((gchar*) service_str_id);
 
     if (exit_code)
         g_variant_unref(exit_code);
@@ -6103,14 +6092,15 @@ end:
     return ret;
 }
 
-static int services_module_deploy_handle_result(AlteratorCtlServicesModule *module, alteratorctl_ctx_t **ctx)
+static int services_module_deploy_handle_result(AlteratorCtlServicesModule* module,
+                                                alteratorctl_ctx_t** ctx)
 {
     int ret               = 0;
-    GVariant *exit_code   = NULL;
-    gchar *service_str_id = NULL;
+    GVariant* exit_code   = NULL;
+    gchar* service_str_id = NULL;
 
-    alteratorctl_ctx_t *service_start_ctx = NULL;
-    GVariant *service_start_exit_code     = NULL;
+    alteratorctl_ctx_t* service_start_ctx = NULL;
+    GVariant* service_start_exit_code     = NULL;
 
     g_variant_get((*ctx)->parameters, "(msms)", &service_str_id, NULL);
     if (!service_str_id)
@@ -6147,7 +6137,8 @@ static int services_module_deploy_handle_result(AlteratorCtlServicesModule *modu
     }
 
     {
-        ServicesPlayPlan *play_plan = services_play_plan_get(module, SERVICES_DEPLOY, service_str_id);
+        ServicesPlayPlan* play_plan = services_play_plan_get(module, SERVICES_DEPLOY,
+                                                             service_str_id);
         gboolean should_autostart   = lauch_after_deploy;
         if (play_plan && play_plan->has_autostart)
             should_autostart = play_plan->autostart;
@@ -6156,7 +6147,8 @@ static int services_module_deploy_handle_result(AlteratorCtlServicesModule *modu
             goto end;
     }
 
-    service_start_ctx = alteratorctl_ctx_init_services(SERVICES_START, service_str_id, NULL, NULL, NULL);
+    service_start_ctx = alteratorctl_ctx_init_services(SERVICES_START, service_str_id, NULL, NULL,
+                                                       NULL);
     if (services_module_start_subcommand(module, &service_start_ctx) < 0)
         ERR_EXIT();
 
@@ -6172,7 +6164,7 @@ static int services_module_deploy_handle_result(AlteratorCtlServicesModule *modu
         ERR_EXIT();
     }
 
-    service_start_exit_code = g_variant_get_child_value((GVariant *) service_start_ctx->results, 0);
+    service_start_exit_code = g_variant_get_child_value((GVariant*) service_start_ctx->results, 0);
     if (!service_start_exit_code)
     {
         g_printerr(_("No exit code from %s service autolaunch after deploying.\n"), service_str_id);
@@ -6182,7 +6174,8 @@ static int services_module_deploy_handle_result(AlteratorCtlServicesModule *modu
     ret = g_variant_get_int32(service_start_exit_code);
     if (ret)
     {
-        g_printerr(_("Failed to start %s service after deploying. Exit code: %i.\n"), service_str_id, ret);
+        g_printerr(_("Failed to start %s service after deploying. Exit code: %i.\n"),
+                   service_str_id, ret);
         ERR_EXIT();
     }
 
@@ -6201,13 +6194,14 @@ end:
     return ret;
 }
 
-static int services_module_info_handle_result(AlteratorCtlServicesModule *module, alteratorctl_ctx_t **ctx)
+static int services_module_info_handle_result(AlteratorCtlServicesModule* module,
+                                              alteratorctl_ctx_t** ctx)
 {
     int ret               = 0;
-    gchar *service_str_id = NULL;
-    gchar *result         = NULL;
-    GVariant *exit_code   = NULL;
-    GVariant *info_array  = NULL;
+    gchar* service_str_id = NULL;
+    gchar* result         = NULL;
+    GVariant* exit_code   = NULL;
+    GVariant* info_array  = NULL;
 
     g_variant_get((*ctx)->parameters, "(msms)", &service_str_id, NULL);
     if (!service_str_id)
@@ -6258,15 +6252,17 @@ end:
     return ret;
 }
 
-static int services_module_resources_handle_result(AlteratorCtlServicesModule *module, alteratorctl_ctx_t **ctx)
+static int services_module_resources_handle_result(AlteratorCtlServicesModule* module,
+                                                   alteratorctl_ctx_t** ctx)
 {
     int ret                                   = 0;
-    gchar *service_str_id                     = NULL;
-    GNode *service_info                       = NULL;
-    GNode *resources                          = NULL;
-    GHashTable *params_to_resources           = NULL;
-    GHashTable *resources_to_params           = NULL;
-    AlteratorCtlModuleInfoParser *info_parser = (AlteratorCtlModuleInfoParser *) module->gdbus_source->info_parser;
+    gchar* service_str_id                     = NULL;
+    GNode* service_info                       = NULL;
+    GNode* resources                          = NULL;
+    GHashTable* params_to_resources           = NULL;
+    GHashTable* resources_to_params           = NULL;
+    AlteratorCtlModuleInfoParser* info_parser = (AlteratorCtlModuleInfoParser*)
+                                                    module->gdbus_source->info_parser;
 
     g_variant_get((*ctx)->parameters, "(msms)", &service_str_id, NULL);
     if (!service_str_id)
@@ -6278,7 +6274,7 @@ static int services_module_resources_handle_result(AlteratorCtlServicesModule *m
     if (!(*ctx)->results)
         goto end;
 
-    service_info = (GNode *) (*ctx)->results;
+    service_info = (GNode*) (*ctx)->results;
 
     resources = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
         info_parser, service_info, SERVICES_ALTERATOR_ENTRY_SERVICE_RESOURCES_TABLE_NAME, 2);
@@ -6290,12 +6286,9 @@ static int services_module_resources_handle_result(AlteratorCtlServicesModule *m
 
     resources_to_params = hash_table_str2str_invert(params_to_resources);
 
-    if (services_module_printing_resources_value(module,
-                                                 service_str_id,
-                                                 service_info,
-                                                 resources,
-                                                 services_module_print_resource_with_links_to_params,
-                                                 resources_to_params)
+    if (services_module_printing_resources_value(
+            module, service_str_id, service_info, resources,
+            services_module_print_resource_with_links_to_params, resources_to_params)
         < 0)
         ERR_EXIT();
 
@@ -6311,12 +6304,13 @@ end:
     return ret;
 }
 
-static int services_module_restore_handle_result(AlteratorCtlServicesModule *module, alteratorctl_ctx_t **ctx)
+static int services_module_restore_handle_result(AlteratorCtlServicesModule* module,
+                                                 alteratorctl_ctx_t** ctx)
 {
     int ret                     = 0;
-    const gchar *service_str_id = NULL;
-    GVariant *exit_code         = NULL;
-    GError *error               = NULL;
+    const gchar* service_str_id = NULL;
+    GVariant* exit_code         = NULL;
+    GError* error               = NULL;
 
     g_variant_get((*ctx)->parameters, "(msms)", &service_str_id, NULL);
     if (!service_str_id)
@@ -6353,7 +6347,7 @@ static int services_module_restore_handle_result(AlteratorCtlServicesModule *mod
     }
 
 end:
-    g_free((gchar *) service_str_id);
+    g_free((gchar*) service_str_id);
 
     if (exit_code)
         g_variant_unref(exit_code);
@@ -6363,7 +6357,7 @@ end:
     return ret;
 }
 
-static int services_module_status_value_to_str(JsonNode *value, gchar **result)
+static int services_module_status_value_to_str(JsonNode* value, gchar** result)
 {
     int ret = 0;
     if (!result)
@@ -6380,8 +6374,14 @@ static int services_module_status_value_to_str(JsonNode *value, gchar **result)
         break;
 
     case G_TYPE_DOUBLE:
-        *result = g_strdup_printf("%lf", json_node_get_double(value));
-        break;
+    {
+        gdouble double_value = json_node_get_double(value);
+        if (double_value == (gint64) double_value)
+            *result = g_strdup_printf("%ld", (gint64) double_value);
+        else
+            *result = g_strdup_printf("%lf", double_value);
+    }
+    break;
 
     case G_TYPE_BOOLEAN:
         *result = g_strdup_printf("%s", (json_node_get_boolean(value) ? "true" : "false"));
@@ -6397,14 +6397,14 @@ end:
     return ret;
 }
 
-static GNode *get_direct_child_by_name(GNode *parent, const char *name)
+static GNode* get_direct_child_by_name(GNode* parent, const char* name)
 {
     if (!parent || !name)
         return NULL;
 
-    for (GNode *child = parent->children; child != NULL; child = child->next)
+    for (GNode* child = parent->children; child != NULL; child = child->next)
     {
-        const gchar *child_name = child ? ((alterator_entry_node *) child->data)->node_name : NULL;
+        const gchar* child_name = child ? ((alterator_entry_node*) child->data)->node_name : NULL;
 
         if (child_name && streq(child_name, name))
             return child;
@@ -6412,33 +6412,33 @@ static GNode *get_direct_child_by_name(GNode *parent, const char *name)
     return NULL;
 }
 
-static GNode *find_properties_on_node(GNode *node)
+static GNode* find_properties_on_node(GNode* node)
 {
     return get_direct_child_by_name(node, SERVICES_ALTERATOR_ENTRY_SERVICE_PROPERTIES_TABLE_NAME);
 }
 
-static GNode *resolve_parameter_properties(AlteratorCtlModuleInfoParser *info_parser,
-                                           GNode *module_info,
-                                           GNode *param_node)
+static GNode* resolve_parameter_properties(AlteratorCtlModuleInfoParser* info_parser,
+                                           GNode* module_info, GNode* param_node)
 {
     if (!param_node)
         return NULL;
 
-    GNode *props = find_properties_on_node(param_node);
+    GNode* props = find_properties_on_node(param_node);
     if (props)
         return props;
 
-    toml_value *prototype = g_hash_table_lookup(((alterator_entry_node *) param_node->data)->toml_pairs,
-                                                SERVICES_ALTERATOR_ENTRY_SERVICE_DEFAULT_PARAM_PROTOTYPE_KEY_NAME);
+    toml_value* prototype =
+        g_hash_table_lookup(((alterator_entry_node*) param_node->data)->toml_pairs,
+                            SERVICES_ALTERATOR_ENTRY_SERVICE_DEFAULT_PARAM_PROTOTYPE_KEY_NAME);
 
     if (prototype && prototype->type == TOML_DATA_STRING)
     {
-        GNode *all_params = get_direct_child_by_name(module_info,
-                                                     SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME);
+        GNode* all_params = get_direct_child_by_name(
+            module_info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME);
         if (!all_params)
             return NULL;
 
-        GNode *proto = get_direct_child_by_name(all_params, prototype->str_value);
+        GNode* proto = get_direct_child_by_name(all_params, prototype->str_value);
         if (!proto)
             return NULL;
 
@@ -6448,23 +6448,21 @@ static GNode *resolve_parameter_properties(AlteratorCtlModuleInfoParser *info_pa
     return NULL;
 }
 
-static int services_module_status_params_build_path(AlteratorCtlServicesModule *module,
-                                                    gchar *service_str_id,
-                                                    const gchar *key,
-                                                    JsonNode *value,
-                                                    GNode *parameter_node,
-                                                    gboolean is_enum_subparam,
-                                                    GString *prefix,
-                                                    GHashTable **result)
+static int services_module_status_params_build_path(AlteratorCtlServicesModule* module,
+                                                    gchar* service_str_id, const gchar* key,
+                                                    JsonNode* value, GNode* parameter_node,
+                                                    gboolean is_enum_subparam, GString* prefix,
+                                                    GHashTable** result)
 {
     int ret                                   = 0;
-    GString *path                             = g_string_new("");
-    AlteratorCtlModuleInfoParser *info_parser = (AlteratorCtlModuleInfoParser *) module->gdbus_source->info_parser;
+    GString* path                             = g_string_new("");
+    AlteratorCtlModuleInfoParser* info_parser = (AlteratorCtlModuleInfoParser*)
+                                                    module->gdbus_source->info_parser;
 
     gboolean is_simple_enum_field = FALSE;
     {
-        alterator_entry_node *parent_parameter_data = parameter_node->parent->data;
-        is_simple_enum_field                        = streq(parent_parameter_data->node_name, "values");
+        alterator_entry_node* parent_parameter_data = parameter_node->parent->data;
+        is_simple_enum_field = streq(parent_parameter_data->node_name, "values");
     }
 
     g_string_assign(path, prefix ? prefix->str : "");
@@ -6478,48 +6476,46 @@ static int services_module_status_params_build_path(AlteratorCtlServicesModule *
     JsonNodeType node_type = json_node_get_node_type(value);
     switch (node_type)
     {
-    case JSON_NODE_ARRAY: {
-        JsonArray *array = json_node_get_array(value);
+    case JSON_NODE_ARRAY:
+    {
+        JsonArray* array = json_node_get_array(value);
         int length       = json_array_get_length(array);
         if (!length)
         {
-            g_hash_table_insert(*result, g_strconcat(prefix->str, ".", key, NULL), g_strdup("empty array"));
+            g_hash_table_insert(*result, g_strconcat(path->str, ".", key, NULL),
+                                g_strdup("empty array"));
             break;
         }
 
         for (int i = 0; i < length; ++i)
         {
-            JsonNode *item         = json_array_get_element(array, i);
+            JsonNode* item         = json_array_get_element(array, i);
             JsonNodeType item_type = json_node_get_node_type(item);
 
-            GString *path_i = g_string_new(path->str);
+            GString* path_i = g_string_new(path->str);
             g_string_append_c(path_i, '.');
             g_string_append_printf(path_i, "%i", i);
 
             if (item_type == JSON_NODE_OBJECT)
             {
-                GNode *children = resolve_parameter_properties(info_parser, module->info, parameter_node);
+                GNode* children = resolve_parameter_properties(info_parser, module->info,
+                                                               parameter_node);
                 if (!children)
-                    children = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
-                                                                                              parameter_node,
-                                                                                              "values",
-                                                                                              2);
+                    children = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
+                        info_parser, parameter_node, "values", 2);
 
                 if (children)
                 {
-                    if (services_module_status_params_build_output(module,
-                                                                   service_str_id,
+                    if (services_module_status_params_build_output(module, service_str_id,
                                                                    json_node_get_object(item),
-                                                                   children,
-                                                                   path_i,
-                                                                   result)
+                                                                   children, path_i, result)
                         < 0)
                         ERR_EXIT();
                 }
             }
             else
             {
-                gchar *value_str = NULL;
+                gchar* value_str = NULL;
                 if (services_module_status_value_to_str(item, &value_str) < 0)
                     ERR_EXIT();
                 g_hash_table_insert(*result, g_strdup(path_i->str), g_strdup(value_str));
@@ -6531,46 +6527,46 @@ static int services_module_status_params_build_path(AlteratorCtlServicesModule *
         break;
     }
 
-    case JSON_NODE_OBJECT: {
-        GNode *values_tbl = NULL;
+    case JSON_NODE_OBJECT:
+    {
+        GNode* values_tbl = NULL;
         if (!is_enum_subparam)
             values_tbl = get_direct_child_by_name(parameter_node, "values");
 
         if (values_tbl)
         {
-            JsonObject *obj = json_node_get_object(value);
+            JsonObject* obj = json_node_get_object(value);
             JsonObjectIter it;
             json_object_iter_init(&it, obj);
 
-            const gchar *enum_value_name;
-            JsonNode *enum_value_payload;
+            const gchar* enum_value_name;
+            JsonNode* enum_value_payload;
 
-            GPtrArray *selected = g_ptr_array_new_with_free_func(g_free);
+            GPtrArray* selected = g_ptr_array_new_with_free_func(g_free);
 
             while (json_object_iter_next(&it, &enum_value_name, &enum_value_payload))
             {
-                GNode *enum_value_node = get_direct_child_by_name(values_tbl, enum_value_name);
+                GNode* enum_value_node = get_direct_child_by_name(values_tbl, enum_value_name);
                 if (!enum_value_node)
                 {
-                    g_printerr(_("Enum value '%s' is not defined in schema for '%s'.\n"), enum_value_name, key);
+                    g_printerr(_("Enum value '%s' is not defined in schema for '%s'.\n"),
+                               enum_value_name, key);
                     continue;
                 }
 
                 g_ptr_array_add(selected, g_strdup(enum_value_name));
 
-                GNode *enum_props = find_properties_on_node(enum_value_node);
+                GNode* enum_props = find_properties_on_node(enum_value_node);
                 if (enum_props && JSON_NODE_OBJECT == json_node_get_node_type(enum_value_payload))
                 {
-                    GString *path_val = g_string_new(path->str);
+                    GString* path_val = g_string_new(path->str);
                     g_string_append_c(path_val, '.');
                     g_string_append(path_val, enum_value_name);
 
-                    if (services_module_status_params_build_output(module,
-                                                                   service_str_id,
-                                                                   json_node_get_object(enum_value_payload),
-                                                                   enum_props,
-                                                                   path_val,
-                                                                   result)
+                    if (services_module_status_params_build_output(module, service_str_id,
+                                                                   json_node_get_object(
+                                                                       enum_value_payload),
+                                                                   enum_props, path_val, result)
                         < 0)
                         ERR_EXIT();
 
@@ -6580,15 +6576,15 @@ static int services_module_status_params_build_path(AlteratorCtlServicesModule *
 
             if (selected->len == 1)
             {
-                const char *sel = (const char *) g_ptr_array_index(selected, 0);
+                const char* sel = (const char*) g_ptr_array_index(selected, 0);
                 g_hash_table_insert(*result, g_strdup(path->str), g_strdup_printf("\"%s\"", sel));
             }
             else if (selected->len > 1)
             {
-                GString *arr = g_string_new("[");
+                GString* arr = g_string_new("[");
                 for (guint i = 0; i < selected->len; ++i)
                 {
-                    const char *sel = (const char *) g_ptr_array_index(selected, i);
+                    const char* sel = (const char*) g_ptr_array_index(selected, i);
                     if (i)
                         g_string_append(arr, ",");
                     g_string_append_printf(arr, "\"%s\"", sel);
@@ -6605,19 +6601,17 @@ static int services_module_status_params_build_path(AlteratorCtlServicesModule *
         {
             if (!is_simple_enum_field)
             {
-                GNode *children = resolve_parameter_properties(info_parser, module->info, parameter_node);
+                GNode* children = resolve_parameter_properties(info_parser, module->info,
+                                                               parameter_node);
                 if (!children)
                 {
                     g_printerr(_("Internal error: can't resolve properties for '%s'.\n"), key);
                     ERR_EXIT();
                 }
 
-                if (services_module_status_params_build_output(module,
-                                                               service_str_id,
+                if (services_module_status_params_build_output(module, service_str_id,
                                                                json_node_get_object(value),
-                                                               children,
-                                                               path,
-                                                               result)
+                                                               children, path, result)
                     < 0)
                     ERR_EXIT();
             }
@@ -6627,8 +6621,9 @@ static int services_module_status_params_build_path(AlteratorCtlServicesModule *
         break;
     }
 
-    case JSON_NODE_VALUE: {
-        gchar *value_str = NULL;
+    case JSON_NODE_VALUE:
+    {
+        gchar* value_str = NULL;
         if (services_module_status_value_to_str(value, &value_str) < 0)
             ERR_EXIT();
 
@@ -6652,12 +6647,10 @@ end:
     return ret;
 }
 
-static int services_module_status_params_build_output(AlteratorCtlServicesModule *module,
-                                                      gchar *service_str_id,
-                                                      JsonObject *parameters,
-                                                      GNode *parameters_data,
-                                                      GString *prefix,
-                                                      GHashTable **result)
+static int services_module_status_params_build_output(AlteratorCtlServicesModule* module,
+                                                      gchar* service_str_id, JsonObject* parameters,
+                                                      GNode* parameters_data, GString* prefix,
+                                                      GHashTable** result)
 {
     int ret = 0;
 
@@ -6665,44 +6658,48 @@ static int services_module_status_params_build_output(AlteratorCtlServicesModule
         ERR_EXIT();
 
     if (!(*result))
-        *result = g_hash_table_new_full(g_str_hash, g_str_equal, (GDestroyNotify) g_free, (GDestroyNotify) g_free);
+        *result = g_hash_table_new_full(g_str_hash, g_str_equal, (GDestroyNotify) g_free,
+                                        (GDestroyNotify) g_free);
 
     if (!module->info)
     {
-        g_printerr(_("Error processing service %s parameters: empty service info.\n"), service_str_id);
+        g_printerr(_("Error processing service %s parameters: empty service info.\n"),
+                   service_str_id);
         ERR_EXIT();
     }
 
     JsonObjectIter iter;
     json_object_iter_init(&iter, parameters);
 
-    const gchar *key;
-    JsonNode *value;
+    const gchar* key;
+    JsonNode* value;
     while (json_object_iter_next(&iter, &key, &value))
     {
         if (services_module_is_special_param(key))
             continue;
 
-        GNode *parameter = get_direct_child_by_name(parameters_data, key);
+        GNode* parameter = get_direct_child_by_name(parameters_data, key);
         if (!parameter)
         {
             g_printerr(_("Parameter data not found for %s.\n"), key);
             continue;
         }
 
-        alterator_entry_node *parameter_data = parameter->data;
+        alterator_entry_node* parameter_data = parameter->data;
 
-        toml_value *constant = g_hash_table_lookup(parameter_data->toml_pairs,
-                                                   SERVICES_ALTERATOR_ENTRY_SERVICE_PARAM_CONSTANT_KEY_NAME);
+        toml_value* constant = g_hash_table_lookup(
+            parameter_data->toml_pairs, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAM_CONSTANT_KEY_NAME);
         if (constant && constant->bool_value)
             continue;
 
-        toml_value *context = g_hash_table_lookup(parameter_data->toml_pairs,
-                                                  SERVICES_ALTERATOR_ENTRY_SERVICE_PARAM_CONTEXT_KEY_NAME);
+        toml_value*
+            context = g_hash_table_lookup(parameter_data->toml_pairs,
+                                          SERVICES_ALTERATOR_ENTRY_SERVICE_PARAM_CONTEXT_KEY_NAME);
         if (context && !context->array_length)
             continue; // For example, object prototypes
 
-        if (services_module_status_params_build_path(module, service_str_id, key, value, parameter, FALSE, prefix, result)
+        if (services_module_status_params_build_path(module, service_str_id, key, value, parameter,
+                                                     FALSE, prefix, result)
             < 0)
             ERR_EXIT();
     }
@@ -6711,23 +6708,22 @@ end:
     return ret;
 }
 
-static gboolean services_module_get_required_parameters_paths_recursive(AlteratorCtlServicesModule *module,
-                                                                        const gchar *context,
-                                                                        gchar *prefix,
-                                                                        GNode *parameter,
-                                                                        JsonNode *value,
-                                                                        gboolean is_array_member,
-                                                                        gboolean is_enum_value,
-                                                                        GHashTable **result)
+static gboolean services_module_get_required_parameters_paths_recursive(
+    AlteratorCtlServicesModule* module, const gchar* context, gchar* prefix, GNode* parameter,
+    JsonNode* value, gboolean is_array_member, gboolean is_enum_value, GHashTable** result)
 {
-    AlteratorCtlModuleInfoParser *info_parser = (AlteratorCtlModuleInfoParser *) module->gdbus_source->info_parser;
-    gchar *param_name                         = ((alterator_entry_node *) parameter->data)->node_name;
+    AlteratorCtlModuleInfoParser* info_parser = (AlteratorCtlModuleInfoParser*)
+                                                    module->gdbus_source->info_parser;
+    gchar* param_name = ((alterator_entry_node*) parameter->data)->node_name;
 
-    gchar *path = prefix ? (is_array_member ? g_strdup(prefix) : g_strconcat(prefix, ".", param_name, NULL))
+    gchar* path = prefix ? (is_array_member ? g_strdup(prefix)
+                                            : g_strconcat(prefix, ".", param_name, NULL))
                          : g_strdup(param_name);
 
     { // skip constants
-        toml_value *constant = g_hash_table_lookup(((alterator_entry_node *) parameter->data)->toml_pairs, "constant");
+        toml_value* constant = g_hash_table_lookup(((alterator_entry_node*) parameter->data)
+                                                       ->toml_pairs,
+                                                   "constant");
         ;
         if (constant && constant->bool_value)
             goto end;
@@ -6735,7 +6731,9 @@ static gboolean services_module_get_required_parameters_paths_recursive(Alterato
 
     gboolean is_required = FALSE;
     {
-        toml_value *required = g_hash_table_lookup(((alterator_entry_node *) parameter->data)->toml_pairs, "required");
+        toml_value* required = g_hash_table_lookup(((alterator_entry_node*) parameter->data)
+                                                       ->toml_pairs,
+                                                   "required");
         if (required)
         {
             if (required->type == TOML_DATA_BOOL)
@@ -6743,7 +6741,7 @@ static gboolean services_module_get_required_parameters_paths_recursive(Alterato
             else if (required->type == TOML_DATA_ARRAY_OF_STRING)
             {
                 for (gsize context_idx = 0; context_idx < required->array_length; context_idx++)
-                    if (streq(context, ((gchar **) required->array)[context_idx]))
+                    if (streq(context, ((gchar**) required->array)[context_idx]))
                     {
                         is_required = TRUE;
                         break;
@@ -6752,12 +6750,12 @@ static gboolean services_module_get_required_parameters_paths_recursive(Alterato
         }
     }
 
-    gchar *type = NULL;
+    gchar* type = NULL;
     {
-        toml_value *type_name
-            = g_hash_table_lookup(((alterator_entry_node *) parameter->data)->toml_pairs,
-                                  is_array_member ? SERVICES_ALTERATOR_ENTRY_SERVICE_DEFAULT_PARAM_ARRAY_TYPE_KEY_NAME
-                                                  : SERVICES_ALTERATOR_ENTRY_SERVICE_DEFAULT_PARAM_TYPE_KEY_NAME);
+        toml_value* type_name = g_hash_table_lookup(
+            ((alterator_entry_node*) parameter->data)->toml_pairs,
+            is_array_member ? SERVICES_ALTERATOR_ENTRY_SERVICE_DEFAULT_PARAM_ARRAY_TYPE_KEY_NAME
+                            : SERVICES_ALTERATOR_ENTRY_SERVICE_DEFAULT_PARAM_TYPE_KEY_NAME);
 
         if (type_name)
             type = type_name->str_value;
@@ -6769,43 +6767,42 @@ static gboolean services_module_get_required_parameters_paths_recursive(Alterato
     if (is_enum_value || streq(type, "object"))
     {
         { // check prototype and repoint "parameter" to a corresponding table
-            toml_value *prototype
-                = g_hash_table_lookup(((alterator_entry_node *) parameter->data)->toml_pairs,
-                                      SERVICES_ALTERATOR_ENTRY_SERVICE_DEFAULT_PARAM_PROTOTYPE_KEY_NAME);
+            toml_value* prototype = g_hash_table_lookup(
+                ((alterator_entry_node*) parameter->data)->toml_pairs,
+                SERVICES_ALTERATOR_ENTRY_SERVICE_DEFAULT_PARAM_PROTOTYPE_KEY_NAME);
 
             if (prototype)
             {
-                GNode *parameters = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-                    info_parser, module->info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME, 2);
+                GNode* parameters = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
+                    info_parser, module->info,
+                    SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME, 2);
 
-                parameter = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
-                                                                                           parameters,
-                                                                                           prototype->str_value,
-                                                                                           2);
+                parameter = info_parser
+                                ->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
+                                                                                    parameters,
+                                                                                    prototype
+                                                                                        ->str_value,
+                                                                                    2);
             }
         }
 
-        GNode *parameters = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
+        GNode* parameters = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
             info_parser, parameter, SERVICES_ALTERATOR_ENTRY_SERVICE_PROPERTIES_TABLE_NAME, 2);
 
         if (parameters)
         {
-            JsonObject *object = value ? json_node_get_object(value) : NULL;
+            JsonObject* object = value ? json_node_get_object(value) : NULL;
 
-            for (GNode *child = parameters->children; child != NULL; child = child->next)
+            for (GNode* child = parameters->children; child != NULL; child = child->next)
             {
-                JsonNode *child_value = object
-                                            ? json_object_get_member(object,
-                                                                     ((alterator_entry_node *) child->data)->node_name)
-                                            : NULL;
-                services_module_get_required_parameters_paths_recursive(module,
-                                                                        context,
-                                                                        path,
-                                                                        child,
-                                                                        child_value,
-                                                                        FALSE,
-                                                                        FALSE,
-                                                                        result);
+                JsonNode* child_value = object ? json_object_get_member(object,
+                                                                        ((alterator_entry_node*)
+                                                                             child->data)
+                                                                            ->node_name)
+                                               : NULL;
+                services_module_get_required_parameters_paths_recursive(module, context, path,
+                                                                        child, child_value, FALSE,
+                                                                        FALSE, result);
             }
         }
 
@@ -6818,47 +6815,43 @@ static gboolean services_module_get_required_parameters_paths_recursive(Alterato
         if (is_required)
             g_hash_table_add(*result, g_strdup(path));
 
-        JsonObject *enum_object = value ? json_node_get_object(value) : NULL;
+        JsonObject* enum_object = value ? json_node_get_object(value) : NULL;
 
         if (enum_object && json_object_get_size(enum_object)) // append child and its subparameters
         {
-            gchar *enum_value_name = NULL;
+            gchar* enum_value_name = NULL;
             {
-                GList *members  = json_object_get_members(enum_object);
+                GList* members  = json_object_get_members(enum_object);
                 enum_value_name = members->data;
                 g_list_free(members);
             }
 
-            GNode *enum_values = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
-                                                                                                parameter,
-                                                                                                "values",
-                                                                                                2);
+            GNode*
+                enum_values = info_parser
+                                  ->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
+                                                                                      parameter,
+                                                                                      "values", 2);
 
-            GNode *value_data    = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
-                                                                                               enum_values,
-                                                                                               enum_value_name,
-                                                                                               2);
-            JsonNode *enum_value = json_object_get_member(enum_object, enum_value_name);
+            GNode* value_data = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
+                info_parser, enum_values, enum_value_name, 2);
+            JsonNode* enum_value = json_object_get_member(enum_object, enum_value_name);
 
-            services_module_get_required_parameters_paths_recursive(module,
-                                                                    context,
-                                                                    path,
-                                                                    value_data,
-                                                                    enum_value,
-                                                                    FALSE,
-                                                                    TRUE,
-                                                                    result);
+            services_module_get_required_parameters_paths_recursive(module, context, path,
+                                                                    value_data, enum_value, FALSE,
+                                                                    TRUE, result);
         }
 
         goto end;
     }
     else if (streq(type, "array"))
     {
-        JsonArray *array = value ? json_node_get_array(value) : NULL;
+        JsonArray* array = value ? json_node_get_array(value) : NULL;
 
         int minsize = 0;
         {
-            toml_value *min_size_toml = g_hash_table_lookup(((alterator_entry_node *) parameter->data)->toml_pairs,
+            toml_value* min_size_toml = g_hash_table_lookup(((alterator_entry_node*)
+                                                                 parameter->data)
+                                                                ->toml_pairs,
                                                             "array_min");
             ;
             if (min_size_toml)
@@ -6869,19 +6862,14 @@ static gboolean services_module_get_required_parameters_paths_recursive(Alterato
 
         if (minsize > array_len)
         {
-            GString *path_i = g_string_new(path);
+            GString* path_i = g_string_new(path);
             if (minsize - array_len == 1)
                 g_string_append_printf(path_i, ".%i", minsize - 1);
             else
                 g_string_append_printf(path_i, ".<%i-%i>", array_len, minsize - 1);
 
-            services_module_get_required_parameters_paths_recursive(module,
-                                                                    context,
-                                                                    path_i->str,
-                                                                    parameter,
-                                                                    NULL,
-                                                                    TRUE,
-                                                                    FALSE,
+            services_module_get_required_parameters_paths_recursive(module, context, path_i->str,
+                                                                    parameter, NULL, TRUE, FALSE,
                                                                     result);
             g_string_free(path_i, TRUE);
         }
@@ -6898,13 +6886,13 @@ end:
     return is_required;
 }
 
-static int services_module_get_required_parameters_paths(AlteratorCtlServicesModule *module,
-                                                         const gchar *service_str_id,
-                                                         const gchar *context,
-                                                         GHashTable **result)
+static int services_module_get_required_parameters_paths(AlteratorCtlServicesModule* module,
+                                                         const gchar* service_str_id,
+                                                         const gchar* context, GHashTable** result)
 {
     int ret                                   = 0;
-    AlteratorCtlModuleInfoParser *info_parser = (AlteratorCtlModuleInfoParser *) module->gdbus_source->info_parser;
+    AlteratorCtlModuleInfoParser* info_parser = (AlteratorCtlModuleInfoParser*)
+                                                    module->gdbus_source->info_parser;
     if (!service_str_id || !strlen(service_str_id))
     {
         g_printerr(_("Can't get required params paths. Unknown service name.\n"));
@@ -6913,51 +6901,50 @@ static int services_module_get_required_parameters_paths(AlteratorCtlServicesMod
 
     if (!context || !strlen(context))
     {
-        g_printerr(_("Can't get required params paths. Unknown service \"%s\" context.\n"), service_str_id);
+        g_printerr(_("Can't get required params paths. Unknown service \"%s\" context.\n"),
+                   service_str_id);
         ERR_EXIT();
     }
 
     if (!result)
     {
-        g_printerr(_("Can't get required params paths of \"%s %s\". There is nowhere to save the result.\n"),
-                   service_str_id,
-                   context);
+        g_printerr(_("Can't get required params paths of \"%s %s\". There is nowhere to save the "
+                     "result.\n"),
+                   service_str_id, context);
         ERR_EXIT();
     }
 
     if (!module->info)
         ERR_EXIT();
     if (!module->required_params_cache)
-        module->required_params_cache = g_hash_table_new_full(g_str_hash,
-                                                              g_str_equal,
+        module->required_params_cache = g_hash_table_new_full(g_str_hash, g_str_equal,
                                                               (GDestroyNotify) g_free,
-                                                              (GDestroyNotify) g_hash_table_destroy);
+                                                              (GDestroyNotify)
+                                                                  g_hash_table_destroy);
 
-    gchar *cache_key = g_strdup_printf("%s|%s", service_str_id, context);
+    gchar* cache_key = g_strdup_printf("%s|%s", service_str_id, context);
 
-    GHashTable *cached = g_hash_table_lookup(module->required_params_cache, cache_key);
+    GHashTable* cached = g_hash_table_lookup(module->required_params_cache, cache_key);
     if (!cached)
     {
-        GHashTable *fresh = g_hash_table_new_full(g_str_hash, g_str_equal, (GDestroyNotify) g_free, NULL);
+        GHashTable* fresh = g_hash_table_new_full(g_str_hash, g_str_equal, (GDestroyNotify) g_free,
+                                                  NULL);
 
-        GNode *parameters = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
+        GNode* parameters = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
             info_parser, module->info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME, 2);
 
         if (!module->json)
             json_node_init_object(module->json, json_object_new());
 
-        JsonObject *root = json_node_get_object(module->json);
+        JsonObject* root = json_node_get_object(module->json);
 
-        for (GNode *parameter = parameters->children; parameter != NULL; parameter = parameter->next)
+        for (GNode* parameter = parameters->children; parameter != NULL;
+             parameter        = parameter->next)
         {
-            JsonNode *value = json_object_get_member(root, ((alterator_entry_node *) parameter->data)->node_name);
-            services_module_get_required_parameters_paths_recursive(module,
-                                                                    context,
-                                                                    NULL,
-                                                                    parameter,
-                                                                    value,
-                                                                    FALSE,
-                                                                    FALSE,
+            JsonNode* value = json_object_get_member(root, ((alterator_entry_node*) parameter->data)
+                                                               ->node_name);
+            services_module_get_required_parameters_paths_recursive(module, context, NULL,
+                                                                    parameter, value, FALSE, FALSE,
                                                                     &fresh);
         }
 
@@ -6973,37 +6960,38 @@ end:
     return ret;
 }
 
-static int services_module_create_params_table(AlteratorCtlServicesModule *module,
-                                               GHashTable *stringified_params_data,
-                                               GHashTable *param_name_to_option_entry,
-                                               GHashTable *required_params_paths,
-                                               gboolean *is_missing_required,
-                                               GString **result)
+static int services_module_create_params_table(AlteratorCtlServicesModule* module,
+                                               GHashTable* stringified_params_data,
+                                               GHashTable* param_name_to_option_entry,
+                                               GHashTable* required_params_paths,
+                                               gboolean* is_missing_required, GString** result)
 {
     int ret                                  = 0;
     gsize max_path_length                    = 0;
     gsize max_value_length                   = 0;
-    GHashTable *stringified_params_data_copy = g_hash_table_copy_table(stringified_params_data,
-                                                                       g_strdup_copy_func,
-                                                                       NULL,
-                                                                       g_strdup_copy_func,
-                                                                       NULL);
-    GPtrArray *params_paths                  = NULL;
-    GPtrArray *params_values                 = g_hash_table_get_values_as_ptr_array(stringified_params_data_copy);
-    if (!g_hash_table_size(stringified_params_data_copy) && !g_hash_table_size(required_params_paths))
+    GHashTable* stringified_params_data_copy = g_hash_table_copy_table(stringified_params_data,
+                                                                       g_strdup_copy_func, NULL,
+                                                                       g_strdup_copy_func, NULL);
+    GPtrArray* params_paths                  = NULL;
+    GPtrArray* params_values = g_hash_table_get_values_as_ptr_array(stringified_params_data_copy);
+    if (!g_hash_table_size(stringified_params_data_copy)
+        && (!required_params_paths || !g_hash_table_size(required_params_paths)))
         goto end;
 
     // Calculate missed required parameters
     if (required_params_paths && g_hash_table_size(required_params_paths))
     {
-        GPtrArray *required_params_paths_array = g_hash_table_get_keys_as_ptr_array(required_params_paths);
+        GPtrArray* required_params_paths_array = g_hash_table_get_keys_as_ptr_array(
+            required_params_paths);
         for (gsize i = 0; i < required_params_paths_array->len; i++)
-            if (!g_hash_table_contains(stringified_params_data_copy, (gchar *) required_params_paths_array->pdata[i]))
+            if (!g_hash_table_contains(stringified_params_data_copy,
+                                       (gchar*) required_params_paths_array->pdata[i]))
             {
                 if (is_missing_required)
                     *is_missing_required = TRUE;
                 g_hash_table_insert(stringified_params_data_copy,
-                                    g_strdup_printf("* %s", (gchar *) required_params_paths_array->pdata[i]),
+                                    g_strdup_printf("* %s",
+                                                    (gchar*) required_params_paths_array->pdata[i]),
                                     g_strdup("none"));
             }
         g_ptr_array_unref(required_params_paths_array);
@@ -7016,7 +7004,7 @@ static int services_module_create_params_table(AlteratorCtlServicesModule *modul
 
     for (gsize i = 0; i < params_paths->len; i++)
     {
-        glong path_len = g_utf8_strlen((gchar *) params_paths->pdata[i], -1);
+        glong path_len = g_utf8_strlen((gchar*) params_paths->pdata[i], -1);
         if (path_len > max_path_length)
             max_path_length = path_len;
     }
@@ -7025,101 +7013,102 @@ static int services_module_create_params_table(AlteratorCtlServicesModule *modul
 
     for (gsize i = 0; i < params_values->len; i++)
     {
-        glong value_len = g_utf8_strlen((gchar *) params_values->pdata[i], -1);
+        glong value_len = g_utf8_strlen((gchar*) params_values->pdata[i], -1);
         if (value_len > max_value_length)
             max_value_length = value_len;
     }
     if (max_value_length < SERVICES_MODULE_MIN_PARAMS_VALUE_COLUMN_WIDTH)
         max_value_length = SERVICES_MODULE_MIN_PARAMS_VALUE_COLUMN_WIDTH;
 
-    GString *horizontal_single_line_left = g_string_new("");
+    GString* horizontal_single_line_left = g_string_new("");
     for (gsize i = 0; i < max_path_length + 2; i++)
         g_string_append(horizontal_single_line_left, SERVICES_PARAMS_TABLE_SINGLE_H);
 
-    GString *horizontal_single_line_right = g_string_new("");
+    GString* horizontal_single_line_right = g_string_new("");
     for (gsize i = 0; i < max_value_length + 2; i++)
         g_string_append(horizontal_single_line_right, SERVICES_PARAMS_TABLE_SINGLE_H);
 
-    GString *horizontal_double_line_left = g_string_new("");
+    GString* horizontal_double_line_left = g_string_new("");
     for (gsize i = 0; i < max_path_length + 2; i++)
         g_string_append(horizontal_double_line_left, SERVICES_PARAMS_TABLE_DOUBLE_H);
 
-    GString *horizontal_double_line_right = g_string_new("");
+    GString* horizontal_double_line_right = g_string_new("");
     for (gsize i = 0; i < max_value_length + 2; i++)
         g_string_append(horizontal_double_line_right, SERVICES_PARAMS_TABLE_DOUBLE_H);
 
     // Top of the table
-    g_string_append_printf(*result,
-                           "%s%s%s%s%s\n",
-                           SERVICES_PARAMS_TABLE_DOUBLE_LT,
+    g_string_append_printf(*result, "%s%s%s%s%s\n", SERVICES_PARAMS_TABLE_DOUBLE_LT,
                            horizontal_double_line_left->str,
                            SERVICES_PARAMS_TABLE_SINGLE_H_DOUBLE_T,
-                           horizontal_double_line_right->str,
-                           SERVICES_PARAMS_TABLE_DOUBLE_RT);
+                           horizontal_double_line_right->str, SERVICES_PARAMS_TABLE_DOUBLE_RT);
 
     for (gsize i = 0; i < params_paths->len; i++)
     {
-        gsize path_length = g_utf8_strlen((gchar *) params_paths->pdata[i], -1);
-        gchar *path       = g_strdup((gchar *) params_paths->pdata[i]);
-        gchar *value      = g_hash_table_lookup(stringified_params_data_copy, path); // HANDLE NULL
-        if (((gchar *) params_paths->pdata[i])[0] == '*' && isatty_safe(STDOUT_FILENO))
+        gsize path_length = g_utf8_strlen((gchar*) params_paths->pdata[i], -1);
+        gchar* path       = g_strdup((gchar*) params_paths->pdata[i]);
+        gchar* value      = g_hash_table_lookup(stringified_params_data_copy, path); // HANDLE NULL
+        if (((gchar*) params_paths->pdata[i])[0] == '*' && isatty_safe(STDOUT_FILENO))
         {
-            gchar *tmp = path;
+            gchar* tmp = path;
             path       = stylize_text(tmp, RED);
             g_free(tmp);
         }
 
-        gchar *first_col_spaces  = g_strnfill(max_path_length - path_length + 2, ' ');
-        gchar *second_col_spaces = g_strnfill(max_value_length - (value ? g_utf8_strlen(value, -1) : 0) + 2, ' ');
+        gchar* first_col_spaces  = g_strnfill(max_path_length - path_length + 2, ' ');
+        gchar* second_col_spaces = g_strnfill(max_value_length
+                                                  - (value ? g_utf8_strlen(value, -1) : 0) + 2,
+                                              ' ');
 
-        GRegex *array_elem_regex    = g_regex_new("\\.(\\d+)(\\.|$)", 0, 0, NULL);
+        GRegex* array_elem_regex    = g_regex_new("\\.(\\d+)(\\.|$)", 0, 0, NULL);
         gboolean is_array_elem      = g_regex_match(array_elem_regex, path, 0, NULL);
         gboolean is_array_last_elem = FALSE;
         {
-            const gchar *next_path = (i + 1 < params_paths->len) ? (const gchar *) params_paths->pdata[i + 1] : NULL;
+            const gchar* next_path = (i + 1 < params_paths->len)
+                                         ? (const gchar*) params_paths->pdata[i + 1]
+                                         : NULL;
 
             if (is_array_elem)
             {
-                gboolean next_is_array = next_path ? g_regex_match(array_elem_regex, next_path, 0, NULL) : FALSE;
+                gboolean next_is_array = next_path
+                                             ? g_regex_match(array_elem_regex, next_path, 0, NULL)
+                                             : FALSE;
                 is_array_last_elem     = (next_path == NULL) || !next_is_array;
             }
         }
         g_regex_unref(array_elem_regex);
 
-        GOptionEntry *param_entry = param_name_to_option_entry
-                                        ? (GOptionEntry *) g_hash_table_lookup(param_name_to_option_entry, path)
+        GOptionEntry* param_entry = param_name_to_option_entry
+                                        ? (GOptionEntry*)
+                                              g_hash_table_lookup(param_name_to_option_entry, path)
                                         : NULL;
 
-        gchar **description_parts = NULL;
+        gchar** description_parts = NULL;
         if (is_array_last_elem)
         {
             // Get array name
-            const gchar *p        = strchr(path, '.');
+            const gchar* p        = strchr(path, '.');
             gsize first_dot_index = p ? (p - path) : -1;
-            gchar *array_path     = g_utf8_substring(path, 0, first_dot_index);
+            gchar* array_path     = g_utf8_substring(path, 0, first_dot_index);
 
-            AlteratorCtlModuleInfoParser *info_parser = module->gdbus_source->info_parser;
+            AlteratorCtlModuleInfoParser* info_parser = module->gdbus_source->info_parser;
 
-            GNode *parameters_node = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-                info_parser, module->info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME, 2);
+            GNode* parameters_node = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
+                info_parser, module->info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME,
+                2);
 
-            GNode *array_node = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
-                                                                                               parameters_node,
-                                                                                               array_path,
-                                                                                               2);
+            GNode* array_node = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
+                info_parser, parameters_node, array_path, 2);
             g_free(array_path);
 
             {
-                const gchar *display_name
-                    = services_module_get_localized_field(info_parser,
-                                                          array_node,
-                                                          SERVICES_ALTERATOR_ENTRY_SERVICE_DISPLAY_NAME_TABLE_NAME);
-                const gchar *comment
-                    = services_module_get_localized_field(info_parser,
-                                                          array_node,
-                                                          SERVICES_ALTERATOR_ENTRY_SERVICE_COMMENT_NAME_TABLE_NAME);
+                const gchar* display_name = services_module_get_localized_field(
+                    info_parser, array_node,
+                    SERVICES_ALTERATOR_ENTRY_SERVICE_DISPLAY_NAME_TABLE_NAME);
+                const gchar* comment = services_module_get_localized_field(
+                    info_parser, array_node,
+                    SERVICES_ALTERATOR_ENTRY_SERVICE_COMMENT_NAME_TABLE_NAME);
 
-                GStrvBuilder *strv_builder = g_strv_builder_new();
+                GStrvBuilder* strv_builder = g_strv_builder_new();
                 g_strv_builder_add(strv_builder, display_name);
                 g_strv_builder_add(strv_builder, comment);
                 description_parts = g_strv_builder_unref_to_strv(strv_builder);
@@ -7130,79 +7119,123 @@ static int services_module_create_params_table(AlteratorCtlServicesModule *modul
         }
         else
         {
-            gchar *description = param_entry ? (gchar *) param_entry->description : NULL;
+            gchar* description = param_entry ? (gchar*) param_entry->description : NULL;
             description_parts  = description ? g_strsplit(description, "\n", -1) : NULL;
             // Remove last string (because it's empty)
             if (description_parts)
                 g_clear_pointer(&description_parts[g_strv_length(description_parts) - 1], g_free);
         }
 
-        gsize descriprion_subrow_length = description_parts ? max_path_length + g_utf8_strlen("  ", -1)
-                                                                  + max_value_length + g_utf8_strlen("  ", -1)
-                                                                  + g_utf8_strlen(SERVICES_PARAMS_TABLE_DOUBLE_V, -1)
-                                                            : 0;
+        gsize descriprion_subrow_length = description_parts
+                                              ? max_path_length + g_utf8_strlen("  ", -1)
+                                                    + max_value_length + g_utf8_strlen("  ", -1)
+                                                    + g_utf8_strlen(SERVICES_PARAMS_TABLE_DOUBLE_V,
+                                                                    -1)
+                                              : 0;
 
-        gchar *stylized_path = NULL;
+        gchar* stylized_path = NULL;
         if (isatty_safe(STDOUT_FILENO))
             stylized_path = stylize_text(path, BOLD);
 
         // Top of the table
-        g_string_append_printf(*result,
-                               "%s%s%s%s%s%s%s\n",
-                               SERVICES_PARAMS_TABLE_DOUBLE_V,
-                               isatty_safe(STDOUT_FILENO) ? stylized_path : path,
-                               first_col_spaces,
-                               SERVICES_PARAMS_TABLE_SINGLE_V,
-                               value,
-                               second_col_spaces,
+        g_string_append_printf(*result, "%s%s%s%s%s%s%s\n", SERVICES_PARAMS_TABLE_DOUBLE_V,
+                               isatty_safe(STDOUT_FILENO) ? stylized_path : path, first_col_spaces,
+                               SERVICES_PARAMS_TABLE_SINGLE_V, value, second_col_spaces,
                                SERVICES_PARAMS_TABLE_DOUBLE_V);
 
         if (description_parts)
         {
-            g_string_append_printf(*result,
-                                   "%s%s%s%s%s\n",
+            g_string_append_printf(*result, "%s%s%s%s%s\n",
                                    SERVICES_PARAMS_TABLE_SINGLE_H_DOUBLE_V_R,
                                    horizontal_single_line_left->str,
                                    SERVICES_PARAMS_TABLE_SINGLE_H_SINGLE_B,
                                    horizontal_single_line_right->str,
                                    SERVICES_PARAMS_TABLE_SINGLE_H_DOUBLE_V_L);
 
-            for (gsize desc_part_idx = 0; desc_part_idx < g_strv_length(description_parts) && desc_part_idx < 2;
+            for (gsize desc_part_idx = 0;
+                 desc_part_idx < g_strv_length(description_parts) && desc_part_idx < 2;
                  desc_part_idx++)
             {
-                gchar *description_part = description_parts[desc_part_idx];
+                gchar* description_part = description_parts[desc_part_idx];
 
                 // Adding '.' at the end
 
                 description_part = g_strconcat(description_part, ".", NULL);
 
-                gchar **words  = g_strsplit(description_part, " ", -1);
-                GString *line  = g_string_new("");
+                gchar** words = NULL;
+                // Set of indicies of paths parts
+                GHashTable* path_parts_indicies_set = g_hash_table_new(g_direct_hash,
+                                                                       g_direct_equal);
+                {
+                    // Words by space separator
+                    gchar** words_by_spaces = g_strsplit(description_part, " ", -1);
+                    GStrvBuilder* builder   = g_strv_builder_new();
+                    gsize out_idx           = 0; // Index in resulting `words`
+                    for (gsize i = 0; i < g_strv_length(words_by_spaces); i++)
+                    {
+                        path_type type;
+                        if (is_path(words_by_spaces[i], &type, NULL) < 0)
+                            ERR_EXIT();
+
+                        if (type == NOT_A_PATH)
+                        {
+                            g_strv_builder_add(builder, words_by_spaces[i]);
+                            out_idx++;
+                            continue;
+                        }
+
+                        // Words by '/' separator
+                        gchar** path_parts = g_strsplit(words_by_spaces[i], "/", -1);
+                        if (words_by_spaces[i][g_utf8_strlen(words_by_spaces[i], -1) - 1] == '/')
+                            // Remove last string (because it's empty)
+                            g_clear_pointer(&path_parts[g_strv_length(path_parts) - 1], g_free);
+
+                        for (gsize j = 0; j < g_strv_length(path_parts); j++)
+                        {
+                            // Empty string
+                            if (type == ABSOLUTE_PATH && j == 0)
+                                continue;
+
+                            gchar* part = g_strconcat(type == ABSOLUTE_PATH && j == 1 ? "/" : "",
+                                                      path_parts[j], "/", NULL);
+                            g_hash_table_add(path_parts_indicies_set, GUINT_TO_POINTER(out_idx));
+                            g_strv_builder_add(builder, part);
+                            g_free(part);
+                            out_idx++;
+                        }
+                        g_strfreev(path_parts);
+                    }
+                    words = g_strv_builder_unref_to_strv(builder);
+                    g_strfreev(words_by_spaces);
+                }
+
+                GString* line  = g_string_new("");
                 gsize line_len = 0;
                 for (gsize w = 0; w < g_strv_length(words); w++)
                 {
-                    gchar *word = words[w];
+                    gchar* word = words[w];
                     if (!word || !g_utf8_strlen(word, -1))
                         continue;
 
-                    gsize word_need_len = (line_len ? 1 : 0) + g_utf8_strlen(word, -1);
+                    gboolean is_path_part = g_hash_table_contains(path_parts_indicies_set,
+                                                                  GUINT_TO_POINTER(w));
+                    gboolean need_space   = line_len && !is_path_part;
+                    gsize word_need_len   = (need_space ? 1 : 0) + g_utf8_strlen(word, -1);
                     if (line_len + word_need_len <= descriprion_subrow_length)
                     {
-                        if (line_len)
+                        if (need_space)
                             g_string_append_c(line, ' ');
                         g_string_append(line, word);
                         line_len += word_need_len;
                     }
                     else
                     {
-                        gsize margin  = (line_len < descriprion_subrow_length) ? (descriprion_subrow_length - line_len)
-                                                                               : 0;
-                        gchar *spaces = g_strnfill(margin, ' ');
-                        g_string_append_printf(*result,
-                                               "%s%s%s%s\n",
-                                               SERVICES_PARAMS_TABLE_DOUBLE_V,
-                                               line->str,
-                                               spaces,
+                        gsize margin  = (line_len < descriprion_subrow_length)
+                                            ? (descriprion_subrow_length - line_len)
+                                            : 0;
+                        gchar* spaces = g_strnfill(margin, ' ');
+                        g_string_append_printf(*result, "%s%s%s%s\n",
+                                               SERVICES_PARAMS_TABLE_DOUBLE_V, line->str, spaces,
                                                SERVICES_PARAMS_TABLE_DOUBLE_V);
                         g_free(spaces);
                         g_string_assign(line, word);
@@ -7211,16 +7244,15 @@ static int services_module_create_params_table(AlteratorCtlServicesModule *modul
                 }
                 if (line_len > 0)
                 {
-                    gsize margin  = (line_len < descriprion_subrow_length) ? (descriprion_subrow_length - line_len) : 0;
-                    gchar *spaces = g_strnfill(margin, ' ');
-                    g_string_append_printf(*result,
-                                           "%s%s%s%s\n",
-                                           SERVICES_PARAMS_TABLE_DOUBLE_V,
-                                           line->str,
-                                           spaces,
-                                           SERVICES_PARAMS_TABLE_DOUBLE_V);
+                    gsize margin  = (line_len < descriprion_subrow_length)
+                                        ? (descriprion_subrow_length - line_len)
+                                        : 0;
+                    gchar* spaces = g_strnfill(margin, ' ');
+                    g_string_append_printf(*result, "%s%s%s%s\n", SERVICES_PARAMS_TABLE_DOUBLE_V,
+                                           line->str, spaces, SERVICES_PARAMS_TABLE_DOUBLE_V);
                     g_free(spaces);
                 }
+                g_hash_table_unref(path_parts_indicies_set);
                 g_string_free(line, TRUE);
                 g_strfreev(words);
                 g_free(description_part);
@@ -7228,25 +7260,27 @@ static int services_module_create_params_table(AlteratorCtlServicesModule *modul
         }
 
         if (i != params_paths->len - 1)
-            g_string_append_printf(*result,
-                                   "%s%s%s%s%s\n",
-                                   is_array_elem && !is_array_last_elem ? SERVICES_PARAMS_TABLE_SINGLE_H_DOUBLE_V_R
-                                                                        : SERVICES_PARAMS_TABLE_DOUBLE_VR,
-                                   is_array_elem && !is_array_last_elem ? horizontal_single_line_left->str
-                                                                        : horizontal_double_line_left->str,
-                                   description_parts ? SERVICES_PARAMS_TABLE_SINGLE_H_DOUBLE_T
-                                                     : (is_array_elem && !is_array_last_elem
-                                                            ? SERVICES_PARAMS_TABLE_SINGLE_V_SINGLE_H
-                                                            : SERVICES_PARAMS_TABLE_SINGLE_V_DOUBLE_H),
-                                   is_array_elem && !is_array_last_elem ? horizontal_single_line_right->str
-                                                                        : horizontal_double_line_right->str,
-                                   is_array_elem && !is_array_last_elem ? SERVICES_PARAMS_TABLE_SINGLE_H_DOUBLE_V_L
-                                                                        : SERVICES_PARAMS_TABLE_DOUBLE_VL);
+            g_string_append_printf(*result, "%s%s%s%s%s\n",
+                                   is_array_elem && !is_array_last_elem
+                                       ? SERVICES_PARAMS_TABLE_SINGLE_H_DOUBLE_V_R
+                                       : SERVICES_PARAMS_TABLE_DOUBLE_VR,
+                                   is_array_elem && !is_array_last_elem
+                                       ? horizontal_single_line_left->str
+                                       : horizontal_double_line_left->str,
+                                   description_parts
+                                       ? SERVICES_PARAMS_TABLE_SINGLE_H_DOUBLE_T
+                                       : (is_array_elem && !is_array_last_elem
+                                              ? SERVICES_PARAMS_TABLE_SINGLE_V_SINGLE_H
+                                              : SERVICES_PARAMS_TABLE_SINGLE_V_DOUBLE_H),
+                                   is_array_elem && !is_array_last_elem
+                                       ? horizontal_single_line_right->str
+                                       : horizontal_double_line_right->str,
+                                   is_array_elem && !is_array_last_elem
+                                       ? SERVICES_PARAMS_TABLE_SINGLE_H_DOUBLE_V_L
+                                       : SERVICES_PARAMS_TABLE_DOUBLE_VL);
         else
             // Bottom of the table
-            g_string_append_printf(*result,
-                                   "%s%s%s%s%s\n",
-                                   SERVICES_PARAMS_TABLE_DOUBLE_LB,
+            g_string_append_printf(*result, "%s%s%s%s%s\n", SERVICES_PARAMS_TABLE_DOUBLE_LB,
                                    horizontal_double_line_left->str,
                                    description_parts ? SERVICES_PARAMS_TABLE_DOUBLE_H
                                                      : SERVICES_PARAMS_TABLE_SINGLE_H_DOUBLE_B,
@@ -7278,19 +7312,21 @@ end:
     return ret;
 }
 
-static int services_module_status_handle_result(AlteratorCtlServicesModule *module, alteratorctl_ctx_t **ctx)
+static int services_module_status_handle_result(AlteratorCtlServicesModule* module,
+                                                alteratorctl_ctx_t** ctx)
 {
     int ret                       = 0;
-    gchar *service_str_id         = NULL;
-    JsonNode *parameters_node     = json_node_new(JSON_NODE_OBJECT);
-    JsonObject *parameters_object = json_object_new();
-    GHashTable *output_data       = NULL;
+    gchar* service_str_id         = NULL;
+    JsonNode* parameters_node     = json_node_new(JSON_NODE_OBJECT);
+    JsonObject* parameters_object = json_object_new();
+    GHashTable* output_data       = NULL;
     json_node_set_object(parameters_node, parameters_object);
-    AlteratorCtlModuleInfoParser *info_parser = (AlteratorCtlModuleInfoParser *) module->gdbus_source->info_parser;
-    GNode *parameters_data                    = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
+    AlteratorCtlModuleInfoParser* info_parser = (AlteratorCtlModuleInfoParser*)
+                                                    module->gdbus_source->info_parser;
+    GNode* parameters_data = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
         info_parser, module->info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME, 2);
-    GArray *options                      = NULL;
-    GHashTable *long_name_to_description = NULL;
+    GArray* options                      = NULL;
+    GHashTable* long_name_to_description = NULL;
 
     g_variant_get((*ctx)->parameters, "(msms)", &service_str_id, NULL);
     if (!service_str_id)
@@ -7306,8 +7342,9 @@ static int services_module_status_handle_result(AlteratorCtlServicesModule *modu
     }
 
     deployment_status deploy_status = UNDEPLOYED;
-    if (services_module_status_result_get_service_params(
-            module, ctx, service_str_id, FALSE, NULL, &parameters_node, &deploy_status, FALSE, NULL)
+    if (services_module_status_result_get_service_params(module, ctx, service_str_id, FALSE, NULL,
+                                                         &parameters_node, &deploy_status, FALSE,
+                                                         NULL)
         < 0)
         ERR_EXIT();
 
@@ -7333,12 +7370,8 @@ static int services_module_status_handle_result(AlteratorCtlServicesModule *modu
     if (deploy_status == UNDEPLOYED)
         goto end;
 
-    if (services_module_status_params_build_output(module,
-                                                   service_str_id,
-                                                   parameters_object,
-                                                   parameters_data,
-                                                   NULL,
-                                                   &output_data)
+    if (services_module_status_params_build_output(module, service_str_id, parameters_object,
+                                                   parameters_data, NULL, &output_data)
         < 0)
         ERR_EXIT();
 
@@ -7348,24 +7381,26 @@ static int services_module_status_handle_result(AlteratorCtlServicesModule *modu
 
     if (options && options->len)
     {
-        long_name_to_description = g_hash_table_new_full(g_str_hash,
-                                                         g_str_equal,
-                                                         NULL,
-                                                         (GDestroyNotify) g_param_option_entry_free);
+        long_name_to_description = g_hash_table_new_full(g_str_hash, g_str_equal, NULL,
+                                                         (GDestroyNotify)
+                                                             g_param_option_entry_free);
         for (gsize i = 0; i < options->len; i++)
         {
-            GOptionEntry entry = ((ParamEntry *) options->data)[i].option_entry;
-            g_hash_table_insert(long_name_to_description, (gchar *) entry.long_name, g_param_option_entry_dup(&entry));
+            GOptionEntry entry = ((ParamEntry*) options->data)[i].option_entry;
+            g_hash_table_insert(long_name_to_description, (gchar*) entry.long_name,
+                                g_param_option_entry_dup(&entry));
         }
     }
 
-    GString *output_str = NULL;
-    if (services_module_create_params_table(module, output_data, long_name_to_description, NULL, NULL, &output_str) < 0)
+    GString* output_str = NULL;
+    if (services_module_create_params_table(module, output_data, long_name_to_description, NULL,
+                                            NULL, &output_str)
+        < 0)
         ERR_EXIT();
 
     if (!output_str)
     {
-        g_printerr("No parameters of service \"%s\"\n", service_str_id);
+        g_printerr(_("No parameters of service \"%s\"\n"), service_str_id);
         ERR_EXIT();
     }
 
@@ -7373,7 +7408,7 @@ static int services_module_status_handle_result(AlteratorCtlServicesModule *modu
     g_string_free(output_str, TRUE);
 
 end:
-    g_free((gchar *) service_str_id);
+    g_free((gchar*) service_str_id);
 
     if (parameters_node)
         json_node_unref(parameters_node);
@@ -7393,12 +7428,13 @@ end:
     return ret;
 }
 
-static int services_module_start_handle_result(AlteratorCtlServicesModule *module, alteratorctl_ctx_t **ctx)
+static int services_module_start_handle_result(AlteratorCtlServicesModule* module,
+                                               alteratorctl_ctx_t** ctx)
 {
     int ret                     = 0;
-    const gchar *service_str_id = NULL;
-    GVariant *exit_code         = NULL;
-    GError *error               = NULL;
+    const gchar* service_str_id = NULL;
+    GVariant* exit_code         = NULL;
+    GError* error               = NULL;
 
     g_variant_get((*ctx)->parameters, "(msms)", &service_str_id, NULL);
     if (!service_str_id)
@@ -7435,7 +7471,7 @@ static int services_module_start_handle_result(AlteratorCtlServicesModule *modul
     }
 
 end:
-    g_free((gchar *) service_str_id);
+    g_free((gchar*) service_str_id);
 
     if (exit_code)
         g_variant_unref(exit_code);
@@ -7445,12 +7481,13 @@ end:
     return ret;
 }
 
-static int services_module_stop_handle_result(AlteratorCtlServicesModule *module, alteratorctl_ctx_t **ctx)
+static int services_module_stop_handle_result(AlteratorCtlServicesModule* module,
+                                              alteratorctl_ctx_t** ctx)
 {
     int ret                     = 0;
-    const gchar *service_str_id = NULL;
-    GVariant *exit_code         = NULL;
-    GError *error               = NULL;
+    const gchar* service_str_id = NULL;
+    GVariant* exit_code         = NULL;
+    GError* error               = NULL;
 
     g_variant_get((*ctx)->parameters, "(msms)", &service_str_id, NULL);
     if (!service_str_id)
@@ -7487,7 +7524,7 @@ static int services_module_stop_handle_result(AlteratorCtlServicesModule *module
     }
 
 end:
-    g_free((gchar *) service_str_id);
+    g_free((gchar*) service_str_id);
 
     if (exit_code)
         g_variant_unref(exit_code);
@@ -7497,11 +7534,12 @@ end:
     return ret;
 }
 
-static int services_module_undeploy_handle_result(AlteratorCtlServicesModule *module, alteratorctl_ctx_t **ctx)
+static int services_module_undeploy_handle_result(AlteratorCtlServicesModule* module,
+                                                  alteratorctl_ctx_t** ctx)
 {
     int ret               = 0;
-    GVariant *exit_code   = NULL;
-    gchar *service_str_id = NULL;
+    GVariant* exit_code   = NULL;
+    gchar* service_str_id = NULL;
 
     g_variant_get((*ctx)->parameters, "(msms)", &service_str_id, NULL);
     if (!service_str_id)
@@ -7525,7 +7563,8 @@ static int services_module_undeploy_handle_result(AlteratorCtlServicesModule *mo
     exit_code = g_variant_get_child_value((*ctx)->results, 0);
     if (!exit_code)
     {
-        g_printerr(_("Can't get service %s undeploy result: exit code is empty.\n"), service_str_id);
+        g_printerr(_("Can't get service %s undeploy result: exit code is empty.\n"),
+                   service_str_id);
         ERR_EXIT();
     }
 
@@ -7546,15 +7585,14 @@ end:
     return ret;
 }
 
-static int services_module_status_get_json_node(AlteratorCtlServicesModule *module,
-                                                const gchar *service_str_id,
-                                                JsonNode **result)
+static int services_module_status_get_json_node(AlteratorCtlServicesModule* module,
+                                                const gchar* service_str_id, JsonNode** result)
 {
     int ret                        = 0;
-    JsonParser *parser             = json_parser_new();
-    GVariant *node_array           = NULL;
-    gchar *node_str                = NULL;
-    alteratorctl_ctx_t *status_ctx = NULL;
+    JsonParser* parser             = json_parser_new();
+    GVariant* node_array           = NULL;
+    gchar* node_str                = NULL;
+    alteratorctl_ctx_t* status_ctx = NULL;
     if (!module)
     {
         g_printerr(_("The call to the services status method failed. The module doesn't exist.\n"));
@@ -7569,7 +7607,8 @@ static int services_module_status_get_json_node(AlteratorCtlServicesModule *modu
 
     if (!result)
     {
-        g_printerr(_("Can't get json params via \"status\" command. Nowhere to save the result.\n"));
+        g_printerr(
+            _("Can't get json params via \"status\" command. Nowhere to save the result.\n"));
         ERR_EXIT();
     }
 
@@ -7578,10 +7617,11 @@ static int services_module_status_get_json_node(AlteratorCtlServicesModule *modu
     if (services_module_status_subcommand(module, &status_ctx, FALSE) < 0)
         ERR_EXIT();
 
-    GVariant *exit_code = g_variant_get_child_value(status_ctx->results, 1);
+    GVariant* exit_code = g_variant_get_child_value(status_ctx->results, 1);
     if (!exit_code || g_variant_get_int32(exit_code) != 0)
     {
-        g_printerr(_("Can't get service \"%s\" status: error %i.\n"), service_str_id, g_variant_get_int32(exit_code));
+        g_printerr(_("Can't get service \"%s\" status: error %i.\n"), service_str_id,
+                   g_variant_get_int32(exit_code));
         ERR_EXIT();
     }
 
@@ -7621,18 +7661,14 @@ end:
     return ret;
 }
 
-static void services_module_run_stdout_simple_stream_handler(GDBusConnection *connection,
-                                                             const gchar *sender_name,
-                                                             const gchar *object_path,
-                                                             const gchar *interface_name,
-                                                             const gchar *signal_name,
-                                                             GVariant *parameters,
-                                                             gpointer user_data)
+static void services_module_run_stdout_simple_stream_handler(
+    GDBusConnection* connection, const gchar* sender_name, const gchar* object_path,
+    const gchar* interface_name, const gchar* signal_name, GVariant* parameters, gpointer user_data)
 {
     for (int i = 0; i < g_variant_n_children(parameters); i++)
     {
-        GVariant *tmp = g_variant_get_child_value(parameters, i);
-        const gchar *str;
+        GVariant* tmp = g_variant_get_child_value(parameters, i);
+        const gchar* str;
         str = g_variant_get_string(tmp, NULL);
         g_print("%s\n", str);
         g_variant_unref(tmp);
@@ -7641,18 +7677,14 @@ static void services_module_run_stdout_simple_stream_handler(GDBusConnection *co
     return;
 }
 
-static void services_module_run_stderr_simple_stream_handler(GDBusConnection *connection,
-                                                             const gchar *sender_name,
-                                                             const gchar *object_path,
-                                                             const gchar *interface_name,
-                                                             const gchar *signal_name,
-                                                             GVariant *parameters,
-                                                             gpointer user_data)
+static void services_module_run_stderr_simple_stream_handler(
+    GDBusConnection* connection, const gchar* sender_name, const gchar* object_path,
+    const gchar* interface_name, const gchar* signal_name, GVariant* parameters, gpointer user_data)
 {
     for (int i = 0; i < g_variant_n_children(parameters); i++)
     {
-        GVariant *tmp = g_variant_get_child_value(parameters, i);
-        const gchar *str;
+        GVariant* tmp = g_variant_get_child_value(parameters, i);
+        const gchar* str;
         str = g_variant_get_string(tmp, NULL);
         g_printerr("%s\n", str);
         g_variant_unref(tmp);
@@ -7715,30 +7747,33 @@ end:
     return ret;
 }
 
-static int services_module_print_list_with_filters(AlteratorCtlServicesModule *module, GHashTable *services)
+static int services_module_print_list_with_filters(AlteratorCtlServicesModule* module,
+                                                   GHashTable* services)
 {
-    int ret              = 0;
-    GPtrArray *entries   = g_ptr_array_new_with_free_func((GDestroyNotify) service_display_entry_free);
-    GArray *status_array = !except_status_markers ? g_array_new(0, 0, sizeof(gint)) : NULL;
+    int ret            = 0;
+    GPtrArray* entries = g_ptr_array_new_with_free_func(
+        (GDestroyNotify) service_display_entry_free);
+    GHashTable* status_by_path = !except_status_markers
+                                     ? g_hash_table_new_full(g_str_hash, g_str_equal, g_free, NULL)
+                                     : NULL;
 
     GHashTableIter status_iter;
     g_hash_table_iter_init(&status_iter, services);
-    gchar *service_path            = NULL;
-    service_names_t *service_names = NULL;
-    while (g_hash_table_iter_next(&status_iter, (gpointer) &service_path, (gpointer) &service_names))
+    gchar* service_path            = NULL;
+    service_names_t* service_names = NULL;
+    while (
+        g_hash_table_iter_next(&status_iter, (gpointer) &service_path, (gpointer) &service_names))
     {
         deployment_status status = UNDEPLOYED;
         if (!except_status_markers)
         {
-            JsonNode *params_node     = json_node_new(JSON_NODE_OBJECT);
-            JsonObject *params_object = json_object_new();
+            JsonNode* params_node     = json_node_new(JSON_NODE_OBJECT);
+            JsonObject* params_object = json_object_new();
             json_node_set_object(params_node, params_object);
 
-            alteratorctl_ctx_t *status_ctx = alteratorctl_ctx_init_services(SERVICES_STATUS,
-                                                                            service_path,
-                                                                            NULL,
-                                                                            NULL,
-                                                                            NULL);
+            alteratorctl_ctx_t* status_ctx = alteratorctl_ctx_init_services(SERVICES_STATUS,
+                                                                            service_path, NULL,
+                                                                            NULL, NULL);
 
             if (services_module_status_subcommand(module, &status_ctx, FALSE) < 0)
             {
@@ -7751,9 +7786,10 @@ static int services_module_print_list_with_filters(AlteratorCtlServicesModule *m
                 ERR_EXIT();
             }
 
-            GError *json_parse_error = NULL;
-            if (services_module_status_result_get_service_params(
-                    module, &status_ctx, service_path, FALSE, NULL, &params_node, &status, FALSE, &json_parse_error)
+            GError* json_parse_error = NULL;
+            if (services_module_status_result_get_service_params(module, &status_ctx, service_path,
+                                                                 FALSE, NULL, &params_node, &status,
+                                                                 FALSE, &json_parse_error)
                 < 0)
             {
                 json_node_free(params_node);
@@ -7770,7 +7806,7 @@ static int services_module_print_list_with_filters(AlteratorCtlServicesModule *m
             json_node_free(params_node);
             json_object_unref(params_object);
 
-            g_array_append_val(status_array, status);
+            g_hash_table_insert(status_by_path, g_strdup(service_path), GUINT_TO_POINTER(status));
 
             alteratorctl_ctx_free(status_ctx);
         }
@@ -7782,15 +7818,15 @@ static int services_module_print_list_with_filters(AlteratorCtlServicesModule *m
     g_hash_table_iter_init(&iter, services);
     service_path  = NULL;
     service_names = NULL;
-    for (gsize i = 0; g_hash_table_iter_next(&iter, (gpointer) &service_path, (gpointer) &service_names); i++)
+    for (gsize i = 0;
+         g_hash_table_iter_next(&iter, (gpointer) &service_path, (gpointer) &service_names); i++)
     {
-        deployment_status status = UNDEPLOYED;
-        if (status_array && i < status_array->len)
-            status = g_array_index(status_array, gint, i);
+        deployment_status status = GPOINTER_TO_UINT(
+            g_hash_table_lookup(status_by_path, service_path));
 
-        gchar *label = services_module_build_service_label(module, service_path, service_names);
+        gchar* label = services_module_build_service_label(module, service_path, service_names);
 
-        service_display_entry *entry = service_display_entry_new(label, status);
+        service_display_entry* entry = service_display_entry_new(label, status);
         g_ptr_array_add(entries, entry);
     }
 
@@ -7801,7 +7837,7 @@ static int services_module_print_list_with_filters(AlteratorCtlServicesModule *m
     {
         for (gsize i = 0; i < entries->len; i++)
         {
-            service_display_entry *entry = g_ptr_array_index(entries, i);
+            service_display_entry* entry = g_ptr_array_index(entries, i);
             if (!entry || !entry->label)
                 continue;
 
@@ -7813,8 +7849,8 @@ static int services_module_print_list_with_filters(AlteratorCtlServicesModule *m
 
     for (gsize i = 0; i < entries->len; i++)
     {
-        service_display_entry *entry = g_ptr_array_index(entries, i);
-        gchar *line                  = services_module_format_entry(entry, max_label_len, show_statuses);
+        service_display_entry* entry = g_ptr_array_index(entries, i);
+        gchar* line = services_module_format_entry(entry, max_label_len, show_statuses);
         if (line)
         {
             g_print("%s\n", line);
@@ -7829,26 +7865,26 @@ end:
     if (entries)
         g_ptr_array_unref(entries);
 
-    if (status_array)
-        g_array_unref(status_array);
+    if (status_by_path)
+        g_hash_table_destroy(status_by_path);
 
     return ret;
 }
 
-static int services_module_validate_object_and_iface(AlteratorCtlServicesModule *module,
-                                                     const gchar *object,
-                                                     const gchar *iface)
+static int services_module_validate_object_and_iface(AlteratorCtlServicesModule* module,
+                                                     const gchar* object, const gchar* iface)
 {
-    int ret                   = 0;
-    int object_exist          = 0;
-    int iface_exists          = 0;
-    const gchar *service_path = object[0] != '/'
-                                    ? module->gdbus_source->alterator_gdbus_source_get_path_by_name(module->gdbus_source,
-                                                                                                    object,
-                                                                                                    iface)
-                                    : object;
+    int ret          = 0;
+    int object_exist = 0;
+    int iface_exists = 0;
+    const gchar*
+        service_path = object[0] != '/'
+                           ? module->gdbus_source
+                                 ->alterator_gdbus_source_get_path_by_name(module->gdbus_source,
+                                                                           object, iface)
+                           : object;
 
-    //Check object
+    // Check object
     if (module->gdbus_source->alterator_gdbus_source_check_object_by_path(module->gdbus_source,
                                                                           service_path,
                                                                           &object_exist)
@@ -7864,10 +7900,9 @@ static int services_module_validate_object_and_iface(AlteratorCtlServicesModule 
         ERR_EXIT();
     }
 
-    //check interface of the object
+    // check interface of the object
     if (module->gdbus_source->alterator_gdbus_source_check_object_by_iface(module->gdbus_source,
-                                                                           service_path,
-                                                                           iface,
+                                                                           service_path, iface,
                                                                            &iface_exists)
         < 0)
     {
@@ -7877,7 +7912,8 @@ static int services_module_validate_object_and_iface(AlteratorCtlServicesModule 
             ERR_EXIT();
         }
 
-        g_printerr(_("Error when checking if an service: %s has an interface %s.\n"), object, iface);
+        g_printerr(_("Error when checking if an service: %s has an interface %s.\n"), object,
+                   iface);
         ERR_EXIT();
     }
 
@@ -7885,26 +7921,23 @@ end:
     return ret;
 }
 
-static int services_module_get_display_name(AlteratorCtlServicesModule *module,
-                                            const gchar *elem_str_id,
-                                            GNode *data,
-                                            gchar **result)
+static int services_module_get_display_name(AlteratorCtlServicesModule* module,
+                                            const gchar* elem_str_id, GNode* data, gchar** result)
 {
     int ret                                   = 0;
-    GNode *elem_data                          = data;
-    gchar *locale                             = NULL;
-    AlteratorCtlModuleInfoParser *info_parser = (AlteratorCtlModuleInfoParser *) module->gdbus_source->info_parser;
+    GNode* elem_data                          = data;
+    gchar* locale                             = NULL;
+    AlteratorCtlModuleInfoParser* info_parser = (AlteratorCtlModuleInfoParser*)
+                                                    module->gdbus_source->info_parser;
 
     if (!elem_data)
     {
-        if (info_parser->alterator_ctl_module_info_parser_get_specified_object_data(info_parser,
-                                                                                    module->gdbus_source,
-                                                                                    elem_str_id,
-                                                                                    SERVICES_INTERFACE_NAME,
-                                                                                    &elem_data)
+        if (info_parser->alterator_ctl_module_info_parser_get_specified_object_data(
+                info_parser, module->gdbus_source, elem_str_id, SERVICES_INTERFACE_NAME, &elem_data)
             < 0)
         {
-            g_printerr(_("Can't get display name of service %s. Parsing of service data failed.\n"), elem_str_id);
+            g_printerr(_("Can't get display name of service %s. Parsing of service data failed.\n"),
+                       elem_str_id);
             ERR_EXIT();
         }
     }
@@ -7912,19 +7945,20 @@ static int services_module_get_display_name(AlteratorCtlServicesModule *module,
     if (!(locale = alterator_ctl_get_language()))
         ERR_EXIT();
 
-    GHashTable *display_name = NULL;
+    GHashTable* display_name = NULL;
     if (!info_parser->alterator_ctl_module_info_parser_find_table(
-            info_parser, elem_data, &display_name, -1, SERVICES_ALTERATOR_ENTRY_SERVICE_DISPLAY_NAME_TABLE_NAME, NULL))
+            info_parser, elem_data, &display_name, -1,
+            SERVICES_ALTERATOR_ENTRY_SERVICE_DISPLAY_NAME_TABLE_NAME, NULL))
     {
-        g_printerr(_("Can't get display name of service %s. Display name data by key %s is empty.\n"),
-                   elem_str_id,
-                   SERVICES_ALTERATOR_ENTRY_SERVICE_DISPLAY_NAME_TABLE_NAME);
+        g_printerr(_("Can't get display name of service %s. Display name data by key %s is "
+                     "empty.\n"),
+                   elem_str_id, SERVICES_ALTERATOR_ENTRY_SERVICE_DISPLAY_NAME_TABLE_NAME);
         ERR_EXIT();
     }
 
-    toml_value *display_name_locale_value = g_hash_table_lookup(display_name, locale);
+    toml_value* display_name_locale_value = g_hash_table_lookup(display_name, locale);
     if (!display_name_locale_value)
-        display_name_locale_value = g_hash_table_lookup(display_name, LOCALE_FALLBACK);
+        display_name_locale_value = g_hash_table_lookup(display_name, LANG_FALLBACK);
 
     (*result) = g_strdup(display_name_locale_value->str_value);
 
@@ -7935,21 +7969,22 @@ end:
     return ret;
 }
 
-static int services_module_status_params_get_state(JsonNode *params, deployment_status *deploy_status)
+static int services_module_status_params_get_state(JsonNode* params,
+                                                   deployment_status* deploy_status)
 {
     int ret = 0;
     if (!params)
         ERR_EXIT();
 
-    JsonObject *params_object = json_node_get_object(params);
+    JsonObject* params_object = json_node_get_object(params);
 
-    JsonNode *deployed_field = json_object_get_member(params_object,
-                                                      SERVICES_ALTERATOR_ENTRY_SERVICE_DEFAULT_PARAM_DEPLOYED_KEY_NAME);
-    gboolean is_deployed     = deployed_field && json_node_get_boolean(deployed_field);
+    JsonNode* deployed_field = json_object_get_member(
+        params_object, SERVICES_ALTERATOR_ENTRY_SERVICE_DEFAULT_PARAM_DEPLOYED_KEY_NAME);
+    gboolean is_deployed = deployed_field && json_node_get_boolean(deployed_field);
 
-    JsonNode *started_field = json_object_get_member(params_object,
-                                                     SERVICES_ALTERATOR_ENTRY_SERVICE_DEFAULT_PARAM_STARTED_KEY_NAME);
-    gboolean is_started     = is_deployed && started_field && json_node_get_boolean(started_field);
+    JsonNode* started_field = json_object_get_member(
+        params_object, SERVICES_ALTERATOR_ENTRY_SERVICE_DEFAULT_PARAM_STARTED_KEY_NAME);
+    gboolean is_started = is_deployed && started_field && json_node_get_boolean(started_field);
 
     if (is_deployed && is_started)
         *deploy_status = DEPLOYED_AND_STARTED;
@@ -7964,24 +7999,19 @@ end:
     return ret;
 }
 
-static int services_module_status_result_get_service_params(AlteratorCtlServicesModule *module,
-                                                            alteratorctl_ctx_t **ctx,
-                                                            const gchar *service_str_id,
-                                                            gboolean initial_params,
-                                                            gchar *filtering_ctx,
-                                                            JsonNode **result,
-                                                            deployment_status *deploy_status,
-                                                            gboolean exclude_unset_params,
-                                                            GError **json_parse_error)
+static int services_module_status_result_get_service_params(
+    AlteratorCtlServicesModule* module, alteratorctl_ctx_t** ctx, const gchar* service_str_id,
+    gboolean initial_params, gchar* filtering_ctx, JsonNode** result,
+    deployment_status* deploy_status, gboolean exclude_unset_params, GError** json_parse_error)
 {
     int ret                = 0;
-    GVariant *exit_code    = NULL;
-    GVariant *status_array = NULL;
-    gchar *status          = NULL;
-    GError *error          = NULL;
-    GNode *service_info    = NULL;
-    JsonParser *parser     = NULL;
-    GHashTable *params_ctx = NULL;
+    GVariant* exit_code    = NULL;
+    GVariant* status_array = NULL;
+    gchar* status          = NULL;
+    GError* error          = NULL;
+    GNode* service_info    = NULL;
+    JsonParser* parser     = NULL;
+    GHashTable* params_ctx = NULL;
 
     if (!service_str_id)
     {
@@ -7991,7 +8021,9 @@ static int services_module_status_result_get_service_params(AlteratorCtlServices
 
     if (!result && !deploy_status)
     {
-        g_printerr(_("Can't get status %s service result: invalid variable for saving the result.\n"), service_str_id);
+        g_printerr(_("Can't get status %s service result: invalid variable for saving the "
+                     "result.\n"),
+                   service_str_id);
         ERR_EXIT();
     }
 
@@ -8020,7 +8052,8 @@ static int services_module_status_result_get_service_params(AlteratorCtlServices
         ERR_EXIT();
 
     gsize array_size;
-    gconstpointer g_var_status = g_variant_get_fixed_array(status_array, &array_size, sizeof(guint8));
+    gconstpointer g_var_status = g_variant_get_fixed_array(status_array, &array_size,
+                                                           sizeof(guint8));
 
     status = g_malloc0(array_size + 1);
     if (!status)
@@ -8037,16 +8070,14 @@ static int services_module_status_result_get_service_params(AlteratorCtlServices
             {
                 if (!json_parse_error)
                     g_printerr(_("Service '%s' returned invalid status: %s (%s, %d).\n"),
-                               service_str_id,
-                               error->message,
-                               g_quark_to_string(error->domain),
+                               service_str_id, error->message, g_quark_to_string(error->domain),
                                error->code);
                 else
                     *json_parse_error = g_error_copy(error);
                 ERR_EXIT();
             }
 
-            JsonNode *deployed_params = json_parser_get_root(parser);
+            JsonNode* deployed_params = json_parser_get_root(parser);
             if (services_module_status_params_get_state(deployed_params, deploy_status) < 0)
                 ERR_EXIT();
         }
@@ -8062,8 +8093,8 @@ static int services_module_status_result_get_service_params(AlteratorCtlServices
     if (!filtering_ctx && exclude_unset_params)
         required_only = FALSE;
 
-    if (services_module_get_initial_params(
-            module, service_str_id, result, required_only, filtering_ctx, &params_ctx, exclude_unset_params)
+    if (services_module_get_initial_params(module, service_str_id, result, required_only,
+                                           filtering_ctx, &params_ctx, exclude_unset_params)
         < 0)
         ERR_EXIT();
 
@@ -8075,18 +8106,17 @@ static int services_module_status_result_get_service_params(AlteratorCtlServices
         {
             if (!json_parse_error)
                 g_printerr(_("Service '%s' returned invalid status: %s (%s, %d).\n"),
-                           service_str_id,
-                           error->message,
-                           g_quark_to_string(error->domain),
+                           service_str_id, error->message, g_quark_to_string(error->domain),
                            error->code);
             else
                 *json_parse_error = g_error_copy(error);
             ERR_EXIT();
         }
 
-        JsonNode *deployed_params = json_parser_get_root(parser);
-        JsonNode *parameters_tmp  = NULL;
-        if (!(parameters_tmp = services_module_merge_json_data(*result, deployed_params, service_str_id)))
+        JsonNode* deployed_params = json_parser_get_root(parser);
+        JsonNode* parameters_tmp  = NULL;
+        if (!(parameters_tmp = services_module_merge_json_data(*result, deployed_params,
+                                                               service_str_id)))
             ERR_EXIT();
         else
         {
@@ -8097,7 +8127,8 @@ static int services_module_status_result_get_service_params(AlteratorCtlServices
 
     if (!streq(filtering_ctx, "status") && filtering_ctx && strlen(filtering_ctx))
     {
-        JsonNode *filtered_node = services_module_filter_params_by_context(*result, params_ctx, filtering_ctx, FALSE);
+        JsonNode* filtered_node = services_module_filter_params_by_context(*result, params_ctx,
+                                                                           filtering_ctx, FALSE);
         json_node_unref(*result);
         *result = filtered_node;
     }
@@ -8122,16 +8153,17 @@ end:
     return ret;
 }
 
-static gchar *services_module_json_params_to_text(JsonNode *params, const gchar *service_str_id)
+static gchar* services_module_json_params_to_text(JsonNode* params, const gchar* service_str_id)
 {
-    gchar *result = NULL;
+    gchar* result = NULL;
     if (!params)
     {
-        g_printerr(_("Can't get text of unspecified json parameters of %s service.\n"), service_str_id);
+        g_printerr(_("Can't get text of unspecified json parameters of %s service.\n"),
+                   service_str_id);
         return result;
     }
 
-    JsonGenerator *gen = json_generator_new();
+    JsonGenerator* gen = json_generator_new();
     json_generator_set_root(gen, params);
     json_generator_set_pretty(gen, TRUE);
     json_generator_set_indent(gen, 2);
@@ -8143,37 +8175,37 @@ static gchar *services_module_json_params_to_text(JsonNode *params, const gchar 
 
 static gint services_module_sort_result(gconstpointer a, gconstpointer b)
 {
-    const gchar *first_comparable_data  = (const gchar *) ((GPtrArray *) a)->pdata;
-    const gchar *second_comparable_data = (const gchar *) ((GPtrArray *) b)->pdata;
+    const gchar* first_comparable_data  = (const gchar*) ((GPtrArray*) a)->pdata;
+    const gchar* second_comparable_data = (const gchar*) ((GPtrArray*) b)->pdata;
     return g_utf8_collate(first_comparable_data, second_comparable_data);
 }
 
-static GPtrArray *services_module_get_sorted_string_keys(GHashTable *table)
+static GPtrArray* services_module_get_sorted_string_keys(GHashTable* table)
 {
     if (!table || !g_hash_table_size(table))
         return NULL;
 
-    GPtrArray *keys = g_hash_table_get_keys_as_ptr_array(table);
+    GPtrArray* keys = g_hash_table_get_keys_as_ptr_array(table);
     g_ptr_array_sort(keys, services_module_sort_result);
     return keys;
 }
 
 static gint services_module_sort_options(gconstpointer a, gconstpointer b)
 {
-    const ParamEntry *pa = a;
-    const ParamEntry *pb = b;
+    const ParamEntry* pa = a;
+    const ParamEntry* pb = b;
     return g_utf8_collate(pa->option_entry.long_name, pb->option_entry.long_name);
 }
 
-static service_display_entry *service_display_entry_new(gchar *label, deployment_status status)
+static service_display_entry* service_display_entry_new(gchar* label, deployment_status status)
 {
-    service_display_entry *entry = g_new0(service_display_entry, 1);
+    service_display_entry* entry = g_new0(service_display_entry, 1);
     entry->label                 = label ? label : g_strdup("");
     entry->status                = status;
     return entry;
 }
 
-static void service_display_entry_free(service_display_entry *entry)
+static void service_display_entry_free(service_display_entry* entry)
 {
     if (!entry)
         return;
@@ -8184,20 +8216,23 @@ static void service_display_entry_free(service_display_entry *entry)
 
 static gint services_module_sort_entries(gconstpointer a, gconstpointer b)
 {
-    const service_display_entry *first  = *(const service_display_entry *const *) a;
-    const service_display_entry *second = *(const service_display_entry *const *) b;
-    const gchar *first_label            = first && first->label ? first->label : "";
-    const gchar *second_label           = second && second->label ? second->label : "";
+    const service_display_entry* first  = *(const service_display_entry* const*) a;
+    const service_display_entry* second = *(const service_display_entry* const*) b;
+    const gchar* first_label            = first && first->label ? first->label : "";
+    const gchar* second_label           = second && second->label ? second->label : "";
     return g_utf8_collate(first_label, second_label);
 }
 
-static gchar *services_module_build_service_label(AlteratorCtlServicesModule *module,
-                                                  const gchar *service_path,
-                                                  const service_names_t *service_names)
+static gchar* services_module_build_service_label(AlteratorCtlServicesModule* module,
+                                                  const gchar* service_path,
+                                                  const service_names_t* service_names)
 {
-    const gchar *name = service_names && service_names->name ? service_names->name : (service_path ? service_path : "");
-    const gchar *display_name = service_names && service_names->display_name ? service_names->display_name : name;
-    const gchar *path         = service_path ? service_path : "";
+    const gchar* name         = service_names && service_names->name ? service_names->name
+                                                                     : (service_path ? service_path : "");
+    const gchar* display_name = service_names && service_names->display_name
+                                    ? service_names->display_name
+                                    : name;
+    const gchar* path         = service_path ? service_path : "";
 
     if (module->alterator_ctl_app && module->alterator_ctl_app->arguments
         && module->alterator_ctl_app->arguments->verbose)
@@ -8220,7 +8255,7 @@ static gchar *services_module_build_service_label(AlteratorCtlServicesModule *mo
     return g_strdup_printf("%s (%s)", display_name, name);
 }
 
-static const gchar *services_module_status_text(deployment_status status)
+static const gchar* services_module_status_text(deployment_status status)
 {
     switch (status)
     {
@@ -8235,7 +8270,7 @@ static const gchar *services_module_status_text(deployment_status status)
     }
 }
 
-static const gchar *services_module_marker_shape_for_status(deployment_status status)
+static const gchar* services_module_marker_shape_for_status(deployment_status status)
 {
     switch (status)
     {
@@ -8263,8 +8298,7 @@ static text_style services_module_color_for_status(deployment_status status)
     }
 }
 
-static gchar *services_module_format_entry(const service_display_entry *entry,
-                                           gsize max_label_len,
+static gchar* services_module_format_entry(const service_display_entry* entry, gsize max_label_len,
                                            gboolean show_statuses)
 {
     if (!entry)
@@ -8273,17 +8307,17 @@ static gchar *services_module_format_entry(const service_display_entry *entry,
     if (!show_statuses)
         return g_strdup(entry->label ? entry->label : "");
 
-    const gchar *label       = entry->label ? entry->label : "";
-    const gchar *shape       = services_module_marker_shape_for_status(entry->status);
+    const gchar* label       = entry->label ? entry->label : "";
+    const gchar* shape       = services_module_marker_shape_for_status(entry->status);
     text_style color         = services_module_color_for_status(entry->status);
     gboolean colorize        = isatty_safe(STDOUT_FILENO) == TTY;
-    gchar *marker            = colorize ? stylize_text(shape, color) : g_strdup(shape);
-    const gchar *status_text = services_module_status_text(entry->status);
+    gchar* marker            = colorize ? stylize_text(shape, color) : g_strdup(shape);
+    const gchar* status_text = services_module_status_text(entry->status);
 
     gsize label_len    = g_utf8_strlen(label, -1);
     gsize padding_size = max_label_len > label_len ? max_label_len - label_len : 0;
 
-    GString *line = g_string_new(NULL);
+    GString* line = g_string_new(NULL);
     g_string_append(line, marker);
     g_string_append_c(line, ' ');
     g_string_append(line, label);
@@ -8301,13 +8335,15 @@ static void services_module_print_status_legend(void)
     g_print("\n%s\n", _("Status legend:"));
     gboolean colorize = isatty_safe(STDOUT_FILENO) == TTY;
 
-    const gchar *shape_running    = services_module_marker_shape_for_status(DEPLOYED_AND_STARTED);
-    const gchar *shape_deployed   = services_module_marker_shape_for_status(DEPLOYED);
-    const gchar *shape_undeployed = services_module_marker_shape_for_status(UNDEPLOYED);
+    const gchar* shape_running    = services_module_marker_shape_for_status(DEPLOYED_AND_STARTED);
+    const gchar* shape_deployed   = services_module_marker_shape_for_status(DEPLOYED);
+    const gchar* shape_undeployed = services_module_marker_shape_for_status(UNDEPLOYED);
 
-    gchar *mark_running    = colorize ? stylize_text(shape_running, GREEN) : g_strdup(shape_running);
-    gchar *mark_deployed   = colorize ? stylize_text(shape_deployed, YELLOW) : g_strdup(shape_deployed);
-    gchar *mark_undeployed = colorize ? stylize_text(shape_undeployed, RED) : g_strdup(shape_undeployed);
+    gchar* mark_running  = colorize ? stylize_text(shape_running, GREEN) : g_strdup(shape_running);
+    gchar* mark_deployed = colorize ? stylize_text(shape_deployed, YELLOW)
+                                    : g_strdup(shape_deployed);
+    gchar* mark_undeployed = colorize ? stylize_text(shape_undeployed, RED)
+                                      : g_strdup(shape_undeployed);
 
     g_print("  %s %s\n", mark_running, services_module_status_text(DEPLOYED_AND_STARTED));
     g_print("  %s %s\n", mark_deployed, services_module_status_text(DEPLOYED));
@@ -8324,14 +8360,16 @@ static void print_json_indent(gsize indent)
         g_print("  ");
 }
 
-static int print_json_node(JsonNode *node, const gchar *key, GHashTable *custom_types, gchar *end_of_line, gint indent)
+static int print_json_node(JsonNode* node, const gchar* key, GHashTable* custom_types,
+                           gchar* end_of_line, gint indent)
 {
     int ret           = 0;
     JsonNodeType type = json_node_get_node_type(node);
 
     switch (type)
     {
-    case JSON_NODE_VALUE: {
+    case JSON_NODE_VALUE:
+    {
         GType nodetype = json_node_get_value_type(node);
         print_json_indent(indent);
         if (key && strlen(key))
@@ -8348,8 +8386,9 @@ static int print_json_node(JsonNode *node, const gchar *key, GHashTable *custom_
         break;
     }
 
-    case JSON_NODE_ARRAY: {
-        JsonArray *arr = json_node_get_array(node);
+    case JSON_NODE_ARRAY:
+    {
+        JsonArray* arr = json_node_get_array(node);
         gsize length   = json_array_get_length(arr);
 
         print_json_indent(indent);
@@ -8360,7 +8399,7 @@ static int print_json_node(JsonNode *node, const gchar *key, GHashTable *custom_
 
         for (gsize i = 0; i < length; i++)
         {
-            JsonNode *elem = json_array_get_element(arr, i);
+            JsonNode* elem = json_array_get_element(arr, i);
             print_json_node(elem, "", custom_types, ",", indent + 1);
         }
 
@@ -8369,9 +8408,10 @@ static int print_json_node(JsonNode *node, const gchar *key, GHashTable *custom_
         break;
     }
 
-    case JSON_NODE_OBJECT: {
-        JsonObject *obj = json_node_get_object(node);
-        GList *members  = json_object_get_members(obj);
+    case JSON_NODE_OBJECT:
+    {
+        JsonObject* obj = json_node_get_object(node);
+        GList* members  = json_object_get_members(obj);
 
         print_json_indent(indent);
         if (key && strlen(key))
@@ -8379,10 +8419,10 @@ static int print_json_node(JsonNode *node, const gchar *key, GHashTable *custom_
         else
             g_print("{\n");
 
-        for (GList *l = members; l; l = l->next)
+        for (GList* l = members; l; l = l->next)
         {
-            const gchar *subkey = l->data;
-            JsonNode *subn      = json_object_get_member(obj, subkey);
+            const gchar* subkey = l->data;
+            JsonNode* subn      = json_object_get_member(obj, subkey);
             print_json_node(subn, subkey, custom_types, "", indent + 1);
         }
         g_list_free(members);
@@ -8404,26 +8444,27 @@ end:
     return ret;
 }
 
-static gchar *services_module_print_resource_with_links_to_params(gchar *resource_name, gpointer resource_to_param_table)
+static gchar* services_module_print_resource_with_links_to_params(gchar* resource_name,
+                                                                  gpointer resource_to_param_table)
 {
-    GHashTable *resource_to_params = (GHashTable *) resource_to_param_table;
+    GHashTable* resource_to_params = (GHashTable*) resource_to_param_table;
     return g_hash_table_lookup(resource_to_params, resource_name);
 }
 
-static int services_module_printing_resources_value(AlteratorCtlServicesModule *module,
-                                                    const gchar *service_str_id,
-                                                    GNode *service_info,
-                                                    const GNode *resources,
+static int services_module_printing_resources_value(AlteratorCtlServicesModule* module,
+                                                    const gchar* service_str_id,
+                                                    GNode* service_info, const GNode* resources,
                                                     ServicesModuleTomlValuePrintingMode mode,
                                                     gpointer user_data)
 {
     int ret                                   = 0;
-    AlteratorCtlModuleInfoParser *info_parser = (AlteratorCtlModuleInfoParser *) module->gdbus_source->info_parser;
-    GHashTable *resources_to_params           = (GHashTable *) user_data;
-    GNode *parameters_node                    = NULL;
-    GPtrArray *groups[SERVICES_RESOURCE_GROUP_COUNT] = {0};
+    AlteratorCtlModuleInfoParser* info_parser = (AlteratorCtlModuleInfoParser*)
+                                                    module->gdbus_source->info_parser;
+    GHashTable* resources_to_params                  = (GHashTable*) user_data;
+    GNode* parameters_node                           = NULL;
+    GPtrArray* groups[SERVICES_RESOURCE_GROUP_COUNT] = {0};
     gboolean printed_any_group                       = FALSE;
-    GString *output                                  = g_string_new(NULL);
+    GString* output                                  = g_string_new(NULL);
 
     if (!service_str_id)
     {
@@ -8449,72 +8490,66 @@ static int services_module_printing_resources_value(AlteratorCtlServicesModule *
     for (gsize i = 0; i < SERVICES_RESOURCE_GROUP_COUNT; i++)
         groups[i] = g_ptr_array_new_with_free_func(services_module_resource_row_free);
 
-    for (GNode *resource = resources->children; resource != NULL; resource = resource->next)
+    for (GNode* resource = resources->children; resource != NULL; resource = resource->next)
     {
-        alterator_entry_node *resource_data = (alterator_entry_node *) resource->data;
-        gchar *resource_name                = resource_data->node_name;
-        toml_value *resource_initial_value  = NULL;
+        alterator_entry_node* resource_data = (alterator_entry_node*) resource->data;
+        gchar* resource_name                = resource_data->node_name;
+        toml_value* resource_initial_value  = NULL;
         if (info_parser->alterator_ctl_module_info_parser_find_value(
-                info_parser,
-                resource,
-                &resource_initial_value,
-                SERVICES_ALTERATOR_ENTRY_SERVICE_RESOURCE_VALUE_KEY_NAME,
-                NULL)
+                info_parser, resource, &resource_initial_value,
+                SERVICES_ALTERATOR_ENTRY_SERVICE_RESOURCE_VALUE_KEY_NAME, NULL)
                 < 0
             && !resource_initial_value)
         {
             g_printerr(_("Can't get non-existance value of resource %s in %s service.\n"),
-                       resource_name,
-                       service_str_id);
+                       resource_name, service_str_id);
             ERR_EXIT();
         }
 
-        toml_value *resource_type = NULL;
-        if (!info_parser
-                 ->alterator_ctl_module_info_parser_find_value(info_parser, resource, &resource_type, "type", NULL))
+        toml_value* resource_type = NULL;
+        if (!info_parser->alterator_ctl_module_info_parser_find_value(info_parser, resource,
+                                                                      &resource_type, "type", NULL))
             resource_type = NULL;
 
-        const gchar *type_str = resource_type ? resource_type->str_value : NULL;
+        const gchar* type_str = resource_type ? resource_type->str_value : NULL;
 
-        services_module_resource_group_t resource_group = services_module_get_resource_group(type_str);
+        services_module_resource_group_t resource_group = services_module_get_resource_group(
+            type_str);
         if (resource_group < 0 || resource_group >= SERVICES_RESOURCE_GROUP_COUNT)
             resource_group = SERVICES_RESOURCE_GROUP_OTHER;
 
-        gchar *resource_display
-            = services_module_get_localized_field(info_parser,
-                                                  resource,
-                                                  SERVICES_ALTERATOR_ENTRY_SERVICE_DISPLAY_NAME_TABLE_NAME);
+        gchar* resource_display = services_module_get_localized_field(
+            info_parser, resource, SERVICES_ALTERATOR_ENTRY_SERVICE_DISPLAY_NAME_TABLE_NAME);
         if (!resource_display)
             resource_display = g_strdup(resource_name);
 
-        gchar *resource_comment
-            = services_module_get_localized_field(info_parser,
-                                                  resource,
-                                                  SERVICES_ALTERATOR_ENTRY_SERVICE_COMMENT_NAME_TABLE_NAME);
+        gchar* resource_comment = services_module_get_localized_field(
+            info_parser, resource, SERVICES_ALTERATOR_ENTRY_SERVICE_COMMENT_NAME_TABLE_NAME);
 
-        gchar *value_string = NULL;
+        gchar* value_string = NULL;
         {
             deployment_status deploy_status = UNDEPLOYED;
-            if (module->json && services_module_status_params_get_state(module->json, &deploy_status) < 0)
+            if (module->json
+                && services_module_status_params_get_state(module->json, &deploy_status) < 0)
                 ERR_EXIT();
 
-            gchar *linked_param = g_hash_table_lookup(resources_to_params, resource_name);
+            gchar* linked_param = g_hash_table_lookup(resources_to_params, resource_name);
 
             if (deploy_status == UNDEPLOYED || !linked_param || !strlen(linked_param))
                 value_string = services_module_resource_value_to_string(resource_initial_value);
             else
             {
-                JsonObject *object              = json_node_get_object(module->json);
-                JsonNode *resource_linked_param = json_object_get_member(object,
-                                                                         g_hash_table_lookup(resources_to_params,
-                                                                                             resource_name));
+                JsonObject* object              = json_node_get_object(module->json);
+                JsonNode* resource_linked_param = json_object_get_member(
+                    object, g_hash_table_lookup(resources_to_params, resource_name));
                 if (!resource_linked_param)
                     continue;
 
                 JsonNodeType node_type = json_node_get_node_type(resource_linked_param);
                 if (node_type != JSON_NODE_VALUE)
                 {
-                    g_printerr(_("Failed of getting resource \"%s\" linked param: it isn't json simple value type.\n"),
+                    g_printerr(_("Failed of getting resource \"%s\" linked param: it isn't json "
+                                 "simple value type.\n"),
                                resource_name);
                     ERR_EXIT();
                 }
@@ -8531,32 +8566,32 @@ static int services_module_printing_resources_value(AlteratorCtlServicesModule *
         {
             gboolean has_tcp      = FALSE;
             gboolean has_udp      = FALSE;
-            toml_value *tcp_value = NULL;
-            toml_value *udp_value = NULL;
+            toml_value* tcp_value = NULL;
+            toml_value* udp_value = NULL;
 
-            if (!info_parser->alterator_ctl_module_info_parser_find_value(info_parser, resource, &tcp_value, "tcp", NULL)
+            if (!info_parser->alterator_ctl_module_info_parser_find_value(info_parser, resource,
+                                                                          &tcp_value, "tcp", NULL)
                 || !tcp_value || tcp_value->type != TOML_DATA_BOOL)
             {
                 g_printerr(_("Can't get required TCP flag of port resource %s in %s service.\n"),
-                           resource_name,
-                           service_str_id);
+                           resource_name, service_str_id);
                 ERR_EXIT();
             }
             has_tcp = tcp_value->bool_value;
 
-            if (!info_parser->alterator_ctl_module_info_parser_find_value(info_parser, resource, &udp_value, "udp", NULL)
+            if (!info_parser->alterator_ctl_module_info_parser_find_value(info_parser, resource,
+                                                                          &udp_value, "udp", NULL)
                 || !udp_value || udp_value->type != TOML_DATA_BOOL)
             {
                 g_printerr(_("Can't get required UDP flag of port resource %s in %s service.\n"),
-                           resource_name,
-                           service_str_id);
+                           resource_name, service_str_id);
                 ERR_EXIT();
             }
             has_udp = udp_value->bool_value;
 
             if (has_tcp || has_udp)
             {
-                gchar *value_with_proto = NULL;
+                gchar* value_with_proto = NULL;
                 if (has_tcp && has_udp)
                     value_with_proto = g_strdup_printf("%s TCP/UDP", value_string);
                 else if (has_tcp)
@@ -8572,58 +8607,59 @@ static int services_module_printing_resources_value(AlteratorCtlServicesModule *
             }
         }
 
-        services_module_resource_row_t *row = g_new0(services_module_resource_row_t, 1);
+        services_module_resource_row_t* row = g_new0(services_module_resource_row_t, 1);
         row->name                           = resource_display;
         row->value                          = value_string;
         row->details                        = g_ptr_array_new_with_free_func(g_free);
 
         if (resource_comment && strlen(resource_comment))
         {
-            gchar *comment_text = g_strdup_printf(_("Comment: %s"), resource_comment);
-            gchar *detail       = g_strdup_printf("- %s", comment_text);
+            gchar* comment_text = g_strdup_printf(_("Comment: %s"), resource_comment);
+            gchar* detail       = g_strdup_printf("- %s", comment_text);
             g_free(comment_text);
             g_ptr_array_add(row->details, detail);
         }
         g_free(resource_comment);
 
-        const gchar *linked_param_name = mode && resources_to_params ? mode(resource_name, resources_to_params) : NULL;
+        const gchar* linked_param_name = mode && resources_to_params
+                                             ? mode(resource_name, resources_to_params)
+                                             : NULL;
 
         if (linked_param_name)
         {
-            gchar *param_display = NULL;
-            gchar *param_comment = NULL;
+            gchar* param_display = NULL;
+            gchar* param_comment = NULL;
 
             if (parameters_node)
             {
-                GNode *parameter_node = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
-                                                                                                       parameters_node,
-                                                                                                       linked_param_name,
-                                                                                                       -1);
+                GNode*
+                    parameter_node = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
+                        info_parser, parameters_node, linked_param_name, -1);
 
                 if (parameter_node)
                 {
-                    param_display
-                        = services_module_get_localized_field(info_parser,
-                                                              parameter_node,
-                                                              SERVICES_ALTERATOR_ENTRY_SERVICE_DISPLAY_NAME_TABLE_NAME);
-                    param_comment
-                        = services_module_get_localized_field(info_parser,
-                                                              parameter_node,
-                                                              SERVICES_ALTERATOR_ENTRY_SERVICE_COMMENT_NAME_TABLE_NAME);
+                    param_display = services_module_get_localized_field(
+                        info_parser, parameter_node,
+                        SERVICES_ALTERATOR_ENTRY_SERVICE_DISPLAY_NAME_TABLE_NAME);
+                    param_comment = services_module_get_localized_field(
+                        info_parser, parameter_node,
+                        SERVICES_ALTERATOR_ENTRY_SERVICE_COMMENT_NAME_TABLE_NAME);
                 }
             }
 
-            const gchar *param_display_effective = param_display ? param_display : linked_param_name;
+            const gchar* param_display_effective = param_display ? param_display
+                                                                 : linked_param_name;
 
-            gchar *param_line_text = g_strdup_printf(_("Param: %s (%s)"), param_display_effective, linked_param_name);
-            gchar *param_detail    = g_strdup_printf("- %s", param_line_text);
+            gchar* param_line_text = g_strdup_printf(_("Param: %s (%s)"), param_display_effective,
+                                                     linked_param_name);
+            gchar* param_detail    = g_strdup_printf("- %s", param_line_text);
             g_free(param_line_text);
             g_ptr_array_add(row->details, param_detail);
 
             if (param_comment && strlen(param_comment))
             {
-                gchar *param_comment_text = g_strdup_printf(_("Param comment: %s"), param_comment);
-                gchar *param_comment_line = g_strdup_printf("- %s", param_comment_text);
+                gchar* param_comment_text = g_strdup_printf(_("Param comment: %s"), param_comment);
+                gchar* param_comment_line = g_strdup_printf("- %s", param_comment_text);
                 g_free(param_comment_text);
                 g_ptr_array_add(row->details, param_comment_line);
             }
@@ -8637,16 +8673,17 @@ static int services_module_printing_resources_value(AlteratorCtlServicesModule *
 
     for (gsize group_index = 0; group_index < SERVICES_RESOURCE_GROUP_COUNT; group_index++)
     {
-        GPtrArray *rows = groups[group_index];
+        GPtrArray* rows = groups[group_index];
         if (!rows || !rows->len)
             continue;
 
         if (printed_any_group)
             g_string_append_c(output, '\n');
 
-        g_string_append_printf(output, "[%s]\n", _(services_module_resource_group_titles[group_index]));
+        g_string_append_printf(output, "[%s]\n",
+                               _(services_module_resource_group_titles[group_index]));
 
-        GString *table = services_module_render_resources_ascii_table(rows);
+        GString* table = services_module_render_resources_ascii_table(rows);
         if (table)
         {
             g_string_append(output, table->str);
@@ -8670,26 +8707,26 @@ end:
     return ret;
 }
 
-static gchar *services_module_get_localized_field(AlteratorCtlModuleInfoParser *info_parser,
-                                                  GNode *node,
-                                                  const gchar *table_name)
+static gchar* services_module_get_localized_field(AlteratorCtlModuleInfoParser* info_parser,
+                                                  GNode* node, const gchar* table_name)
 {
-    gchar *result = NULL;
-    gchar *locale = NULL;
+    gchar* result = NULL;
+    gchar* locale = NULL;
 
     if (!info_parser || !node || !table_name)
         return NULL;
 
     locale = alterator_ctl_get_language();
 
-    GHashTable *table = NULL;
-    if (info_parser->alterator_ctl_module_info_parser_find_table(info_parser, node, &table, -1, table_name, NULL))
+    GHashTable* table = NULL;
+    if (info_parser->alterator_ctl_module_info_parser_find_table(info_parser, node, &table, -1,
+                                                                 table_name, NULL))
     {
-        toml_value *value = NULL;
+        toml_value* value = NULL;
         if (locale)
             value = g_hash_table_lookup(table, locale);
         if (!value)
-            value = g_hash_table_lookup(table, LOCALE_FALLBACK);
+            value = g_hash_table_lookup(table, LANG_FALLBACK);
 
         if (value && value->str_value)
             result = g_strdup(value->str_value);
@@ -8701,12 +8738,12 @@ static gchar *services_module_get_localized_field(AlteratorCtlModuleInfoParser *
     return result;
 }
 
-static gchar *services_module_resource_value_to_string(const toml_value *value)
+static gchar* services_module_resource_value_to_string(const toml_value* value)
 {
     if (!value)
         return NULL;
 
-    gchar *stringified = services_module_strignify_toml_value(value);
+    gchar* stringified = services_module_strignify_toml_value(value);
     if (!stringified)
         return NULL;
 
@@ -8717,7 +8754,7 @@ static gchar *services_module_resource_value_to_string(const toml_value *value)
         gsize len = strlen(stringified);
         if (len >= 2 && stringified[0] == '"' && stringified[len - 1] == '"')
         {
-            gchar *unquoted = g_strndup(stringified + 1, len - 2);
+            gchar* unquoted = g_strndup(stringified + 1, len - 2);
             g_free(stringified);
             return unquoted;
         }
@@ -8726,7 +8763,7 @@ static gchar *services_module_resource_value_to_string(const toml_value *value)
     return stringified;
 }
 
-static services_module_resource_group_t services_module_get_resource_group(const gchar *type_str)
+static services_module_resource_group_t services_module_get_resource_group(const gchar* type_str)
 {
     if (!type_str)
         return SERVICES_RESOURCE_GROUP_OTHER;
@@ -8745,7 +8782,7 @@ static services_module_resource_group_t services_module_get_resource_group(const
 
 static void services_module_resource_row_free(gpointer data)
 {
-    services_module_resource_row_t *row = data;
+    services_module_resource_row_t* row = data;
     if (!row)
         return;
 
@@ -8756,13 +8793,13 @@ static void services_module_resource_row_free(gpointer data)
     g_free(row);
 }
 
-static void services_module_append_spaces(GString *buffer, gsize count)
+static void services_module_append_spaces(GString* buffer, gsize count)
 {
     for (gsize i = 0; i < count; i++)
         g_string_append_c(buffer, ' ');
 }
 
-static GString *services_module_render_resources_ascii_table(const GPtrArray *rows)
+static GString* services_module_render_resources_ascii_table(const GPtrArray* rows)
 {
     if (!rows || !rows->len)
         return NULL;
@@ -8771,8 +8808,8 @@ static GString *services_module_render_resources_ascii_table(const GPtrArray *ro
 
     for (gsize i = 0; i < rows->len; i++)
     {
-        services_module_resource_row_t *row = g_ptr_array_index(rows, i);
-        const gchar *name_text              = (row && row->name) ? row->name : "";
+        services_module_resource_row_t* row = g_ptr_array_index(rows, i);
+        const gchar* name_text              = (row && row->name) ? row->name : "";
         gsize len                           = g_utf8_strlen(name_text, -1);
         if (len > left_width)
             left_width = len;
@@ -8781,16 +8818,16 @@ static GString *services_module_render_resources_ascii_table(const GPtrArray *ro
     if (left_width < SERVICES_MODULE_MIN_PARAMS_PATH_COLUMN_WIDTH)
         left_width = SERVICES_MODULE_MIN_PARAMS_PATH_COLUMN_WIDTH;
 
-    GString *buffer = g_string_new(NULL);
+    GString* buffer = g_string_new(NULL);
 
     for (gsize i = 0; i < rows->len; i++)
     {
-        services_module_resource_row_t *row = g_ptr_array_index(rows, i);
+        services_module_resource_row_t* row = g_ptr_array_index(rows, i);
         if (!row)
             continue;
 
-        const gchar *name_text  = row->name ? row->name : "";
-        const gchar *value_text = row->value ? row->value : "";
+        const gchar* name_text  = row->name ? row->name : "";
+        const gchar* value_text = row->value ? row->value : "";
         gsize name_len          = g_utf8_strlen(name_text, -1);
 
         g_string_append(buffer, name_text);
@@ -8804,7 +8841,7 @@ static GString *services_module_render_resources_ascii_table(const GPtrArray *ro
         {
             for (gsize d = 0; d < row->details->len; d++)
             {
-                const gchar *detail_text = g_ptr_array_index(row->details, d);
+                const gchar* detail_text = g_ptr_array_index(row->details, d);
                 if (!detail_text)
                     continue;
 
@@ -8819,18 +8856,17 @@ static GString *services_module_render_resources_ascii_table(const GPtrArray *ro
 }
 
 // TODO: add optional GNode* argument for optimise getting service info
-static int services_module_get_initial_params(AlteratorCtlServicesModule *module,
-                                              const gchar *service_str_id,
-                                              JsonNode **result,
-                                              gboolean required_only,
-                                              gchar *required_only_context,
-                                              GHashTable **params_ctx,
+static int services_module_get_initial_params(AlteratorCtlServicesModule* module,
+                                              const gchar* service_str_id, JsonNode** result,
+                                              gboolean required_only, gchar* required_only_context,
+                                              GHashTable** params_ctx,
                                               gboolean exclude_unset_params)
 {
     int ret                                   = 0;
-    GNode *service_info                       = NULL;
-    GHashTable *params_to_resources           = NULL;
-    AlteratorCtlModuleInfoParser *info_parser = (AlteratorCtlModuleInfoParser *) module->gdbus_source->info_parser;
+    GNode* service_info                       = NULL;
+    GHashTable* params_to_resources           = NULL;
+    AlteratorCtlModuleInfoParser* info_parser = (AlteratorCtlModuleInfoParser*)
+                                                    module->gdbus_source->info_parser;
 
     if (!service_str_id)
     {
@@ -8838,11 +8874,12 @@ static int services_module_get_initial_params(AlteratorCtlServicesModule *module
         ERR_EXIT();
     }
 
-    if (info_parser->alterator_ctl_module_info_parser_get_specified_object_data(info_parser,
-                                                                                module->gdbus_source,
-                                                                                service_str_id,
-                                                                                SERVICES_INTERFACE_NAME,
-                                                                                &service_info)
+    if (info_parser
+            ->alterator_ctl_module_info_parser_get_specified_object_data(info_parser,
+                                                                         module->gdbus_source,
+                                                                         service_str_id,
+                                                                         SERVICES_INTERFACE_NAME,
+                                                                         &service_info)
         < 0)
     {
         g_printerr(_("Can't get service %s default value's.\n"), service_str_id);
@@ -8855,36 +8892,32 @@ static int services_module_get_initial_params(AlteratorCtlServicesModule *module
         ERR_EXIT();
     }
 
-    if (params_ctx && services_module_get_params_context(module, service_str_id, service_info, params_ctx) < 0)
+    if (params_ctx
+        && services_module_get_params_context(module, service_str_id, service_info, params_ctx) < 0)
         ERR_EXIT();
 
-    GNode *parameters = NULL;
+    GNode* parameters = NULL;
     if (!(parameters = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-              info_parser, service_info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME, 2)))
+              info_parser, service_info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME,
+              2)))
     {
         g_printerr(_("No service %s initial parameters info.\n"), service_str_id);
         ERR_EXIT();
     }
 
-    GNode *resources = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
+    GNode* resources = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
         info_parser, service_info, SERVICES_ALTERATOR_ENTRY_SERVICE_RESOURCES_TABLE_NAME, 2);
 
-    if (resources && services_module_get_param_to_resource_table(module, resources, &params_to_resources) < 0)
+    if (resources
+        && services_module_get_param_to_resource_table(module, resources, &params_to_resources) < 0)
         ERR_EXIT();
 
-    for (GNode *parameter = parameters->children; parameter != NULL; parameter = parameter->next)
+    for (GNode* parameter = parameters->children; parameter != NULL; parameter = parameter->next)
     {
-        if (services_module_recursive_get_initial_params(module,
-                                                         service_str_id,
-                                                         service_info,
-                                                         parameters,
-                                                         parameter,
-                                                         result,
-                                                         required_only,
-                                                         required_only_context,
-                                                         NULL,
-                                                         params_to_resources,
-                                                         exclude_unset_params,
+        if (services_module_recursive_get_initial_params(module, service_str_id, service_info,
+                                                         parameters, parameter, result,
+                                                         required_only, required_only_context, NULL,
+                                                         params_to_resources, exclude_unset_params,
                                                          FALSE)
             < 0)
             ERR_EXIT();
@@ -8900,22 +8933,16 @@ end:
     return ret;
 }
 
-static int services_module_recursive_get_initial_params(AlteratorCtlServicesModule *module,
-                                                        const gchar *service_str_id,
-                                                        GNode *service_info,
-                                                        GNode *types,
-                                                        GNode *parameter,
-                                                        JsonNode **result,
-                                                        gboolean required_only,
-                                                        gchar *required_only_context,
-                                                        JsonObject **nested_object,
-                                                        GHashTable *params_to_resources,
-                                                        gboolean exclude_unset_params,
-                                                        gboolean constant_parent)
+static int services_module_recursive_get_initial_params(
+    AlteratorCtlServicesModule* module, const gchar* service_str_id, GNode* service_info,
+    GNode* types, GNode* parameter, JsonNode** result, gboolean required_only,
+    gchar* required_only_context, JsonObject** nested_object, GHashTable* params_to_resources,
+    gboolean exclude_unset_params, gboolean constant_parent)
 {
     int ret                                   = 0;
-    JsonObject *root_object                   = json_node_get_object(*result);
-    AlteratorCtlModuleInfoParser *info_parser = (AlteratorCtlModuleInfoParser *) module->gdbus_source->info_parser;
+    JsonObject* root_object                   = json_node_get_object(*result);
+    AlteratorCtlModuleInfoParser* info_parser = (AlteratorCtlModuleInfoParser*)
+                                                    module->gdbus_source->info_parser;
 
     if (!service_str_id)
     {
@@ -8923,23 +8950,26 @@ static int services_module_recursive_get_initial_params(AlteratorCtlServicesModu
         ERR_EXIT();
     }
 
-    const gchar *param_name = ((alterator_entry_node *) parameter->data)->node_name;
-    GHashTable *param_data  = ((alterator_entry_node *) parameter->data)->toml_pairs;
+    const gchar* param_name = ((alterator_entry_node*) parameter->data)->node_name;
+    GHashTable* param_data  = ((alterator_entry_node*) parameter->data)->toml_pairs;
 
-    toml_value *type_val = g_hash_table_lookup(param_data, SERVICES_ALTERATOR_ENTRY_SERVICE_DEFAULT_PARAM_TYPE_KEY_NAME);
+    toml_value* type_val = g_hash_table_lookup(
+        param_data, SERVICES_ALTERATOR_ENTRY_SERVICE_DEFAULT_PARAM_TYPE_KEY_NAME);
     gboolean is_enum_field = !type_val
-                             && streq(((alterator_entry_node *) parameter->parent->data)->node_name, "values");
+                             && streq(((alterator_entry_node*) parameter->parent->data)->node_name,
+                                      "values");
 
-    toml_value *is_constant_toml = g_hash_table_lookup(param_data,
-                                                       SERVICES_ALTERATOR_ENTRY_SERVICE_PARAM_CONSTANT_KEY_NAME);
-    gboolean is_constant = is_constant_toml && is_constant_toml->type == TOML_DATA_BOOL && is_constant_toml->bool_value
+    toml_value* is_constant_toml =
+        g_hash_table_lookup(param_data, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAM_CONSTANT_KEY_NAME);
+    gboolean is_constant = is_constant_toml && is_constant_toml->type == TOML_DATA_BOOL
+                               && is_constant_toml->bool_value
                            || constant_parent;
 
     // Skip optional parameters (exclude constants)
     if (!is_enum_field && !is_constant && required_only)
     {
-        toml_value *is_required = g_hash_table_lookup(param_data,
-                                                      SERVICES_ALTERATOR_ENTRY_SERVICE_PARAM_REQUIRED_KEY_NAME);
+        toml_value* is_required = g_hash_table_lookup(
+            param_data, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAM_REQUIRED_KEY_NAME);
         if (!is_required)
             goto end;
         else if (is_required->type == TOML_DATA_BOOL)
@@ -8954,38 +8984,41 @@ static int services_module_recursive_get_initial_params(AlteratorCtlServicesModu
 
             gboolean has_context = FALSE;
             for (gsize i = 0; i < is_required->array_length; i++)
-                has_context = has_context ? has_context
-                                          : streq(required_only_context, ((gchar **) is_required->array)[i]);
+                has_context = has_context
+                                  ? has_context
+                                  : streq(required_only_context, ((gchar**) is_required->array)[i]);
 
             if (!has_context)
                 goto end;
         }
         else
         {
-            g_printerr(_("Incorrect key 'required' type in '%s' alterator entry.\n"), service_str_id);
+            g_printerr(_("Incorrect key 'required' type in '%s' alterator entry.\n"),
+                       service_str_id);
             ERR_EXIT();
         }
     }
 
-    gboolean is_enum_simple_field = is_enum_field
-                                    && !info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-                                        info_parser,
-                                        parameter,
-                                        SERVICES_ALTERATOR_ENTRY_SERVICE_PROPERTIES_TABLE_NAME,
-                                        2);
-    gboolean is_composite_parameter = is_enum_field || (type_val && streq(type_val->str_value, "object"));
+    gboolean
+        is_enum_simple_field = is_enum_field
+                               && !info_parser->alterator_ctl_module_info_parser_get_node_by_name(
+                                   info_parser, parameter,
+                                   SERVICES_ALTERATOR_ENTRY_SERVICE_PROPERTIES_TABLE_NAME, 2);
+    gboolean is_composite_parameter = is_enum_field
+                                      || (type_val && streq(type_val->str_value, "object"));
 
-    gboolean is_enum = type_val && streq(type_val->str_value, "enum");
-    gboolean is_enum_with_subparams
-        = is_enum
-          && info_parser->alterator_ctl_module_info_parser_find_table(
-              info_parser, parameter, NULL, -1, SERVICES_ALTERATOR_ENTRY_SERVICE_PROPERTIES_TABLE_NAME, NULL);
+    gboolean is_enum                = type_val && streq(type_val->str_value, "enum");
+    gboolean is_enum_with_subparams = is_enum
+                                      && info_parser->alterator_ctl_module_info_parser_find_table(
+                                          info_parser, parameter, NULL, -1,
+                                          SERVICES_ALTERATOR_ENTRY_SERVICE_PROPERTIES_TABLE_NAME,
+                                          NULL);
 
     gboolean is_composite_array = FALSE;
     gboolean is_enum_array      = FALSE;
     if (type_val && streq(type_val->str_value, "array"))
     {
-        toml_value *arr_type = (toml_value *) g_hash_table_lookup(param_data, "array_type");
+        toml_value* arr_type = (toml_value*) g_hash_table_lookup(param_data, "array_type");
         if (arr_type && arr_type->type == TOML_DATA_STRING)
         {
             if (streq(arr_type->str_value, "object"))
@@ -8995,37 +9028,35 @@ static int services_module_recursive_get_initial_params(AlteratorCtlServicesModu
         }
     }
 
-    JsonObject *target = (nested_object && *nested_object) ? *nested_object : root_object;
+    JsonObject* target = (nested_object && *nested_object) ? *nested_object : root_object;
 
     if (is_enum)
     {
-        GNode *values = NULL;
-        if (!(values = info_parser
-                           ->alterator_ctl_module_info_parser_get_node_by_name(info_parser, parameter, "values", 2)))
+        GNode* values = NULL;
+        if (!(values = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
+                                                                                      parameter,
+                                                                                      "values", 2)))
             ERR_EXIT();
 
-        toml_value *default_field_name
-            = g_hash_table_lookup(param_data, SERVICES_ALTERATOR_ENTRY_SERVICE_DEFAULT_PARAM_VALUE_KEY_NAME);
+        toml_value* default_field_name = g_hash_table_lookup(
+            param_data, SERVICES_ALTERATOR_ENTRY_SERVICE_DEFAULT_PARAM_VALUE_KEY_NAME);
 
-        if (default_field_name && default_field_name->type == TOML_DATA_STRING && strlen(default_field_name->str_value))
+        if (default_field_name && default_field_name->type == TOML_DATA_STRING
+            && strlen(default_field_name->str_value))
         {
-            JsonObject *subobject = json_object_new();
+            JsonObject* subobject = json_object_new();
 
-            for (GNode *value = values->children; value != NULL; value = g_node_next_sibling(value))
+            for (GNode* value = values->children; value != NULL; value = g_node_next_sibling(value))
             {
-                if (streq(((alterator_entry_node *) value->data)->node_name, default_field_name->str_value))
+                if (streq(((alterator_entry_node*) value->data)->node_name,
+                          default_field_name->str_value))
                 {
-                    if (services_module_recursive_get_initial_params(module,
-                                                                     service_str_id,
-                                                                     service_info,
-                                                                     types,
-                                                                     value,
-                                                                     result,
-                                                                     required_only,
+                    if (services_module_recursive_get_initial_params(module, service_str_id,
+                                                                     service_info, types, value,
+                                                                     result, required_only,
                                                                      required_only_context,
                                                                      &subobject,
-                                                                     params_to_resources,
-                                                                     FALSE,
+                                                                     params_to_resources, FALSE,
                                                                      is_constant)
                         < 0)
                     {
@@ -9043,49 +9074,42 @@ static int services_module_recursive_get_initial_params(AlteratorCtlServicesModu
 
     if (is_composite_parameter || is_composite_array)
     {
-        toml_value *prototype_value
-            = g_hash_table_lookup(param_data, SERVICES_ALTERATOR_ENTRY_SERVICE_DEFAULT_PARAM_PROTOTYPE_KEY_NAME);
+        toml_value* prototype_value = g_hash_table_lookup(
+            param_data, SERVICES_ALTERATOR_ENTRY_SERVICE_DEFAULT_PARAM_PROTOTYPE_KEY_NAME);
 
-        GNode *prototypes = prototype_value
-                                ? info_parser
-                                      ->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
-                                                                                          types,
-                                                                                          prototype_value->str_value,
-                                                                                          2)
+        GNode* prototypes = prototype_value
+                                ? info_parser->alterator_ctl_module_info_parser_get_node_by_name(
+                                      info_parser, types, prototype_value->str_value, 2)
                                 : parameter;
 
-        GNode *properties = prototypes
+        GNode* properties = prototypes
                                 ? info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-                                      info_parser, prototypes, SERVICES_ALTERATOR_ENTRY_SERVICE_PROPERTIES_TABLE_NAME, 2)
+                                      info_parser, prototypes,
+                                      SERVICES_ALTERATOR_ENTRY_SERVICE_PROPERTIES_TABLE_NAME, 2)
                                 : NULL;
 
         if ((properties != NULL) && g_node_n_children(properties) > 0)
         {
             if (is_enum_with_subparams)
             {
-                toml_value *default_child_name
-                    = g_hash_table_lookup(param_data, SERVICES_ALTERATOR_ENTRY_SERVICE_DEFAULT_PARAM_VALUE_KEY_NAME);
+                toml_value* default_child_name = g_hash_table_lookup(
+                    param_data, SERVICES_ALTERATOR_ENTRY_SERVICE_DEFAULT_PARAM_VALUE_KEY_NAME);
                 if (!default_child_name || !default_child_name->str_value)
                     goto end;
 
-                JsonObject *subobject = json_object_new();
+                JsonObject* subobject = json_object_new();
 
-                for (GNode *prop = properties->children; prop != NULL; prop = prop->next)
+                for (GNode* prop = properties->children; prop != NULL; prop = prop->next)
                 {
-                    alterator_entry_node *child = prop->data;
+                    alterator_entry_node* child = prop->data;
                     if (streq(child->node_name, default_child_name->str_value))
                     {
-                        if (services_module_recursive_get_initial_params(module,
-                                                                         service_str_id,
-                                                                         service_info,
-                                                                         types,
-                                                                         prop,
-                                                                         result,
-                                                                         required_only,
+                        if (services_module_recursive_get_initial_params(module, service_str_id,
+                                                                         service_info, types, prop,
+                                                                         result, required_only,
                                                                          required_only_context,
                                                                          &subobject,
-                                                                         params_to_resources,
-                                                                         FALSE,
+                                                                         params_to_resources, FALSE,
                                                                          is_constant)
                             < 0)
                         {
@@ -9101,16 +9125,12 @@ static int services_module_recursive_get_initial_params(AlteratorCtlServicesModu
             }
             else if (!is_composite_array)
             {
-                JsonObject *subobject = json_object_new();
-                for (GNode *prop = properties->children; prop != NULL; prop = prop->next)
+                JsonObject* subobject = json_object_new();
+                for (GNode* prop = properties->children; prop != NULL; prop = prop->next)
                 {
-                    if (services_module_recursive_get_initial_params(module,
-                                                                     service_str_id,
-                                                                     service_info,
-                                                                     types,
-                                                                     prop,
-                                                                     result,
-                                                                     required_only,
+                    if (services_module_recursive_get_initial_params(module, service_str_id,
+                                                                     service_info, types, prop,
+                                                                     result, required_only,
                                                                      required_only_context,
                                                                      &subobject,
                                                                      params_to_resources,
@@ -9127,24 +9147,21 @@ static int services_module_recursive_get_initial_params(AlteratorCtlServicesModu
             }
             else
             {
-                JsonArray *array     = json_array_new();
-                toml_value *min_toml = (toml_value *) g_hash_table_lookup(param_data, "array_min");
-                gsize min = min_toml && min_toml->type == TOML_DATA_DOUBLE ? (gsize) min_toml->double_value : 0;
+                JsonArray* array     = json_array_new();
+                toml_value* min_toml = (toml_value*) g_hash_table_lookup(param_data, "array_min");
+                gsize min            = min_toml && min_toml->type == TOML_DATA_DOUBLE
+                                           ? (gsize) min_toml->double_value
+                                           : 0;
                 for (gsize i = 0; i < min; i++)
                 {
-                    JsonObject *elem = json_object_new();
-                    for (GNode *prop = properties->children; prop != NULL; prop = prop->next)
+                    JsonObject* elem = json_object_new();
+                    for (GNode* prop = properties->children; prop != NULL; prop = prop->next)
                     {
-                        if (services_module_recursive_get_initial_params(module,
-                                                                         service_str_id,
-                                                                         service_info,
-                                                                         types,
-                                                                         prop,
-                                                                         result,
-                                                                         required_only,
+                        if (services_module_recursive_get_initial_params(module, service_str_id,
+                                                                         service_info, types, prop,
+                                                                         result, required_only,
                                                                          required_only_context,
-                                                                         &elem,
-                                                                         params_to_resources,
+                                                                         &elem, params_to_resources,
                                                                          exclude_unset_params,
                                                                          is_constant)
                             < 0)
@@ -9163,58 +9180,56 @@ static int services_module_recursive_get_initial_params(AlteratorCtlServicesModu
 
     if (is_enum_array)
     {
-        GNode *values = NULL;
-        if (!(values = info_parser
-                           ->alterator_ctl_module_info_parser_get_node_by_name(info_parser, parameter, "values", 2)))
+        GNode* values = NULL;
+        if (!(values = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
+                                                                                      parameter,
+                                                                                      "values", 2)))
         {
             g_printerr(_("Failed to get enum fields of \"%s\" array elements.\n"), param_name);
             ERR_EXIT();
         }
 
-        JsonArray *array = json_array_new();
+        JsonArray* array = json_array_new();
 
-        toml_value *default_fields_array = (toml_value *)
-            g_hash_table_lookup(param_data, SERVICES_ALTERATOR_ENTRY_SERVICE_DEFAULT_PARAM_VALUE_KEY_NAME);
+        toml_value* default_fields_array = (toml_value*)
+            g_hash_table_lookup(param_data,
+                                SERVICES_ALTERATOR_ENTRY_SERVICE_DEFAULT_PARAM_VALUE_KEY_NAME);
 
         if (default_fields_array && default_fields_array->type == TOML_DATA_ARRAY_OF_STRING
             && default_fields_array->array_length)
         {
             for (gsize i = 0; i < default_fields_array->array_length; i++)
             {
-                JsonObject *elem = json_object_new();
+                JsonObject* elem = json_object_new();
 
-                GNode *default_field_node = NULL;
+                GNode* default_field_node = NULL;
                 {
-                    gchar *default_field_name = ((gchar **) default_fields_array->array)[i];
+                    gchar* default_field_name = ((gchar**) default_fields_array->array)[i];
                     if (!default_field_name || !strlen(default_field_name))
                     {
-                        g_printerr(_("Failed to get enum fields of \"%s\" array element with index %lu.\n"),
-                                   param_name,
-                                   i);
+                        g_printerr(_("Failed to get enum fields of \"%s\" array element with index "
+                                     "%lu.\n"),
+                                   param_name, i);
                         ERR_EXIT();
                     }
 
-                    if (!(default_field_node = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-                              info_parser, values, default_field_name, 2)))
+                    if (!(default_field_node =
+                              info_parser->alterator_ctl_module_info_parser_get_node_by_name(
+                                  info_parser, values, default_field_name, 2)))
                     {
-                        g_printerr(_("Failed to get enum fields of \"%s\" array element with index %lu.\n"),
-                                   param_name,
-                                   i);
+                        g_printerr(_("Failed to get enum fields of \"%s\" array element with index "
+                                     "%lu.\n"),
+                                   param_name, i);
                         ERR_EXIT();
                     }
                 }
 
-                if (services_module_recursive_get_initial_params(module,
-                                                                 service_str_id,
-                                                                 service_info,
-                                                                 types,
-                                                                 default_field_node,
-                                                                 result,
+                if (services_module_recursive_get_initial_params(module, service_str_id,
+                                                                 service_info, types,
+                                                                 default_field_node, result,
                                                                  required_only,
-                                                                 required_only_context,
-                                                                 &elem,
-                                                                 params_to_resources,
-                                                                 FALSE,
+                                                                 required_only_context, &elem,
+                                                                 params_to_resources, FALSE,
                                                                  is_constant)
                     < 0)
                 {
@@ -9230,29 +9245,35 @@ static int services_module_recursive_get_initial_params(AlteratorCtlServicesModu
         }
     }
 
-    toml_value *value = g_hash_table_lookup(param_data, SERVICES_ALTERATOR_ENTRY_SERVICE_DEFAULT_PARAM_VALUE_KEY_NAME);
+    toml_value*
+        value = g_hash_table_lookup(param_data,
+                                    SERVICES_ALTERATOR_ENTRY_SERVICE_DEFAULT_PARAM_VALUE_KEY_NAME);
     if (!value) // Get value of param which linked with some resource
     {
-        gchar *resource_name = NULL;
-        if (params_to_resources && (resource_name = g_hash_table_lookup(params_to_resources, param_name)))
+        gchar* resource_name = NULL;
+        if (params_to_resources
+            && (resource_name = g_hash_table_lookup(params_to_resources, param_name)))
         {
-            GNode *resources = NULL;
+            GNode* resources = NULL;
             if (!(resources = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-                      info_parser, service_info, SERVICES_ALTERATOR_ENTRY_SERVICE_RESOURCES_TABLE_NAME, -1)))
+                      info_parser, service_info,
+                      SERVICES_ALTERATOR_ENTRY_SERVICE_RESOURCES_TABLE_NAME, -1)))
                 return ret;
 
-            GNode *resource = NULL;
-            if (!(resource = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
-                                                                                            resources,
-                                                                                            resource_name,
-                                                                                            -1)))
+            GNode* resource = NULL;
+            if (!(resource = info_parser
+                                 ->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
+                                                                                     resources,
+                                                                                     resource_name,
+                                                                                     -1)))
             {
                 g_printerr(_("No service %s resources info.\n"), service_str_id);
                 ERR_EXIT();
             }
 
             if (!info_parser->alterator_ctl_module_info_parser_find_value(
-                    info_parser, resource, &value, SERVICES_ALTERATOR_ENTRY_SERVICE_RESOURCE_VALUE_KEY_NAME, NULL))
+                    info_parser, resource, &value,
+                    SERVICES_ALTERATOR_ENTRY_SERVICE_RESOURCE_VALUE_KEY_NAME, NULL))
                 return ret;
         }
     }
@@ -9261,7 +9282,7 @@ static int services_module_recursive_get_initial_params(AlteratorCtlServicesModu
     {
         if (is_enum_simple_field)
         {
-            JsonObject *object = json_object_new();
+            JsonObject* object = json_object_new();
             json_object_set_object_member(target, param_name, object);
         }
         else if (!exclude_unset_params)
@@ -9270,7 +9291,7 @@ static int services_module_recursive_get_initial_params(AlteratorCtlServicesModu
                 json_object_set_null_member(target, param_name);
             else
             {
-                JsonObject *empty_subparam = json_object_new();
+                JsonObject* empty_subparam = json_object_new();
                 json_object_set_object_member(target, param_name, empty_subparam);
             }
         }
@@ -9279,11 +9300,12 @@ static int services_module_recursive_get_initial_params(AlteratorCtlServicesModu
 
     switch (value->type)
     {
-    case TOML_DATA_STRING: {
-        const gchar *parent_name = ((alterator_entry_node *) parameter->parent->data)->node_name;
+    case TOML_DATA_STRING:
+    {
+        const gchar* parent_name = ((alterator_entry_node*) parameter->parent->data)->node_name;
         if (streq(parent_name, "values"))
         {
-            JsonObject *object = json_object_new();
+            JsonObject* object = json_object_new();
             json_object_set_object_member(target, param_name, object);
         }
         else
@@ -9301,31 +9323,35 @@ static int services_module_recursive_get_initial_params(AlteratorCtlServicesModu
     case TOML_DATA_BOOL:
         json_object_set_boolean_member(target, param_name, value->bool_value);
         break;
-    case TOML_DATA_ARRAY_OF_INT: {
-        JsonArray *arr = json_array_new();
+    case TOML_DATA_ARRAY_OF_INT:
+    {
+        JsonArray* arr = json_array_new();
         for (gsize i = 0; i < value->array_length; i++)
-            json_array_add_int_element(arr, ((gint64 *) value->array)[i]);
+            json_array_add_int_element(arr, ((gint64*) value->array)[i]);
         json_object_set_array_member(target, param_name, arr);
     }
     break;
-    case TOML_DATA_ARRAY_OF_DOUBLE: {
-        JsonArray *arr = json_array_new();
+    case TOML_DATA_ARRAY_OF_DOUBLE:
+    {
+        JsonArray* arr = json_array_new();
         for (gsize i = 0; i < value->array_length; i++)
-            json_array_add_double_element(arr, ((gdouble *) value->array)[i]);
+            json_array_add_double_element(arr, ((gdouble*) value->array)[i]);
         json_object_set_array_member(target, param_name, arr);
     }
     break;
-    case TOML_DATA_ARRAY_OF_BOOL: {
-        JsonArray *arr = json_array_new();
+    case TOML_DATA_ARRAY_OF_BOOL:
+    {
+        JsonArray* arr = json_array_new();
         for (gsize i = 0; i < value->array_length; i++)
-            json_array_add_boolean_element(arr, ((gint *) value->array)[i]);
+            json_array_add_boolean_element(arr, ((gint*) value->array)[i]);
         json_object_set_array_member(target, param_name, arr);
     }
     break;
-    case TOML_DATA_ARRAY_OF_STRING: {
-        JsonArray *arr = json_array_new();
+    case TOML_DATA_ARRAY_OF_STRING:
+    {
+        JsonArray* arr = json_array_new();
         for (gsize i = 0; i < value->array_length; i++)
-            json_array_add_string_element(arr, ((gchar **) value->array)[i]);
+            json_array_add_string_element(arr, ((gchar**) value->array)[i]);
         json_object_set_array_member(target, param_name, arr);
     }
     break;
@@ -9337,20 +9363,18 @@ end:
     return ret;
 }
 
-static int services_module_get_params_context(AlteratorCtlServicesModule *module,
-                                              const gchar *service_str_id,
-                                              GNode *info,
-                                              GHashTable **params_ctx)
+static int services_module_get_params_context(AlteratorCtlServicesModule* module,
+                                              const gchar* service_str_id, GNode* info,
+                                              GHashTable** params_ctx)
 {
-    int ret                                   = 0;
-    *params_ctx                               = g_hash_table_new_full(g_str_hash,
-                                        g_str_equal,
-                                        (GDestroyNotify) g_free,
+    int ret     = 0;
+    *params_ctx = g_hash_table_new_full(g_str_hash, g_str_equal, (GDestroyNotify) g_free,
                                         (GDestroyNotify) services_module_service_info_free);
-    GHashTable *params_to_resources           = NULL;
-    AlteratorCtlModuleInfoParser *info_parser = (AlteratorCtlModuleInfoParser *) module->gdbus_source->info_parser;
+    GHashTable* params_to_resources           = NULL;
+    AlteratorCtlModuleInfoParser* info_parser = (AlteratorCtlModuleInfoParser*)
+                                                    module->gdbus_source->info_parser;
 
-    GNode *parameters = NULL;
+    GNode* parameters = NULL;
     if (!(parameters = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
               info_parser, info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME, -1)))
     {
@@ -9358,55 +9382,57 @@ static int services_module_get_params_context(AlteratorCtlServicesModule *module
         ERR_EXIT();
     }
 
-    GNode *resources = NULL;
+    GNode* resources = NULL;
     if ((resources = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
              info_parser, info, SERVICES_ALTERATOR_ENTRY_SERVICE_RESOURCES_TABLE_NAME, -1)))
     {
-        if (services_module_get_param_to_resource_table(module, resources, &params_to_resources) < 0)
+        if (services_module_get_param_to_resource_table(module, resources, &params_to_resources)
+            < 0)
             ERR_EXIT();
     }
 
-    for (GNode *parameter = parameters->children; parameter != NULL; parameter = parameter->next)
+    for (GNode* parameter = parameters->children; parameter != NULL; parameter = parameter->next)
     {
-        alterator_entry_node *param_data = (alterator_entry_node *) parameter->data;
-        const gchar *param_name          = param_data->node_name;
-        GNode *current_param_ctx         = NULL;
+        alterator_entry_node* param_data = (alterator_entry_node*) parameter->data;
+        const gchar* param_name          = param_data->node_name;
+        GNode* current_param_ctx         = NULL;
         if (!(current_param_ctx = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
                   info_parser, info, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME, -1)))
         {
-            g_printerr(_("No service %s context usage of %s parameter.\n"), service_str_id, param_name);
+            g_printerr(_("No service %s context usage of %s parameter.\n"), service_str_id,
+                       param_name);
             ERR_EXIT();
         }
 
-        toml_value *required_arr = g_hash_table_lookup(param_data->toml_pairs,
-                                                       SERVICES_ALTERATOR_ENTRY_SERVICE_PARAM_REQUIRED_KEY_NAME);
+        toml_value* required_arr = g_hash_table_lookup(
+            param_data->toml_pairs, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAM_REQUIRED_KEY_NAME);
 
-        GHashTable *
-            requires
-        = g_hash_table_new_full(g_str_hash, g_str_equal, (GDestroyNotify) g_free, NULL);
+        GHashTable* requires = g_hash_table_new_full(g_str_hash, g_str_equal,
+                                                     (GDestroyNotify) g_free, NULL);
         if (required_arr && required_arr->array_length && required_arr->array)
             for (gsize i = 0; i < required_arr->array_length; i++)
-                g_hash_table_add(requires, g_strdup(((gchar **) required_arr->array)[i]));
+                g_hash_table_add(requires, g_strdup(((gchar**) required_arr->array)[i]));
 
-        GHashTable *contexts    = g_hash_table_new_full(g_str_hash, g_str_equal, (GDestroyNotify) g_free, NULL);
-        toml_value *context_arr = g_hash_table_lookup(param_data->toml_pairs,
-                                                      SERVICES_ALTERATOR_ENTRY_SERVICE_PARAM_CONTEXT_KEY_NAME);
+        GHashTable* contexts    = g_hash_table_new_full(g_str_hash, g_str_equal,
+                                                        (GDestroyNotify) g_free, NULL);
+        toml_value* context_arr = g_hash_table_lookup(
+            param_data->toml_pairs, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAM_CONTEXT_KEY_NAME);
 
         if (context_arr && context_arr->array_length && context_arr->array)
             for (gsize i = 0; i < context_arr->array_length; i++)
-                g_hash_table_add(contexts, g_strdup(((gchar **) context_arr->array)[i]));
+                g_hash_table_add(contexts, g_strdup(((gchar**) context_arr->array)[i]));
 
-        toml_value *constant_val = g_hash_table_lookup(param_data->toml_pairs,
-                                                       SERVICES_ALTERATOR_ENTRY_SERVICE_PARAM_CONSTANT_KEY_NAME);
-        gboolean constant        = constant_val && constant_val->bool_value;
+        toml_value* constant_val = g_hash_table_lookup(
+            param_data->toml_pairs, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAM_CONSTANT_KEY_NAME);
+        gboolean constant = constant_val && constant_val->bool_value;
 
-        gchar *linked_resource     = params_to_resources ? g_hash_table_lookup(params_to_resources, param_name) : NULL;
-        param_info *param_contexts = services_module_service_info_init(param_name,
-                                                                       linked_resource,
-                                                                       requires,
-                                                                       contexts,
+        gchar* linked_resource     = params_to_resources
+                                         ? g_hash_table_lookup(params_to_resources, param_name)
+                                         : NULL;
+        param_info* param_contexts = services_module_service_info_init(param_name, linked_resource,
+                                                                       requires, contexts,
                                                                        constant);
-        g_hash_table_insert(*params_ctx, g_strdup((gchar *) param_name), param_contexts);
+        g_hash_table_insert(*params_ctx, g_strdup((gchar*) param_name), param_contexts);
     }
 
 end:
@@ -9416,27 +9442,24 @@ end:
     return ret;
 }
 
-static int services_module_get_param_to_resource_table(AlteratorCtlServicesModule *module,
-                                                       GNode *resources,
-                                                       GHashTable **result)
+static int services_module_get_param_to_resource_table(AlteratorCtlServicesModule* module,
+                                                       GNode* resources, GHashTable** result)
 {
     int ret = 0;
     if (!resources)
         return ret;
 
     *result                                   = g_hash_table_new(g_str_hash, g_str_equal);
-    AlteratorCtlModuleInfoParser *info_parser = (AlteratorCtlModuleInfoParser *) module->gdbus_source->info_parser;
+    AlteratorCtlModuleInfoParser* info_parser = (AlteratorCtlModuleInfoParser*)
+                                                    module->gdbus_source->info_parser;
 
-    for (GNode *resource = resources->children; resource != NULL; resource = resource->next)
+    for (GNode* resource = resources->children; resource != NULL; resource = resource->next)
     {
-        toml_value *resource_val = NULL;
-        gchar *resource_name     = ((alterator_entry_node *) resource->data)->node_name;
+        toml_value* resource_val = NULL;
+        gchar* resource_name     = ((alterator_entry_node*) resource->data)->node_name;
         if (info_parser->alterator_ctl_module_info_parser_find_value(
-                info_parser,
-                resource,
-                &resource_val,
-                SERVICES_ALTERATOR_ENTRY_SERVICE_RESOURCES_PARAMETER_KEY_NAME,
-                NULL))
+                info_parser, resource, &resource_val,
+                SERVICES_ALTERATOR_ENTRY_SERVICE_RESOURCES_PARAMETER_KEY_NAME, NULL))
         {
             if (resource_val && resource_val->str_value)
                 g_hash_table_insert(*result, resource_val->str_value, resource_name);
@@ -9447,9 +9470,10 @@ end:
     return ret;
 }
 
-static JsonNode *services_module_merge_json_data(JsonNode *first, JsonNode *second, const gchar *service_str_id)
+static JsonNode* services_module_merge_json_data(JsonNode* first, JsonNode* second,
+                                                 const gchar* service_str_id)
 {
-    JsonNode *result = NULL;
+    JsonNode* result = NULL;
     if (!JSON_NODE_HOLDS_OBJECT(first))
     {
         g_printerr(_("Invalid json data of service %s to update current data.\n"), service_str_id);
@@ -9467,10 +9491,11 @@ static JsonNode *services_module_merge_json_data(JsonNode *first, JsonNode *seco
     return result;
 }
 
-static int services_module_recursive_merge_json_data(JsonNode *target, JsonNode *source, const gchar *service_str_id)
+static int services_module_recursive_merge_json_data(JsonNode* target, JsonNode* source,
+                                                     const gchar* service_str_id)
 {
     int ret        = 0;
-    GList *members = NULL;
+    GList* members = NULL;
 
     if (!JSON_NODE_HOLDS_OBJECT(target) || !JSON_NODE_HOLDS_OBJECT(source))
     {
@@ -9478,30 +9503,31 @@ static int services_module_recursive_merge_json_data(JsonNode *target, JsonNode 
         ERR_EXIT();
     }
 
-    JsonObject *target_object = json_node_get_object(target);
-    JsonObject *source_object = json_node_get_object(source);
+    JsonObject* target_object = json_node_get_object(target);
+    JsonObject* source_object = json_node_get_object(source);
     members                   = json_object_get_members(source_object);
 
-    for (GList *member = members; member != NULL; member = member->next)
+    for (GList* member = members; member != NULL; member = member->next)
     {
-        const gchar *key       = (gchar *) member->data;
-        JsonNode *source_value = json_object_get_member(source_object, key);
+        const gchar* key       = (gchar*) member->data;
+        JsonNode* source_value = json_object_get_member(source_object, key);
 
         if (json_object_has_member(target_object, key))
         {
-            JsonNode *target_value = json_object_get_member(target_object, key);
+            JsonNode* target_value = json_object_get_member(target_object, key);
 
             if (JSON_NODE_HOLDS_OBJECT(target_value) && JSON_NODE_HOLDS_OBJECT(source_value))
-                services_module_recursive_merge_json_data(target_value, source_value, service_str_id);
+                services_module_recursive_merge_json_data(target_value, source_value,
+                                                          service_str_id);
             else
             {
-                JsonNode *copy = json_node_copy(source_value);
+                JsonNode* copy = json_node_copy(source_value);
                 json_object_set_member(target_object, key, copy);
             }
         }
         else
         {
-            JsonNode *copy = json_node_copy(source_value);
+            JsonNode* copy = json_node_copy(source_value);
             json_object_set_member(target_object, key, copy);
         }
     }
@@ -9513,23 +9539,23 @@ end:
     return ret;
 }
 
-static int services_module_recursive_filter_params_by_context(JsonNode *data,
-                                                              GHashTable *ctx_data,
-                                                              gchar *context_name,
+static int services_module_recursive_filter_params_by_context(JsonNode* data, GHashTable* ctx_data,
+                                                              gchar* context_name,
                                                               gboolean constants_only)
 {
     int ret            = 0;
     gboolean is_status = streq(context_name, "status");
     switch (json_node_get_node_type(data))
     {
-    case JSON_NODE_OBJECT: {
-        JsonObject *object = json_node_get_object(data);
-        GList *members     = json_object_get_members(object);
-        for (GList *member = members; member != NULL; member = member->next)
+    case JSON_NODE_OBJECT:
+    {
+        JsonObject* object = json_node_get_object(data);
+        GList* members     = json_object_get_members(object);
+        for (GList* member = members; member != NULL; member = member->next)
         {
-            const gchar *member_name = (gchar *) member->data;
-            JsonNode *child          = json_object_get_member(object, member_name);
-            param_info *info         = g_hash_table_lookup(ctx_data, member_name);
+            const gchar* member_name = (gchar*) member->data;
+            JsonNode* child          = json_object_get_member(object, member_name);
+            param_info* info         = g_hash_table_lookup(ctx_data, member_name);
             if (info)
             {
                 gboolean allowed = constants_only ? info->constant : TRUE;
@@ -9550,17 +9576,19 @@ static int services_module_recursive_filter_params_by_context(JsonNode *data,
                 }
             }
 
-            services_module_recursive_filter_params_by_context(child, ctx_data, context_name, FALSE);
+            services_module_recursive_filter_params_by_context(child, ctx_data, context_name,
+                                                               FALSE);
         }
         g_list_free(members);
         break;
     }
-    case JSON_NODE_ARRAY: {
-        JsonArray *arr = json_node_get_array(data);
+    case JSON_NODE_ARRAY:
+    {
+        JsonArray* arr = json_node_get_array(data);
         guint len      = json_array_get_length(arr);
         for (guint i = 0; i < len; i++)
         {
-            JsonNode *elem = json_array_get_element(arr, i);
+            JsonNode* elem = json_array_get_element(arr, i);
             services_module_recursive_filter_params_by_context(elem, ctx_data, context_name, FALSE);
         }
         break;
@@ -9573,24 +9601,26 @@ end:
     return ret;
 }
 
-static JsonNode *services_module_filter_params_by_context(JsonNode *data,
-                                                          GHashTable *ctx_data,
-                                                          gchar *context_name,
+static JsonNode* services_module_filter_params_by_context(JsonNode* data, GHashTable* ctx_data,
+                                                          gchar* context_name,
                                                           gboolean constants_only)
 {
-    JsonNode *root = json_node_copy(data);
+    JsonNode* root = json_node_copy(data);
     json_object_remove_member(json_node_get_object(root),
                               SERVICES_ALTERATOR_ENTRY_SERVICE_DEFAULT_PARAM_DEPLOYED_KEY_NAME);
     json_object_remove_member(json_node_get_object(root),
                               SERVICES_ALTERATOR_ENTRY_SERVICE_DEFAULT_PARAM_STARTED_KEY_NAME);
-    services_module_recursive_filter_params_by_context(root, ctx_data, context_name, constants_only);
+    services_module_recursive_filter_params_by_context(root, ctx_data, context_name,
+                                                       constants_only);
     return root;
 }
 
-static param_info *services_module_service_info_init(
-    const gchar *name, const gchar *linked_resource, GHashTable *required, GHashTable *ctx, gboolean constant)
+static param_info* services_module_service_info_init(const gchar* name,
+                                                     const gchar* linked_resource,
+                                                     GHashTable* required, GHashTable* ctx,
+                                                     gboolean constant)
 {
-    param_info *result      = g_new0(param_info, 1);
+    param_info* result      = g_new0(param_info, 1);
     result->name            = g_strdup(name);
     result->linked_resource = g_strdup(linked_resource);
     result->required        = required;
@@ -9599,13 +9629,13 @@ static param_info *services_module_service_info_init(
     return result;
 }
 
-static void services_module_service_info_free(param_info *info)
+static void services_module_service_info_free(param_info* info)
 {
     if (!info)
         return;
 
-    g_free((gchar *) info->name);
-    g_free((gchar *) info->linked_resource);
+    g_free((gchar*) info->name);
+    g_free((gchar*) info->linked_resource);
 
     if (info->usage_ctx)
         g_hash_table_destroy(info->usage_ctx);
@@ -9616,65 +9646,62 @@ static void services_module_service_info_free(param_info *info)
     g_free(info);
 }
 
-static diag_tool_test_info *services_module_service_diag_tool_test_info_init_from_node(
-    AlteratorCtlModuleInfoParser *info_parser, GNode *tool_info, gboolean is_required, diag_tool_test_mode mode)
+static diag_tool_test_info* services_module_service_diag_tool_test_info_init_from_node(
+    AlteratorCtlModuleInfoParser* info_parser, GNode* tool_info, gboolean is_required,
+    diag_tool_test_mode mode)
 {
-    gchar *lang = NULL;
+    gchar* lang = NULL;
     if (!tool_info)
         return NULL;
 
-    alterator_entry_node *data = tool_info->data;
+    alterator_entry_node* data = tool_info->data;
     if (!data)
         return NULL;
 
     if (!(lang = alterator_ctl_get_language()))
         return NULL;
 
-    GHashTable *display_name_table = NULL;
-    if (!info_parser
-             ->alterator_ctl_module_info_parser_find_table(info_parser,
-                                                           tool_info,
-                                                           &display_name_table,
-                                                           -1,
-                                                           SERVICES_ALTERATOR_ENTRY_SERVICE_DISPLAY_NAME_TABLE_NAME,
-                                                           NULL))
+    GHashTable* display_name_table = NULL;
+    if (!info_parser->alterator_ctl_module_info_parser_find_table(
+            info_parser, tool_info, &display_name_table, -1,
+            SERVICES_ALTERATOR_ENTRY_SERVICE_DISPLAY_NAME_TABLE_NAME, NULL))
     {
         g_free(lang);
         return NULL;
     }
 
-    toml_value *display_name = g_hash_table_lookup(display_name_table, lang);
+    toml_value* display_name = g_hash_table_lookup(display_name_table, lang);
     if (!display_name)
         display_name = g_hash_table_lookup(display_name_table, "en");
 
-    GHashTable *comment_table = NULL;
+    GHashTable* comment_table = NULL;
     if (!info_parser->alterator_ctl_module_info_parser_find_table(
-            info_parser, tool_info, &comment_table, -1, SERVICES_ALTERATOR_ENTRY_SERVICE_COMMENT_NAME_TABLE_NAME, NULL))
+            info_parser, tool_info, &comment_table, -1,
+            SERVICES_ALTERATOR_ENTRY_SERVICE_COMMENT_NAME_TABLE_NAME, NULL))
     {
         g_free(lang);
         return NULL;
     }
 
-    toml_value *comment = g_hash_table_lookup(comment_table, lang);
+    toml_value* comment = g_hash_table_lookup(comment_table, lang);
     if (!comment)
         comment = g_hash_table_lookup(comment_table, "en");
 
     g_free(lang);
 
     return services_module_service_diag_tool_test_info_init(data->node_name,
-                                                            display_name ? display_name->str_value : NULL,
+                                                            display_name ? display_name->str_value
+                                                                         : NULL,
                                                             comment ? comment->str_value : NULL,
-                                                            is_required,
-                                                            mode);
+                                                            is_required, mode);
 }
 
-static diag_tool_test_info *services_module_service_diag_tool_test_info_init(const gchar *name,
-                                                                             const gchar *display_name,
-                                                                             const gchar *description,
-                                                                             gboolean is_required,
-                                                                             diag_tool_test_mode mode)
+static diag_tool_test_info*
+services_module_service_diag_tool_test_info_init(const gchar* name, const gchar* display_name,
+                                                 const gchar* description, gboolean is_required,
+                                                 diag_tool_test_mode mode)
 {
-    diag_tool_test_info *result = g_new0(diag_tool_test_info, 1);
+    diag_tool_test_info* result = g_new0(diag_tool_test_info, 1);
     result->name                = g_strdup(name);
     result->display_name        = g_strdup(display_name);
     result->description         = g_strdup(description);
@@ -9683,7 +9710,7 @@ static diag_tool_test_info *services_module_service_diag_tool_test_info_init(con
     return result;
 }
 
-static void services_module_service_diag_tool_test_info_free(diag_tool_test_info *tool_tests)
+static void services_module_service_diag_tool_test_info_free(diag_tool_test_info* tool_tests)
 {
     if (!tool_tests)
         return;
@@ -9694,12 +9721,11 @@ static void services_module_service_diag_tool_test_info_free(diag_tool_test_info
     g_free(tool_tests);
 }
 
-static diag_tool_tests *services_module_service_diag_tool_tests_init(const gchar *path,
-                                                                     GHashTable *all_tests,
-                                                                     GHashTable *required_only_tests,
-                                                                     GBusType bus_type)
+static diag_tool_tests*
+services_module_service_diag_tool_tests_init(const gchar* path, GHashTable* all_tests,
+                                             GHashTable* required_only_tests, GBusType bus_type)
 {
-    diag_tool_tests *result = g_new0(diag_tool_tests, 1);
+    diag_tool_tests* result = g_new0(diag_tool_tests, 1);
     result->path            = g_strdup(path);
     result->all_tests       = all_tests ? g_hash_table_ref(all_tests) : NULL;
     result->required_tests  = required_only_tests ? g_hash_table_ref(required_only_tests) : NULL;
@@ -9708,7 +9734,7 @@ static diag_tool_tests *services_module_service_diag_tool_tests_init(const gchar
     return result;
 }
 
-static void services_module_service_diag_tool_tests_free(diag_tool_tests *tool_tests)
+static void services_module_service_diag_tool_tests_free(diag_tool_tests* tool_tests)
 {
     if (!tool_tests)
         return;
@@ -9727,26 +9753,25 @@ static void services_module_service_diag_tool_tests_free(diag_tool_tests *tool_t
     g_free(tool_tests);
 }
 
-static gboolean services_module_service_diag_tool_tests_is_no_tests(struct diag_tool_tests *tool)
+static gboolean services_module_service_diag_tool_tests_is_no_tests(struct diag_tool_tests* tool)
 {
     gboolean all_tests_is_empty = !tool->all_tests || !g_hash_table_size(tool->all_tests);
     gboolean required_is_empty  = !tool->required_tests || !g_hash_table_size(tool->required_tests);
     return all_tests_is_empty && required_is_empty;
 }
 
-static int service_module_get_list_of_deployed_services_with_params(AlteratorCtlServicesModule *module,
-                                                                    GList **result,
-                                                                    const gchar *skip_service_name)
+static int service_module_get_list_of_deployed_services_with_params(
+    AlteratorCtlServicesModule* module, GList** result, const gchar* skip_service_name)
 {
-    int ret                    = 0;
-    GHashTable *services_table = NULL;
-    const gchar *skip_service_path
-        = skip_service_name && skip_service_name[0] != '/'
-              ? g_strdup(module->gdbus_source->alterator_gdbus_source_get_path_by_name(module->gdbus_source,
-                                                                                       skip_service_name,
-                                                                                       SERVICES_INTERFACE_NAME))
-              : g_strdup(skip_service_name);
-    GList *all_services_list = NULL;
+    int ret                        = 0;
+    GHashTable* services_table     = NULL;
+    const gchar* skip_service_path = skip_service_name && skip_service_name[0] != '/'
+                                         ? g_strdup(module->gdbus_source
+                                                        ->alterator_gdbus_source_get_path_by_name(
+                                                            module->gdbus_source, skip_service_name,
+                                                            SERVICES_INTERFACE_NAME))
+                                         : g_strdup(skip_service_name);
+    GList* all_services_list       = NULL;
 
     module->gdbus_source->alterator_gdbus_source_get_iface_objects(module->gdbus_source,
                                                                    SERVICES_INTERFACE_NAME,
@@ -9757,19 +9782,18 @@ static int service_module_get_list_of_deployed_services_with_params(AlteratorCtl
         ERR_EXIT();
     };
 
-    if (skip_service_path && strlen(skip_service_path) && g_hash_table_contains(services_table, skip_service_path))
+    if (skip_service_path && strlen(skip_service_path)
+        && g_hash_table_contains(services_table, skip_service_path))
         g_hash_table_remove(services_table, skip_service_path);
 
     if (!(all_services_list = g_hash_table_get_keys(services_table)))
         ERR_EXIT();
 
-    for (GList *service = all_services_list; service != NULL; service = service->next)
+    for (GList* service = all_services_list; service != NULL; service = service->next)
     {
-        alteratorctl_ctx_t *status_ctx = alteratorctl_ctx_init_services(SERVICES_STATUS,
-                                                                        (gchar *) service->data,
-                                                                        NULL,
-                                                                        NULL,
-                                                                        NULL);
+        alteratorctl_ctx_t* status_ctx = alteratorctl_ctx_init_services(SERVICES_STATUS,
+                                                                        (gchar*) service->data,
+                                                                        NULL, NULL, NULL);
         if (services_module_status_subcommand(module, &status_ctx, TRUE) < 0)
         {
             if (g_list_length(service) != 1)
@@ -9779,31 +9803,28 @@ static int service_module_get_list_of_deployed_services_with_params(AlteratorCtl
 
         if (!status_ctx->results)
         {
-            g_printerr(_("Empty status of service %s in getting list of deployed services.\n"), (gchar *) service->data);
+            g_printerr(_("Empty status of service %s in getting list of deployed services.\n"),
+                       (gchar*) service->data);
             ERR_EXIT();
         }
 
         if (!g_variant_is_of_type(status_ctx->results, G_VARIANT_TYPE("(ayi)")))
         {
-            g_printerr(_("Wrong answer services status type in getting list of deployed services.\n"));
+            g_printerr(
+                _("Wrong answer services status type in getting list of deployed services.\n"));
             ERR_EXIT();
         }
 
-        JsonNode *parameters_node     = json_node_new(JSON_NODE_OBJECT);
-        JsonObject *parameters_object = json_object_new();
+        JsonNode* parameters_node     = json_node_new(JSON_NODE_OBJECT);
+        JsonObject* parameters_object = json_object_new();
         json_node_set_object(parameters_node, parameters_object);
         json_object_unref(parameters_object);
 
         deployment_status deploy_status = UNDEPLOYED;
-        GError *json_parse_error        = NULL;
-        if (services_module_status_result_get_service_params(module,
-                                                             &status_ctx,
-                                                             (gchar *) service->data,
-                                                             FALSE,
-                                                             NULL,
-                                                             &parameters_node,
-                                                             &deploy_status,
-                                                             TRUE,
+        GError* json_parse_error        = NULL;
+        if (services_module_status_result_get_service_params(module, &status_ctx,
+                                                             (gchar*) service->data, FALSE, NULL,
+                                                             &parameters_node, &deploy_status, TRUE,
                                                              &json_parse_error)
             < 0)
         {
@@ -9813,7 +9834,7 @@ static int service_module_get_list_of_deployed_services_with_params(AlteratorCtl
                 g_clear_error(&json_parse_error);
                 continue;
             }
-            g_printerr(_("Failed to determine service '%s' state.\n"), (gchar *) service->data);
+            g_printerr(_("Failed to determine service '%s' state.\n"), (gchar*) service->data);
             ERR_EXIT();
         }
 
@@ -9826,7 +9847,8 @@ static int service_module_get_list_of_deployed_services_with_params(AlteratorCtl
 
         if (deploy_status == DEPLOYED || deploy_status == DEPLOYED_AND_STARTED)
         {
-            gchar *output = services_module_json_params_to_text(parameters_node, (gchar *) service->data);
+            gchar* output = services_module_json_params_to_text(parameters_node,
+                                                                (gchar*) service->data);
             if (!output)
             {
                 json_node_unref(parameters_node);
@@ -9834,7 +9856,7 @@ static int service_module_get_list_of_deployed_services_with_params(AlteratorCtl
                 ERR_EXIT();
             }
 
-            GVariant *deployed_service_data = g_variant_new("(ss)", (gchar *) service->data, output);
+            GVariant* deployed_service_data = g_variant_new("(ss)", (gchar*) service->data, output);
             (*result)                       = g_list_append(*result, deployed_service_data);
             g_free(output);
         }
@@ -9844,7 +9866,7 @@ static int service_module_get_list_of_deployed_services_with_params(AlteratorCtl
     }
 
 end:
-    g_free((gchar *) skip_service_path);
+    g_free((gchar*) skip_service_path);
 
     if (services_table)
         g_hash_table_unref(services_table);
@@ -9855,20 +9877,22 @@ end:
     return ret;
 }
 
-static int services_module_is_deployed(AlteratorCtlServicesModule *module,
-                                       const gchar *service_str_id,
-                                       deployment_status *result)
+static int services_module_is_deployed(AlteratorCtlServicesModule* module,
+                                       const gchar* service_str_id, deployment_status* result)
 {
     int ret                        = 0;
-    alteratorctl_ctx_t *status_ctx = NULL;
-    GVariant *exit_code            = NULL;
+    alteratorctl_ctx_t* status_ctx = NULL;
+    GVariant* exit_code            = NULL;
 
     if (!module)
     {
         if (service_str_id && strlen(service_str_id))
-            g_printerr(_("Can't get deploy status of %s service. The services module doesn't exist.\n"), service_str_id);
+            g_printerr(_("Can't get deploy status of %s service. The services module doesn't "
+                         "exist.\n"),
+                       service_str_id);
         else
-            g_printerr(_("Can't get deploy status of unknown service. The services module doesn't exist.\n"));
+            g_printerr(_("Can't get deploy status of unknown service. The services module doesn't "
+                         "exist.\n"));
         ERR_EXIT();
     }
 
@@ -9880,14 +9904,17 @@ static int services_module_is_deployed(AlteratorCtlServicesModule *module,
 
     if (!result)
     {
-        g_printerr(_("Can't get deploy status of %s service. There is nowhere to save the result.\n"), service_str_id);
+        g_printerr(_("Can't get deploy status of %s service. There is nowhere to save the "
+                     "result.\n"),
+                   service_str_id);
         ERR_EXIT();
     }
 
     status_ctx = alteratorctl_ctx_init_services(SERVICES_STATUS, service_str_id, NULL, NULL, NULL);
     if (!status_ctx)
     {
-        g_printerr(_("Can't get service %s deploy status. Unspecified service status context.\n"), service_str_id);
+        g_printerr(_("Can't get service %s deploy status. Unspecified service status context.\n"),
+                   service_str_id);
         ERR_EXIT();
     }
 
@@ -9896,7 +9923,8 @@ static int services_module_is_deployed(AlteratorCtlServicesModule *module,
 
     if (!status_ctx->results)
     {
-        g_printerr(_("Failed to get %s service status. No result of services status command.\n"), service_str_id);
+        g_printerr(_("Failed to get %s service status. No result of services status command.\n"),
+                   service_str_id);
         ERR_EXIT();
     }
 
@@ -9908,8 +9936,8 @@ static int services_module_is_deployed(AlteratorCtlServicesModule *module,
     }
 
     ///
-    if (services_module_status_result_get_service_params(
-            module, &status_ctx, service_str_id, FALSE, NULL, NULL, result, FALSE, NULL)
+    if (services_module_status_result_get_service_params(module, &status_ctx, service_str_id, FALSE,
+                                                         NULL, NULL, result, FALSE, NULL)
         < 0)
         ERR_EXIT();
 
@@ -9923,31 +9951,33 @@ end:
     return ret;
 }
 
-static int services_module_get_service_tests(AlteratorCtlServicesModule *module,
-                                             const gchar *service_str_id,
-                                             GNode *optional_service_info,
-                                             const GPtrArray *diag_env_vars,
-                                             gboolean all_modes,
-                                             GHashTable **result)
+static int services_module_get_service_tests(AlteratorCtlServicesModule* module,
+                                             const gchar* service_str_id,
+                                             GNode* optional_service_info,
+                                             const GPtrArray* diag_env_vars, gboolean all_modes,
+                                             GHashTable** result)
 {
     int ret                      = 0;
-    GHashTable *service_ifaces   = NULL;
-    gchar *service_path          = NULL;
-    GNode *service_info          = NULL;
-    GHashTable *tests_info_table = NULL;
+    GHashTable* service_ifaces   = NULL;
+    gchar* service_path          = NULL;
+    GNode* service_info          = NULL;
+    GHashTable* tests_info_table = NULL;
 
     if (!module)
     {
         if (service_str_id && strlen(service_str_id))
-            g_printerr(_("Can't get diagnostic tests of \"%s\" service. The services module doesn't exist.\n"),
+            g_printerr(_("Can't get diagnostic tests of \"%s\" service. The services module "
+                         "doesn't exist.\n"),
                        service_str_id);
         else
-            g_printerr(_("Can't get diagnostic tests of unknown service. The services module doesn't exist.\n"));
+            g_printerr(_("Can't get diagnostic tests of unknown service. The services module "
+                         "doesn't exist.\n"));
         ERR_EXIT();
     }
 
-    AlteratorCtlModuleInfoParser *info_parser = (AlteratorCtlModuleInfoParser *) module->gdbus_source->info_parser;
-    service_info                              = optional_service_info ? optional_service_info : module->info;
+    AlteratorCtlModuleInfoParser* info_parser = (AlteratorCtlModuleInfoParser*)
+                                                    module->gdbus_source->info_parser;
+    service_info = optional_service_info ? optional_service_info : module->info;
 
     if (!service_str_id || !strlen(service_str_id))
     {
@@ -9956,36 +9986,36 @@ static int services_module_get_service_tests(AlteratorCtlServicesModule *module,
     }
 
     service_path = service_str_id[0] != '/'
-                       ? g_strdup(module->gdbus_source->alterator_gdbus_source_get_path_by_name(module->gdbus_source,
-                                                                                                service_str_id,
-                                                                                                SERVICES_INTERFACE_NAME))
+                       ? g_strdup(
+                             module->gdbus_source
+                                 ->alterator_gdbus_source_get_path_by_name(module->gdbus_source,
+                                                                           service_str_id,
+                                                                           SERVICES_INTERFACE_NAME))
                        : g_strdup(service_str_id);
 
     if (!service_info && !module->info
-        && info_parser->alterator_ctl_module_info_parser_get_specified_object_data(info_parser,
-                                                                                   module->gdbus_source,
-                                                                                   service_path,
-                                                                                   SERVICES_INTERFACE_NAME,
-                                                                                   &service_info)
+        && info_parser->alterator_ctl_module_info_parser_get_specified_object_data(
+               info_parser, module->gdbus_source, service_path, SERVICES_INTERFACE_NAME,
+               &service_info)
                < 0)
         ERR_EXIT();
 
     if (!service_info)
     {
-        g_printerr(_("Can't get diagnostic tests. No service \"%s\" alterator entry.\n"), service_str_id);
+        g_printerr(_("Can't get diagnostic tests. No service \"%s\" alterator entry.\n"),
+                   service_str_id);
         ERR_EXIT();
     }
 
     if (!result)
     {
-        g_printerr(_("Can't get diagnostic tests of \"%s\" service. There is nowhere to save the result.\n"),
+        g_printerr(_("Can't get diagnostic tests of \"%s\" service. There is nowhere to save the "
+                     "result.\n"),
                    service_str_id);
         ERR_EXIT();
     }
 
-    *result = g_hash_table_new_full(g_str_hash,
-                                    g_str_equal,
-                                    (GDestroyNotify) g_free,
+    *result = g_hash_table_new_full(g_str_hash, g_str_equal, (GDestroyNotify) g_free,
                                     (GDestroyNotify) services_module_service_diag_tool_tests_free);
 
     if (module->gdbus_source->alterator_gdbus_source_get_object_ifaces(module->gdbus_source,
@@ -9998,74 +10028,82 @@ static int services_module_get_service_tests(AlteratorCtlServicesModule *module,
     }
 
     // No diag tool in service Alterator Entry
-    GNode *diag_service_tools_node = NULL;
+    GNode* diag_service_tools_node = NULL;
     if (!(diag_service_tools_node = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-              info_parser, service_info, SERVICES_ALTERATOR_ENTRY_SERVICE_DIAG_TOOLS_TABLE_NAME, -1)))
+              info_parser, service_info, SERVICES_ALTERATOR_ENTRY_SERVICE_DIAG_TOOLS_TABLE_NAME,
+              -1)))
         goto end;
 
-    GHashTable *tools_names = g_hash_table_new(g_str_hash, g_str_equal);
-    for (GNode *tool = diag_service_tools_node->children; tool != NULL; tool = g_node_next_sibling(tool))
-        g_hash_table_add(tools_names, ((alterator_entry_node *) tool->data)->node_name);
+    GHashTable* tools_names = g_hash_table_new(g_str_hash, g_str_equal);
+    for (GNode* tool = diag_service_tools_node->children; tool != NULL;
+         tool        = g_node_next_sibling(tool))
+        g_hash_table_add(tools_names, ((alterator_entry_node*) tool->data)->node_name);
 
-    gint tools_info_result = services_module_get_diag_tools_info(module, service_str_id, tools_names, &tests_info_table);
+    gint tools_info_result = services_module_get_diag_tools_info(module, service_str_id,
+                                                                 tools_names, &tests_info_table);
     if (tools_info_result < 0 || (tools_info_result > 1 && !g_hash_table_size(tools_names)))
     {
-        g_printerr(_("Can't get test list of \"%s\" service: failed of getting diag tools info.\n"), service_str_id);
+        g_printerr(_("Can't get test list of \"%s\" service: failed of getting diag tools info.\n"),
+                   service_str_id);
         ERR_EXIT();
     }
 
-    for (GNode *tool = diag_service_tools_node->children; tool != NULL; tool = g_node_next_sibling(tool))
+    for (GNode* tool = diag_service_tools_node->children; tool != NULL;
+         tool        = g_node_next_sibling(tool))
     {
-        gchar *tool_name = ((alterator_entry_node *) tool->data)->node_name;
+        gchar* tool_name = ((alterator_entry_node*) tool->data)->node_name;
         if (!g_hash_table_contains(tools_names, tool_name))
             continue;
 
-        toml_value *path = g_hash_table_lookup(((alterator_entry_node *) tool->data)->toml_pairs,
-                                               SERVICES_ALTERATOR_ENTRY_SERVICE_DIAG_TOOLS_PATH_KEY_NAME);
+        toml_value*
+            path = g_hash_table_lookup(((alterator_entry_node*) tool->data)->toml_pairs,
+                                       SERVICES_ALTERATOR_ENTRY_SERVICE_DIAG_TOOLS_PATH_KEY_NAME);
 
         if (!path)
         {
-            g_printerr(_("Can't get test list of \"%s\" service \"%s\" diag tool with unspecified DBus path.\n"),
-                       service_str_id,
-                       tool_name);
+            g_printerr(_("Can't get test list of \"%s\" service \"%s\" diag tool with unspecified "
+                         "DBus path.\n"),
+                       service_str_id, tool_name);
             ERR_EXIT();
         }
 
         if (path && (path->type != TOML_DATA_STRING || !strlen(path->str_value)))
         {
-            g_printerr(_("Can't get test list of \"%s\" service \"%s\" diag tool with invalid DBus path.\n"),
-                       service_str_id,
-                       tool_name);
+            g_printerr(_("Can't get test list of \"%s\" service \"%s\" diag tool with invalid DBus "
+                         "path.\n"),
+                       service_str_id, tool_name);
             ERR_EXIT();
         }
 
-        toml_value *bus = g_hash_table_lookup(((alterator_entry_node *) tool->data)->toml_pairs,
-                                              SERVICES_ALTERATOR_ENTRY_SERVICE_DIAG_TOOLS_BUS_KEY_NAME);
+        toml_value*
+            bus = g_hash_table_lookup(((alterator_entry_node*) tool->data)->toml_pairs,
+                                      SERVICES_ALTERATOR_ENTRY_SERVICE_DIAG_TOOLS_BUS_KEY_NAME);
 
         if (!bus)
         {
-            g_printerr(_("Can't get test list of \"%s\" service \"%s\" diag tool with unspecified bus type.\n"),
-                       service_str_id,
-                       tool_name);
+            g_printerr(_("Can't get test list of \"%s\" service \"%s\" diag tool with unspecified "
+                         "bus type.\n"),
+                       service_str_id, tool_name);
             ERR_EXIT();
         }
 
         if (bus && (bus->type != TOML_DATA_STRING || !strlen(bus->str_value)))
         {
-            g_printerr(_("Can't get test list of \"%s\" service: \"%s\" diag tool has invalid bus type.\n"),
-                       service_str_id,
-                       tool_name);
+            g_printerr(_("Can't get test list of \"%s\" service: \"%s\" diag tool has invalid bus "
+                         "type.\n"),
+                       service_str_id, tool_name);
             ERR_EXIT();
         }
 
         GBusType bus_type = streq(bus->str_value, "system")
                                 ? G_BUS_TYPE_SYSTEM
-                                : (streq(bus->str_value, "session") ? G_BUS_TYPE_SESSION : G_BUS_TYPE_NONE);
+                                : (streq(bus->str_value, "session") ? G_BUS_TYPE_SESSION
+                                                                    : G_BUS_TYPE_NONE);
         if (bus_type == G_BUS_TYPE_NONE)
         {
-            g_printerr(_("Can't get test list of \"%s\" service: \"%s\" diag tool has invalid bus type.\n"),
-                       service_str_id,
-                       tool_name);
+            g_printerr(_("Can't get test list of \"%s\" service: \"%s\" diag tool has invalid bus "
+                         "type.\n"),
+                       service_str_id, tool_name);
             ERR_EXIT();
         }
 
@@ -10073,14 +10111,14 @@ static int services_module_get_service_tests(AlteratorCtlServicesModule *module,
 
         // Check object by iface in bus from alterator entry
         {
-            AlteratorGDBusSource *check_source = bus_type == G_BUS_TYPE_SYSTEM
-                                                     ? module->gdbus_source
-                                                     : alterator_gdbus_source_new(FALSE, G_BUS_TYPE_SESSION);
+            AlteratorGDBusSource*
+                check_source = bus_type == G_BUS_TYPE_SYSTEM
+                                   ? module->gdbus_source
+                                   : alterator_gdbus_source_new(FALSE, G_BUS_TYPE_SESSION);
 
-            if (module->gdbus_source->alterator_gdbus_source_check_object_by_iface(check_source,
-                                                                                   path->str_value,
-                                                                                   DIAG_INTERFACE_NAME,
-                                                                                   &is_exist)
+            if (module->gdbus_source
+                    ->alterator_gdbus_source_check_object_by_iface(check_source, path->str_value,
+                                                                   DIAG_INTERFACE_NAME, &is_exist)
                 < 0)
             {
                 if (bus_type == G_BUS_TYPE_SESSION)
@@ -10096,27 +10134,23 @@ static int services_module_get_service_tests(AlteratorCtlServicesModule *module,
         if (is_exist == 0)
             continue;
 
-        GNode *diag_tool_info       = g_hash_table_lookup(tests_info_table, path->str_value);
-        GNode *diag_tool_tests_info = NULL;
+        GNode* diag_tool_info       = g_hash_table_lookup(tests_info_table, path->str_value);
+        GNode* diag_tool_tests_info = NULL;
         if (!(diag_tool_tests_info = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-                  info_parser, diag_tool_info, DIAG_ALTERATOR_ENTRY_SERVICE_DIAG_TESTS_TABLE_NAME, -1)))
+                  info_parser, diag_tool_info, DIAG_ALTERATOR_ENTRY_SERVICE_DIAG_TESTS_TABLE_NAME,
+                  -1)))
         {
             g_printerr(_("Failed to get \"%s\" diag tool tests info.\n"), tool_name);
             ERR_EXIT();
         }
 
-        if (services_module_get_diag_tests(module,
-                                           service_str_id,
-                                           path->str_value,
-                                           tool_name,
+        if (services_module_get_diag_tests(module, service_str_id, path->str_value, tool_name,
                                            streq(bus->str_value, "system")
                                                ? G_BUS_TYPE_SYSTEM
-                                               : (streq(bus->str_value, "session") ? G_BUS_TYPE_SESSION
-                                                                                   : G_BUS_TYPE_NONE),
-                                           diag_env_vars,
-                                           all_modes,
-                                           diag_tool_tests_info,
-                                           result)
+                                               : (streq(bus->str_value, "session")
+                                                      ? G_BUS_TYPE_SESSION
+                                                      : G_BUS_TYPE_NONE),
+                                           diag_env_vars, all_modes, diag_tool_tests_info, result)
             < 0)
             ERR_EXIT();
 
@@ -10126,19 +10160,17 @@ static int services_module_get_service_tests(AlteratorCtlServicesModule *module,
          *  - diag_name:  logical diagnostic tool name from .diag (e.g. "test_service1")
          */
         {
-            diag_tool_tests *tool_tests = g_hash_table_lookup(*result, tool_name);
+            diag_tool_tests* tool_tests = g_hash_table_lookup(*result, tool_name);
             if (tool_tests)
             {
                 if (!tool_tests->entry_name && tool_name)
                     tool_tests->entry_name = g_strdup(tool_name);
 
-                toml_value *tool_diag_name_val = NULL;
+                toml_value* tool_diag_name_val = NULL;
                 if (diag_tool_info
-                    && info_parser->alterator_ctl_module_info_parser_find_value(info_parser,
-                                                                                diag_tool_info,
-                                                                                &tool_diag_name_val,
-                                                                                DIAG_ALTERATOR_ENTRY_TOOLNAME_KEY_NAME,
-                                                                                NULL)
+                    && info_parser->alterator_ctl_module_info_parser_find_value(
+                        info_parser, diag_tool_info, &tool_diag_name_val,
+                        DIAG_ALTERATOR_ENTRY_TOOLNAME_KEY_NAME, NULL)
                     && tool_diag_name_val && tool_diag_name_val->type == TOML_DATA_STRING
                     && tool_diag_name_val->str_value && strlen(tool_diag_name_val->str_value))
                 {
@@ -10158,15 +10190,14 @@ static int services_module_get_service_tests(AlteratorCtlServicesModule *module,
     // Validate result tools table
     GHashTableIter iter;
     g_hash_table_iter_init(&iter, *result);
-    diag_tool_tests *tool = NULL;
-    gchar *tool_name      = NULL;
-    while (g_hash_table_iter_next(&iter, (gpointer *) &tool_name, (gpointer *) &tool))
+    diag_tool_tests* tool = NULL;
+    gchar* tool_name      = NULL;
+    while (g_hash_table_iter_next(&iter, (gpointer*) &tool_name, (gpointer*) &tool))
     {
         if (tool->is_no_tests(tool))
         {
             g_printerr(_("No diagnostic tests in diagnostic tool \"%s\" of \"%s\" service.\n"),
-                       tool_name,
-                       service_str_id);
+                       tool_name, service_str_id);
             ERR_EXIT();
         }
     }
@@ -10183,30 +10214,28 @@ end:
     return ret;
 }
 
-static int diag_list_tests_call(AlteratorCtlModule *diag_module,
-                                const gchar *service_str_id,
-                                const gchar *diag_tool_name,
-                                GBusType bus_type,
-                                gboolean get_required_only,
-                                gboolean all_modes,
-                                GNode *tests_info,
-                                alteratorctl_ctx_t **diag_ctx)
+static int diag_list_tests_call(AlteratorCtlModule* diag_module, const gchar* service_str_id,
+                                const gchar* diag_tool_name, GBusType bus_type,
+                                gboolean get_required_only, gboolean all_modes, GNode* tests_info,
+                                alteratorctl_ctx_t** diag_ctx)
 {
     int ret                                      = 0;
-    AlteratorCtlDiagModule *diag_module_instance = (AlteratorCtlDiagModule *) diag_module->module_instance;
-    AlteratorGDBusSource *diag_gdbus_source      = bus_type == G_BUS_TYPE_SYSTEM
-                                                       ? diag_module_instance->gdbus_system_source
-                                                       : diag_module_instance->gdbus_session_source;
+    AlteratorCtlDiagModule* diag_module_instance = (AlteratorCtlDiagModule*)
+                                                       diag_module->module_instance;
+    AlteratorGDBusSource* diag_gdbus_source = bus_type == G_BUS_TYPE_SYSTEM
+                                                  ? diag_module_instance->gdbus_system_source
+                                                  : diag_module_instance->gdbus_session_source;
 
-    if (diag_gdbus_source->alterator_gdbus_source_set_env_value(diag_gdbus_source,
-                                                                SERVICES_DIAGNOSE_TESTS_ENV_VALUE_REQUIRED_ONLY,
-                                                                get_required_only ? "true" : "")
+    if (diag_gdbus_source
+            ->alterator_gdbus_source_set_env_value(diag_gdbus_source,
+                                                   SERVICES_DIAGNOSE_TESTS_ENV_VALUE_REQUIRED_ONLY,
+                                                   get_required_only ? "true" : "")
         < 0)
     {
-        g_printerr(_("Failed to set environment variable (\"%s\": \"%s\") for getting diagnostic tests of service "
+        g_printerr(_("Failed to set environment variable (\"%s\": \"%s\") for getting diagnostic "
+                     "tests of service "
                      "\"%s\".\n"),
-                   SERVICES_DIAGNOSE_TESTS_ENV_VALUE_REQUIRED_ONLY,
-                   get_required_only ? "true" : "",
+                   SERVICES_DIAGNOSE_TESTS_ENV_VALUE_REQUIRED_ONLY, get_required_only ? "true" : "",
                    service_str_id);
         ERR_EXIT();
     }
@@ -10219,20 +10248,23 @@ static int diag_list_tests_call(AlteratorCtlModule *diag_module,
 
     if (all_modes && !tests_info)
     {
-        g_printerr(_("Empty info of diagnostic tests of \"%s\" diagnostic tool.\n"), diag_tool_name);
+        g_printerr(_("Empty info of diagnostic tests of \"%s\" diagnostic tool.\n"),
+                   diag_tool_name);
         ERR_EXIT();
     }
 
-    gchar *current_diag_mode_str = NULL;
-    diag_gdbus_source->alterator_gdbus_source_get_env_value(diag_gdbus_source,
-                                                            SERVICES_DIAGNOSE_TESTS_ENV_VALUE_DEPLOY_MODE,
-                                                            &current_diag_mode_str);
+    gchar* current_diag_mode_str = NULL;
+    diag_gdbus_source
+        ->alterator_gdbus_source_get_env_value(diag_gdbus_source,
+                                               SERVICES_DIAGNOSE_TESTS_ENV_VALUE_DEPLOY_MODE,
+                                               &current_diag_mode_str);
     diag_tool_test_mode mode = streq(current_diag_mode_str, "pre") ? PRE_DIAG_MODE : POST_DIAG_MODE;
 
     // Backup help options and run
     {
-        gboolean help_backup                         = diag_module_instance->alterator_ctl_app->arguments->module_help;
-        enum alteratorctl_help_type help_type_backup = diag_module_instance->alterator_ctl_app->arguments->help_type;
+        gboolean help_backup = diag_module_instance->alterator_ctl_app->arguments->module_help;
+        enum alteratorctl_help_type help_type_backup = diag_module_instance->alterator_ctl_app
+                                                           ->arguments->help_type;
 
         diag_module_instance->alterator_ctl_app->arguments->module_help = FALSE;
         diag_module_instance->alterator_ctl_app->arguments->help_type   = ALTERATORCTL_NONE_HELP;
@@ -10248,93 +10280,94 @@ static int diag_list_tests_call(AlteratorCtlModule *diag_module,
         diag_module_instance->alterator_ctl_app->arguments->help_type   = help_type_backup;
     }
 
-    if (!(*diag_ctx)->results || !g_hash_table_size((GHashTable *) (*diag_ctx)->results))
+    if (!(*diag_ctx)->results || !g_hash_table_size((GHashTable*) (*diag_ctx)->results))
     {
         if (streq(service_str_id, diag_tool_name))
-            g_printerr(_("Failed to get \"%s\" diagnostic tool tests of \"%s\" service. Empty result.\n"),
-                       diag_tool_name,
-                       service_str_id);
+            g_printerr(_("Failed to get \"%s\" diagnostic tool tests of \"%s\" service. Empty "
+                         "result.\n"),
+                       diag_tool_name, service_str_id);
         else
-            g_printerr(_("Failed to get diagnostic tests of \"%s\" service. Empty result.\n"), service_str_id);
+            g_printerr(_("Failed to get diagnostic tests of \"%s\" service. Empty result.\n"),
+                       service_str_id);
         ERR_EXIT();
     }
 
-    AlteratorCtlModuleInfoParser *info_parser = diag_gdbus_source->info_parser;
+    AlteratorCtlModuleInfoParser* info_parser = diag_gdbus_source->info_parser;
     // Set table values as a parser tests info
     {
-        GHashTable *tests_table = g_hash_table_lookup((GHashTable *) (*diag_ctx)->results,
-                                                      bus_type == G_BUS_TYPE_SYSTEM ? "system_bus" : "session_bus");
+        GHashTable* tests_table = g_hash_table_lookup((GHashTable*) (*diag_ctx)->results,
+                                                      bus_type == G_BUS_TYPE_SYSTEM
+                                                          ? "system_bus"
+                                                          : "session_bus");
         GHashTableIter iter;
         g_hash_table_iter_init(&iter, tests_table);
-        gchar *test_name = NULL;
-        while (g_hash_table_iter_next(&iter, (gpointer *) &test_name, NULL))
+        gchar* test_name = NULL;
+        while (g_hash_table_iter_next(&iter, (gpointer*) &test_name, NULL))
         {
-            GNode *test_node = NULL;
-            if (!(test_node = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
-                                                                                             tests_info,
-                                                                                             test_name,
-                                                                                             -1)))
+            GNode* test_node = NULL;
+            if (!(test_node = info_parser
+                                  ->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
+                                                                                      tests_info,
+                                                                                      test_name,
+                                                                                      -1)))
                 ERR_EXIT();
 
-            g_hash_table_insert(tests_table,
-                                g_strdup(test_name),
-                                services_module_service_diag_tool_test_info_init_from_node(info_parser,
-                                                                                           test_node,
-                                                                                           get_required_only,
-                                                                                           mode));
+            g_hash_table_insert(tests_table, g_strdup(test_name),
+                                services_module_service_diag_tool_test_info_init_from_node(
+                                    info_parser, test_node, get_required_only, mode));
         }
     }
 
     if (all_modes)
     {
-        GHashTable *backup_result = (*diag_ctx)->results;
+        GHashTable* backup_result = (*diag_ctx)->results;
         (*diag_ctx)->results      = NULL;
 
         // Get test from another mode
-        diag_gdbus_source->alterator_gdbus_source_set_env_value(diag_gdbus_source,
-                                                                SERVICES_DIAGNOSE_TESTS_ENV_VALUE_DEPLOY_MODE,
-                                                                mode == PRE_DIAG_MODE ? "post" : "pre");
-        if (diag_list_tests_call(
-                diag_module, service_str_id, diag_tool_name, bus_type, get_required_only, FALSE, tests_info, diag_ctx)
+        diag_gdbus_source
+            ->alterator_gdbus_source_set_env_value(diag_gdbus_source,
+                                                   SERVICES_DIAGNOSE_TESTS_ENV_VALUE_DEPLOY_MODE,
+                                                   mode == PRE_DIAG_MODE ? "post" : "pre");
+        if (diag_list_tests_call(diag_module, service_str_id, diag_tool_name, bus_type,
+                                 get_required_only, FALSE, tests_info, diag_ctx)
             < 0)
             ERR_EXIT();
 
         // Return old value
-        diag_gdbus_source->alterator_gdbus_source_set_env_value(diag_gdbus_source,
-                                                                SERVICES_DIAGNOSE_TESTS_ENV_VALUE_DEPLOY_MODE,
-                                                                mode == PRE_DIAG_MODE ? "pre" : "post");
+        diag_gdbus_source
+            ->alterator_gdbus_source_set_env_value(diag_gdbus_source,
+                                                   SERVICES_DIAGNOSE_TESTS_ENV_VALUE_DEPLOY_MODE,
+                                                   mode == PRE_DIAG_MODE ? "pre" : "post");
 
-        GHashTable *original_mode_tests_table = g_hash_table_lookup(backup_result,
-                                                                    bus_type == G_BUS_TYPE_SYSTEM ? "system_bus"
-                                                                                                  : "session_bus");
+        GHashTable* original_mode_tests_table = g_hash_table_lookup(backup_result,
+                                                                    bus_type == G_BUS_TYPE_SYSTEM
+                                                                        ? "system_bus"
+                                                                        : "session_bus");
 
-        GHashTable *another_mode_tests_table = g_hash_table_lookup((GHashTable *) (*diag_ctx)->results,
-                                                                   bus_type == G_BUS_TYPE_SYSTEM ? "system_bus"
-                                                                                                 : "session_bus");
+        GHashTable* another_mode_tests_table = g_hash_table_lookup((GHashTable*) (*diag_ctx)
+                                                                       ->results,
+                                                                   bus_type == G_BUS_TYPE_SYSTEM
+                                                                       ? "system_bus"
+                                                                       : "session_bus");
 
-        GPtrArray *another_mode_tests_array = g_hash_table_get_keys_as_ptr_array(another_mode_tests_table);
+        GPtrArray* another_mode_tests_array = g_hash_table_get_keys_as_ptr_array(
+            another_mode_tests_table);
         for (gsize i = 0; i < another_mode_tests_array->len; i++)
         {
-            gchar *another_mode_test_name = ((gchar **) another_mode_tests_array->pdata)[i];
-            GNode *test_node              = NULL;
-            if (!(test_node = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
-                                                                                             tests_info,
-                                                                                             another_mode_test_name,
-                                                                                             -1)))
+            gchar* another_mode_test_name = ((gchar**) another_mode_tests_array->pdata)[i];
+            GNode* test_node              = NULL;
+            if (!(test_node = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
+                      info_parser, tests_info, another_mode_test_name, -1)))
                 ERR_EXIT();
 
             if (!g_hash_table_contains(original_mode_tests_table, another_mode_test_name))
-                g_hash_table_insert(original_mode_tests_table,
-                                    g_strdup(another_mode_test_name),
-                                    services_module_service_diag_tool_test_info_init_from_node(info_parser,
-                                                                                               test_node,
-                                                                                               get_required_only,
-                                                                                               mode == PRE_DIAG_MODE
-                                                                                                   ? POST_DIAG_MODE
-                                                                                                   : PRE_DIAG_MODE));
+                g_hash_table_insert(original_mode_tests_table, g_strdup(another_mode_test_name),
+                                    services_module_service_diag_tool_test_info_init_from_node(
+                                        info_parser, test_node, get_required_only,
+                                        mode == PRE_DIAG_MODE ? POST_DIAG_MODE : PRE_DIAG_MODE));
             else
             {
-                diag_tool_test_info *existing_info = g_hash_table_lookup(original_mode_tests_table,
+                diag_tool_test_info* existing_info = g_hash_table_lookup(original_mode_tests_table,
                                                                          another_mode_test_name);
                 existing_info->mode                = BOTH_DIAG_MODE;
             }
@@ -10348,41 +10381,36 @@ end:
     return ret;
 }
 
-static int services_module_pack_diag_tests(const gchar *service_str_id,
-                                           const gchar *diag_tool_name,
-                                           GBusType bus_type,
-                                           alteratorctl_ctx_t **diag_ctx,
-                                           GHashTable *tests_data)
+static int services_module_pack_diag_tests(const gchar* service_str_id, const gchar* diag_tool_name,
+                                           GBusType bus_type, alteratorctl_ctx_t** diag_ctx,
+                                           GHashTable* tests_data)
 {
     int ret = 0;
     GHashTableIter iter;
-    GHashTable *tests_table = g_hash_table_lookup((GHashTable *) (*diag_ctx)->results,
-                                                  bus_type == G_BUS_TYPE_SYSTEM ? "system_bus" : "session_bus");
+    GHashTable* tests_table = g_hash_table_lookup((GHashTable*) (*diag_ctx)->results,
+                                                  bus_type == G_BUS_TYPE_SYSTEM ? "system_bus"
+                                                                                : "session_bus");
     g_hash_table_iter_init(&iter, tests_table);
     gpointer test_name        = NULL;
     gpointer test_parsed_info = NULL;
     while (g_hash_table_iter_next(&iter, &test_name, &test_parsed_info))
-        g_hash_table_insert(tests_data, g_strdup((gchar *) test_name), test_parsed_info);
+        g_hash_table_insert(tests_data, g_strdup((gchar*) test_name), test_parsed_info);
 
 end:
     return ret;
 }
 
-static int services_module_get_diag_tests(AlteratorCtlServicesModule *module,
-                                          const gchar *service_str_id,
-                                          const gchar *diag_tool_path,
-                                          const gchar *diag_tool_table_name,
-                                          GBusType bus_type,
-                                          const GPtrArray *diag_env_vars,
-                                          gboolean all_modes,
-                                          GNode *diag_tests_info,
-                                          GHashTable **result)
+static int services_module_get_diag_tests(AlteratorCtlServicesModule* module,
+                                          const gchar* service_str_id, const gchar* diag_tool_path,
+                                          const gchar* diag_tool_table_name, GBusType bus_type,
+                                          const GPtrArray* diag_env_vars, gboolean all_modes,
+                                          GNode* diag_tests_info, GHashTable** result)
 {
     int ret                         = 0;
-    GVariant *diag_tool_tests_var   = NULL;
-    GVariant *diag_exit_code        = NULL;
-    alteratorctl_ctx_t *diag_ctx    = NULL;
-    AlteratorCtlModule *diag_module = NULL;
+    GVariant* diag_tool_tests_var   = NULL;
+    GVariant* diag_exit_code        = NULL;
+    alteratorctl_ctx_t* diag_ctx    = NULL;
+    AlteratorCtlModule* diag_module = NULL;
 
     if (!service_str_id || !strlen(service_str_id))
     {
@@ -10390,7 +10418,8 @@ static int services_module_get_diag_tests(AlteratorCtlServicesModule *module,
         ERR_EXIT();
     }
 
-    if ((!diag_tool_path || !strlen(diag_tool_path)) || (!diag_tool_table_name || !strlen(diag_tool_table_name)))
+    if ((!diag_tool_path || !strlen(diag_tool_path))
+        || (!diag_tool_table_name || !strlen(diag_tool_table_name)))
     {
         g_printerr(_("Can't get diagnostic test of unspecified diagnostic tool.\n"));
         ERR_EXIT();
@@ -10401,12 +10430,13 @@ static int services_module_get_diag_tests(AlteratorCtlServicesModule *module,
         if (service_str_id && strlen(service_str_id))
         {
             if (streq(service_str_id, diag_tool_path))
-                g_printerr(_("Can't get \"%s\" diagnostic tool tests of \"%s\" service. The services module "
+                g_printerr(_("Can't get \"%s\" diagnostic tool tests of \"%s\" service. The "
+                             "services module "
                              "doesn't exist.\n"),
-                           diag_tool_table_name,
-                           service_str_id);
+                           diag_tool_table_name, service_str_id);
             else
-                g_printerr(_("Can't get diagnostic tests of unknown service. The services module doesn't exist.\n"));
+                g_printerr(_("Can't get diagnostic tests of unknown service. The services module "
+                             "doesn't exist.\n"));
         }
         ERR_EXIT();
     }
@@ -10414,9 +10444,9 @@ static int services_module_get_diag_tests(AlteratorCtlServicesModule *module,
     if (bus_type != G_BUS_TYPE_SYSTEM && bus_type != G_BUS_TYPE_SESSION)
     {
         if (streq(service_str_id, diag_tool_path))
-            g_printerr(_("Can't get \"%s\" diagnostic tool tests of \"%s\" service. Incorrect bus type.\n"),
-                       diag_tool_table_name,
-                       service_str_id);
+            g_printerr(_("Can't get \"%s\" diagnostic tool tests of \"%s\" service. Incorrect bus "
+                         "type.\n"),
+                       diag_tool_table_name, service_str_id);
         else
             g_printerr(_("Can't get diagnostic tests of unknown service. Incorrect bus type.\n"));
         ERR_EXIT();
@@ -10425,91 +10455,96 @@ static int services_module_get_diag_tests(AlteratorCtlServicesModule *module,
     if (!result)
     {
         if (streq(service_str_id, diag_tool_path))
-            g_printerr(_("Can't get diagnostic tests of \"%s\" service. There is nowhere to save the result.\n"),
+            g_printerr(_("Can't get diagnostic tests of \"%s\" service. There is nowhere to save "
+                         "the result.\n"),
                        service_str_id);
         else
-            g_printerr(_("Can't get \"%s\" diagnostic tool tests of \"%s\" service. There is nowhere to save the "
+            g_printerr(_("Can't get \"%s\" diagnostic tool tests of \"%s\" service. There is "
+                         "nowhere to save the "
                          "result.\n"),
-                       diag_tool_table_name,
-                       service_str_id);
+                       diag_tool_table_name, service_str_id);
         ERR_EXIT();
     }
 
-    if (alterator_ctl_get_registered_module(module->alterator_ctl_app, ALTERATOR_CTL_DIAG_MODULE_NAME, &diag_module) < 0)
+    if (alterator_ctl_get_registered_module(module->alterator_ctl_app,
+                                            ALTERATOR_CTL_DIAG_MODULE_NAME, &diag_module)
+        < 0)
         ERR_EXIT();
 
-    AlteratorCtlDiagModule *diag_module_instance = (AlteratorCtlDiagModule *) diag_module->module_instance;
-    AlteratorGDBusSource *diag_gdbus_source      = bus_type == G_BUS_TYPE_SYSTEM
-                                                       ? diag_module_instance->gdbus_system_source
-                                                       : diag_module_instance->gdbus_session_source;
+    AlteratorCtlDiagModule* diag_module_instance = (AlteratorCtlDiagModule*)
+                                                       diag_module->module_instance;
+    AlteratorGDBusSource* diag_gdbus_source = bus_type == G_BUS_TYPE_SYSTEM
+                                                  ? diag_module_instance->gdbus_system_source
+                                                  : diag_module_instance->gdbus_session_source;
 
     for (gsize i = 0; i < diag_env_vars->len; i++)
     {
-        evn_variable_t *var = (evn_variable_t *) (diag_env_vars->pdata[i]);
-        if (diag_gdbus_source->alterator_gdbus_source_set_env_value(diag_gdbus_source, var->name, var->value) < 0)
+        evn_variable_t* var = (evn_variable_t*) (diag_env_vars->pdata[i]);
+        if (diag_gdbus_source->alterator_gdbus_source_set_env_value(diag_gdbus_source, var->name,
+                                                                    var->value)
+            < 0)
         {
-            g_print("Failed to set environment value (\"%s\": \"%s\") for getting diagnostic tests of service "
+            g_print("Failed to set environment value (\"%s\": \"%s\") for getting diagnostic tests "
+                    "of service "
                     "\"%s\".\n",
-                    var->name,
-                    var->value,
-                    service_str_id);
+                    var->name, var->value, service_str_id);
             ERR_EXIT();
         }
     }
 
-    diag_ctx = alteratorctl_ctx_init_diag(DIAG_LIST_TESTS_PRIV, diag_tool_path, NULL, NULL, NULL, NULL);
-    if (diag_list_tests_call(
-            diag_module, service_str_id, diag_tool_path, bus_type, FALSE, all_modes, diag_tests_info, &diag_ctx)
+    diag_ctx = alteratorctl_ctx_init_diag(DIAG_LIST_TESTS_PRIV, diag_tool_path, NULL, NULL, NULL,
+                                          NULL);
+    if (diag_list_tests_call(diag_module, service_str_id, diag_tool_path, bus_type, FALSE,
+                             all_modes, diag_tests_info, &diag_ctx)
         < 0)
         ERR_EXIT();
 
-    GHashTable *all_tests_data = g_hash_table_new_full(g_str_hash,
-                                                       g_str_equal,
-                                                       (GDestroyNotify) g_free,
-                                                       (GDestroyNotify)
-                                                           services_module_service_diag_tool_test_info_free);
-    if (services_module_pack_diag_tests(service_str_id, diag_tool_path, bus_type, &diag_ctx, all_tests_data) < 0)
+    GHashTable* all_tests_data =
+        g_hash_table_new_full(g_str_hash, g_str_equal, (GDestroyNotify) g_free,
+                              (GDestroyNotify) services_module_service_diag_tool_test_info_free);
+    if (services_module_pack_diag_tests(service_str_id, diag_tool_path, bus_type, &diag_ctx,
+                                        all_tests_data)
+        < 0)
         ERR_EXIT();
 
     diag_ctx->free_results(diag_ctx->results);
 
-    if (diag_list_tests_call(
-            diag_module, service_str_id, diag_tool_path, bus_type, TRUE, all_modes, diag_tests_info, &diag_ctx)
+    if (diag_list_tests_call(diag_module, service_str_id, diag_tool_path, bus_type, TRUE, all_modes,
+                             diag_tests_info, &diag_ctx)
         < 0)
         ERR_EXIT();
 
-    GHashTable *required_tests_data = g_hash_table_new_full(g_str_hash,
-                                                            g_str_equal,
-                                                            (GDestroyNotify) g_free,
-                                                            (GDestroyNotify)
-                                                                services_module_service_diag_tool_test_info_free);
-    if (services_module_pack_diag_tests(service_str_id, diag_tool_path, bus_type, &diag_ctx, required_tests_data) < 0)
+    GHashTable* required_tests_data =
+        g_hash_table_new_full(g_str_hash, g_str_equal, (GDestroyNotify) g_free,
+                              (GDestroyNotify) services_module_service_diag_tool_test_info_free);
+    if (services_module_pack_diag_tests(service_str_id, diag_tool_path, bus_type, &diag_ctx,
+                                        required_tests_data)
+        < 0)
         ERR_EXIT();
 
-    if (diag_gdbus_source->alterator_gdbus_source_set_env_value(diag_gdbus_source,
-                                                                SERVICES_DIAGNOSE_TESTS_ENV_VALUE_REQUIRED_ONLY,
-                                                                "")
+    if (diag_gdbus_source
+            ->alterator_gdbus_source_set_env_value(diag_gdbus_source,
+                                                   SERVICES_DIAGNOSE_TESTS_ENV_VALUE_REQUIRED_ONLY,
+                                                   "")
         < 0)
     {
-        g_printerr(_("Failed to unset environment variable \"%s\" for getting diagnostic tests of service \"%s\".\n"),
-                   SERVICES_DIAGNOSE_TESTS_ENV_VALUE_REQUIRED_ONLY,
-                   service_str_id);
+        g_printerr(_("Failed to unset environment variable \"%s\" for getting diagnostic tests of "
+                     "service \"%s\".\n"),
+                   SERVICES_DIAGNOSE_TESTS_ENV_VALUE_REQUIRED_ONLY, service_str_id);
         ERR_EXIT();
     }
 
-    GPtrArray *all_tests_names = g_hash_table_get_keys_as_ptr_array(required_tests_data);
+    GPtrArray* all_tests_names = g_hash_table_get_keys_as_ptr_array(required_tests_data);
     for (gsize i = 0; i < all_tests_names->len; i++)
     {
-        gchar *test_name          = ((gchar **) all_tests_names->pdata)[i];
-        diag_tool_test_info *test = g_hash_table_lookup(all_tests_data, test_name);
+        gchar* test_name          = ((gchar**) all_tests_names->pdata)[i];
+        diag_tool_test_info* test = g_hash_table_lookup(all_tests_data, test_name);
         test->is_required         = TRUE;
     }
     g_ptr_array_unref(all_tests_names);
 
-    g_hash_table_insert(*result,
-                        g_strdup(diag_tool_table_name),
-                        services_module_service_diag_tool_tests_init(diag_tool_path,
-                                                                     all_tests_data,
+    g_hash_table_insert(*result, g_strdup(diag_tool_table_name),
+                        services_module_service_diag_tool_tests_init(diag_tool_path, all_tests_data,
                                                                      required_tests_data,
                                                                      bus_type));
 
@@ -10532,15 +10567,17 @@ end:
     return ret;
 }
 
-static int services_module_get_diag_tools_info(AlteratorCtlServicesModule *module,
-                                               const gchar *service_str_id,
-                                               GHashTable *diag_tools_names,
-                                               GHashTable **tools_names_to_nodes)
+static int services_module_get_diag_tools_info(AlteratorCtlServicesModule* module,
+                                               const gchar* service_str_id,
+                                               GHashTable* diag_tools_names,
+                                               GHashTable** tools_names_to_nodes)
 {
-    int ret                           = 0;
-    GPtrArray *diag_tools_names_arr   = NULL;
-    GHashTable *diag_tools_names_copy = g_hash_table_copy_table(diag_tools_names, g_strdup_copy_func, NULL, NULL, NULL);
-    AlteratorCtlModuleInfoParser *info_parser = NULL;
+    int ret                                   = 0;
+    GPtrArray* diag_tools_names_arr           = NULL;
+    GHashTable* diag_tools_names_copy         = g_hash_table_copy_table(diag_tools_names,
+                                                                        g_strdup_copy_func, NULL, NULL,
+                                                                        NULL);
+    AlteratorCtlModuleInfoParser* info_parser = NULL;
     if (!service_str_id)
     {
         g_printerr(_("Can't get diagnostics tests info of unspecified service.\n"));
@@ -10568,77 +10605,79 @@ static int services_module_get_diag_tools_info(AlteratorCtlServicesModule *modul
     info_parser = module->gdbus_source->info_parser;
 
     if (!module->info
-        && info_parser->alterator_ctl_module_info_parser_get_specified_object_data(info_parser,
-                                                                                   module->gdbus_source,
-                                                                                   service_str_id,
-                                                                                   SERVICES_INTERFACE_NAME,
-                                                                                   &module->info))
+        && info_parser
+               ->alterator_ctl_module_info_parser_get_specified_object_data(info_parser,
+                                                                            module->gdbus_source,
+                                                                            service_str_id,
+                                                                            SERVICES_INTERFACE_NAME,
+                                                                            &module->info))
     {
-        g_printerr(_("Failed to get all service \"%s\" tools info. Error getting service alterator entry info.\n"),
+        g_printerr(_("Failed to get all service \"%s\" tools info. Error getting service alterator "
+                     "entry info.\n"),
                    service_str_id);
         ERR_EXIT();
     }
 
-    GNode *diag_tools_node = NULL;
+    GNode* diag_tools_node = NULL;
     if (!(diag_tools_node = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-              info_parser, module->info, SERVICES_ALTERATOR_ENTRY_SERVICE_DIAG_TOOLS_TABLE_NAME, -1)))
+              info_parser, module->info, SERVICES_ALTERATOR_ENTRY_SERVICE_DIAG_TOOLS_TABLE_NAME,
+              -1)))
     {
-        g_printerr(_("Failed to get all service \"%s\" tools info. No diagnostics tools.\n"), service_str_id);
+        g_printerr(_("Failed to get all service \"%s\" tools info. No diagnostics tools.\n"),
+                   service_str_id);
         ERR_EXIT();
     }
 
-    info_parser           = module->gdbus_source->info_parser;
-    *tools_names_to_nodes = g_hash_table_new_full(g_str_hash,
-                                                  g_str_equal,
-                                                  (GDestroyNotify) g_free,
-                                                  (GDestroyNotify) alterator_ctl_module_info_parser_result_tree_free);
+    info_parser = module->gdbus_source->info_parser;
+    *tools_names_to_nodes =
+        g_hash_table_new_full(g_str_hash, g_str_equal, (GDestroyNotify) g_free,
+                              (GDestroyNotify) alterator_ctl_module_info_parser_result_tree_free);
 
     diag_tools_names_arr = g_hash_table_get_keys_as_ptr_array(diag_tools_names_copy);
     for (gsize i = 0; i < diag_tools_names_arr->len; i++)
     {
-        gchar *tool_name          = ((gchar **) (diag_tools_names_arr->pdata))[i];
-        GNode *tool_metadata_node = NULL;
-        if (!(tool_metadata_node = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
-                                                                                                  module->info,
-                                                                                                  tool_name,
-                                                                                                  -1)))
+        gchar* tool_name          = ((gchar**) (diag_tools_names_arr->pdata))[i];
+        GNode* tool_metadata_node = NULL;
+        if (!(tool_metadata_node = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
+                  info_parser, module->info, tool_name, -1)))
         {
-            g_printerr(_("Failed to get all service \"%s\" tools info. Tool \"%s\" doesn't exists.\n"),
-                       service_str_id,
-                       tool_name);
+            g_printerr(_("Failed to get all service \"%s\" tools info. Tool \"%s\" doesn't "
+                         "exists.\n"),
+                       service_str_id, tool_name);
             ERR_EXIT();
         }
 
-        alterator_entry_node *tool_metadata = tool_metadata_node->data;
-        toml_value *bus                     = g_hash_table_lookup(tool_metadata->toml_pairs,
-                                              SERVICES_ALTERATOR_ENTRY_SERVICE_DIAG_TOOLS_BUS_KEY_NAME);
+        alterator_entry_node* tool_metadata = tool_metadata_node->data;
+        toml_value*
+            bus = g_hash_table_lookup(tool_metadata->toml_pairs,
+                                      SERVICES_ALTERATOR_ENTRY_SERVICE_DIAG_TOOLS_BUS_KEY_NAME);
         if (!bus || bus->type != TOML_DATA_STRING || !bus->str_value || !strlen(bus->str_value))
         {
-            g_printerr(_("Failed to get all service \"%s\" tools info. The \"%s\" tool bus isn't specified.\n"),
-                       service_str_id,
-                       tool_name);
+            g_printerr(_("Failed to get all service \"%s\" tools info. The \"%s\" tool bus isn't "
+                         "specified.\n"),
+                       service_str_id, tool_name);
             ERR_EXIT();
         }
 
-        toml_value *tool_path = g_hash_table_lookup(tool_metadata->toml_pairs,
-                                                    SERVICES_ALTERATOR_ENTRY_SERVICE_DIAG_TOOLS_PATH_KEY_NAME);
-        if (!tool_path || tool_path->type != TOML_DATA_STRING || !tool_path->str_value || !strlen(tool_path->str_value))
+        toml_value* tool_path = g_hash_table_lookup(
+            tool_metadata->toml_pairs, SERVICES_ALTERATOR_ENTRY_SERVICE_DIAG_TOOLS_PATH_KEY_NAME);
+        if (!tool_path || tool_path->type != TOML_DATA_STRING || !tool_path->str_value
+            || !strlen(tool_path->str_value))
         {
-            g_printerr(_("Failed to get all service \"%s\" tools info. The \"%s\" tool path isn't specified.\n"),
-                       service_str_id,
-                       tool_name);
+            g_printerr(_("Failed to get all service \"%s\" tools info. The \"%s\" tool path isn't "
+                         "specified.\n"),
+                       service_str_id, tool_name);
             ERR_EXIT();
         }
 
-        GNode *tool_info     = NULL;
-        gint get_info_result = services_module_get_diag_info(module,
-                                                             service_str_id,
-                                                             tool_name,
+        GNode* tool_info     = NULL;
+        gint get_info_result = services_module_get_diag_info(module, service_str_id, tool_name,
                                                              tool_path->str_value,
                                                              streq(bus->str_value, "system")
                                                                  ? G_BUS_TYPE_SYSTEM
-                                                                 : (streq(bus->str_value, "session") ? G_BUS_TYPE_SESSION
-                                                                                                     : G_BUS_TYPE_NONE),
+                                                                 : (streq(bus->str_value, "session")
+                                                                        ? G_BUS_TYPE_SESSION
+                                                                        : G_BUS_TYPE_NONE),
                                                              &tool_info);
 
         if (get_info_result < 0)
@@ -10662,16 +10701,15 @@ end:
 }
 
 // ret 1 if failed of getting info
-static int services_module_get_diag_info(AlteratorCtlServicesModule *module,
-                                         const gchar *service_str_id,
-                                         const gchar *service_diag_tool_entry_name,
-                                         const gchar *diag_tool_str_id,
-                                         GBusType bus_type,
-                                         GNode **result)
+static int services_module_get_diag_info(AlteratorCtlServicesModule* module,
+                                         const gchar* service_str_id,
+                                         const gchar* service_diag_tool_entry_name,
+                                         const gchar* diag_tool_str_id, GBusType bus_type,
+                                         GNode** result)
 {
     int ret                           = 0;
-    AlteratorCtlModule *diag_module   = NULL;
-    alteratorctl_ctx_t *diag_info_ctx = NULL;
+    AlteratorCtlModule* diag_module   = NULL;
+    alteratorctl_ctx_t* diag_info_ctx = NULL;
 
     if (!service_str_id)
     {
@@ -10681,7 +10719,8 @@ static int services_module_get_diag_info(AlteratorCtlServicesModule *module,
 
     if (!diag_tool_str_id)
     {
-        g_printerr(_("Can't get diagnostics tests info of \"%s\" service with unspecified diagnostic tool.\n"),
+        g_printerr(_("Can't get diagnostics tests info of \"%s\" service with unspecified "
+                     "diagnostic tool.\n"),
                    service_str_id);
         ERR_EXIT();
     }
@@ -10694,21 +10733,25 @@ static int services_module_get_diag_info(AlteratorCtlServicesModule *module,
 
     if (bus_type != G_BUS_TYPE_SYSTEM && bus_type != G_BUS_TYPE_SESSION)
     {
-        g_printerr(_("Can't get \"%s\" diagnostic tool info of \"%s\" service. Invalid bus type.\n"),
-                   diag_tool_str_id,
-                   service_str_id);
+        g_printerr(_("Can't get \"%s\" diagnostic tool info of \"%s\" service. Invalid bus "
+                     "type.\n"),
+                   diag_tool_str_id, service_str_id);
         ERR_EXIT();
     }
 
     if (!result)
     {
-        g_printerr(_("Can't save \"%s\" diagnostic tool info of \"%s\" service.\n"), diag_tool_str_id, service_str_id);
+        g_printerr(_("Can't save \"%s\" diagnostic tool info of \"%s\" service.\n"),
+                   diag_tool_str_id, service_str_id);
         ERR_EXIT();
     }
 
-    if (alterator_ctl_get_registered_module(module->alterator_ctl_app, ALTERATOR_CTL_DIAG_MODULE_NAME, &diag_module) < 0)
+    if (alterator_ctl_get_registered_module(module->alterator_ctl_app,
+                                            ALTERATOR_CTL_DIAG_MODULE_NAME, &diag_module)
+        < 0)
     {
-        g_printerr(_("Failed to run getting diagnostic tests info in \"%s\" service.\n"), service_str_id);
+        g_printerr(_("Failed to run getting diagnostic tests info in \"%s\" service.\n"),
+                   service_str_id);
         ERR_EXIT();
     }
 
@@ -10718,12 +10761,14 @@ static int services_module_get_diag_info(AlteratorCtlServicesModule *module,
     diag_module->module_iface->run(diag_module->module_instance, diag_info_ctx);
     enable_output();
 
-    AlteratorGDBusSource *diag_gdbus_source
-        = bus_type == G_BUS_TYPE_SYSTEM
-              ? ((AlteratorCtlDiagModule *) diag_module->module_instance)->gdbus_system_source
-              : (bus_type == G_BUS_TYPE_SESSION
-                     ? ((AlteratorCtlDiagModule *) diag_module->module_instance)->gdbus_session_source
-                     : NULL);
+    AlteratorGDBusSource*
+        diag_gdbus_source = bus_type == G_BUS_TYPE_SYSTEM
+                                ? ((AlteratorCtlDiagModule*) diag_module->module_instance)
+                                      ->gdbus_system_source
+                                : (bus_type == G_BUS_TYPE_SESSION
+                                       ? ((AlteratorCtlDiagModule*) diag_module->module_instance)
+                                             ->gdbus_session_source
+                                       : NULL);
 
     if (!diag_gdbus_source)
     {
@@ -10731,18 +10776,22 @@ static int services_module_get_diag_info(AlteratorCtlServicesModule *module,
         ERR_EXIT();
     }
 
-    AlteratorCtlModuleInfoParser *info_parser = (AlteratorCtlModuleInfoParser *) diag_gdbus_source->info_parser;
+    AlteratorCtlModuleInfoParser* info_parser = (AlteratorCtlModuleInfoParser*)
+                                                    diag_gdbus_source->info_parser;
     disable_output();
-    gint getting_data_result = info_parser->alterator_ctl_module_info_parser_get_specified_object_data(
-        info_parser, diag_gdbus_source, diag_tool_str_id, DIAG_INTERFACE_NAME, result);
+    gint getting_data_result =
+        info_parser->alterator_ctl_module_info_parser_get_specified_object_data(info_parser,
+                                                                                diag_gdbus_source,
+                                                                                diag_tool_str_id,
+                                                                                DIAG_INTERFACE_NAME,
+                                                                                result);
     enable_output();
     if (getting_data_result < 0)
     {
-        g_print(_("WARNING: Diagnostic tool \"%s\" in service \"%s\" cannot be used - D-Bus object \"%s\" not "
+        g_print(_("WARNING: Diagnostic tool \"%s\" in service \"%s\" cannot be used - D-Bus object "
+                  "\"%s\" not "
                   "found.\n"),
-                service_diag_tool_entry_name,
-                service_str_id,
-                diag_tool_str_id);
+                service_diag_tool_entry_name, service_str_id, diag_tool_str_id);
         ret = 1;
         goto end;
     }
@@ -10757,17 +10806,14 @@ end:
     return ret;
 }
 
-static int services_module_run_test(AlteratorCtlServicesModule *module,
-                                    const gchar *service_str_id,
-                                    const gchar *diag_tool_name,
-                                    const gchar *test_name,
-                                    deployment_status deploy_mode,
-                                    GBusType bus_type)
+static int services_module_run_test(AlteratorCtlServicesModule* module, const gchar* service_str_id,
+                                    const gchar* diag_tool_name, const gchar* test_name,
+                                    deployment_status deploy_mode, GBusType bus_type)
 {
     int ret                                 = 0;
-    alteratorctl_ctx_t *diag_ctx            = NULL;
-    AlteratorCtlModule *diag_module         = NULL;
-    AlteratorGDBusSource *diag_gdbus_source = NULL;
+    alteratorctl_ctx_t* diag_ctx            = NULL;
+    AlteratorCtlModule* diag_module         = NULL;
+    AlteratorGDBusSource* diag_gdbus_source = NULL;
 
     if (!service_str_id)
     {
@@ -10777,18 +10823,21 @@ static int services_module_run_test(AlteratorCtlServicesModule *module,
 
     if (!diag_tool_name)
     {
-        g_printerr(_("Can't run diagnostics tests of %s service with unspecified diagnostic tool.\n"), service_str_id);
+        g_printerr(_("Can't run diagnostics tests of %s service with unspecified diagnostic "
+                     "tool.\n"),
+                   service_str_id);
         ERR_EXIT();
     }
 
     if (!test_name)
     {
         if (streq(service_str_id, diag_tool_name))
-            g_printerr(_("Can't run unspecified diagnostics test of %s service.\n"), service_str_id);
-        else
-            g_printerr(_("Can't run unspecified diagnostics test of %s diagnostic tool of %s service.\n"),
-                       diag_tool_name,
+            g_printerr(_("Can't run unspecified diagnostics test of %s service.\n"),
                        service_str_id);
+        else
+            g_printerr(_("Can't run unspecified diagnostics test of %s diagnostic tool of %s "
+                         "service.\n"),
+                       diag_tool_name, service_str_id);
         ERR_EXIT();
     }
 
@@ -10798,41 +10847,49 @@ static int services_module_run_test(AlteratorCtlServicesModule *module,
         ERR_EXIT();
     }
 
-    if (alterator_ctl_get_registered_module(module->alterator_ctl_app, ALTERATOR_CTL_DIAG_MODULE_NAME, &diag_module) < 0)
+    if (alterator_ctl_get_registered_module(module->alterator_ctl_app,
+                                            ALTERATOR_CTL_DIAG_MODULE_NAME, &diag_module)
+        < 0)
         ERR_EXIT();
-    AlteratorCtlDiagModule *diag_module_instance = (AlteratorCtlDiagModule *) diag_module->module_instance;
-    diag_gdbus_source                            = bus_type == G_BUS_TYPE_SYSTEM
-                                                       ? diag_module_instance->gdbus_system_source
-                                                       : (bus_type == G_BUS_TYPE_SESSION ? diag_module_instance->gdbus_session_source : NULL);
+    AlteratorCtlDiagModule* diag_module_instance = (AlteratorCtlDiagModule*)
+                                                       diag_module->module_instance;
+    diag_gdbus_source = bus_type == G_BUS_TYPE_SYSTEM
+                            ? diag_module_instance->gdbus_system_source
+                            : (bus_type == G_BUS_TYPE_SESSION
+                                   ? diag_module_instance->gdbus_session_source
+                                   : NULL);
 
-    if (diag_gdbus_source->alterator_gdbus_source_set_env_value(diag_gdbus_source,
-                                                                SERVICES_DIAGNOSE_TESTS_ENV_VALUE_DEPLOY_MODE,
-                                                                deploy_mode != UNDEPLOYED ? "post" : "pre")
+    if (diag_gdbus_source
+            ->alterator_gdbus_source_set_env_value(diag_gdbus_source,
+                                                   SERVICES_DIAGNOSE_TESTS_ENV_VALUE_DEPLOY_MODE,
+                                                   deploy_mode != UNDEPLOYED ? "post" : "pre")
         < 0)
         ERR_EXIT();
 
-    GString *diag_log_buffer = NULL;
+    GString* diag_log_buffer = NULL;
     if (module->play_plan && g_strcmp0(module->play_plan->service_name, service_str_id) == 0)
         diag_log_buffer = module->play_plan->diag_log_buffer;
 
-    DiagRunAdditionalData *run_data = g_new0(DiagRunAdditionalData, 1);
+    DiagRunAdditionalData* run_data = g_new0(DiagRunAdditionalData, 1);
     if (!run_data)
         ERR_EXIT();
 
     run_data->bus_hint   = g_strdup(bus_type == G_BUS_TYPE_SYSTEM ? "system" : "session");
     run_data->log_buffer = diag_log_buffer;
 
-    diag_ctx = alteratorctl_ctx_init_diag(DIAG_RUN_TOOL_TEST_PRIV, diag_tool_name, test_name, NULL, NULL, run_data);
+    diag_ctx = alteratorctl_ctx_init_diag(DIAG_RUN_TOOL_TEST_PRIV, diag_tool_name, test_name, NULL,
+                                          NULL, run_data);
 
     if (!diag_gdbus_source)
     {
         if (streq(service_str_id, diag_tool_name))
-            g_printerr(_("Failed to run diagnostics tests. Unknown diagnostic tool bus type in %s service.\n"),
+            g_printerr(_("Failed to run diagnostics tests. Unknown diagnostic tool bus type in %s "
+                         "service.\n"),
                        service_str_id);
         else
-            g_printerr(_("Failed to run diagnostics tests. Unknown %s diagnostic tool bus type in %s service.\n"),
-                       diag_tool_name,
-                       service_str_id);
+            g_printerr(_("Failed to run diagnostics tests. Unknown %s diagnostic tool bus type in "
+                         "%s service.\n"),
+                       diag_tool_name, service_str_id);
         ERR_EXIT();
     }
 
@@ -10862,21 +10919,21 @@ end:
     return ret;
 }
 
-static toml_value *services_module_toml_value_dup(toml_value *value)
+static toml_value* services_module_toml_value_dup(toml_value* value)
 {
     if (!value)
         return NULL;
 
-    toml_value *result = g_new0(toml_value, 1);
+    toml_value* result = g_new0(toml_value, 1);
     result->type       = value->type;
     if (value->array)
     {
         result->array_length = value->array_length;
         if (value->type == TOML_DATA_ARRAY_OF_STRING)
         {
-            result->array = (gpointer) g_new0(gchar *, value->array_length);
+            result->array = (gpointer) g_new0(gchar*, value->array_length);
             for (gsize i = 0; i < value->array_length; i++)
-                ((gchar **) result->array)[i] = g_strdup(((gchar **) value->array)[i]);
+                ((gchar**) result->array)[i] = g_strdup(((gchar**) value->array)[i]);
             return result;
         }
         else if (value->type == TOML_DATA_ARRAY_OF_INT)
@@ -10902,18 +10959,19 @@ static toml_value *services_module_toml_value_dup(toml_value *value)
 }
 
 // ret = 1: The resource does not exist or does not have an associated parameter
-static int services_module_get_actual_resourse_value(AlteratorCtlServicesModule *module,
-                                                     const gchar *service_str_id,
-                                                     GNode *resources,
-                                                     JsonNode *parameters,
-                                                     const gchar *resource_name,
-                                                     toml_value **result)
+static int services_module_get_actual_resourse_value(AlteratorCtlServicesModule* module,
+                                                     const gchar* service_str_id, GNode* resources,
+                                                     JsonNode* parameters,
+                                                     const gchar* resource_name,
+                                                     toml_value** result)
 {
     int ret                                   = 0;
-    AlteratorCtlModuleInfoParser *info_parser = (AlteratorCtlModuleInfoParser *) module->gdbus_source->info_parser;
+    AlteratorCtlModuleInfoParser* info_parser = (AlteratorCtlModuleInfoParser*)
+                                                    module->gdbus_source->info_parser;
     if (!service_str_id)
     {
-        g_printerr(_("Can't get resource %s value of unspecified service.\n"), resource_name ? resource_name : "");
+        g_printerr(_("Can't get resource %s value of unspecified service.\n"),
+                   resource_name ? resource_name : "");
         ERR_EXIT();
     }
 
@@ -10925,30 +10983,36 @@ static int services_module_get_actual_resourse_value(AlteratorCtlServicesModule 
 
     if (!resources)
     {
-        g_printerr(_("Can't get %s resource value of %s service: no resources data.\n"), resource_name, service_str_id);
+        g_printerr(_("Can't get %s resource value of %s service: no resources data.\n"),
+                   resource_name, service_str_id);
         ERR_EXIT();
     }
 
     if (!result)
     {
-        g_printerr(_("No container for saving resource %s value of %s service.\n"), resource_name, service_str_id);
+        g_printerr(_("No container for saving resource %s value of %s service.\n"), resource_name,
+                   service_str_id);
         ERR_EXIT();
     }
 
-    GNode *resource = NULL;
-    if (!(resource
-          = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser, resources, resource_name, -1)))
+    GNode* resource = NULL;
+    if (!(resource = info_parser->alterator_ctl_module_info_parser_get_node_by_name(info_parser,
+                                                                                    resources,
+                                                                                    resource_name,
+                                                                                    -1)))
         goto end;
 
-    toml_value *resource_value = NULL;
+    toml_value* resource_value = NULL;
     if (info_parser->alterator_ctl_module_info_parser_find_value(
-            info_parser, resource, &resource_value, SERVICES_ALTERATOR_ENTRY_SERVICE_RESOURCE_VALUE_KEY_NAME, NULL)
+            info_parser, resource, &resource_value,
+            SERVICES_ALTERATOR_ENTRY_SERVICE_RESOURCE_VALUE_KEY_NAME, NULL)
         && resource_value)
         *result = resource_value;
 
-    toml_value *parameter = NULL;
+    toml_value* parameter = NULL;
     if (!info_parser->alterator_ctl_module_info_parser_find_value(
-            info_parser, resource, &parameter, SERVICES_ALTERATOR_ENTRY_SERVICE_RESOURCES_PARAMETER_KEY_NAME, NULL)
+            info_parser, resource, &parameter,
+            SERVICES_ALTERATOR_ENTRY_SERVICE_RESOURCES_PARAMETER_KEY_NAME, NULL)
         || !parameter)
     {
         if (!resource_value)
@@ -10956,52 +11020,57 @@ static int services_module_get_actual_resourse_value(AlteratorCtlServicesModule 
         goto end;
     }
 
-    // There is no point in looking for a parameter in JSON with default parameters if they are in TOML
-    // if (parameter && only_initial_parameters && !parameters)
+    // There is no point in looking for a parameter in JSON with default parameters if they are in
+    // TOML if (parameter && only_initial_parameters && !parameters)
     //     *result = parameter;
 
-    toml_value *param_name_val = NULL;
+    toml_value* param_name_val = NULL;
     if (!info_parser->alterator_ctl_module_info_parser_find_value(
-            info_parser, resource, &param_name_val, SERVICES_ALTERATOR_ENTRY_SERVICE_RESOURCES_PARAMETER_KEY_NAME, NULL)
+            info_parser, resource, &param_name_val,
+            SERVICES_ALTERATOR_ENTRY_SERVICE_RESOURCES_PARAMETER_KEY_NAME, NULL)
         || param_name_val->type != TOML_DATA_STRING || !param_name_val->str_value)
     {
         ret = 1;
         goto end;
     }
 
-    const gchar *param_name      = param_name_val->str_value;
-    JsonObject *parameter_object = json_node_get_object(parameters);
+    const gchar* param_name      = param_name_val->str_value;
+    JsonObject* parameter_object = json_node_get_object(parameters);
 
     if (!json_object_has_member(parameter_object, param_name))
     {
         *result = resource_value;
         switch ((*result)->type)
         {
-        case TOML_DATA_ARRAY_OF_STRING: {
-            JsonArray *array = json_array_new();
+        case TOML_DATA_ARRAY_OF_STRING:
+        {
+            JsonArray* array = json_array_new();
             for (gsize i = 0; i < (*result)->array_length; i++)
-                json_array_add_string_element(array, ((gchar **) (*result)->array)[i]);
+                json_array_add_string_element(array, ((gchar**) (*result)->array)[i]);
             json_object_set_array_member(parameter_object, param_name, array);
         }
         break;
-        case TOML_DATA_ARRAY_OF_INT: {
-            JsonArray *array = json_array_new();
+        case TOML_DATA_ARRAY_OF_INT:
+        {
+            JsonArray* array = json_array_new();
             for (gsize i = 0; i < (*result)->array_length; i++)
-                json_array_add_int_element(array, ((gint64 *) (*result)->array)[i]);
+                json_array_add_int_element(array, ((gint64*) (*result)->array)[i]);
             json_object_set_array_member(parameter_object, param_name, array);
         }
         break;
-        case TOML_DATA_ARRAY_OF_DOUBLE: {
-            JsonArray *array = json_array_new();
+        case TOML_DATA_ARRAY_OF_DOUBLE:
+        {
+            JsonArray* array = json_array_new();
             for (gsize i = 0; i < (*result)->array_length; i++)
-                json_array_add_double_element(array, ((gdouble *) (*result)->array)[i]);
+                json_array_add_double_element(array, ((gdouble*) (*result)->array)[i]);
             json_object_set_array_member(parameter_object, param_name, array);
         }
         break;
-        case TOML_DATA_ARRAY_OF_BOOL: {
-            JsonArray *array = json_array_new();
+        case TOML_DATA_ARRAY_OF_BOOL:
+        {
+            JsonArray* array = json_array_new();
             for (gsize i = 0; i < (*result)->array_length; i++)
-                json_array_add_boolean_element(array, ((gboolean *) (*result)->array)[i]);
+                json_array_add_boolean_element(array, ((gboolean*) (*result)->array)[i]);
             json_object_set_array_member(parameter_object, param_name, array);
         }
         break;
@@ -11020,7 +11089,7 @@ static int services_module_get_actual_resourse_value(AlteratorCtlServicesModule 
         goto end;
     }
 
-    JsonNode *param_node    = json_object_get_member(parameter_object, param_name);
+    JsonNode* param_node    = json_object_get_member(parameter_object, param_name);
     JsonNodeType value_type = json_node_get_node_type(param_node);
     resource_value          = g_new0(toml_value, 1);
 
@@ -11048,20 +11117,20 @@ static int services_module_get_actual_resourse_value(AlteratorCtlServicesModule 
             resource_value->bool_value = json_node_get_boolean(param_node);
             break;
         default:
-            g_printerr(_("Unknown resourse %s value type in %s service.\n"), resource_name, service_str_id);
+            g_printerr(_("Unknown resourse %s value type in %s service.\n"), resource_name,
+                       service_str_id);
             ERR_EXIT();
             break;
         }
     }
     else if (value_type == JSON_NODE_ARRAY)
     {
-        JsonArray *arr = json_node_get_array(param_node);
+        JsonArray* arr = json_node_get_array(param_node);
         guint len      = json_array_get_length(arr);
         if (len == 0)
         {
             g_printerr(_("Invalid resource %s value type as a empty array in %s service.\n"),
-                       resource_name,
-                       service_str_id);
+                       resource_name, service_str_id);
             ERR_EXIT();
         }
         else
@@ -11070,10 +11139,10 @@ static int services_module_get_actual_resourse_value(AlteratorCtlServicesModule 
             {
             case G_TYPE_STRING:
                 resource_value->type         = TOML_DATA_ARRAY_OF_STRING;
-                resource_value->array        = (gpointer) g_new0(gchar *, len);
+                resource_value->array        = (gpointer) g_new0(gchar*, len);
                 resource_value->array_length = len;
                 for (guint i = 0; i < len; i++)
-                    ((gchar **) resource_value->array)[i] = g_strdup(
+                    ((gchar**) resource_value->array)[i] = g_strdup(
                         json_node_get_string(json_array_get_element(arr, i)));
                 break;
             case G_TYPE_INT64:
@@ -11081,24 +11150,28 @@ static int services_module_get_actual_resourse_value(AlteratorCtlServicesModule 
                 resource_value->array        = (gpointer) g_new0(gint, len);
                 resource_value->array_length = len;
                 for (guint i = 0; i < len; i++)
-                    ((gint *) resource_value->array)[i] = (gint) json_node_get_int(json_array_get_element(arr, i));
+                    ((gint*) resource_value->array)[i] = (gint) json_node_get_int(
+                        json_array_get_element(arr, i));
                 break;
             case G_TYPE_DOUBLE:
                 resource_value->type         = TOML_DATA_ARRAY_OF_DOUBLE;
                 resource_value->array        = (gpointer) g_new0(double, len);
                 resource_value->array_length = len;
                 for (guint i = 0; i < len; i++)
-                    ((double *) resource_value->array)[i] = json_node_get_double(json_array_get_element(arr, i));
+                    ((double*) resource_value->array)[i] = json_node_get_double(
+                        json_array_get_element(arr, i));
                 break;
             case G_TYPE_BOOLEAN:
                 resource_value->type         = TOML_DATA_ARRAY_OF_BOOL;
                 resource_value->array        = (gpointer) g_new0(gboolean, len);
                 resource_value->array_length = len;
                 for (guint i = 0; i < len; i++)
-                    ((gboolean *) resource_value->array)[i] = json_node_get_boolean(json_array_get_element(arr, i));
+                    ((gboolean*) resource_value->array)[i] = json_node_get_boolean(
+                        json_array_get_element(arr, i));
                 break;
             default:
-                g_printerr(_("Unknown resourse %s value type in %s service.\n"), resource_name, service_str_id);
+                g_printerr(_("Unknown resourse %s value type in %s service.\n"), resource_name,
+                           service_str_id);
                 ERR_EXIT();
                 break;
             }
@@ -11107,13 +11180,13 @@ static int services_module_get_actual_resourse_value(AlteratorCtlServicesModule 
     else if (value_type == JSON_NODE_OBJECT)
     {
         g_printerr(_("Unsupported resourse %s value type as a composite param in %s service.\n"),
-                   resource_name,
-                   service_str_id);
+                   resource_name, service_str_id);
         ERR_EXIT();
     }
     else
     {
-        g_printerr(_("Unknown resourse %s value type in %s service.\n"), resource_name, service_str_id);
+        g_printerr(_("Unknown resourse %s value type in %s service.\n"), resource_name,
+                   service_str_id);
         ERR_EXIT();
     }
     *result = resource_value;
@@ -11125,9 +11198,9 @@ end:
     return ret;
 }
 
-static gchar *services_module_strignify_toml_value(const toml_value *value)
+static gchar* services_module_strignify_toml_value(const toml_value* value)
 {
-    gchar *result = NULL;
+    gchar* result = NULL;
 
     if (!value)
     {
@@ -11155,56 +11228,55 @@ static gchar *services_module_strignify_toml_value(const toml_value *value)
             result = g_strdup("false\n");
         break;
 
-    case TOML_DATA_ARRAY_OF_INT: {
+    case TOML_DATA_ARRAY_OF_INT:
+    {
         result = g_strdup("[");
         for (gsize i = 0; i < value->array_length; i++)
         {
-            gchar *tmp     = result;
-            gchar *int_str = g_strdup_printf("%d", ((gint *) value->array)[i]);
-            result         = g_strconcat(tmp, int_str, i + 1 != value->array_length ? ", " : "]", NULL);
+            gchar* tmp     = result;
+            gchar* int_str = g_strdup_printf("%d", ((gint*) value->array)[i]);
+            result = g_strconcat(tmp, int_str, i + 1 != value->array_length ? ", " : "]", NULL);
             g_free(tmp);
             g_free(int_str);
         }
         break;
     }
 
-    case TOML_DATA_ARRAY_OF_DOUBLE: {
+    case TOML_DATA_ARRAY_OF_DOUBLE:
+    {
         result = g_strdup("[");
         for (gsize i = 0; i < value->array_length; i++)
         {
-            gchar *tmp        = result;
-            gchar *double_str = g_strdup_printf("%f", ((gdouble *) value->array)[i]);
-            result            = g_strconcat(tmp, double_str, i + 1 != value->array_length ? ", " : "]", NULL);
+            gchar* tmp        = result;
+            gchar* double_str = g_strdup_printf("%f", ((gdouble*) value->array)[i]);
+            result = g_strconcat(tmp, double_str, i + 1 != value->array_length ? ", " : "]", NULL);
             g_free(tmp);
             g_free(double_str);
         }
         break;
     }
 
-    case TOML_DATA_ARRAY_OF_BOOL: {
+    case TOML_DATA_ARRAY_OF_BOOL:
+    {
         result = g_strdup("[");
         for (gsize i = 0; i < value->array_length; i++)
         {
-            gchar *tmp = result;
-            result     = g_strconcat(tmp,
-                                 ((gint *) value->array)[i] ? "true" : "false",
-                                 i + 1 != value->array_length ? ", " : "]",
-                                 NULL);
+            gchar* tmp = result;
+            result     = g_strconcat(tmp, ((gint*) value->array)[i] ? "true" : "false",
+                                 i + 1 != value->array_length ? ", " : "]", NULL);
             g_free(tmp);
         }
         break;
     }
 
-    case TOML_DATA_ARRAY_OF_STRING: {
+    case TOML_DATA_ARRAY_OF_STRING:
+    {
         result = g_strdup("[");
         for (gsize i = 0; i < value->array_length; i++)
         {
-            gchar *tmp = result;
-            result     = g_strconcat(tmp,
-                                 "\"",
-                                 ((gchar **) value->array)[i],
-                                 i + 1 != value->array_length ? "\", " : "]",
-                                 NULL);
+            gchar* tmp = result;
+            result     = g_strconcat(tmp, "\"", ((gchar**) value->array)[i],
+                                 i + 1 != value->array_length ? "\", " : "]", NULL);
             g_free(tmp);
         }
         break;
@@ -11217,64 +11289,67 @@ static gchar *services_module_strignify_toml_value(const toml_value *value)
     return result;
 }
 
-static int services_module_find_conflicting_resources_within_current_service(AlteratorCtlServicesModule *module,
-                                                                             const gchar *service_str_id,
-                                                                             JsonNode *parameters_node)
+// FIXME: this method modifies json!
+static int services_module_find_conflicting_resources_within_current_service(
+    AlteratorCtlServicesModule* module, const gchar* service_str_id, JsonNode* parameters_node)
 {
     int ret                                   = 0;
-    AlteratorCtlModuleInfoParser *info_parser = module->gdbus_source->info_parser;
-    GString *error_message                    = g_string_new(NULL);
-    //<(services_module_strignify_toml_value(toml_value), GHashTable -> <resource_type, GArray (resources_names)>>
-    GHashTable *actual_resources_data = g_hash_table_new_full(g_str_hash,
-                                                              g_str_equal,
-                                                              g_free,
-                                                              (GDestroyNotify) g_hash_table_destroy);
-    GNode *resources                  = NULL;
+    AlteratorCtlModuleInfoParser* info_parser = module->gdbus_source->info_parser;
+    GString* error_message                    = g_string_new(NULL);
+    //<(services_module_strignify_toml_value(toml_value), GHashTable -> <resource_type, GArray
+    //(resources_names)>>
+    GHashTable* actual_resources_data = g_hash_table_new_full(g_str_hash, g_str_equal, g_free,
+                                                              (GDestroyNotify)
+                                                                  g_hash_table_destroy);
+    GNode* resources                  = NULL;
     if (!(resources = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-              info_parser, module->info, SERVICES_ALTERATOR_ENTRY_SERVICE_RESOURCES_TABLE_NAME, -1)))
+              info_parser, module->info, SERVICES_ALTERATOR_ENTRY_SERVICE_RESOURCES_TABLE_NAME,
+              -1)))
         goto end;
 
-    for (GNode *resource = resources->children; resource != NULL; resource = g_node_next_sibling(resource))
+    for (GNode* resource = resources->children; resource != NULL;
+         resource        = g_node_next_sibling(resource))
     {
-        alterator_entry_node *resource_data = (alterator_entry_node *) resource->data;
-        gchar *type                         = g_hash_table_lookup(resource_data->toml_pairs,
+        alterator_entry_node* resource_data = (alterator_entry_node*) resource->data;
+        gchar* type =
+            g_hash_table_lookup(resource_data->toml_pairs,
 
-                                          SERVICES_ALTERATOR_ENTRY_SERVICE_DEFAULT_PARAM_TYPE_KEY_NAME);
-        gchar *name                         = resource_data->node_name;
-        toml_value *value                   = NULL;
-        int actual_resource_ret             = services_module_get_actual_resourse_value(module,
-                                                                            service_str_id,
+                                SERVICES_ALTERATOR_ENTRY_SERVICE_DEFAULT_PARAM_TYPE_KEY_NAME);
+        gchar* name             = resource_data->node_name;
+        toml_value* value       = NULL;
+        int actual_resource_ret = services_module_get_actual_resourse_value(module, service_str_id,
                                                                             resources,
-                                                                            parameters_node,
-                                                                            name,
+                                                                            parameters_node, name,
                                                                             &value);
         if (actual_resource_ret == 1)
         {
             if (info_parser->alterator_ctl_module_info_parser_find_value(
-                    info_parser, resource, &value, SERVICES_ALTERATOR_ENTRY_SERVICE_RESOURCE_VALUE_KEY_NAME, NULL)
+                    info_parser, resource, &value,
+                    SERVICES_ALTERATOR_ENTRY_SERVICE_RESOURCE_VALUE_KEY_NAME, NULL)
                 < 0)
             {
-                g_printerr(_("Can't get non-existance value of resource \"%s\" in \"%s\" service.\n"),
-                           name,
-                           service_str_id);
+                g_printerr(_("Can't get non-existance value of resource \"%s\" in \"%s\" "
+                             "service.\n"),
+                           name, service_str_id);
                 ERR_EXIT();
             }
         }
 
-        gchar *strinified_toml_value        = services_module_strignify_toml_value(value);
-        GHashTable *current_resources_types = g_hash_table_lookup(actual_resources_data, strinified_toml_value);
+        gchar* strinified_toml_value        = services_module_strignify_toml_value(value);
+        GHashTable* current_resources_types = g_hash_table_lookup(actual_resources_data,
+                                                                  strinified_toml_value);
         gboolean resources_types_contains   = current_resources_types != NULL;
-        current_resources_types             = !resources_types_contains ? g_hash_table_new_full(g_str_hash,
-                                                                                    g_str_equal,
-                                                                                    NULL,
-                                                                                    (GDestroyNotify) g_ptr_array_unref)
-                                                                        : current_resources_types;
+        current_resources_types             = !resources_types_contains
+                                                  ? g_hash_table_new_full(g_str_hash, g_str_equal, NULL,
+                                                                          (GDestroyNotify) g_ptr_array_unref)
+                                                  : current_resources_types;
 
-        GPtrArray *current_type_names = g_hash_table_lookup(current_resources_types, type);
+        GPtrArray* current_type_names = g_hash_table_lookup(current_resources_types, type);
         gboolean array_contains       = current_type_names != NULL;
-        current_type_names            = !array_contains ? g_ptr_array_new_with_free_func(g_free) : current_type_names;
+        current_type_names            = !array_contains ? g_ptr_array_new_with_free_func(g_free)
+                                                        : current_type_names;
 
-        gchar *display_name = NULL;
+        gchar* display_name = NULL;
         if (services_module_get_display_name(module, name, resource, &display_name) < 0)
             g_ptr_array_add(current_type_names, g_strdup(name));
         else
@@ -11285,40 +11360,44 @@ static int services_module_find_conflicting_resources_within_current_service(Alt
             g_hash_table_insert(current_resources_types, type, current_type_names);
 
         if (!resources_types_contains)
-            g_hash_table_insert(actual_resources_data, strinified_toml_value, current_resources_types);
+            g_hash_table_insert(actual_resources_data, strinified_toml_value,
+                                current_resources_types);
     }
 
     GHashTableIter iter;
     g_hash_table_iter_init(&iter, actual_resources_data);
-    gchar *resource_value         = NULL;
-    GHashTable *resources_by_type = NULL;
-    while (g_hash_table_iter_next(&iter, (gpointer *) &resource_value, (gpointer *) &resources_by_type))
+    gchar* resource_value         = NULL;
+    GHashTable* resources_by_type = NULL;
+    while (
+        g_hash_table_iter_next(&iter, (gpointer*) &resource_value, (gpointer*) &resources_by_type))
     {
         GHashTableIter types_iter;
         g_hash_table_iter_init(&types_iter, resources_by_type);
-        gchar *type   = NULL;
-        GArray *names = NULL;
-        while (g_hash_table_iter_next(&types_iter, (gpointer *) &type, (gpointer *) &names))
+        gchar* type   = NULL;
+        GArray* names = NULL;
+        while (g_hash_table_iter_next(&types_iter, (gpointer*) &type, (gpointer*) &names))
             if (names->len > 1)
             {
-                gchar **names_str = (gchar **) names->data;
+                gchar** names_str = (gchar**) names->data;
                 if (names->len == 2)
                 {
                     g_string_append_printf(error_message,
-                                           _("A resource conflict was detected within the \"%s\" service: it attempts "
+                                           _("A resource conflict was detected within the \"%s\" "
+                                             "service: it attempts "
                                              "to acquire the same resources \"%s\" and \"%s\""),
-                                           service_str_id,
-                                           names_str[0],
-                                           names_str[1]);
+                                           service_str_id, names_str[0], names_str[1]);
                 }
                 else
                 {
                     g_string_append_printf(error_message,
-                                           _("A resource conflict was detected within the service \"%s\": the service "
+                                           _("A resource conflict was detected within the service "
+                                             "\"%s\": the service "
                                              "it attempts to acquire the same resources: "),
                                            service_str_id);
                     for (gsize i = 0; i < names->len; i++)
-                        g_string_append_printf(error_message, i != names->len - 1 ? "\"%s\", " : "\"%s\"", names_str[i]);
+                        g_string_append_printf(error_message,
+                                               i != names->len - 1 ? "\"%s\", " : "\"%s\"",
+                                               names_str[i]);
                 }
             }
     }
@@ -11336,33 +11415,38 @@ end:
     return ret;
 }
 
-static int services_module_find_conflicting_services(AlteratorCtlServicesModule *module, alteratorctl_ctx_t *ctx)
+static int services_module_find_conflicting_services(AlteratorCtlServicesModule* module,
+                                                     alteratorctl_ctx_t* ctx)
 {
     int ret                          = 0;
-    GList *deployed_services         = NULL;
-    GNode *service_info              = NULL;
-    gchar *current_service_str_id    = NULL;
+    GList* deployed_services         = NULL;
+    GNode* service_info              = NULL;
+    gchar* current_service_str_id    = NULL;
     gboolean all_services_undeployed = FALSE;
 
-    AlteratorCtlModuleInfoParser *info_parser = (AlteratorCtlModuleInfoParser *) module->gdbus_source->info_parser;
+    AlteratorCtlModuleInfoParser* info_parser = (AlteratorCtlModuleInfoParser*)
+                                                    module->gdbus_source->info_parser;
 
     g_variant_get(ctx->parameters, "(msms)", &current_service_str_id, NULL);
 
-    if (service_module_get_list_of_deployed_services_with_params(module, &deployed_services, current_service_str_id) < 0)
+    if (service_module_get_list_of_deployed_services_with_params(module, &deployed_services,
+                                                                 current_service_str_id)
+        < 0)
         ERR_EXIT();
 
-    if (info_parser->alterator_ctl_module_info_parser_get_specified_object_data(info_parser,
-                                                                                module->gdbus_source,
-                                                                                current_service_str_id,
-                                                                                SERVICES_INTERFACE_NAME,
-                                                                                &service_info)
+    if (info_parser
+            ->alterator_ctl_module_info_parser_get_specified_object_data(info_parser,
+                                                                         module->gdbus_source,
+                                                                         current_service_str_id,
+                                                                         SERVICES_INTERFACE_NAME,
+                                                                         &service_info)
         < 0)
     {
         g_printerr(_("Internal error: empty service info.\n"));
         ERR_EXIT();
     }
 
-    GNode *resources = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
+    GNode* resources = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
         info_parser, service_info, SERVICES_ALTERATOR_ENTRY_SERVICE_RESOURCES_TABLE_NAME, 2);
 
     if (!resources || g_node_n_children(resources) == 0)
@@ -11370,13 +11454,11 @@ static int services_module_find_conflicting_services(AlteratorCtlServicesModule 
 
     all_services_undeployed = !g_list_length(deployed_services);
     if (!all_services_undeployed && resources)
-        for (GList *deployed_service = deployed_services; deployed_service != NULL;
+        for (GList* deployed_service = deployed_services; deployed_service != NULL;
              deployed_service        = deployed_service->next)
-            if (services_module_check_resources_conflicts(module,
-                                                          current_service_str_id,
-                                                          (GVariant *) deployed_service->data,
-                                                          resources,
-                                                          module->json)
+            if (services_module_check_resources_conflicts(module, current_service_str_id,
+                                                                 (GVariant*) deployed_service->data,
+                                                                 resources, module->json)
                 < 0)
                 ERR_EXIT();
 
@@ -11392,24 +11474,26 @@ end:
     return ret;
 }
 
-static int services_module_check_resources_conflicts(AlteratorCtlServicesModule *module,
-                                                     const gchar *current_service_str_id,
-                                                     const GVariant *deployed_service_data,
-                                                     GNode *resources,
-                                                     JsonNode *parameters)
+static int services_module_check_resources_conflicts(AlteratorCtlServicesModule* module,
+                                                     const gchar* current_service_str_id,
+                                                     const GVariant* deployed_service_data,
+                                                     GNode* resources, JsonNode* parameters)
 {
     int ret                                   = 0;
-    gchar *deployed_service_str_id            = NULL;
-    gchar *deployed_service_params            = NULL;
-    GString *conflicts                        = g_string_new("");
-    AlteratorCtlModuleInfoParser *info_parser = (AlteratorCtlModuleInfoParser *) module->gdbus_source->info_parser;
+    gchar* deployed_service_str_id            = NULL;
+    gchar* deployed_service_params            = NULL;
+    JsonParser* deployed_service_parser       = json_parser_new();
+    GString* conflicts                        = g_string_new("");
+    AlteratorCtlModuleInfoParser* info_parser = (AlteratorCtlModuleInfoParser*)
+                                                    module->gdbus_source->info_parser;
     if (!deployed_service_data)
     {
         g_printerr(_("Internal error: failed to check resources conflicts with other services.\n"));
         ERR_EXIT();
     }
 
-    g_variant_get((GVariant *) deployed_service_data, "(ss)", &deployed_service_str_id, &deployed_service_params);
+    g_variant_get((GVariant*) deployed_service_data, "(ss)", &deployed_service_str_id,
+                  &deployed_service_params);
 
     if (!deployed_service_str_id || !deployed_service_params)
     {
@@ -11417,59 +11501,55 @@ static int services_module_check_resources_conflicts(AlteratorCtlServicesModule 
         ERR_EXIT();
     }
 
-    GNode *deployed_service_info = NULL;
-    if (info_parser->alterator_ctl_module_info_parser_get_specified_object_data(info_parser,
-                                                                                module->gdbus_source,
-                                                                                deployed_service_str_id,
-                                                                                SERVICES_INTERFACE_NAME,
-                                                                                &deployed_service_info)
+    GNode* deployed_service_info = NULL;
+    if (info_parser
+            ->alterator_ctl_module_info_parser_get_specified_object_data(info_parser,
+                                                                         module->gdbus_source,
+                                                                         deployed_service_str_id,
+                                                                         SERVICES_INTERFACE_NAME,
+                                                                         &deployed_service_info)
         < 0)
     {
         g_printerr(_("Internal error: failed to check conflicts with other services.\n"));
         ERR_EXIT();
     }
 
-    GNode *deployed_service_resources = NULL;
-    if (!(deployed_service_resources = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-              info_parser, deployed_service_info, SERVICES_ALTERATOR_ENTRY_SERVICE_RESOURCES_TABLE_NAME, -1)))
+    GNode* deployed_service_resources = NULL;
+    if (!(deployed_service_resources =
+              info_parser->alterator_ctl_module_info_parser_get_node_by_name(
+                  info_parser, deployed_service_info,
+                  SERVICES_ALTERATOR_ENTRY_SERVICE_RESOURCES_TABLE_NAME, -1)))
         goto end;
 
-    JsonParser *deployed_service_parser    = NULL;
-    JsonNode *deployed_service_params_node = NULL;
+    JsonNode* deployed_service_params_node = NULL;
 
     gsize conflicts_count = 0;
-    for (GNode *resource = resources->children; resource != NULL; resource = resource->next)
+    for (GNode* resource = resources->children; resource != NULL; resource = resource->next)
     {
-        const gchar *resource_name           = ((alterator_entry_node *) resource->data)->node_name;
-        toml_value *deployable_service_value = NULL;
+        const gchar* resource_name           = ((alterator_entry_node*) resource->data)->node_name;
+        toml_value* deployable_service_value = NULL;
         gint get_actual_ret                  = services_module_get_actual_resourse_value(module,
-                                                                        current_service_str_id,
-                                                                        resources,
-                                                                        parameters,
-                                                                        resource_name,
-                                                                        &deployable_service_value);
+                                                                                         current_service_str_id,
+                                                                                         resources, parameters,
+                                                                                         resource_name,
+                                                                                         &deployable_service_value);
         if (get_actual_ret < 0)
             ERR_EXIT();
         else if (get_actual_ret == 1)
             continue;
 
-        if (!deployed_service_parser)
+        if (!json_parser_load_from_data(deployed_service_parser, deployed_service_params, -1, NULL))
         {
-            deployed_service_parser = json_parser_new();
-            if (!json_parser_load_from_data(deployed_service_parser, deployed_service_params, -1, NULL))
-            {
-                g_printerr(_("Invalid json parameters.\n"));
-                g_object_unref(deployed_service_parser);
-                deployed_service_parser = NULL;
-                ERR_EXIT();
-            }
-
-            deployed_service_params_node = json_parser_get_root(deployed_service_parser);
+            g_printerr(_("Invalid json parameters.\n"));
+            g_object_unref(deployed_service_parser);
+            deployed_service_parser = NULL;
+            ERR_EXIT();
         }
 
-        toml_value *deployed_service_value = NULL;
-        get_actual_ret                     = services_module_get_actual_resourse_value(module,
-                                                                   current_service_str_id,
+        deployed_service_params_node = json_parser_get_root(deployed_service_parser);
+
+        toml_value* deployed_service_value = NULL;
+        get_actual_ret = services_module_get_actual_resourse_value(module, current_service_str_id,
                                                                    deployed_service_resources,
                                                                    deployed_service_params_node,
                                                                    resource_name,
@@ -11484,18 +11564,20 @@ static int services_module_check_resources_conflicts(AlteratorCtlServicesModule 
             continue;
         }
 
-        if (alterator_ctl_compare_toml_values(deployable_service_value, deployed_service_value, NULL))
+        if (alterator_ctl_compare_toml_values(deployable_service_value, deployed_service_value,
+                                              NULL))
         {
-            gchar *display_name = NULL;
+            gchar* display_name = NULL;
             services_module_get_display_name(module, resource_name, resource, &display_name);
 
-            gchar *strinified_value = services_module_strignify_toml_value(deployable_service_value);
+            gchar* strinified_value = services_module_strignify_toml_value(
+                deployable_service_value);
             g_string_append_printf(conflicts,
                                    _("Resource \"%s\" with value %s is occupied by another "
                                      "service \"%s\".\n"),
-                                   display_name && g_utf8_strlen(display_name, -1) ? display_name : resource_name,
-                                   strinified_value,
-                                   deployed_service_str_id);
+                                   display_name && g_utf8_strlen(display_name, -1) ? display_name
+                                                                                   : resource_name,
+                                   strinified_value, deployed_service_str_id);
             g_free(display_name);
 
             g_free(strinified_value);
@@ -11505,9 +11587,8 @@ static int services_module_check_resources_conflicts(AlteratorCtlServicesModule 
 
     if (conflicts_count)
     {
-        g_string_prepend(conflicts,
-                         conflicts_count == 1 ? _("Resource conflict detected.\n")
-                                              : _("Resources conflicts detected.\n"));
+        g_string_prepend(conflicts, conflicts_count == 1 ? _("Resource conflict detected.\n")
+                                                         : _("Resources conflicts detected.\n"));
         g_printerr("%s", conflicts->str);
         ERR_EXIT();
     }
@@ -11529,25 +11610,26 @@ end:
     return ret;
 }
 
-static int services_module_validate_json_params(AlteratorCtlServicesModule *module,
-                                                JsonNode *params,
-                                                const gchar *service_str_id,
-                                                GNode *optional_service_info)
+static int services_module_validate_json_params(AlteratorCtlServicesModule* module,
+                                                JsonNode* params, const gchar* service_str_id,
+                                                GNode* optional_service_info)
 {
     int ret                        = 0;
-    GNode *service_alterator_entry = NULL;
+    GNode* service_alterator_entry = NULL;
 
     if (!module)
     {
         if (service_str_id && strlen(service_str_id))
-            g_printerr(_("Can't validate json params in %s service. The services module doesn't exist.\n"),
+            g_printerr(_("Can't validate json params in %s service. The services module doesn't "
+                         "exist.\n"),
                        service_str_id);
         else
             g_printerr(_("Can't validate json params. The services module doesn't exist.\n"));
         ERR_EXIT();
     }
 
-    AlteratorCtlModuleInfoParser *info_parser = (AlteratorCtlModuleInfoParser *) module->gdbus_source->info_parser;
+    AlteratorCtlModuleInfoParser* info_parser = (AlteratorCtlModuleInfoParser*)
+                                                    module->gdbus_source->info_parser;
 
     if (!service_str_id)
     {
@@ -11555,133 +11637,133 @@ static int services_module_validate_json_params(AlteratorCtlServicesModule *modu
         ERR_EXIT();
     }
 
-    JsonObject *params_object = params ? json_node_get_object(params) : NULL;
+    JsonObject* params_object = params ? json_node_get_object(params) : NULL;
     if (!params_object)
     {
-        g_printerr(_("Can't validate json params in %s service. Parameters is NULL.\n"), service_str_id);
+        g_printerr(_("Can't validate json params in %s service. Parameters is NULL.\n"),
+                   service_str_id);
         ERR_EXIT();
     }
 
     if (optional_service_info)
         service_alterator_entry = optional_service_info;
-    else if (info_parser->alterator_ctl_module_info_parser_get_specified_object_data(info_parser,
-                                                                                     module->gdbus_source,
-                                                                                     service_str_id,
-                                                                                     SERVICES_INTERFACE_NAME,
-                                                                                     &service_alterator_entry)
-             < 0)
+    else if (
+        info_parser
+            ->alterator_ctl_module_info_parser_get_specified_object_data(info_parser,
+                                                                         module->gdbus_source,
+                                                                         service_str_id,
+                                                                         SERVICES_INTERFACE_NAME,
+                                                                         &service_alterator_entry)
+        < 0)
     {
-        g_printerr(_("Failed to validate %s service parameters. Can't get service info.\n"), service_str_id);
+        g_printerr(_("Failed to validate %s service parameters. Can't get service info.\n"),
+                   service_str_id);
         ERR_EXIT();
     }
 
-    GNode *service_alterator_entry_params = NULL;
-    if (!(service_alterator_entry_params = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
-              info_parser, service_alterator_entry, SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME, -1)))
+    GNode* service_alterator_entry_params = NULL;
+    if (!(service_alterator_entry_params =
+              info_parser->alterator_ctl_module_info_parser_get_node_by_name(
+                  info_parser, service_alterator_entry,
+                  SERVICES_ALTERATOR_ENTRY_SERVICE_PARAMETERS_TABLE_NAME, -1)))
     {
-        g_printerr(_("It is not possible to validate parameters for a service that does not contain them.\n"));
+        g_printerr(_("It is not possible to validate parameters for a service that does not "
+                     "contain them.\n"));
         ERR_EXIT();
     }
 
     JsonObjectIter json_iter;
-    const gchar *member_name = NULL;
-    JsonNode *member_node    = NULL;
+    const gchar* member_name = NULL;
+    JsonNode* member_node    = NULL;
     json_object_iter_init(&json_iter, params_object);
     while (json_object_iter_next(&json_iter, &member_name, &member_node))
     {
         JsonNodeType member_node_type = json_node_get_node_type(member_node);
-        GNode *parameter_info         = NULL;
+        GNode* parameter_info         = NULL;
         if (!(parameter_info = info_parser->alterator_ctl_module_info_parser_get_node_by_name(
                   info_parser, service_alterator_entry_params, member_name, -1)))
         {
-            g_printerr(_("Service %s validation parameters failed. The service doesn't have \"%s\" parameter.\n"),
-                       service_str_id,
-                       member_name);
+            g_printerr(_("Service %s validation parameters failed. The service doesn't have \"%s\" "
+                         "parameter.\n"),
+                       service_str_id, member_name);
             ERR_EXIT();
         }
 
-        alterator_entry_node *parameter = (alterator_entry_node *) parameter_info->data;
-        toml_value *parameter_type
-            = parameter ? g_hash_table_lookup(parameter->toml_pairs,
-                                              SERVICES_ALTERATOR_ENTRY_SERVICE_DEFAULT_PARAM_TYPE_KEY_NAME)
-                        : NULL;
+        alterator_entry_node* parameter = (alterator_entry_node*) parameter_info->data;
+        toml_value* parameter_type =
+            parameter
+                ? g_hash_table_lookup(parameter->toml_pairs,
+                                      SERVICES_ALTERATOR_ENTRY_SERVICE_DEFAULT_PARAM_TYPE_KEY_NAME)
+                : NULL;
         if (!parameter_type || parameter_type->type != TOML_DATA_STRING)
         {
-            g_printerr(_("Service %s validation parameters failed. The parameter %s data type isn't defined in the "
+            g_printerr(_("Service %s validation parameters failed. The parameter %s data type "
+                         "isn't defined in the "
                          "service "
                          "alterator entry.\n"),
-                       service_str_id,
-                       parameter->node_name);
+                       service_str_id, parameter->node_name);
             ERR_EXIT();
         }
 
         if (member_node_type == JSON_NODE_NULL)
         {
-            g_printerr(_("Service %s validation parameters failed. Services don't support null parameters.\n"),
+            g_printerr(_("Service %s validation parameters failed. Services don't support null "
+                         "parameters.\n"),
                        service_str_id);
             ERR_EXIT();
         }
         else if (member_node_type == JSON_NODE_ARRAY || member_node_type == JSON_NODE_VALUE)
         {
-            JsonNode *node_value = NULL;
+            JsonNode* node_value = NULL;
             if (member_node_type == JSON_NODE_ARRAY)
             {
                 if (!streq(parameter_type->str_value, "array"))
                 {
-                    g_printerr(_("Service %s validation parameters failed. The parameter %s must have an \"%s\" data "
+                    g_printerr(_("Service %s validation parameters failed. The parameter %s must "
+                                 "have an \"%s\" data "
                                  "type, not a "
                                  "\"array\".\n"),
-                               service_str_id,
-                               parameter->node_name,
-                               parameter_type->str_value);
+                               service_str_id, parameter->node_name, parameter_type->str_value);
                     ERR_EXIT();
                 }
 
-                toml_value *min_size = g_hash_table_lookup(parameter->toml_pairs, "array_min");
+                toml_value* min_size = g_hash_table_lookup(parameter->toml_pairs, "array_min");
                 if (min_size && min_size->type != TOML_DATA_DOUBLE)
                 {
-                    g_printerr(
-                        _("Service %s validation parameters failed. Wrong type of array min length field of \"%s\" "
-                          "array in %s service alterator entry.\n"),
-                        service_str_id,
-                        parameter->node_name,
-                        service_str_id);
+                    g_printerr(_("Service %s validation parameters failed. Wrong type of array min "
+                                 "length field of \"%s\" "
+                                 "array in %s service alterator entry.\n"),
+                               service_str_id, parameter->node_name, service_str_id);
                 }
 
-                toml_value *max_size = g_hash_table_lookup(parameter->toml_pairs, "array_max");
+                toml_value* max_size = g_hash_table_lookup(parameter->toml_pairs, "array_max");
                 if (max_size && max_size->type != TOML_DATA_DOUBLE)
                 {
-                    g_printerr(
-                        _("Service %s validation parameters failed. Wrong type of array max length field of \"%s\" "
-                          "array in %s service alterator entry.\n"),
-                        service_str_id,
-                        parameter->node_name,
-                        service_str_id);
+                    g_printerr(_("Service %s validation parameters failed. Wrong type of array max "
+                                 "length field of \"%s\" "
+                                 "array in %s service alterator entry.\n"),
+                               service_str_id, parameter->node_name, service_str_id);
                 }
 
-                JsonArray *arr  = json_node_get_array(member_node);
+                JsonArray* arr  = json_node_get_array(member_node);
                 gint arr_length = json_array_get_length(arr);
                 if (min_size && arr_length < min_size->double_value)
                 {
-                    g_printerr(
-                        _("Service %s validation parameters failed. The size of the array parameter \"%s\" must be "
-                          "greater than %d, while it is %d.\n"),
-                        service_str_id,
-                        parameter->node_name,
-                        (gint) min_size->double_value,
-                        (gint) json_array_get_length(arr));
+                    g_printerr(_("Service %s validation parameters failed. The size of the array "
+                                 "parameter \"%s\" must be "
+                                 "greater than %d, while it is %d.\n"),
+                               service_str_id, parameter->node_name, (gint) min_size->double_value,
+                               (gint) json_array_get_length(arr));
                     ERR_EXIT();
                 }
 
                 if (max_size && arr_length > max_size->double_value)
                 {
-                    g_printerr(
-                        _("Service %s validation parameters failed. The size of the array parameter \"%s\" must be "
-                          "less than %d, while it is %d.\n"),
-                        service_str_id,
-                        parameter->node_name,
-                        (gint) max_size->double_value,
-                        (gint) json_array_get_length(arr));
+                    g_printerr(_("Service %s validation parameters failed. The size of the array "
+                                 "parameter \"%s\" must be "
+                                 "less than %d, while it is %d.\n"),
+                               service_str_id, parameter->node_name, (gint) max_size->double_value,
+                               (gint) json_array_get_length(arr));
                     ERR_EXIT();
                 }
 
@@ -11692,21 +11774,21 @@ static int services_module_validate_json_params(AlteratorCtlServicesModule *modu
             else
                 node_value = member_node;
 
-            toml_value *pattern   = g_hash_table_lookup(parameter->toml_pairs, "pattern");
+            toml_value* pattern   = g_hash_table_lookup(parameter->toml_pairs, "pattern");
             GType node_value_type = json_node_get_value_type(node_value);
             switch (node_value_type)
             {
             case G_TYPE_STRING:
                 if (pattern)
                 {
-                    GRegex *string_param_pattern = g_regex_new(pattern->str_value, 0, 0, NULL);
-                    GMatchInfo *match            = NULL;
-                    g_regex_match(string_param_pattern, json_node_get_string(member_node), 0, &match);
+                    GRegex* string_param_pattern = g_regex_new(pattern->str_value, 0, 0, NULL);
+                    GMatchInfo* match            = NULL;
+                    g_regex_match(string_param_pattern, json_node_get_string(member_node), 0,
+                                  &match);
                     if (!g_match_info_matches(match))
                     {
                         g_printerr(_("The parameter %s value doesn't match the pattern %s.\n"),
-                                   parameter->node_name,
-                                   pattern->str_value);
+                                   parameter->node_name, pattern->str_value);
                         g_match_info_free(match);
                         g_regex_unref(string_param_pattern);
                         ERR_EXIT();
@@ -11716,10 +11798,13 @@ static int services_module_validate_json_params(AlteratorCtlServicesModule *modu
                 }
                 break;
 
-            case G_TYPE_INT64: {
-                GRegex *int_param_pattern
-                    = g_regex_new(pattern ? pattern->str_value : SERVICES_JSON_PARAMS_INTEGER_PATTERN, 0, 0, NULL);
-                GMatchInfo *match = NULL;
+            case G_TYPE_INT64:
+            {
+                GRegex* int_param_pattern = g_regex_new(pattern
+                                                            ? pattern->str_value
+                                                            : SERVICES_JSON_PARAMS_INTEGER_PATTERN,
+                                                        0, 0, NULL);
+                GMatchInfo* match = NULL;
                 g_regex_match(int_param_pattern, json_node_get_string(member_node), 0, &match);
                 if (!g_match_info_matches(match))
                 {
@@ -11735,15 +11820,16 @@ static int services_module_validate_json_params(AlteratorCtlServicesModule *modu
             }
             break;
 
-            case G_TYPE_BOOLEAN: {
-                GRegex *boolean_param_pattern = g_regex_new(SERVICES_JSON_PARAMS_BOOLEAN_PATTERN, 0, 0, NULL);
-                GMatchInfo *match             = NULL;
+            case G_TYPE_BOOLEAN:
+            {
+                GRegex* boolean_param_pattern = g_regex_new(SERVICES_JSON_PARAMS_BOOLEAN_PATTERN, 0,
+                                                            0, NULL);
+                GMatchInfo* match             = NULL;
                 g_regex_match(boolean_param_pattern, json_node_get_string(member_node), 0, &match);
                 if (!g_match_info_matches(match))
                 {
                     g_printerr(_("The parameter %s value doesn't match the pattern %s.\n"),
-                               parameter->node_name,
-                               SERVICES_JSON_PARAMS_BOOLEAN_PATTERN);
+                               parameter->node_name, SERVICES_JSON_PARAMS_BOOLEAN_PATTERN);
                     g_match_info_free(match);
                     g_regex_unref(boolean_param_pattern);
                     ERR_EXIT();
@@ -11753,15 +11839,16 @@ static int services_module_validate_json_params(AlteratorCtlServicesModule *modu
                 break;
             }
 
-            default: {
-                GTypeQuery *type_info = NULL;
+            default:
+            {
+                GTypeQuery* type_info = NULL;
                 g_type_query(node_value_type, type_info);
                 if (member_node_type == JSON_NODE_ARRAY)
-                    g_printerr(_("Wrong array %s parameter elem type %s.\n"),
-                               parameter->node_name,
+                    g_printerr(_("Wrong array %s parameter elem type %s.\n"), parameter->node_name,
                                type_info->type_name);
                 else
-                    g_printerr(_("Wrong %s parameter type %s.\n"), parameter->node_name, type_info->type_name);
+                    g_printerr(_("Wrong %s parameter type %s.\n"), parameter->node_name,
+                               type_info->type_name);
                 g_free(type_info);
                 ERR_EXIT();
             }
@@ -11772,22 +11859,23 @@ static int services_module_validate_json_params(AlteratorCtlServicesModule *modu
         {
             if (!streq(parameter_type->str_value, "object"))
             {
-                g_printerr(_("Service %s validation parameters failed. The parameter %s must have an \"%s\" data "
+                g_printerr(_("Service %s validation parameters failed. The parameter %s must have "
+                             "an \"%s\" data "
                              "type, not a "
                              "\"object\".\n"),
-                           service_str_id,
-                           parameter->node_name,
-                           parameter_type->str_value);
+                           service_str_id, parameter->node_name, parameter_type->str_value);
                 ERR_EXIT();
             }
 
-            JsonObject *subobject = json_node_get_object(member_node);
+            JsonObject* subobject = json_node_get_object(member_node);
             JsonObjectIter subobject_json_iter;
-            const gchar *subobject_member_name = NULL;
-            JsonNode *subobject_member_node    = NULL;
+            const gchar* subobject_member_name = NULL;
+            JsonNode* subobject_member_node    = NULL;
             json_object_iter_init(&json_iter, subobject);
-            while (json_object_iter_next(&subobject_json_iter, &subobject_member_name, &subobject_member_node))
-                if (services_module_validate_json_params(module, member_node, service_str_id, service_alterator_entry)
+            while (json_object_iter_next(&subobject_json_iter, &subobject_member_name,
+                                         &subobject_member_node))
+                if (services_module_validate_json_params(module, member_node, service_str_id,
+                                                         service_alterator_entry)
                     < 0)
                     ERR_EXIT();
         }

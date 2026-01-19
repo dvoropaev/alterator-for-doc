@@ -33,6 +33,8 @@ runcmd=run
 logfile=/dev/null
 force=
 global_retval=0
+tempdir="$(mktemp -td diag-domain-client.XXXXXX)"
+tmp_krb5_cache_file="$tempdir/diag-domain-client_krb5cc_%{pid}"
 
 show_usage() {
     echo "Active Directory domain environment diagnostic tool"
@@ -183,6 +185,16 @@ print_head() {
     __footer | __log
     __newline | __log
 }
+
+__clean(){
+    if [ -f "$tmp_krb5_cache_file" ]; then
+        is_root && kdestroy -q -c "$tmp_krb5_cache_file"
+    fi
+    rm -rf "$tempdir"
+    exit "$global_retval"
+}
+
+trap __clean EXIT HUP PIPE INT QUIT TERM
 
 is_root() {
     if test "$(id -u)" != 0; then
@@ -492,29 +504,29 @@ _ldap_get_computer() {
     return "$retval"
 }
 
+_get_machine_ticket(){
+    local hostname_upper
+    hostname_upper=$(echo "$HOSTNAME_SHORT" | tr '[:lower:]' '[:upper:]')
+    local domain_upper
+    domain_upper=$(echo "$DOMAIN_DOMAIN" | tr '[:lower:]' '[:upper:]')
+    local kinit_realm
+    kinit_realm="$hostname_upper\$\@$domain_upper"
+
+    if is_root && [ ! -f "$tmp_krb5_cache_file" ]; then
+        _command kinit -k "$kinit_realm" -c "FILE:$tmp_krb5_cache_file" || return 1
+    fi
+    return 0
+}
+
 _check_domain_controller() {
     local retval=0
     local dc="$1"
     local computer=
-    local computer=
-    local hostname_upper=
-    hostname_upper=$(echo "$HOSTNAME_SHORT" | tr '[:lower:]' '[:upper:]')
-    local domain_upper=
-    domain_upper=$(echo "$DOMAIN_DOMAIN" | tr '[:lower:]' '[:upper:]')
-    local kinit_realm="$hostname_upper\$\@$domain_upper"
-    if is_root; then
-        KRB5CCNAME="FILE:/tmp/diag-domain-client_krb5cc_%{pid}"
-        _command kinit -k "$kinit_realm" || retval=2
-        if test "$retval" != "0"; then
-            is_system_auth_local && return 2 || return 1
-        fi
-    fi
 
     computer="${dc%%.*}"
     _ldap_get_computer "$dc" "$computer" "| grep 'operating\|name:' | cut -d ' ' -f 2 | tr '\n' ' '" || retval=2
 
     __newline
-    is_root && _command kdestroy -A
     return "$retval"
 }
 
@@ -531,9 +543,10 @@ check_domain_controllers() {
         resolv_msg="host $controller_name | sed 's/^.* //g'"
         _command "$resolv_msg"
     done
+    _get_machine_ticket
     for controller_name in $controllers_names; do
         # TODO: Add controller check by ip
-        _check_domain_controller "$controller_name" && retval=0
+        KRB5CCNAME="FILE:$tmp_krb5_cache_file" _check_domain_controller "$controller_name" && retval=0
     done
     test -z "$controllers_names" && retval=2
     ! is_system_auth_local && test "$retval" != 0 && retval=1
@@ -583,6 +596,15 @@ check_sssd_ad_packages() {
 check_sssd_winbind_packages() {
     local retval=0
     _command rpm -q task-auth-ad-winbind || retval=2
+    return "$retval"
+}
+
+check_krb5_init_trace() {
+    local retval=0
+    if ! is_root; then
+        __not_root_skip && return 102
+    fi
+    KRB5_TRACE="/dev/stdout" _get_machine_ticket || retval=1
     return "$retval"
 }
 
@@ -700,6 +722,7 @@ $runcmd check_common_packages "Check common packages"
 $runcmd check_group_policy_packages "Check group policy packages"
 $runcmd check_sssd_ad_packages "Check SSSD AD packages"
 $runcmd check_sssd_winbind_packages "Check SSSD Winbind packages"
+$runcmd check_krb5_init_trace "Trace Kerberos authentication process"
 
 test -f "$logfile" && test -w "$logfile" &&
     sed -i 's/\x1b\[[0-9;]*[mGKH]//g' "$logfile"

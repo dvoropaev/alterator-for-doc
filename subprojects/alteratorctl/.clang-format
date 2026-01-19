@@ -1,113 +1,84 @@
-# .clang-format for ADT
+# This .clang-format configuration is based on the LLVM coding style
+# with additional project-specific adjustments.
 #
-# This is for clang-format >= 5.0.
-#
-# The configuration based on the Qt Creator Coding Rules [1].
-# Documentation on the clang-format options can be found in [2].
-#
-# [1] https://doc-snapshots.qt.io/qtcreator-extending/coding-style.html
-# [2] https://clang.llvm.org/docs/ClangFormatStyleOptions.html
-#
----
-Language:        Cpp
-AccessModifierOffset: -4
-AlignAfterOpenBracket: Align
-AlignConsecutiveAssignments: true
-AlignConsecutiveDeclarations: false
-AlignEscapedNewlines: DontAlign
-AlignOperands:   true
-AlignTrailingComments: true
-AllowAllParametersOfDeclarationOnNextLine: true
-AllowShortBlocksOnASingleLine: false
-AllowShortCaseLabelsOnASingleLine: false
-AllowShortFunctionsOnASingleLine: Inline
-AllowShortIfStatementsOnASingleLine: false
-AllowShortLoopsOnASingleLine: false
-AlwaysBreakAfterReturnType: None
-AlwaysBreakBeforeMultilineStrings: false
-AlwaysBreakTemplateDeclarations: true
-BinPackArguments: false
-BinPackParameters: false
-BraceWrapping:
-  AfterClass:      true
-  AfterControlStatement: true
-  AfterEnum:       true
-  AfterFunction:   true
-  AfterNamespace:  true
-  AfterObjCDeclaration: true
-  AfterStruct:     true
-  AfterUnion:      true
-  BeforeCatch:     true
-  BeforeElse:      true
-  IndentBraces:    false
-  SplitEmptyFunction: false
-  SplitEmptyRecord: false
-  SplitEmptyNamespace: false
-BreakBeforeBinaryOperators: All
-BreakBeforeBraces: Custom
-BreakBeforeInheritanceComma: false
-BreakBeforeTernaryOperators: true
-BreakConstructorInitializersBeforeComma: false
-BreakConstructorInitializers: BeforeComma
-BreakAfterJavaFieldAnnotations: false
-BreakStringLiterals: true
-ColumnLimit:    120
-CommentPragmas:  '^ IWYU pragma:'
-CompactNamespaces: false
-ConstructorInitializerAllOnOneLineOrOnePerLine: false
-ConstructorInitializerIndentWidth: 4
+# References:
+# - LLVM Coding Standards:
+#   https://llvm.org/docs/CodingStandards.html
+# - clang-format style options:
+#   https://clang.llvm.org/docs/ClangFormatStyleOptions.html
+
+# Use LLVM style as a base for all options not explicitly specified below.
+BasedOnStyle: LLVM
+
+# Column width is limited to 100 characters.
+# This encourages readable code while keeping lines relatively compact.
+ColumnLimit: 100
+
+# How much indentation to use for continued lines.
+IndentWidth: 4
 ContinuationIndentWidth: 4
-Cpp11BracedListStyle: true
-DerivePointerAlignment: false
-DisableFormat:   false
-ExperimentalAutoDetectBinPacking: false
-FixNamespaceComments: true
-ForEachMacros:
-  - forever # avoids { wrapped to next line
-  - foreach
-  - Q_FOREACH
-  - BOOST_FOREACH
-IncludeCategories:
-  - Regex:           '^<Q.*'
-    Priority:        200
-IncludeIsMainRegex: '(Test)?$'
-IndentCaseLabels: false
-IndentWidth:     4
-IndentWrappedFunctionNames: false
-JavaScriptQuotes: Leave
-JavaScriptWrapImports: true
-KeepEmptyLinesAtTheStartOfBlocks: false
-# Do not add QT_BEGIN_NAMESPACE/QT_END_NAMESPACE as this will indent lines in between.
-MacroBlockBegin: ""
-MacroBlockEnd:   ""
-MaxEmptyLinesToKeep: 1
-NamespaceIndentation: None
-ObjCBlockIndentWidth: 4
-ObjCSpaceAfterProperty: false
-ObjCSpaceBeforeProtocolList: true
-PenaltyBreakAssignment: 150
-PenaltyBreakBeforeFirstCallParameter: 300
-PenaltyBreakComment: 500
-PenaltyBreakFirstLessLess: 400
-PenaltyBreakString: 600
-PenaltyExcessCharacter: 50
-PenaltyReturnTypeOnItsOwnLine: 300
-PointerAlignment: Right
-ReflowComments:  false
-SortIncludes:    true
-SortUsingDeclarations: true
+
+# Prefer keeping function arguments/parameters on the same line when possible.
+# This helps avoid early wrapping before ColumnLimit is exceeded.
+BinPackParameters: true
+BinPackArguments: true
+
+# Align wrapped arguments/parameters under the first argument after '('.
+AlignAfterOpenBracket: Align
+
+# Align escaped newlines to the left to keep things visually consistent.
+AlignEscapedNewlines: Left
+
+# Do not force a line break after a function definition return type.
+AlwaysBreakAfterDefinitionReturnType: None
+
+# Add a space after C-style casts.
+# Example: (int) x
 SpaceAfterCStyleCast: true
-SpaceAfterTemplateKeyword: false
-SpaceBeforeAssignmentOperators: true
-SpaceBeforeParens: ControlStatements
-SpaceInEmptyParentheses: false
-SpacesBeforeTrailingComments: 1
-SpacesInAngles:  false
-SpacesInContainerLiterals: false
-SpacesInCStyleCastParentheses: false
-SpacesInParentheses: false
-SpacesInSquareBrackets: false
-Standard:        Cpp11
-TabWidth:        4
-UseTab:          Never
+
+# Attach '*' to the type rather than the variable name.
+# Example: int* ptr;
+PointerAlignment: Left
+
+# Use Allman style braces.
+# Example:
+# if (cond)
+# {
+#     ...
+# }
+BreakBeforeBraces: Allman
+
+# Break before binary operators when wrapping long expressions.
+# Do not break before the assignment operator ('=').
+BreakBeforeBinaryOperators: NonAssignment
+
+# Align consecutive assignments in a block to improve readability.
+AlignConsecutiveAssignments: Consecutive
+
+# Allow breaking long string literals into multiple adjacent string literals.
+# This is especially useful for translation strings and error messages.
+BreakStringLiterals: true
+
+# Do not force breaking before multiline strings.
+# This helps avoid formatting like:
+#   x =
+#       "long string...";
+AlwaysBreakBeforeMultilineStrings: false
+
+# Make breaking string literals expensive unless required by ColumnLimit.
+PenaltyBreakString: 2000
+
+# Avoid breaking lines right after assignment whenever possible.
+# Prefer breaking function arguments instead.
+PenaltyBreakAssignment: 2000
+
+# Do not allow placing *all* call arguments onto the next line.
+# Prevents formatting like:
+#   func(
+#       a, b, c);
+AllowAllArgumentsOnNextLine: false
+
+# Avoid breaking immediately after '(' in a function call.
+# Prefer keeping the first argument on the same line and breaking later ones.
+PenaltyBreakBeforeFirstCallParameter: 2000
 

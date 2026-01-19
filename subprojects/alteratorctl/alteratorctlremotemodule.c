@@ -13,52 +13,55 @@
 
 typedef struct remote_module_subcommands_t
 {
-    char *subcommand;
+    char* subcommand;
     enum remote_sub_commands id;
 } remote_module_subcommands_t;
 
 static remote_module_subcommands_t remote_module_subcommands_list[] = {{"connect", REMOTE_CONNECT},
-                                                                       {"disconnect", REMOTE_DISCONNECT},
+                                                                       {"disconnect",
+                                                                        REMOTE_DISCONNECT},
                                                                        {"list", REMOTE_LIST}};
 
-static GObjectClass *remote_module_parent_class = NULL;
+static GObjectClass* remote_module_parent_class = NULL;
 static alterator_ctl_module_t remote_module     = {0};
 
-static void remote_module_class_init(AlteratorCtlRemoteModuleClass *klass);
-static void remote_ctl_class_finalize(GObject *klass);
+static void remote_module_class_init(AlteratorCtlRemoteModuleClass* klass);
+static void remote_ctl_class_finalize(GObject* klass);
 
 static void remote_module_alterator_interface_init(gpointer iface, gpointer iface_data);
 static void remote_module_alterator_interface_finalize(gpointer iface, gpointer iface_data);
 
-AlteratorCtlRemoteModule *remote_module_new(gpointer app);
-void remote_module_free(AlteratorCtlRemoteModule *module);
+AlteratorCtlRemoteModule* remote_module_new(gpointer app);
+void remote_module_free(AlteratorCtlRemoteModule* module);
 
-static void fill_command_hash_table(GHashTable *command);
+static void fill_command_hash_table(GHashTable* command);
 
-static int remote_module_parse_arguments(AlteratorCtlRemoteModule *module,
-                                         int argc,
-                                         char **argv,
-                                         alteratorctl_ctx_t **ctx);
+static int remote_module_parse_arguments(AlteratorCtlRemoteModule* module, int argc, char** argv,
+                                         alteratorctl_ctx_t** ctx);
 
-static int remote_module_connect_subcommand(AlteratorCtlRemoteModule *module, alteratorctl_ctx_t **ctx);
-static int remote_module_disconnect_subcommand(AlteratorCtlRemoteModule *module, alteratorctl_ctx_t **ctx);
-static int remote_module_list_subcommand(AlteratorCtlRemoteModule *module, alteratorctl_ctx_t **ctx);
+static int remote_module_connect_subcommand(AlteratorCtlRemoteModule* module,
+                                            alteratorctl_ctx_t** ctx);
+static int remote_module_disconnect_subcommand(AlteratorCtlRemoteModule* module,
+                                               alteratorctl_ctx_t** ctx);
+static int remote_module_list_subcommand(AlteratorCtlRemoteModule* module,
+                                         alteratorctl_ctx_t** ctx);
 
-static int remote_module_handle_results(AlteratorCtlRemoteModule *module, alteratorctl_ctx_t **ctx);
-static int remote_module_connect_handle_result(AlteratorCtlRemoteModule *module, alteratorctl_ctx_t **ctx);
-static int remote_module_disconnect_handle_result(AlteratorCtlRemoteModule *module, alteratorctl_ctx_t **ctx);
-static int remote_module_list_handle_result(AlteratorCtlRemoteModule *module, alteratorctl_ctx_t **ctx);
+static int remote_module_handle_results(AlteratorCtlRemoteModule* module, alteratorctl_ctx_t** ctx);
+static int remote_module_connect_handle_result(AlteratorCtlRemoteModule* module,
+                                               alteratorctl_ctx_t** ctx);
+static int remote_module_disconnect_handle_result(AlteratorCtlRemoteModule* module,
+                                                  alteratorctl_ctx_t** ctx);
+static int remote_module_list_handle_result(AlteratorCtlRemoteModule* module,
+                                            alteratorctl_ctx_t** ctx);
 
-static int remote_module_validate_object_and_iface(AlteratorCtlRemoteModule *module,
-                                                   const gchar *object,
-                                                   const gchar *iface);
+static int remote_module_validate_object_and_iface(AlteratorCtlRemoteModule* module,
+                                                   const gchar* object, const gchar* iface);
 
-static int remote_module_validation_connection_address(const gchar *connection_address);
+static int remote_module_validation_connection_address(const gchar* connection_address);
 
-static int remote_module_password_agent_validation(AlteratorGDBusSource *source,
-                                                   const gchar *service,
-                                                   const gchar *path,
-                                                   const gchar *iface);
+static int remote_module_password_agent_validation(AlteratorGDBusSource* source,
+                                                   const gchar* service, const gchar* path,
+                                                   const gchar* iface);
 
 GType alterator_ctl_remote_module_get_type(void)
 {
@@ -79,41 +82,42 @@ GType alterator_ctl_remote_module_get_type(void)
                NULL};
 
         const GInterfaceInfo alterator_module_interface_info = {
-            (GInterfaceInitFunc) remote_module_alterator_interface_init,         /* interface_init */
-            (GInterfaceFinalizeFunc) remote_module_alterator_interface_finalize, /* interface_finalize */
-            NULL                                                                 /* interface_data */
+            (GInterfaceInitFunc) remote_module_alterator_interface_init, /* interface_init */
+            (GInterfaceFinalizeFunc)
+                remote_module_alterator_interface_finalize, /* interface_finalize */
+            NULL                                            /* interface_data */
         };
 
         remote_module_type = g_type_register_static(G_TYPE_OBJECT, /* parent class */
-                                                    "AlteratorCtlRemoteModule",
-                                                    &remote_module_info,
+                                                    "AlteratorCtlRemoteModule", &remote_module_info,
                                                     0);
 
-        g_type_add_interface_static(remote_module_type, TYPE_ALTERATOR_CTL_MODULE, &alterator_module_interface_info);
+        g_type_add_interface_static(remote_module_type, TYPE_ALTERATOR_CTL_MODULE,
+                                    &alterator_module_interface_info);
     }
 
     return remote_module_type;
 }
 
-static void remote_module_class_init(AlteratorCtlRemoteModuleClass *klass)
+static void remote_module_class_init(AlteratorCtlRemoteModuleClass* klass)
 {
-    GObjectClass *obj_class = G_OBJECT_CLASS(klass);
+    GObjectClass* obj_class = G_OBJECT_CLASS(klass);
 
     obj_class->finalize = remote_ctl_class_finalize;
 
     remote_module_parent_class = g_type_class_peek_parent(klass);
 }
 
-static void remote_ctl_class_finalize(GObject *klass)
+static void remote_ctl_class_finalize(GObject* klass)
 {
-    AlteratorCtlRemoteModuleClass *obj = (AlteratorCtlRemoteModuleClass *) klass;
+    AlteratorCtlRemoteModuleClass* obj = (AlteratorCtlRemoteModuleClass*) klass;
 
     G_OBJECT_CLASS(remote_module_parent_class)->finalize(klass);
 }
 
 static void remote_module_alterator_interface_init(gpointer iface, gpointer iface_data)
 {
-    AlteratorCtlModuleInterface *interface = iface;
+    AlteratorCtlModuleInterface* interface = iface;
 
     interface->run_with_args = remote_module_run_with_args;
 
@@ -122,14 +126,13 @@ static void remote_module_alterator_interface_init(gpointer iface, gpointer ifac
     interface->print_help = remote_module_print_help;
 }
 
-alterator_ctl_module_t *get_remote_module()
+alterator_ctl_module_t* get_remote_module()
 {
     int ret                             = 0;
     static gsize remote_ctl_module_init = 0;
     if (g_once_init_enter(&remote_ctl_module_init))
     {
-        gsize module_id_size = g_strlcpy(remote_module.id,
-                                         ALTERATOR_CTL_REMOTE_MODULE_NAME,
+        gsize module_id_size = g_strlcpy(remote_module.id, ALTERATOR_CTL_REMOTE_MODULE_NAME,
                                          strlen(ALTERATOR_CTL_REMOTE_MODULE_NAME) + 1);
 
         if (module_id_size != strlen(ALTERATOR_CTL_REMOTE_MODULE_NAME))
@@ -152,21 +155,22 @@ end:
     return NULL;
 }
 
-AlteratorCtlRemoteModule *remote_module_new(gpointer app)
+AlteratorCtlRemoteModule* remote_module_new(gpointer app)
 {
-    AlteratorCtlRemoteModule *object = g_object_new(TYPE_ALTERATOR_CTL_REMOTE_MODULE, NULL);
+    AlteratorCtlRemoteModule* object = g_object_new(TYPE_ALTERATOR_CTL_REMOTE_MODULE, NULL);
 
     object->commands = g_hash_table_new(g_str_hash, g_str_equal);
     fill_command_hash_table(object->commands);
 
-    object->alterator_ctl_app = (AlteratorCtlApp *) app;
+    object->alterator_ctl_app = (AlteratorCtlApp*) app;
 
-    object->gdbus_source = alterator_gdbus_source_new(object->alterator_ctl_app->arguments->verbose, G_BUS_TYPE_SESSION);
+    object->gdbus_source = alterator_gdbus_source_new(object->alterator_ctl_app->arguments->verbose,
+                                                      G_BUS_TYPE_SESSION);
 
     return object;
 }
 
-void remote_module_free(AlteratorCtlRemoteModule *module)
+void remote_module_free(AlteratorCtlRemoteModule* module)
 {
     g_hash_table_destroy(module->commands);
 
@@ -178,23 +182,21 @@ void remote_module_free(AlteratorCtlRemoteModule *module)
     g_object_unref(module);
 }
 
-static void fill_command_hash_table(GHashTable *command)
+static void fill_command_hash_table(GHashTable* command)
 {
-    for (int i = 0; i < sizeof(remote_module_subcommands_list) / sizeof(remote_module_subcommands_t); i++)
-        g_hash_table_insert(command,
-                            remote_module_subcommands_list[i].subcommand,
+    for (int i = 0;
+         i < sizeof(remote_module_subcommands_list) / sizeof(remote_module_subcommands_t); i++)
+        g_hash_table_insert(command, remote_module_subcommands_list[i].subcommand,
                             &remote_module_subcommands_list[i].id);
 }
 
 static void remote_module_alterator_interface_finalize(gpointer iface, gpointer iface_data) {}
 
-static int remote_module_parse_arguments(AlteratorCtlRemoteModule *module,
-                                         int argc,
-                                         char **argv,
-                                         alteratorctl_ctx_t **ctx)
+static int remote_module_parse_arguments(AlteratorCtlRemoteModule* module, int argc, char** argv,
+                                         alteratorctl_ctx_t** ctx)
 {
     int ret                            = 0;
-    AlteratorCtlModuleInterface *iface = GET_ALTERATOR_CTL_MODULE_INTERFACE((void *) module);
+    AlteratorCtlModuleInterface* iface = GET_ALTERATOR_CTL_MODULE_INTERFACE((void*) module);
 
     if (!iface)
     {
@@ -227,7 +229,8 @@ static int remote_module_parse_arguments(AlteratorCtlRemoteModule *module,
     {
     case REMOTE_CONNECT:
         if (argc == 7)
-            (*ctx) = alteratorctl_ctx_init_remote(REMOTE_CONNECT, argv[3], argv[4], argv[5], argv[6], NULL, NULL);
+            (*ctx) = alteratorctl_ctx_init_remote(REMOTE_CONNECT, argv[3], argv[4], argv[5],
+                                                  argv[6], NULL, NULL);
         else
         {
             g_printerr(_("Wrong arguments to connect module command.\n"));
@@ -238,7 +241,8 @@ static int remote_module_parse_arguments(AlteratorCtlRemoteModule *module,
 
     case REMOTE_DISCONNECT:
         if (argc == 4)
-            (*ctx) = alteratorctl_ctx_init_remote(REMOTE_DISCONNECT, argv[3], NULL, NULL, NULL, NULL, NULL);
+            (*ctx) = alteratorctl_ctx_init_remote(REMOTE_DISCONNECT, argv[3], NULL, NULL, NULL,
+                                                  NULL, NULL);
         else
         {
             g_printerr(_("Wrong arguments to disconnect module command.\n"));
@@ -269,15 +273,16 @@ end:
     return ret;
 }
 
-int remote_module_run_with_args(gpointer self, int argc, char **argv)
+int remote_module_run_with_args(gpointer self, int argc, char** argv)
 {
     int ret                          = 0;
-    alteratorctl_ctx_t *ctx          = NULL;
-    AlteratorCtlRemoteModule *module = ALTERATOR_CTL_REMOTE_MODULE(self);
+    alteratorctl_ctx_t* ctx          = NULL;
+    AlteratorCtlRemoteModule* module = ALTERATOR_CTL_REMOTE_MODULE(self);
 
     if (!module)
     {
-        g_printerr(_("Internal data error in remote module with args: AlteratorCtlRemoteModule *module is NULL.\n"));
+        g_printerr(_("Internal data error in remote module with args: AlteratorCtlRemoteModule "
+                     "*module is NULL.\n"));
         ERR_EXIT();
     }
 
@@ -299,8 +304,8 @@ end:
 int remote_module_run(gpointer self, gpointer data)
 {
     int ret                            = 0;
-    AlteratorCtlModuleInterface *iface = GET_ALTERATOR_CTL_MODULE_INTERFACE(self);
-    AlteratorCtlRemoteModule *module   = ALTERATOR_CTL_REMOTE_MODULE(self);
+    AlteratorCtlModuleInterface* iface = GET_ALTERATOR_CTL_MODULE_INTERFACE(self);
+    AlteratorCtlRemoteModule* module   = ALTERATOR_CTL_REMOTE_MODULE(self);
 
     if (module->alterator_ctl_app->arguments->module_help)
         goto end;
@@ -311,7 +316,7 @@ int remote_module_run(gpointer self, gpointer data)
         ERR_EXIT();
     }
 
-    alteratorctl_ctx_t *ctx = (alteratorctl_ctx_t *) data;
+    alteratorctl_ctx_t* ctx = (alteratorctl_ctx_t*) data;
 
     switch (g_variant_get_int32(ctx->subcommands_ids))
     {
@@ -339,24 +344,27 @@ end:
     return ret;
 }
 
-static int remote_module_connect_subcommand(AlteratorCtlRemoteModule *module, alteratorctl_ctx_t **ctx)
+static int remote_module_connect_subcommand(AlteratorCtlRemoteModule* module,
+                                            alteratorctl_ctx_t** ctx)
 {
     int ret                = 0;
-    gchar *remote_address  = NULL;
-    gchar *connection_name = NULL;
-    gchar *agent_bus_name  = NULL;
-    gchar *pty             = NULL;
+    gchar* remote_address  = NULL;
+    gchar* connection_name = NULL;
+    gchar* agent_bus_name  = NULL;
+    gchar* pty             = NULL;
 
-    dbus_ctx_t *d_ctx = NULL;
+    dbus_ctx_t* d_ctx = NULL;
 
     if (!module)
     {
-        g_printerr(_("Internal error in remote module - AlteratorCtlRemoteModule *module is NULL in \"remote "
+        g_printerr(_("Internal error in remote module - AlteratorCtlRemoteModule *module is NULL "
+                     "in \"remote "
                      "connect\".\n"));
         ERR_EXIT();
     }
 
-    g_variant_get((*ctx)->parameters, "(msmsmsms)", &remote_address, &connection_name, &agent_bus_name, &pty);
+    g_variant_get((*ctx)->parameters, "(msmsmsms)", &remote_address, &connection_name,
+                  &agent_bus_name, &pty);
     if (!remote_address | !connection_name | !agent_bus_name | !pty)
     {
         g_printerr(_("Not enough parameters for remote connect subcommand.\n"));
@@ -367,21 +375,19 @@ static int remote_module_connect_subcommand(AlteratorCtlRemoteModule *module, al
     if (remote_module_validation_connection_address(remote_address) < 0)
         ERR_EXIT();
 
-    //Check remote object
-    if (remote_module_validate_object_and_iface(module, ALTERATOR_REMOTE_PATH, REMOTE_INTERFACE_NAME) < 0)
-        ERR_EXIT();
-
-    // password agent validation
-    if (remote_module_password_agent_validation(module->gdbus_source,
-                                                PASSWORD_AGENT_SERVICE,
-                                                PASSWORD_AGENT_OBJECT,
-                                                PASSWORD_AGENT_INTERFACE)
+    // Check remote object
+    if (remote_module_validate_object_and_iface(module, ALTERATOR_REMOTE_PATH,
+                                                REMOTE_INTERFACE_NAME)
         < 0)
         ERR_EXIT();
 
-    d_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME,
-                          ALTERATOR_REMOTE_PATH,
-                          REMOTE_INTERFACE_NAME,
+    // password agent validation
+    if (remote_module_password_agent_validation(module->gdbus_source, PASSWORD_AGENT_SERVICE,
+                                                PASSWORD_AGENT_OBJECT, PASSWORD_AGENT_INTERFACE)
+        < 0)
+        ERR_EXIT();
+
+    d_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME, ALTERATOR_REMOTE_PATH, REMOTE_INTERFACE_NAME,
                           REMOTE_CONNECT_METHOD_NAME,
                           module->alterator_ctl_app->arguments->verbose);
 
@@ -391,7 +397,8 @@ static int remote_module_connect_subcommand(AlteratorCtlRemoteModule *module, al
         ERR_EXIT();
     }
 
-    d_ctx->parameters = g_variant_new("(ssss)", remote_address, connection_name, agent_bus_name, pty);
+    d_ctx->parameters = g_variant_new("(ssss)", remote_address, connection_name, agent_bus_name,
+                                      pty);
     d_ctx->reply_type = G_VARIANT_TYPE("(bs)");
 
     (*ctx)->free_results = (void (*)(gpointer)) g_variant_unref;
@@ -402,7 +409,8 @@ static int remote_module_connect_subcommand(AlteratorCtlRemoteModule *module, al
         (*ctx)->results = (gpointer) g_variant_ref(d_ctx->result);
     else
     {
-        g_printerr(_("D-Bus error in remote module while calling Connect(): failed to produce a result.\n"));
+        g_printerr(_(
+            "D-Bus error in remote module while calling Connect(): failed to produce a result.\n"));
         ERR_EXIT();
     }
 
@@ -425,15 +433,17 @@ end:
     return ret;
 }
 
-static int remote_module_disconnect_subcommand(AlteratorCtlRemoteModule *module, alteratorctl_ctx_t **ctx)
+static int remote_module_disconnect_subcommand(AlteratorCtlRemoteModule* module,
+                                               alteratorctl_ctx_t** ctx)
 {
     int ret                = 0;
-    gchar *connection_name = NULL;
-    dbus_ctx_t *d_ctx      = NULL;
+    gchar* connection_name = NULL;
+    dbus_ctx_t* d_ctx      = NULL;
 
     if (!module)
     {
-        g_printerr(_("Internal error in remote module - AlteratorCtlRemoteModule *module is NULL in \"remote "
+        g_printerr(_("Internal error in remote module - AlteratorCtlRemoteModule *module is NULL "
+                     "in \"remote "
                      "disconnect\".\n"));
         ERR_EXIT();
     }
@@ -446,13 +456,13 @@ static int remote_module_disconnect_subcommand(AlteratorCtlRemoteModule *module,
         ERR_EXIT();
     }
 
-    //Check remote object
-    if (remote_module_validate_object_and_iface(module, ALTERATOR_REMOTE_PATH, REMOTE_INTERFACE_NAME) < 0)
+    // Check remote object
+    if (remote_module_validate_object_and_iface(module, ALTERATOR_REMOTE_PATH,
+                                                REMOTE_INTERFACE_NAME)
+        < 0)
         ERR_EXIT();
 
-    d_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME,
-                          ALTERATOR_REMOTE_PATH,
-                          REMOTE_INTERFACE_NAME,
+    d_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME, ALTERATOR_REMOTE_PATH, REMOTE_INTERFACE_NAME,
                           REMOTE_DISCONNECT_METHOD_NAME,
                           module->alterator_ctl_app->arguments->verbose);
 
@@ -473,7 +483,8 @@ static int remote_module_disconnect_subcommand(AlteratorCtlRemoteModule *module,
         (*ctx)->results = (gpointer) g_variant_ref(d_ctx->result);
     else
     {
-        g_printerr(_("D-Bus error in remote module while calling Disconnect(): failed to produce a result.\n"));
+        g_printerr(_("D-Bus error in remote module while calling Disconnect(): failed to produce a "
+                     "result.\n"));
         ERR_EXIT();
     }
 
@@ -487,27 +498,27 @@ end:
     return ret;
 }
 
-static int remote_module_list_subcommand(AlteratorCtlRemoteModule *module, alteratorctl_ctx_t **ctx)
+static int remote_module_list_subcommand(AlteratorCtlRemoteModule* module, alteratorctl_ctx_t** ctx)
 {
     int ret           = 0;
-    dbus_ctx_t *d_ctx = NULL;
+    dbus_ctx_t* d_ctx = NULL;
 
     if (!module)
     {
-        g_printerr(_("Internal error in remote module - AlteratorCtlRemoteModule *module is NULL in \"remote "
+        g_printerr(_("Internal error in remote module - AlteratorCtlRemoteModule *module is NULL "
+                     "in \"remote "
                      "list\".\n"));
         ERR_EXIT();
     }
 
-    //Check remote object
-    if (remote_module_validate_object_and_iface(module, ALTERATOR_REMOTE_PATH, REMOTE_INTERFACE_NAME) < 0)
+    // Check remote object
+    if (remote_module_validate_object_and_iface(module, ALTERATOR_REMOTE_PATH,
+                                                REMOTE_INTERFACE_NAME)
+        < 0)
         ERR_EXIT();
 
-    d_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME,
-                          ALTERATOR_REMOTE_PATH,
-                          REMOTE_INTERFACE_NAME,
-                          REMOTE_LIST_METHOD_NAME,
-                          module->alterator_ctl_app->arguments->verbose);
+    d_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME, ALTERATOR_REMOTE_PATH, REMOTE_INTERFACE_NAME,
+                          REMOTE_LIST_METHOD_NAME, module->alterator_ctl_app->arguments->verbose);
 
     if (!d_ctx)
     {
@@ -525,7 +536,8 @@ static int remote_module_list_subcommand(AlteratorCtlRemoteModule *module, alter
         (*ctx)->results = (gpointer) g_variant_ref(d_ctx->result);
     else
     {
-        g_printerr(_("D-Bus error in remote module while calling GetConnections(): failed to produce a result.\n"));
+        g_printerr(_("D-Bus error in remote module while calling GetConnections(): failed to "
+                     "produce a result.\n"));
         ERR_EXIT();
     }
 
@@ -536,7 +548,7 @@ end:
     return ret;
 }
 
-static int remote_module_handle_results(AlteratorCtlRemoteModule *module, alteratorctl_ctx_t **ctx)
+static int remote_module_handle_results(AlteratorCtlRemoteModule* module, alteratorctl_ctx_t** ctx)
 {
     int ret = 0;
     if (!module)
@@ -581,11 +593,12 @@ end:
     return ret;
 }
 
-static int remote_module_connect_handle_result(AlteratorCtlRemoteModule *module, alteratorctl_ctx_t **ctx)
+static int remote_module_connect_handle_result(AlteratorCtlRemoteModule* module,
+                                               alteratorctl_ctx_t** ctx)
 {
     int ret                      = 0;
-    GVariant *is_success         = NULL;
-    GVariant *remote_object_path = NULL;
+    GVariant* is_success         = NULL;
+    GVariant* remote_object_path = NULL;
 
     if (!(*ctx)->results)
     {
@@ -620,14 +633,16 @@ end:
     return ret;
 }
 
-static int remote_module_disconnect_handle_result(AlteratorCtlRemoteModule *module, alteratorctl_ctx_t **ctx)
+static int remote_module_disconnect_handle_result(AlteratorCtlRemoteModule* module,
+                                                  alteratorctl_ctx_t** ctx)
 {
     int ret              = 0;
-    GVariant *is_success = NULL;
+    GVariant* is_success = NULL;
 
     if (!(*ctx)->results)
     {
-        g_printerr(_("D-Bus error in remote disconnect handle result: failed to produce a result.\n"));
+        g_printerr(
+            _("D-Bus error in remote disconnect handle result: failed to produce a result.\n"));
         ERR_EXIT();
     }
 
@@ -652,11 +667,12 @@ end:
     return ret;
 }
 
-static int remote_module_list_handle_result(AlteratorCtlRemoteModule *module, alteratorctl_ctx_t **ctx)
+static int remote_module_list_handle_result(AlteratorCtlRemoteModule* module,
+                                            alteratorctl_ctx_t** ctx)
 {
     int ret = 0;
 
-    GVariant *answer_array = NULL;
+    GVariant* answer_array = NULL;
 
     if (!(*ctx)->results)
     {
@@ -672,8 +688,8 @@ static int remote_module_list_handle_result(AlteratorCtlRemoteModule *module, al
 
     answer_array = g_variant_get_child_value((*ctx)->results, 0);
 
-    GVariantIter *iter = NULL;
-    gchar *str         = NULL;
+    GVariantIter* iter = NULL;
+    gchar* str         = NULL;
 
     g_variant_get(answer_array, "as", &iter);
     while (g_variant_iter_loop(iter, "s", &str))
@@ -690,23 +706,25 @@ end:
     return ret;
 }
 
-static int remote_module_validation_connection_address(const gchar *connection_address)
+static int remote_module_validation_connection_address(const gchar* connection_address)
 {
     int ret                          = 0;
-    gchar **connection_address_parts = NULL;
-    GRegex *ipv4_regex               = NULL;
-    GMatchInfo *ipv4_match_info      = NULL;
+    gchar** connection_address_parts = NULL;
+    GRegex* ipv4_regex               = NULL;
+    GMatchInfo* ipv4_match_info      = NULL;
 
     if (!g_strrstr(connection_address, NAME_IP_ADDRESS_DELIM))
     {
-        g_printerr(_("Invalid connection address: an '@' delimiter between name and IP is required.\n"));
+        g_printerr(
+            _("Invalid connection address: an '@' delimiter between name and IP is required.\n"));
         ERR_EXIT();
     }
 
     connection_address_parts = g_strsplit(connection_address, NAME_IP_ADDRESS_DELIM, 2);
     if (!connection_address_parts)
     {
-        g_printerr(_("Invalid connection address: can't split connection address to username and IP.\n"));
+        g_printerr(
+            _("Invalid connection address: can't split connection address to username and IP.\n"));
         ERR_EXIT();
     }
 
@@ -716,11 +734,9 @@ static int remote_module_validation_connection_address(const gchar *connection_a
         ERR_EXIT();
     }
 
-    ipv4_regex
-        = g_regex_new("^(\\b25[0-5]|\\b2[0-4][0-9]|\\b[01]?[0-9][0-9]?)(\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$",
-                      0,
-                      0,
-                      NULL);
+    ipv4_regex = g_regex_new("^(\\b25[0-5]|\\b2[0-4][0-9]|\\b[01]?[0-9][0-9]?)(\\.(25[0-5]|2[0-4]["
+                             "0-9]|[01]?[0-9][0-9]?)){3}$",
+                             0, 0, NULL);
 
     g_regex_match(ipv4_regex, connection_address_parts[1], 0, &ipv4_match_info);
     if (!g_match_info_matches(ipv4_match_info))
@@ -752,7 +768,8 @@ int remote_module_print_help(gpointer self)
     g_print(_("  connect <remote address> <connection name> <agent bus name> <pty> Connect to a\n"
               "                              remote machine via ssh\n"));
     g_print(_("  disconnect <connection name> Disconnect from the remote machine\n"));
-    g_print(_("  list                        Get the list of names of installed ssh connections\n\n"));
+    g_print(
+        _("  list                        Get the list of names of installed ssh connections\n\n"));
     g_print(_("Options:\n"));
     g_print(_("  -h, --help                  Show module remote usage\n\n"));
 
@@ -760,16 +777,16 @@ end:
     return ret;
 }
 
-static int remote_module_validate_object_and_iface(AlteratorCtlRemoteModule *module,
-                                                   const gchar *object,
-                                                   const gchar *iface)
+static int remote_module_validate_object_and_iface(AlteratorCtlRemoteModule* module,
+                                                   const gchar* object, const gchar* iface)
 {
     int ret          = 0;
     int object_exist = 0;
     int iface_exists = 0;
 
-    //Check object
-    if (module->gdbus_source->alterator_gdbus_source_check_object_by_path(module->gdbus_source, object, &object_exist)
+    // Check object
+    if (module->gdbus_source->alterator_gdbus_source_check_object_by_path(module->gdbus_source,
+                                                                          object, &object_exist)
         < 0)
     {
         g_printerr(_("The object %s doesn't exist.\n"), object);
@@ -782,10 +799,9 @@ static int remote_module_validate_object_and_iface(AlteratorCtlRemoteModule *mod
         ERR_EXIT();
     }
 
-    //check interface of the object
+    // check interface of the object
     if (module->gdbus_source->alterator_gdbus_source_check_object_by_iface(module->gdbus_source,
-                                                                           object,
-                                                                           iface,
+                                                                           object, iface,
                                                                            &iface_exists)
         < 0)
     {
@@ -803,24 +819,24 @@ end:
     return ret;
 }
 
-static int remote_module_password_agent_validation(AlteratorGDBusSource *source,
-                                                   const gchar *service,
-                                                   const gchar *path,
-                                                   const gchar *iface)
+static int remote_module_password_agent_validation(AlteratorGDBusSource* source,
+                                                   const gchar* service, const gchar* path,
+                                                   const gchar* iface)
 {
     int ret                      = 0;
-    GHashTable *services         = NULL;
-    gchar *introspection         = NULL;
-    GRegex *iface_regex          = NULL;
-    GMatchInfo *iface_match_info = NULL;
+    GHashTable* services         = NULL;
+    gchar* introspection         = NULL;
+    GRegex* iface_regex          = NULL;
+    GMatchInfo* iface_match_info = NULL;
 
     if (!service | !path | !iface)
     {
-        g_printerr(_("Can't validate password agent: wrong password agent service, path or iface.\n"));
+        g_printerr(
+            _("Can't validate password agent: wrong password agent service, path or iface.\n"));
         ERR_EXIT();
     }
 
-    //Get services names
+    // Get services names
     if (source->alterator_gdbus_source_get_services_names(source, &services) < 0)
     {
         g_printerr(_("Can't get services names in D-Bus system bus\n"));
@@ -837,7 +853,8 @@ static int remote_module_password_agent_validation(AlteratorGDBusSource *source,
     source->alterator_gdbus_source_get_introspection(source, service, path, &introspection);
     if (!introspection)
     {
-        g_printerr(_("Can't get introspection of password agent by path: %s in service: %s\n"), path, service);
+        g_printerr(_("Can't get introspection of password agent by path: %s in service: %s\n"),
+                   path, service);
         ERR_EXIT();
     }
 

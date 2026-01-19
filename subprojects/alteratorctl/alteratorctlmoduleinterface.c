@@ -1,8 +1,8 @@
 #include "alteratorctlmoduleinterface.h"
 
-static int alterator_ctl_module_run_with_args(gpointer self, int argc, char **argv)
+static int alterator_ctl_module_run_with_args(gpointer self, int argc, char** argv)
 {
-    AlteratorCtlModuleInterface *iface;
+    AlteratorCtlModuleInterface* iface;
 
     g_return_val_if_fail(IS_ALTERATOR_CTL_MODULE(self), -1);
 
@@ -15,7 +15,7 @@ static int alterator_ctl_module_run_with_args(gpointer self, int argc, char **ar
 
 static int alterator_ctl_module_run(gpointer self, gpointer data)
 {
-    AlteratorCtlModuleInterface *iface;
+    AlteratorCtlModuleInterface* iface;
 
     g_return_val_if_fail(IS_ALTERATOR_CTL_MODULE(self), -1);
     g_return_val_if_fail(data != NULL, -1);
@@ -29,7 +29,7 @@ static int alterator_ctl_module_run(gpointer self, gpointer data)
 
 static int alterator_ctl_module_print_help(gpointer self)
 {
-    AlteratorCtlModuleInterface *iface;
+    AlteratorCtlModuleInterface* iface;
 
     g_return_val_if_fail(IS_ALTERATOR_CTL_MODULE(self), -1);
 
@@ -40,7 +40,7 @@ static int alterator_ctl_module_print_help(gpointer self)
     return 0;
 }
 
-static int get_command_id(GHashTable *table, char *subcommand)
+static int get_command_id(GHashTable* table, char* subcommand)
 {
     if (!table || !subcommand)
         return -1;
@@ -48,12 +48,12 @@ static int get_command_id(GHashTable *table, char *subcommand)
     if (!g_hash_table_contains(table, subcommand))
         return -1;
 
-    return *(int *) g_hash_table_lookup(table, subcommand);
+    return *(int*) g_hash_table_lookup(table, subcommand);
 }
 
 static void alterator_module_interface_init(gpointer iface, gpointer data)
 {
-    AlteratorCtlModuleInterface *interface = (AlteratorCtlModuleInterface *) iface;
+    AlteratorCtlModuleInterface* interface = (AlteratorCtlModuleInterface*) iface;
 
     interface->get_command_id = get_command_id;
 
@@ -66,7 +66,7 @@ static void alterator_module_interface_init(gpointer iface, gpointer data)
     /* add properties and signals here, will only be called once */
 }
 
-void alterator_module_interface_finalize(gpointer *iface, gpointer data) {}
+void alterator_module_interface_finalize(gpointer* iface, gpointer data) {}
 
 GType alterator_ctl_module_get_type(void)
 {
@@ -84,10 +84,8 @@ GType alterator_ctl_module_get_type(void)
             0,                                            /* n_preallocs */
             NULL                                          /* instance_init */
         };
-        GType alterator_module_interface_type = g_type_register_static(G_TYPE_INTERFACE,
-                                                                       "AlteratorModuleInterface",
-                                                                       &alterator_module_interface_info,
-                                                                       0);
+        GType alterator_module_interface_type = g_type_register_static(
+            G_TYPE_INTERFACE, "AlteratorModuleInterface", &alterator_module_interface_info, 0);
 
         g_once_init_leave(&alterator_module_interface, alterator_module_interface_type);
     }

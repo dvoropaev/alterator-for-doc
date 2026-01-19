@@ -20,14 +20,14 @@ static int stdout_backup, stderr_backup;
 
 #define SELF_PROCESS_STDIN_LINK_PATH "/proc/self/fd/0"
 
-static void alterator_ctl_print_html_node(GumboNode *node, gboolean is_newline);
+static void alterator_ctl_print_html_node(GumboNode* node, gboolean is_newline);
 
-dbus_ctx_t *dbus_ctx_init(
-    const gchar *service, const gchar *path, const gchar *interface, const gchar *method, gboolean verbose)
+dbus_ctx_t* dbus_ctx_init(const gchar* service, const gchar* path, const gchar* interface,
+                          const gchar* method, gboolean verbose)
 {
     int ret = 0;
 
-    dbus_ctx_t *ctx = g_malloc0(sizeof(dbus_ctx_t));
+    dbus_ctx_t* ctx = g_malloc0(sizeof(dbus_ctx_t));
 
     if (!ctx)
         return NULL;
@@ -70,7 +70,7 @@ end:
     return NULL;
 }
 
-int dbus_ctx_set_timeout(dbus_ctx_t *ctx, gint milliseconds)
+int dbus_ctx_set_timeout(dbus_ctx_t* ctx, gint milliseconds)
 {
     int ret = 0;
     if (milliseconds < -1)
@@ -84,7 +84,7 @@ end:
     return ret;
 }
 
-void dbus_ctx_free(dbus_ctx_t *ctx)
+void dbus_ctx_free(dbus_ctx_t* ctx)
 {
     if (!ctx)
         return;
@@ -100,12 +100,11 @@ void dbus_ctx_free(dbus_ctx_t *ctx)
     g_free(ctx);
 }
 
-alteratorctl_ctx_t *alteratorctl_context_init(GVariant *subcommands_ids,
-                                              GVariant *parameters,
+alteratorctl_ctx_t* alteratorctl_context_init(GVariant* subcommands_ids, GVariant* parameters,
                                               void (*free_results)(gpointer results),
-                                              void *additional_data)
+                                              void* additional_data)
 {
-    alteratorctl_ctx_t *ctx = g_malloc0(sizeof(alteratorctl_ctx_t));
+    alteratorctl_ctx_t* ctx = g_malloc0(sizeof(alteratorctl_ctx_t));
     if (!ctx)
         return NULL;
 
@@ -117,18 +116,17 @@ alteratorctl_ctx_t *alteratorctl_context_init(GVariant *subcommands_ids,
     return ctx;
 }
 
-alteratorctl_ctx_t *alteratorctl_ctx_init_manager(int subcommand_id,
-                                                  const gchar *param1,
-                                                  const gchar *param2,
-                                                  const gchar *param3,
-                                                  const gchar *param4,
+alteratorctl_ctx_t* alteratorctl_ctx_init_manager(int subcommand_id, const gchar* param1,
+                                                  const gchar* param2, const gchar* param3,
+                                                  const gchar* param4,
                                                   void (*free_results)(gpointer results),
-                                                  void *additional_data)
+                                                  void* additional_data)
 {
-    GVariant *ids        = g_variant_new("i", subcommand_id);
-    GVariant *parameters = g_variant_new("(msmsmsms)", param1, param2, param3, param4);
+    GVariant* ids        = g_variant_new("i", subcommand_id);
+    GVariant* parameters = g_variant_new("(msmsmsms)", param1, param2, param3, param4);
 
-    alteratorctl_ctx_t *ctx = alteratorctl_context_init(ids, parameters, free_results, additional_data);
+    alteratorctl_ctx_t* ctx = alteratorctl_context_init(ids, parameters, free_results,
+                                                        additional_data);
     if (!ctx)
     {
         g_printerr(_("Error of creating alteratorctl_ctx_t to manager module.\n"));
@@ -138,16 +136,16 @@ alteratorctl_ctx_t *alteratorctl_ctx_init_manager(int subcommand_id,
     return ctx;
 }
 
-alteratorctl_ctx_t *alteratorctl_ctx_init_packages(gint submodule_id,
-                                                   gint subcommand_id,
-                                                   const gchar *param1,
+alteratorctl_ctx_t* alteratorctl_ctx_init_packages(gint submodule_id, gint subcommand_id,
+                                                   const gchar* param1,
                                                    void (*free_results)(gpointer results),
-                                                   void *additional_data)
+                                                   void* additional_data)
 {
-    GVariant *ids        = g_variant_new("(ii)", submodule_id, subcommand_id);
-    GVariant *parameters = g_variant_new("(ms)", param1);
+    GVariant* ids        = g_variant_new("(ii)", submodule_id, subcommand_id);
+    GVariant* parameters = g_variant_new("(ms)", param1);
 
-    alteratorctl_ctx_t *ctx = alteratorctl_context_init(ids, parameters, free_results, additional_data);
+    alteratorctl_ctx_t* ctx = alteratorctl_context_init(ids, parameters, free_results,
+                                                        additional_data);
     if (!ctx)
     {
         g_printerr(_("Error of creating alteratorctl_ctx_t to packages module.\n"));
@@ -157,15 +155,15 @@ alteratorctl_ctx_t *alteratorctl_ctx_init_packages(gint submodule_id,
     return ctx;
 }
 
-alteratorctl_ctx_t *alteratorctl_ctx_init_editions(gint subcommand_id,
-                                                   const gchar *param1,
+alteratorctl_ctx_t* alteratorctl_ctx_init_editions(gint subcommand_id, const gchar* param1,
                                                    void (*free_results)(gpointer results),
-                                                   void *additional_data)
+                                                   void* additional_data)
 {
-    GVariant *ids        = g_variant_new("i", subcommand_id);
-    GVariant *parameters = g_variant_new("(ms)", param1);
+    GVariant* ids        = g_variant_new("i", subcommand_id);
+    GVariant* parameters = g_variant_new("(ms)", param1);
 
-    alteratorctl_ctx_t *ctx = alteratorctl_context_init(ids, parameters, free_results, additional_data);
+    alteratorctl_ctx_t* ctx = alteratorctl_context_init(ids, parameters, free_results,
+                                                        additional_data);
     if (!ctx)
     {
         g_printerr(_("Error of creating alteratorctl_ctx_t to editions module.\n"));
@@ -175,15 +173,15 @@ alteratorctl_ctx_t *alteratorctl_ctx_init_editions(gint subcommand_id,
     return ctx;
 }
 
-alteratorctl_ctx_t *alteratorctl_ctx_init_components(gint subcommand_id,
-                                                     const gchar *param1,
+alteratorctl_ctx_t* alteratorctl_ctx_init_components(gint subcommand_id, const gchar* param1,
                                                      void (*free_results)(gpointer results),
-                                                     void *additional_data)
+                                                     void* additional_data)
 {
-    GVariant *ids        = g_variant_new("i", subcommand_id);
-    GVariant *parameters = g_variant_new("(ms)", param1);
+    GVariant* ids        = g_variant_new("i", subcommand_id);
+    GVariant* parameters = g_variant_new("(ms)", param1);
 
-    alteratorctl_ctx_t *ctx = alteratorctl_context_init(ids, parameters, free_results, additional_data);
+    alteratorctl_ctx_t* ctx = alteratorctl_context_init(ids, parameters, free_results,
+                                                        additional_data);
     if (!ctx)
     {
         g_printerr(_("Error of creating alteratorctl_ctx_t to components module.\n"));
@@ -193,17 +191,16 @@ alteratorctl_ctx_t *alteratorctl_ctx_init_components(gint subcommand_id,
     return ctx;
 }
 
-alteratorctl_ctx_t *alteratorctl_ctx_init_diag(gint subcommand_id,
-                                               const gchar *param1,
-                                               const gchar *param2,
-                                               const gchar *param3,
+alteratorctl_ctx_t* alteratorctl_ctx_init_diag(gint subcommand_id, const gchar* param1,
+                                               const gchar* param2, const gchar* param3,
                                                void (*free_results)(gpointer results),
-                                               void *additional_data)
+                                               void* additional_data)
 {
-    GVariant *ids        = g_variant_new("i", subcommand_id);
-    GVariant *parameters = g_variant_new("(msmsms)", param1, param2, param3);
+    GVariant* ids        = g_variant_new("i", subcommand_id);
+    GVariant* parameters = g_variant_new("(msmsms)", param1, param2, param3);
 
-    alteratorctl_ctx_t *ctx = alteratorctl_context_init(ids, parameters, free_results, additional_data);
+    alteratorctl_ctx_t* ctx = alteratorctl_context_init(ids, parameters, free_results,
+                                                        additional_data);
     if (!ctx)
     {
         g_printerr(_("Error of creating alteratorctl_ctx_t to diag module.\n"));
@@ -213,12 +210,12 @@ alteratorctl_ctx_t *alteratorctl_ctx_init_diag(gint subcommand_id,
     return ctx;
 }
 
-alteratorctl_ctx_t *alteratorctl_ctx_init_systeminfo(gint subcommand_id,
+alteratorctl_ctx_t* alteratorctl_ctx_init_systeminfo(gint subcommand_id,
                                                      void (*free_results)(gpointer results),
-                                                     void *additional_data)
+                                                     void* additional_data)
 {
-    GVariant *ids           = g_variant_new("i", subcommand_id);
-    alteratorctl_ctx_t *ctx = alteratorctl_context_init(ids, NULL, free_results, additional_data);
+    GVariant* ids           = g_variant_new("i", subcommand_id);
+    alteratorctl_ctx_t* ctx = alteratorctl_context_init(ids, NULL, free_results, additional_data);
     if (!ctx)
     {
         g_printerr(_("Error of creating alteratorctl_ctx_t to systeminfo module.\n"));
@@ -228,18 +225,17 @@ alteratorctl_ctx_t *alteratorctl_ctx_init_systeminfo(gint subcommand_id,
     return ctx;
 }
 
-alteratorctl_ctx_t *alteratorctl_ctx_init_remote(gint subcommand_id,
-                                                 const gchar *param1,
-                                                 const gchar *param2,
-                                                 const gchar *param3,
-                                                 const gchar *param4,
+alteratorctl_ctx_t* alteratorctl_ctx_init_remote(gint subcommand_id, const gchar* param1,
+                                                 const gchar* param2, const gchar* param3,
+                                                 const gchar* param4,
                                                  void (*free_results)(gpointer results),
-                                                 void *additional_data)
+                                                 void* additional_data)
 {
-    GVariant *ids        = g_variant_new("i", subcommand_id);
-    GVariant *parameters = g_variant_new("(msmsmsms)", param1, param2, param3, param4);
+    GVariant* ids        = g_variant_new("i", subcommand_id);
+    GVariant* parameters = g_variant_new("(msmsmsms)", param1, param2, param3, param4);
 
-    alteratorctl_ctx_t *ctx = alteratorctl_context_init(ids, parameters, free_results, additional_data);
+    alteratorctl_ctx_t* ctx = alteratorctl_context_init(ids, parameters, free_results,
+                                                        additional_data);
     if (!ctx)
     {
         g_printerr(_("Error of creating alteratorctl_ctx_t to remote module.\n"));
@@ -249,16 +245,16 @@ alteratorctl_ctx_t *alteratorctl_ctx_init_remote(gint subcommand_id,
     return ctx;
 }
 
-alteratorctl_ctx_t *alteratorctl_ctx_init_services(gint subcommand_id,
-                                                   const gchar *param1,
-                                                   const gchar *param2,
+alteratorctl_ctx_t* alteratorctl_ctx_init_services(gint subcommand_id, const gchar* param1,
+                                                   const gchar* param2,
                                                    void (*free_results)(gpointer results),
-                                                   void *additional_data)
+                                                   void* additional_data)
 {
-    GVariant *ids        = g_variant_new("i", subcommand_id);
-    GVariant *parameters = g_variant_new("(msms)", param1, param2);
+    GVariant* ids        = g_variant_new("i", subcommand_id);
+    GVariant* parameters = g_variant_new("(msms)", param1, param2);
 
-    alteratorctl_ctx_t *ctx = alteratorctl_context_init(ids, parameters, free_results, additional_data);
+    alteratorctl_ctx_t* ctx = alteratorctl_context_init(ids, parameters, free_results,
+                                                        additional_data);
     if (!ctx)
     {
         g_printerr(_("Error of creating alteratorctl_ctx_t to services module.\n"));
@@ -268,7 +264,7 @@ alteratorctl_ctx_t *alteratorctl_ctx_init_services(gint subcommand_id,
     return ctx;
 }
 
-void alteratorctl_ctx_free(alteratorctl_ctx_t *ctx)
+void alteratorctl_ctx_free(alteratorctl_ctx_t* ctx)
 {
     if (ctx->subcommands_ids)
         g_variant_unref(ctx->subcommands_ids);
@@ -285,25 +281,25 @@ void alteratorctl_ctx_free(alteratorctl_ctx_t *ctx)
 
 gboolean alterator_ctl_is_utf8_locale()
 {
-    const char *charset = NULL;
+    const char* charset = NULL;
     return g_get_charset(&charset);
 }
 
-gchar *alterator_ctl_get_effective_locale()
+gchar* alterator_ctl_get_effective_locale()
 {
     if (!alterator_ctl_is_utf8_locale())
         return g_strdup("C");
     return alterator_ctl_get_locale();
 }
 
-gchar *alterator_ctl_get_effective_language()
+gchar* alterator_ctl_get_effective_language()
 {
     if (!alterator_ctl_is_utf8_locale())
         return g_strdup("en");
     return alterator_ctl_get_language();
 }
 
-void print_hash_table(GHashTable *table, gboolean with_values)
+void print_hash_table(GHashTable* table, gboolean with_values)
 {
     if (!table)
         goto end;
@@ -314,17 +310,17 @@ void print_hash_table(GHashTable *table, gboolean with_values)
     g_hash_table_iter_init(&iter, table);
     while (g_hash_table_iter_next(&iter, &key, &value))
         if (!with_values)
-            g_print("%s\n", (gchar *) key);
+            g_print("%s\n", (gchar*) key);
         else
-            g_print("%s: %s\n", (gchar *) key, (gchar *) value);
+            g_print("%s: %s\n", (gchar*) key, (gchar*) value);
 
 end:
     return;
 }
 
-gchar *read_file(gchar *filepath)
+gchar* read_file(gchar* filepath)
 {
-    gchar *result = NULL;
+    gchar* result = NULL;
     if (!filepath)
     {
         g_printerr(_("Can't read unspecified file.\n"));
@@ -337,7 +333,7 @@ gchar *read_file(gchar *filepath)
         return NULL;
     }
 
-    GError *error = NULL;
+    GError* error = NULL;
     if (!g_file_get_contents(filepath, &result, NULL, &error))
     {
         g_printerr(_("Error of reading file %s: %s\n"), filepath, error->message);
@@ -351,8 +347,8 @@ gchar *read_file(gchar *filepath)
 static int redirecting_stream(uint32_t target_id, uint32_t stream_id)
 {
     int ret             = 0;
-    gchar *fd_proc_path = NULL;
-    gchar *target_str   = g_strdup_printf("%u", target_id);
+    gchar* fd_proc_path = NULL;
+    gchar* target_str   = g_strdup_printf("%u", target_id);
     char path[512];
 
     if (dup2(target_id, stream_id) == -1)
@@ -362,16 +358,16 @@ static int redirecting_stream(uint32_t target_id, uint32_t stream_id)
         if (len != -1)
         {
             path[len] = '\0';
-            g_printerr(_("In dup2 to redirect the thread from id %u to \"%s\" failed. Return code: -1\n"),
-                       stream_id,
-                       path);
+            g_printerr(_("In dup2 to redirect the thread from id %u to \"%s\" failed. Return code: "
+                         "-1\n"),
+                       stream_id, path);
             ERR_EXIT();
         }
         else
         {
-            g_printerr(_("In dup2 to redirect the thread from id %u to file descriptor %u. Return code: -1\n"),
-                       stream_id,
-                       target_id);
+            g_printerr(_("In dup2 to redirect the thread from id %u to file descriptor %u. Return "
+                         "code: -1\n"),
+                       stream_id, target_id);
             ERR_EXIT();
         }
     }
@@ -434,9 +430,9 @@ end:
     return ret;
 }
 
-gchar *stylize_text(const gchar *text, text_style style)
+gchar* stylize_text(const gchar* text, text_style style)
 {
-    gchar *result = NULL;
+    gchar* result = NULL;
 
     switch (style)
     {
@@ -464,9 +460,9 @@ gchar *stylize_text(const gchar *text, text_style style)
     return result;
 }
 
-gchar *call_bash_command(const gchar *cmd, GError **error)
+gchar* call_bash_command(const gchar* cmd, GError** error)
 {
-    gchar *output = NULL;
+    gchar* output = NULL;
 
     if (!g_spawn_command_line_sync(cmd, &output, NULL, NULL, error))
         return NULL;
@@ -474,10 +470,10 @@ gchar *call_bash_command(const gchar *cmd, GError **error)
     return output;
 }
 
-gchar *alterator_ctl_get_locale()
+gchar* alterator_ctl_get_locale()
 {
-    gchar *locale           = NULL;
-    gchar *full_locale_name = getenv("LC_ALL");
+    gchar* locale           = NULL;
+    gchar* full_locale_name = getenv("LC_ALL");
 
     if (!full_locale_name || (full_locale_name && !strlen(full_locale_name)))
         full_locale_name = getenv("LANG");
@@ -496,23 +492,24 @@ gchar *alterator_ctl_get_locale()
         locale = g_strdup(LOCALE_FALLBACK);
     }
     else
-        locale = full_locale_name;
+        locale = g_strdup(full_locale_name);
     // clang-format on
 
     return locale;
 }
 
-gchar *alterator_ctl_get_language()
+gchar* alterator_ctl_get_language()
 {
-    gchar *locale   = alterator_ctl_get_locale();
-    gchar *language = g_utf8_substring(locale, 0, 2);
+    gchar* locale   = alterator_ctl_get_locale();
+    gchar* language = g_utf8_substring(locale, 0, 2);
+    g_free(locale);
     return language;
 }
 
-int alterator_ctl_print_html(const gchar *html)
+int alterator_ctl_print_html(const gchar* html)
 {
     int ret             = 0;
-    GumboOutput *output = gumbo_parse(html);
+    GumboOutput* output = gumbo_parse(html);
     if (!output)
     {
         g_printerr(_("Failed to parse html text.\n"));
@@ -524,7 +521,7 @@ end:
     return ret;
 }
 
-static void alterator_ctl_print_html_node(GumboNode *node, gboolean is_newline)
+static void alterator_ctl_print_html_node(GumboNode* node, gboolean is_newline)
 {
     if (node->type == GUMBO_NODE_TEXT)
     {
@@ -561,7 +558,7 @@ static void alterator_ctl_print_html_node(GumboNode *node, gboolean is_newline)
 
         for (size_t i = 0; i < node->v.element.children.length; ++i)
         {
-            GumboNode *child = node->v.element.children.data[i];
+            GumboNode* child = node->v.element.children.data[i];
             alterator_ctl_print_html_node(child, add_newline);
         }
 
@@ -572,10 +569,7 @@ static void alterator_ctl_print_html_node(GumboNode *node, gboolean is_newline)
     }
 }
 
-gboolean alterator_ctl_is_root()
-{
-    return getuid() == 0;
-}
+gboolean alterator_ctl_is_root() { return getuid() == 0; }
 
 is_tty_status isatty_safe(guint fd)
 {
@@ -592,7 +586,7 @@ is_tty_status isatty_safe(guint fd)
     return NOT_TTY;
 }
 
-int print_with_pager(const gchar *text)
+int print_with_pager(const gchar* text)
 {
     if (!text)
         return 0;
@@ -613,7 +607,7 @@ int print_with_pager(const gchar *text)
 
     /* Step 3: Count lines in text */
     int line_count = 0;
-    for (const char *p = text; *p; ++p)
+    for (const char* p = text; *p; ++p)
         if (*p == '\n')
             ++line_count;
     // If text does not end with newline, count last line
@@ -636,7 +630,7 @@ int print_with_pager(const gchar *text)
         fputs(text, stdout);
         return 0;
     }
-    FILE *tmpf = fdopen(fd, "w+");
+    FILE* tmpf = fdopen(fd, "w+");
     if (!tmpf)
     {
         close(fd);
@@ -649,7 +643,7 @@ int print_with_pager(const gchar *text)
     rewind(tmpf);
 
     /* Step 6: Pager invocation */
-    const char *pager = getenv("PAGER");
+    const char* pager = getenv("PAGER");
     if (!pager || !*pager)
         pager = "less";
 
@@ -682,7 +676,7 @@ int print_with_pager(const gchar *text)
     return 0;
 }
 
-gchar *columnize_text(gchar **text)
+gchar* columnize_text(gchar** text)
 {
     if (!text || !g_strv_length(text))
         return NULL;
@@ -694,7 +688,7 @@ gchar *columnize_text(gchar **text)
         return NULL;
     }
 
-    gsize strings_amount = g_strv_length((gchar **) text);
+    gsize strings_amount = g_strv_length((gchar**) text);
     gint terminal_width  = w.ws_col;
 
     gsize max_columns = strings_amount;
@@ -703,7 +697,7 @@ gchar *columnize_text(gchar **text)
     for (gsize column = max_columns; column > 0; column--)
     {
         rows              = (strings_amount + column - 1) / column;
-        gsize *col_widths = g_new0(gsize, column);
+        gsize* col_widths = g_new0(gsize, column);
         for (gsize i = 0; i < strings_amount; i++)
         {
             gsize column_idx       = i / rows;
@@ -712,7 +706,8 @@ gchar *columnize_text(gchar **text)
 
         gsize total_width = 0;
         for (gsize i = 0; i < column; i++)
-            total_width += col_widths[i] + (i < column - 1 ? 2 : 0); // 2 space symbols between columns
+            total_width += col_widths[i]
+                           + (i < column - 1 ? 2 : 0); // 2 space symbols between columns
 
         g_free(col_widths);
 
@@ -725,14 +720,14 @@ gchar *columnize_text(gchar **text)
 
     rows = (strings_amount + columns - 1) / columns;
 
-    gsize *col_widths = g_new0(gsize, columns);
+    gsize* col_widths = g_new0(gsize, columns);
     for (gsize i = 0; i < strings_amount; i++)
     {
         gsize column_idx       = i / rows;
         col_widths[column_idx] = MAX(col_widths[column_idx], strlen(text[i]));
     }
 
-    GString *result_builder = g_string_new(NULL);
+    GString* result_builder = g_string_new(NULL);
     for (gsize row_idx = 0; row_idx < rows; row_idx++)
     {
         for (gsize column_idx = 0; column_idx < columns; column_idx++)
@@ -751,7 +746,7 @@ gchar *columnize_text(gchar **text)
         g_string_append(result_builder, "\n");
     }
 
-    gchar *result = g_strdup(result_builder->str);
+    gchar* result = g_strdup(result_builder->str);
     g_string_free(result_builder, TRUE);
     g_free(col_widths);
 
@@ -760,14 +755,13 @@ gchar *columnize_text(gchar **text)
 
 static void invert_pair(gpointer key, gpointer value, gpointer user_data)
 {
-    GHashTable *rev = user_data;
-    g_hash_table_insert(rev, g_strdup((gchar *) value), g_strdup((gchar *) key));
+    GHashTable* rev = user_data;
+    g_hash_table_insert(rev, g_strdup((gchar*) value), g_strdup((gchar*) key));
 }
 
-GHashTable *hash_table_str2str_invert(GHashTable *original_table)
+GHashTable* hash_table_str2str_invert(GHashTable* original_table)
 {
-    GHashTable *reversed_table = g_hash_table_new_full(g_str_hash,
-                                                       g_str_equal,
+    GHashTable* reversed_table = g_hash_table_new_full(g_str_hash, g_str_equal,
                                                        (GDestroyNotify) g_free,
                                                        (GDestroyNotify) g_free);
     g_hash_table_foreach(original_table, invert_pair, reversed_table);
@@ -779,49 +773,45 @@ GQuark alterator_ctl_secret_error_quark(void)
     return g_quark_from_static_string("alterator-ctl-secret-error-quark");
 }
 
-GHashTable *g_hash_table_copy_table(GHashTable *orig,
-                                    GCopyFunc key_copy_func,
-                                    gpointer key_user_data,
-                                    GCopyFunc value_copy_func,
+GHashTable* g_hash_table_copy_table(GHashTable* orig, GCopyFunc key_copy_func,
+                                    gpointer key_user_data, GCopyFunc value_copy_func,
                                     gpointer value_user_data)
 {
     if (!orig || (!key_copy_func && !value_copy_func))
         return NULL;
 
-    GHashTable *result = g_hash_table_new_similar(orig);
+    GHashTable* result = g_hash_table_new_similar(orig);
 
     GHashTableIter iter;
     g_hash_table_iter_init(&iter, orig);
     gpointer key = NULL, value = NULL;
     while (g_hash_table_iter_next(&iter, &key, &value))
-        g_hash_table_insert(result,
-                            key_copy_func ? key_copy_func(key, key_user_data) : NULL,
+        g_hash_table_insert(result, key_copy_func ? key_copy_func(key, key_user_data) : NULL,
                             value_copy_func ? value_copy_func(value, value_user_data) : NULL);
 
     return result;
 }
 
-gboolean alterator_ctl_read_secret(const gchar *label, gchar **out_secret, GError **error)
+gboolean alterator_ctl_read_secret(const gchar* label, gchar** out_secret, GError** error)
 {
     g_return_val_if_fail(label != NULL, FALSE);
     g_return_val_if_fail(out_secret != NULL, FALSE);
 
     gboolean success = FALSE;
-    FILE *tty        = fopen("/dev/tty", "r+");
+    FILE* tty        = fopen("/dev/tty", "r+");
     int fd           = tty ? fileno(tty) : -1;
     struct termios oldt, newt;
 
     if (!tty || fd < 0)
     {
-        g_set_error(error, ALTERATOR_CTL_SECRET_ERROR, ALTERATOR_CTL_SECRET_ERROR_IO, _("Failed to open /dev/tty"));
+        g_set_error(error, ALTERATOR_CTL_SECRET_ERROR, ALTERATOR_CTL_SECRET_ERROR_IO,
+                    _("Failed to open /dev/tty"));
         goto end;
     }
 
     if (tcgetattr(fd, &oldt) == -1)
     {
-        g_set_error(error,
-                    ALTERATOR_CTL_SECRET_ERROR,
-                    ALTERATOR_CTL_SECRET_ERROR_IO,
+        g_set_error(error, ALTERATOR_CTL_SECRET_ERROR, ALTERATOR_CTL_SECRET_ERROR_IO,
                     _("Failed to get terminal attributes"));
         goto end;
     }
@@ -839,9 +829,7 @@ gboolean alterator_ctl_read_secret(const gchar *label, gchar **out_secret, GErro
     {
         fprintf(tty, "\n");
         (void) tcsetattr(fd, TCSANOW, &oldt);
-        g_set_error(error,
-                    ALTERATOR_CTL_SECRET_ERROR,
-                    ALTERATOR_CTL_SECRET_ERROR_IO,
+        g_set_error(error, ALTERATOR_CTL_SECRET_ERROR, ALTERATOR_CTL_SECRET_ERROR_IO,
                     _("Failed to read password input"));
         goto end;
     }
@@ -856,9 +844,7 @@ gboolean alterator_ctl_read_secret(const gchar *label, gchar **out_secret, GErro
     {
         fprintf(tty, "\n");
         (void) tcsetattr(fd, TCSANOW, &oldt);
-        g_set_error(error,
-                    ALTERATOR_CTL_SECRET_ERROR,
-                    ALTERATOR_CTL_SECRET_ERROR_IO,
+        g_set_error(error, ALTERATOR_CTL_SECRET_ERROR, ALTERATOR_CTL_SECRET_ERROR_IO,
                     _("Failed to read password confirmation"));
         goto end;
     }
@@ -875,13 +861,15 @@ gboolean alterator_ctl_read_secret(const gchar *label, gchar **out_secret, GErro
 
     if (!len1 || !len2)
     {
-        g_set_error(error, ALTERATOR_CTL_SECRET_ERROR, ALTERATOR_CTL_SECRET_ERROR_EMPTY, _("Password cannot be empty"));
+        g_set_error(error, ALTERATOR_CTL_SECRET_ERROR, ALTERATOR_CTL_SECRET_ERROR_EMPTY,
+                    _("Password cannot be empty"));
         goto end;
     }
 
     if (strcmp(buf1, buf2) != 0)
     {
-        g_set_error(error, ALTERATOR_CTL_SECRET_ERROR, ALTERATOR_CTL_SECRET_ERROR_MISMATCH, _("Passwords do not match"));
+        g_set_error(error, ALTERATOR_CTL_SECRET_ERROR, ALTERATOR_CTL_SECRET_ERROR_MISMATCH,
+                    _("Passwords do not match"));
         goto end;
     }
 
@@ -892,4 +880,25 @@ end:
     if (tty)
         fclose(tty);
     return success;
+}
+
+int is_path(const gchar* string, path_type* result, GError** error)
+{
+    int ret                   = 0;
+    GError* error_plaseholder = NULL;
+
+    GRegex* search_regex = g_regex_new("/", 0, 0, error ? error : &error_plaseholder);
+    if (error && *error || error_plaseholder)
+        ERR_EXIT();
+
+    if (g_regex_match(search_regex, string, 0, NULL))
+        *result = g_path_is_absolute(string) ? ABSOLUTE_PATH : RELATIVE_PATH;
+    else
+        *result = NOT_A_PATH;
+
+end:
+    g_clear_error(&error_plaseholder);
+    g_regex_unref(search_regex);
+
+    return ret;
 }

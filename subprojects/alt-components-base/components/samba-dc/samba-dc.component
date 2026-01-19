@@ -8,3 +8,4 @@ display_name.ru = "Samba AD - контроллер домена"
 task-samba-dc = {}
 samba-winbind-clients = {}
 bind-utils = {}
+samba-extension-laps-v2-schema = {}

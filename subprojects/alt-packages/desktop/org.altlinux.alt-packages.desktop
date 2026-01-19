@@ -7,6 +7,5 @@ GenericName[ru]=Альт Пакеты
 Comment=Graphical application for managing packages and repositories of packages
 Comment[ru]=Графическое приложение для управления пакетами и пакетными репозиториями
 Exec=alt-packages
-Icon=alterator
+Icon=alt-packages
 Categories=Settings;System;
-NoDisplay=true

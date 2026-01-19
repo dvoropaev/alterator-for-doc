@@ -1,0 +1,11 @@
+type = "Backend"
+module = "executor"
+name = "framework_runner"
+interface = "application1"
+action_id = "org.altlinux.alterator.application1"
+
+[methods.Info]
+execute = "cat /usr/share/alterator/applications/framework_runner.application"
+stdout_bytes = true
+exit_status  = true
+action_id = "Info"

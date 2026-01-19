@@ -238,29 +238,29 @@
                 <ul>
                     <li>Ядро Linux 6.12</li>
                     <li>Glibc 2.38</li>
-                    <li>systemd 255</li>
+                    <li>systemd 257</li>
                     <li>OpenSSL 3.3</li>
                 </ul>
                 <h3>Серверное программное обеспечение</h3>
 				<p>Системы управления базами данных</p>
 				<ul>
                     <li>MariaDB 10.11</li>
-                    <li>PostgreSQL 17.5</li>
+                    <li>PostgreSQL 17.7</li>
                 </ul>
 				<p>Сетевая инфраструктура</p>
 				<ul>
-					<li>Apache 2.4</li>
-					<li>Dovecot 2.3</li>
-					<li>Kea 2.7</li>
-                    <li>NGINX 1.26</li>
-					<li>OpenUDS 3.6</li>
-					<li>Proxmox VE Backup Server 3.3</li>
-                    <li>Squid 7.0</li>
-					<li>Zabbix 7.0</li>
+                    <li>BIND 9.18</li>
+					<li>Kea 3.0</li>
                 </ul>
 				<p>Сетевые сервисы</p>
 				<ul>
-                    <li>BIND 9.18</li>
+					<li>Apache 2.4</li>
+                    <li>NGINX 1.28</li>
+					<li>Dovecot 2.3</li>
+					<li>OpenUDS 4.0</li>
+					<li>Proxmox VE Backup Server 4.0</li>
+                    <li>Squid 7.3</li>
+					<li>Zabbix 7.0</li>
 				</ul>
 				<p>Периферийные устройства</p>
 				<ul>
@@ -272,20 +272,18 @@
 				</ul>
 				<p>Доменная инфраструктура</p>
 				<ul>
-                    <li>Samba AD 4.20</li>
-                    <li>FreeIPA 4.12</li>
+                    <li>Samba 4.21</li>
 				</ul>
 				<p>Контейнеризация</p>
 				<ul>
-                    <li>Podman 5.4</li>
-                    <li>Docker 27.1</li>
-                    <li>Kubernetes 1.31</li>
+                    <li>Podman 5.7</li>
+                    <li>Docker 28.3</li>
+                    <li>Kubernetes 1.33</li>
                 </ul>
                 <p>Дополнительное программное обеспечение</p>
                 <ul>
-                    <li>Рабочая среда GNOME 47</li>
-                    <li>Веб-браузер Chromium 137.0 (только x86_64)</li>
-                    <li>Веб-браузер Firefox ESR 128.10 (для AArch64)</li>
+                    <li>Рабочая среда GNOME 48</li>
+                    <li>Веб-браузер Chromium 143.0</li>
                 </ul>
             </div>
 

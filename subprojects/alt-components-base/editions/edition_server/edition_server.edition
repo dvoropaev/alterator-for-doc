@@ -210,14 +210,11 @@ components = [
     "avahi-mdns",
     "ntp-utils",
 # domain-infra:
-    "admx-templates",
     "samba-ad-admin-tools",
     "samba-ad-client-sssd",
     "samba-ad-client-winbind",
     "samba-ad-client-support",
-    "samba-dc",
     "freeipa-client",
-    "freeipa-server",
 # peripherals/usb-tools:
     "usbguard",
     "usb-modeswitch",
@@ -241,9 +238,10 @@ components = [
 # system-infra/containers:
     "docker",
     "podman",
-    "kubernetes1_31",
+    "kubernetes1_33",
     "lxc",
-# system-infra:
+# network-infra:
+    "bind",
     "apache2",
     "conntrack-tools",
     "dhcp-kea",
@@ -289,7 +287,7 @@ components = [
     "remmina",
     "tigervnc-client",
 # apps/browsers-apps:
-    "base-browser",
+    "chromium",
 # graphics:
     "xorg-base",
     "xorg-other",

@@ -4,29 +4,34 @@
 #include "ui/MainWindow.h"
 #include "RichToolTipEventFilter.h"
 
-#include <QEvent>
-#include <QDragEnterEvent>
-#include <QDropEvent>
-#include <QMimeData>
-#include <QFile>
-#include <QMessageBox>
-#include <QJsonParseError>
-#include <QJsonArray>
-
-#include <range/v3/algorithm.hpp>
+#include <QDBusConnection>
+#include <QDBusConnectionInterface>
+#include <KDBusService>
+#include <KWindowSystem>
 
 #include "version.h"
+
+#include <QDir>
+#include <QCommandLineParser>
+#include <QThread>
+#include "sysexits.h"
+
 
 class ServicesApp::Private {
 public:
     AppSettings m_settings;
     std::unique_ptr<Controller> m_controller;
+    std::unique_ptr<MainWindow> m_window;
+    bool m_started{false};
+
+    bool m_mayQuit{true};
 };
 
 ServicesApp::ServicesApp(int& argc, char** argv)
-    : QtSingleApplication{argc, argv}
+    : QApplication{argc, argv}
     , d{ new Private }
 {
+    setDesktopFileName("org.altlinux.alt-services");
     setOrganizationName("ALTLinux");
     setOrganizationDomain("altlinux.org");
     setApplicationName("alt-services");
@@ -39,16 +44,70 @@ ServicesApp::~ServicesApp() { delete d; }
 
 int ServicesApp::run()
 {
+    QCommandLineParser parser;
+    auto replace = QCommandLineOption{"replace", tr("Close existing window and open a new one")};
+    auto object  = QCommandLineOption{{"o", "object"}, tr("Go to a specific service, specified by dbus path"), tr("path")};
+    parser.addOptions({replace, object});
+    auto help = parser.addHelpOption();
+    parser.process(arguments());
+
+    {
+        // NOTE: until there is no any non-closable window, we can't handle this other way.
+        auto session = QDBusConnection::sessionBus();
+        if ( !session.isConnected() )
+        {
+            qCritical() << tr("Unable to connect to a session bus");
+            return EX_UNAVAILABLE;
+        }
+
+        auto* interface = session.interface();
+        if ( interface->isServiceRegistered("org.altlinux.alt-services") )
+            qWarning() << tr("Application already running");
+    }
+
+    KDBusService::StartupOptions options{KDBusService::Unique | KDBusService::NoExitOnFailure};
+    if ( parser.isSet(replace) )
+    {
+        qWarning() << tr("Attempting to replace existing window...");
+        options.setFlag(KDBusService::Replace);
+    }
+
+    KDBusService service(options);
+
+    if ( !service.isRegistered() )
+    {
+        qWarning() << tr("Replacing window failed. You should close it manually");
+        return 4;
+    }
+
+    auto activate = [&, this](const QStringList& arguments, const QString& workingDirectory)
+    {
+        if ( d->m_started )
+        {
+            parser.process(arguments);
+            raiseMainWindow();
+        }
+
+        if ( parser.isSet(object) )
+            d->m_controller->selectByPath(parser.value(object));
+    };
+
+    connect(&service, &KDBusService::activateRequested, this, activate);
+
     d->m_controller.reset(new Controller);
 
-    MainWindow window;
-    window.show();
+    d->m_window.reset(new MainWindow);
+    d->m_window->show();
 
-    d->m_controller->refresh();
-
-    auto args = arguments();
-    if ( args.size() >= 3 && args[1] == "-o" )
-        d->m_controller->selectByPath(args[2]);
+    auto* t = QThread::create(&Controller::refresh, d->m_controller.get());
+    connect(this, &QApplication::aboutToQuit, t, &QThread::quit);
+    connect(t, &QThread::finished, this, [=]
+    {
+        activate(arguments(), QDir::current().absolutePath());
+        d->m_started = true;
+        t->deleteLater();
+    });
+    t->start();
 
     return exec();
 }
@@ -56,243 +115,29 @@ int ServicesApp::run()
 AppSettings* ServicesApp::settings() { return &d->m_settings; }
 Controller* ServicesApp::controller() { return d->m_controller.get(); }
 
-
-
-template <typename E> bool checkEvent(E* event) {
-    if ( event->dropAction() != Qt::CopyAction )
-        return true;
-
-    auto urls = event->mimeData()->urls();
-    if ( urls.empty() ) return true;
-
-    if ( urls.size() == 1 &&
-         urls.at(0).isLocalFile() &&
-         urls.at(0).fileName().toLower().endsWith(".json")
-        )
-    {
-        event->acceptProposedAction();
-        return true;
-    }
-
-    return false;
-}
-
-bool ServicesApp::notify(QObject* object, QEvent* event)
+bool ServicesApp::event(QEvent* event)
 {
-    if ( auto widget = qobject_cast<QWidget*>(object) ) {
-        if ( widget->acceptDrops() ) {
-            switch ( event->type() ) {
-                case QEvent::Type::DragEnter:
-                    if ( checkEvent(static_cast<QDragEnterEvent*>(event)) ) break;
-                    return false;
-
-                case QEvent::Type::Drop:
-                    if ( checkEvent(static_cast<QDropEvent*>(event)) ) break;
-                    return false;
-
-                default:
-                    break;
-            }
-        }
+    if ( event->type() == QEvent::Quit && !d->m_mayQuit )
+    {
+        qDebug() << "rejecting quit: operation in progress!";
+        event->ignore();
+        return false;
     }
-
-    return QApplication::notify(object, event);
+    return QApplication::event(event);
 }
 
 
-// NOTE: returns false only if options is invalid
-bool getTests(Action::TestSet& result, const QJsonObject& options, Service* service)
+void ServicesApp::raiseMainWindow()
 {
-    for ( auto entry = options.constBegin(); entry != options.constEnd(); ++entry )
-    {
-        const auto& key = entry.key();
-        if ( key.isEmpty() )
-            return false;
-
-        auto toolIt = ranges::find(service->diagTools(), key, &DiagTool::name);
-
-        if ( toolIt == service->diagTools().cend() )
-        {
-            qWarning() << "skipping non-existing diag tool: " << key;
-            continue;
-        }
-
-        DiagTool* tool = toolIt->get();
-
-        const auto& value = entry.value();
-
-        if ( !value.isArray() )
-            return false;
-
-        auto tests = value.toArray();
-        for ( const auto& testItem : tests )
-        {
-            QString testName = testItem.toString();
-
-            if (testName.isEmpty())
-                return false;
-
-            auto testIt = ranges::find( tool->tests(), testName, &DiagTool::Test::name );
-
-            if ( testIt == tool->tests().cend() )
-            {
-                qWarning() << "skipping non-existing diag tool " << key << " test: " << testName;
-                continue;
-            }
-
-            result.insert(testIt->get());
-        }
-    }
-
-    return true;
+    d->m_window->show();
+    KWindowSystem::updateStartupId(d->m_window->windowHandle());
+    d->m_window->raise();
+    KWindowSystem::activateWindow(d->m_window->windowHandle());
 }
 
+ServicesApp::QuitLock::QuitLock(bool& flag) : m_flag{flag} { m_flag = false; }
 
-std::optional<Action> ServicesApp::importParameters(const QString& fileName)
-{
+ServicesApp::QuitLock::~QuitLock() { m_flag = true; }
 
-    if ( fileName.isEmpty() ) return {};
-
-    QFile f{fileName};
-    if ( ! f.open(QIODevice::ReadOnly) ) {
-        QMessageBox::critical(activeModalWidget(), tr("File open error"), tr("Could not open file."));
-        return {};
-    }
-
-    QByteArray data = f.readAll();
-
-    f.close();
-
-
-#define MESSAGEBOX(severity, title, text) \
-    QMessageBox:: severity (QApplication::activeModalWidget(), title, text)
-
-#define CRITICAL(...) MESSAGEBOX(critical, __VA_ARGS__)
-#define WARNING(...) MESSAGEBOX(warning, __VA_ARGS__)
-
-    QJsonParseError err;
-    auto doc = QJsonDocument::fromJson(data, &err);
-    if ( err.error != QJsonParseError::NoError ) {
-        CRITICAL( QObject::tr("File parse error"), QObject::tr("Invalid file format.").append('\n').append(err.errorString()));
-        return {};
-    }
-
-    QJsonObject object = doc.object();
-    if ( object["version"].toInt() != 1)
-        CRITICAL( QObject::tr("File parse error"), QObject::tr("Unsupported format version."));
-
-    auto name = object["service"].toString();
-    Service* service = qApp->controller()->findByName( name );
-
-    if ( !service ) {
-        CRITICAL( QObject::tr("Error"), QObject::tr("Service \"%0\" does not exist").arg(name));
-        return {};
-    }
-    static const std::map<QString, Parameter::Context> ctxmap {
-        { "configure" , Parameter::Context::Configure },
-        { "deploy"    , Parameter::Context::Deploy    },
-        { "undeploy"  , Parameter::Context::Undeploy  },
-        { "diag"      , Parameter::Context::Diag      },
-        { "backup"    , Parameter::Context::Backup    },
-        { "restore"   , Parameter::Context::Restore   },
-    };
-    Parameter::Context loaded_ctx{};
-
-    try { loaded_ctx = ctxmap.at(object["action"].toString()); }
-    catch (std::out_of_range&) {
-        CRITICAL( QObject::tr("File parse error"), QObject::tr("Invalid file format.") );
-        return {};
-    }
-
-
-    if ( service->isDeployed() && loaded_ctx == Parameter::Context::Undeploy )
-    {
-        CRITICAL( QObject::tr("Action not applicable"), QObject::tr("Service is already deployed") );
-        return {};
-    }
-
-    if ( !service->isDeployed() && !Parameter::Contexts{Parameter::Context::Deploy | Parameter::Context::Diag}.testFlag(loaded_ctx) )
-    {
-        CRITICAL( QObject::tr("Action not applicable"), QObject::tr("Service is not deployed") );
-        return {};
-    }
-
-    Action::Options options;
-
-    if ( object.contains("options") )
-    {
-        QJsonObject optionsObj = object["options"].toObject();
-
-        switch ( loaded_ctx )
-        {
-        case Parameter::Context::Deploy:
-            options.autostart = optionsObj["autostart"].toBool();
-            options.force     = optionsObj["force"    ].toBool();
-
-            if ( service->isDeployed() && !options.force )
-            {
-                CRITICAL( QObject::tr("Action not applicable"), QObject::tr("Service is already deployed") );
-                return {};
-            }
-
-            if ( optionsObj.contains("prediag") )
-            {
-                QJsonObject prediag = optionsObj["prediag"].toObject();
-                options.prediag = !options.force && prediag["enable"].toBool();
-
-                if ( !getTests(options.prediagTests, prediag["options"].toObject(), service) )
-                {
-                    CRITICAL( QObject::tr("File parse error"), QObject::tr("Invalid file format.") );
-                    return {};
-                }
-
-                if ( options.prediag && options.prediagTests.empty() )
-                    WARNING( QObject::tr("Not enough data"),
-                            QObject::tr("Premilinary diagnostics:").append('\n')
-                                .append(QObject::tr("The file does not contains any existing diagnostic tests. A default diagnostic subset will be used.")) );
-
-            }
-            // NOTE: both actions may have postdiag
-            [[fallthrough]];
-
-        case Parameter::Context::Configure:
-            if ( optionsObj.contains("postdiag") )
-            {
-                QJsonObject postdiag = optionsObj["postdiag"].toObject();
-                options.postdiag = postdiag["enable"].toBool();
-
-                if ( !getTests(options.postdiagTests, postdiag["options"].toObject(), service) )
-                {
-                    CRITICAL( QObject::tr("File parse error"), QObject::tr("Invalid file format.") );
-                    return {};
-                }
-
-                if ( options.postdiag && options.postdiagTests.empty() )
-                    WARNING( QObject::tr("Not enough data"),
-                            QObject::tr("Post-diagnostics:").append('\n')
-                                .append(QObject::tr("The file does not contains any existing diagnostic tests. A default diagnostic subset will be used.")) );
-            }
-            break;
-
-        case Parameter::Context::Diag:
-            (service->isDeployed() ? options.postdiag: options.prediag) = true;
-            if ( !getTests(service->isDeployed() ? options.postdiagTests : options.prediagTests, optionsObj, service) )
-            {
-                CRITICAL( QObject::tr("File parse error"), QObject::tr("Invalid file format.") );
-                return {};
-            }
-
-            if ( (service->isDeployed() ? options.postdiagTests : options.prediagTests).empty() )
-            {
-                WARNING( QObject::tr("Not enough data"),
-                        QObject::tr("The file does not contains any existing diagnostic tests. A default diagnostic subset will be used.") );
-                return {};
-            }
-            break;
-
-        default: break;
-        }
-    }
-
-    return { Action{service, loaded_ctx, object["parameters"].toObject(), std::move(options)} };
-}
+ServicesApp::QuitLock ServicesApp::quitLock()
+{ return QuitLock{d->m_mayQuit}; }

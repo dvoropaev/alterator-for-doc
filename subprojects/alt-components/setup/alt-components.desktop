@@ -7,6 +7,5 @@ GenericName[ru]=Альт Компоненты
 Comment=Application for component instalation and removal
 Comment[ru]=Приложениe для установки и удаления системных компонентов
 Exec=alt-components
-Icon=alterator
+Icon=alt-components
 Categories=Settings;System;
-NoDisplay=true

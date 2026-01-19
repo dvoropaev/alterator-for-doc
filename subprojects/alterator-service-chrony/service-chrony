@@ -454,9 +454,15 @@ make_ntp_entry() {
       --arg offlineValue "$offline" \
       --arg requireFlag "$require" \
       --arg trustFlag "$trust" '
-      (if $entryType == "server" then {serverDomainName: $domainName}
-       elif $entryType == "pool" then {poolDomainName: $domainName}
-       else {} end)
+      (if $entryType == "server" then
+         {serverDomainName: $domainName}
+        elif $entryType == "pool" then
+         (if $domainName != "pool.ntp.org" then
+            {poolDomainName: $domainName}
+          else
+            {}
+          end)
+        else {} end)
       + (if $burstsValue != "" then {bursts: {($burstsValue): {}}} else {} end)
       + (if $minpollValue != "" then {minpoll: ($minpollValue|tonumber)} else {} end)
       + (if $maxpollValue != "" then {maxpoll: ($maxpollValue|tonumber)} else {} end)
@@ -595,42 +601,41 @@ ${ip}"
     done < "$conf_file"
 
     local result
-    result=$(  jq -n \
+    result=$(jq -n \
         --arg makestep "$makestep_value" \
         --arg ls "$local_stratum" \
         --argjson subnets "$(
             printf '%s\n' "$subnets" \
             | jq -R 'select(length>0)' \
             | jq -s '.'
-        )"\
+        )" \
         --argjson rtcSync "$rtc_sync" \
         --argjson servers "$(printf '%s\n' $servers | jq -s '.')" \
         --argjson pools "$(printf '%s\n' $pools | jq -s '.')" \
         --argjson defaultPool "$default_pool" \
         --argjson disableDefaultPoll "$disable_default_poll" '
         {
-          rtcSync: $rtcSync,
-          ntpServersSettings: $servers,
-          ntpPoolsSettings: $pools
+          rtcSync: $rtcSync
         }
+        + (if ($servers | length) > 0 then {ntpServersSettings: $servers} else {} end)
+        + (if ($pools   | length) > 0 then {ntpPoolsSettings:   $pools}   else {} end)
         + (if $makestep != "" then {makestep: $makestep} else {} end)
-        + (if $defaultPool != null and ($defaultPool|length>0)
+        + (if $defaultPool != null and ($defaultPool | length > 0)
            then {ntpDefaultPool: $defaultPool}
            else {} end)
         + (
-            ($ls|length>0 or ($subnets|length>0))
+            ($ls | length > 0 or ($subnets | length > 0))
             | if . then {
                 clientsSettings:
                   ({} +
-                   (if $ls|length>0 then {localStratum: ($ls|tonumber)} else {} end) +
-                   (if $subnets|length>0 then {subnetIpAddresses: $subnets} else {} end)
+                   (if $ls | length > 0 then {localStratum: ($ls | tonumber)} else {} end) +
+                   (if $subnets | length > 0 then {subnetIpAddresses: $subnets} else {} end)
                   )
               } else {} end
           )
         + (if $disableDefaultPoll then {disableDefaultPoll: true} else {} end)
-        '
-        )
-    echo $result
+    ')
+    echo "$result"
 }
 
 call_backup(){

@@ -15,7 +15,6 @@ public:
     MainWindowSettingsPrivate(MainWindow *mWindow, Ui::MainWindow *ui)
         : m_mainWindow(mWindow)
         , m_ui(ui)
-        , m_settings("AltLinux", "alterator-explorer")
     {}
     ~MainWindowSettingsPrivate() = default;
 

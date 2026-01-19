@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## 0.1.17-alt1
+
+### Fixed
+- window was delayed until all objects are built
+- launched apps are now keeped after acc window closed
+- application coud not raise its window on Wayland
+- reference text
+- the input cursor is removed in the reference
+
+### Added
+- dbus-activation mechanism
+- xdg-activation protocol
+- --replace commandline option for replacing existing window
+
 ## 0.1.16-alt1
 
 ### Fixed

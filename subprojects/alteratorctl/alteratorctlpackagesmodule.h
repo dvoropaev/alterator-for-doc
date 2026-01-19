@@ -9,15 +9,19 @@
 #include "alteratorctlgdbussource.h"
 
 #define TYPE_ALTERATOR_CTL_PACKAGES_MODULE (alterator_ctl_packages_module_get_type())
-#define ALTERATOR_CTL_PACKAGES_MODULE(obj) \
-    (G_TYPE_CHECK_INSTANCE_CAST((obj), TYPE_ALTERATOR_CTL_PACKAGES_MODULE, AlteratorCtlPackagesModule))
-#define IS_ALTERATOR_CTL_PACKAGES_MODULE(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), TYPE_ALTERATOR_CTL_PACKAGES_MODULE))
-#define ALTERATOR_CTL_PACKAGES_MODULE_CLASS(klass) \
-    (G_TYPE_CHECK_CLASS_CAST((klass), TYPE_ALTERATOR_CTL_PACKAGES_MODULE, AlteratorCtlPackagesModuleClass))
+#define ALTERATOR_CTL_PACKAGES_MODULE(obj)                                 \
+    (G_TYPE_CHECK_INSTANCE_CAST((obj), TYPE_ALTERATOR_CTL_PACKAGES_MODULE, \
+                                AlteratorCtlPackagesModule))
+#define IS_ALTERATOR_CTL_PACKAGES_MODULE(obj) \
+    (G_TYPE_CHECK_INSTANCE_TYPE((obj), TYPE_ALTERATOR_CTL_PACKAGES_MODULE))
+#define ALTERATOR_CTL_PACKAGES_MODULE_CLASS(klass)                        \
+    (G_TYPE_CHECK_CLASS_CAST((klass), TYPE_ALTERATOR_CTL_PACKAGES_MODULE, \
+                             AlteratorCtlPackagesModuleClass))
 #define IS_ALTERATOR_CTL_PACKAGES_MODULE_CLASS(klass) \
     (G_TYPE_CHECK_CLASS_TYPE((klass), TYPE_ALTERATOR_CTL_PACKAGES_MODULE))
-#define ALTERATOR_CTL_PACKAGES_MODULE_GET_CLASS(obj) \
-    (G_TYPE_INSTANCE_GET_CLASS((obj), TYPE_ALTERATOR_CTL_PACKAGES_MODULE, AlteratorCtlPackagesModuleClass))
+#define ALTERATOR_CTL_PACKAGES_MODULE_GET_CLASS(obj)                      \
+    (G_TYPE_INSTANCE_GET_CLASS((obj), TYPE_ALTERATOR_CTL_PACKAGES_MODULE, \
+                               AlteratorCtlPackagesModuleClass))
 
 enum packages_sub_commands
 {
@@ -68,20 +72,20 @@ typedef struct
 {
     GObject parnet_instance;
 
-    GHashTable **commands;
+    GHashTable** commands;
 
-    AlteratorGDBusSource *gdbus_source;
+    AlteratorGDBusSource* gdbus_source;
 
-    AlteratorCtlApp *alterator_ctl_app;
+    AlteratorCtlApp* alterator_ctl_app;
 
 } AlteratorCtlPackagesModule;
 
-alterator_ctl_module_t *get_packages_module();
+alterator_ctl_module_t* get_packages_module();
 
-int packages_module_run_with_args(gpointer self, int argc, char **argv);
+int packages_module_run_with_args(gpointer self, int argc, char** argv);
 
 int packages_module_run(gpointer self, gpointer data);
 
 int packages_module_print_help(gpointer self);
 
-#endif //ALTERATORCTL_PACKAGES_H
+#endif // ALTERATORCTL_PACKAGES_H

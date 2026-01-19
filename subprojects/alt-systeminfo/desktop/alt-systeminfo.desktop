@@ -7,6 +7,5 @@ GenericName[ru]=Альт Системная информация
 Comment=Application for show information and configure system
 Comment[ru]=Приложениe показа информации и настройки системы
 Exec=alt-systeminfo %U
-Icon=alterator
+Icon=alt-systeminfo
 Categories=Settings;System;
-NoDisplay=true

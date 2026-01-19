@@ -9,6 +9,7 @@ class SearchAdapter : public QObject {
     Q_OBJECT
 
 public:
+    using QObject::QObject;
     virtual ~SearchAdapter() = default;
     
     /*

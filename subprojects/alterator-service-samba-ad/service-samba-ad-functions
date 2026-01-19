@@ -201,10 +201,11 @@ upper() {
 
 set_hostname() {
     local domain_realm="$1"
+    local hostname="${2:-}"
     local retval=0
-    local hostname=
-
-    hostname="$(hostname -s)"
+    if [ -z "$hostname" ]; then
+        hostname="$(hostnamectl --static)"
+    fi
 
     hostnamectl hostname "$hostname.$domain_realm" || retval=1
 
@@ -249,5 +250,15 @@ prepare_resolv_conf_to_join() {
 search $domain_realm
 nameserver $dc_ip
 EOF
+    return 0
+}
+
+enable_unit(){
+    local unit_name="$1"
+
+    if systemctl is-enabled "$unit_name"; then
+        systemctl enable "$unit_name"
+    fi
+
     return 0
 }

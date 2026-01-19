@@ -209,7 +209,7 @@ int DBusProxy::status(const QString& path, QByteArray& result)
     auto message = serviceMethod(path, "Status");
     auto reply = d->m_system.call(message, QDBus::BlockWithGui, DBUS_TIMEOUT);
 
-    if ( reply.type() == QDBusMessage::ErrorMessage ) {
+    if ( reply.type() != QDBusMessage::ReplyMessage ) {
         emit stderr(reply.errorMessage());
         return false;
     }
@@ -229,7 +229,7 @@ bool DBusProxy::deploy(const QString& path, const QString& data)
     auto message = serviceMethod(path, "Deploy", {data});
     auto reply = d->m_system.call(message, QDBus::BlockWithGui, DBUS_TIMEOUT);
 
-    if ( reply.type() == QDBusMessage::ErrorMessage ) {
+    if ( reply.type() != QDBusMessage::ReplyMessage ) {
         emit stderr(reply.errorMessage());
         return false;
     }
@@ -250,7 +250,7 @@ bool DBusProxy::undeploy(const QString& path, const QString& data)
     auto message = serviceMethod(path, "Undeploy", {data});
     auto reply = d->m_system.call(message, QDBus::BlockWithGui, DBUS_TIMEOUT);
 
-    if ( reply.type() == QDBusMessage::ErrorMessage ) {
+    if ( reply.type() != QDBusMessage::ReplyMessage ) {
         emit stderr(reply.errorMessage());
         return false;
     }
@@ -271,7 +271,7 @@ bool DBusProxy::configure(const QString& path, const QString& data)
     auto message = serviceMethod(path, "Configure", {data});
     auto reply = d->m_system.call(message, QDBus::BlockWithGui, DBUS_TIMEOUT);
 
-    if ( reply.type() == QDBusMessage::ErrorMessage ) {
+    if ( reply.type() != QDBusMessage::ReplyMessage ) {
         emit stderr(reply.errorMessage());
         return false;
     }
@@ -291,7 +291,7 @@ bool DBusProxy::start(const QString& path)
 
     auto reply = d->m_system.call(serviceMethod(path, "Start"), QDBus::BlockWithGui, DBUS_TIMEOUT);
 
-    if ( reply.type() == QDBusMessage::ErrorMessage ) {
+    if ( reply.type() != QDBusMessage::ReplyMessage ) {
         emit stderr(reply.errorMessage());
         return false;
     }
@@ -311,7 +311,7 @@ bool DBusProxy::stop(const QString& path)
 
     auto reply = d->m_system.call(serviceMethod(path, "Stop"), QDBus::BlockWithGui, DBUS_TIMEOUT);
 
-    if ( reply.type() == QDBusMessage::ErrorMessage ) {
+    if ( reply.type() != QDBusMessage::ReplyMessage ) {
         emit stderr(reply.errorMessage());
         return false;
     }
@@ -332,7 +332,7 @@ bool DBusProxy::backup(const QString& path, const QString& data)
     auto message = serviceMethod(path, "Backup", {data});
     auto reply = d->m_system.call(message, QDBus::BlockWithGui, DBUS_TIMEOUT);
 
-    if ( reply.type() == QDBusMessage::ErrorMessage ) {
+    if ( reply.type() != QDBusMessage::ReplyMessage ) {
         emit stderr(reply.errorMessage());
         return false;
     }
@@ -353,7 +353,7 @@ bool DBusProxy::restore(const QString& path, const QString& data)
     auto message = serviceMethod(path, "Restore", {data});
     auto reply = d->m_system.call(message, QDBus::BlockWithGui, DBUS_TIMEOUT);
 
-    if ( reply.type() == QDBusMessage::ErrorMessage ) {
+    if ( reply.type() != QDBusMessage::ReplyMessage ) {
         emit stderr(reply.errorMessage());
         return false;
     }
@@ -391,7 +391,7 @@ Controller::Result DBusProxy::runDiag(const QString& path, const QString& test, 
 
     auto testReply = connection.call(method(IFACE_DIAG, path, "Run", {test}), QDBus::BlockWithGui, DBUS_TIMEOUT);
 
-    if ( testReply.type() == QDBusMessage::ErrorMessage )
+    if ( testReply.type() != QDBusMessage::ReplyMessage )
     {
         emit stderr(testReply.errorMessage());
         return Controller::Result::Error;

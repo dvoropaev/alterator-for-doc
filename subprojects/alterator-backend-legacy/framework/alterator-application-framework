@@ -1,0 +1,86 @@
+#!/usr/bin/env python3
+
+import os
+import shutil
+import subprocess
+import sys
+
+from pydbus import SystemBus
+
+
+def safe_print(*args, **kwargs):
+    try:
+        print(*args, **kwargs)
+    except BrokenPipeError:
+        pass
+
+
+def get_object_info(path: str) -> bytes:
+    bus = SystemBus()
+    obj = bus.get("org.altlinux.alterator", path)["org.altlinux.alterator.framework1"]
+    res = obj.Info()
+
+    if not isinstance(res, (list, tuple)) or len(res) < 2:
+        raise RuntimeError("Invalid Info() response")
+
+    info_bytes = res[0]
+    exit_status = res[-1]
+
+    if exit_status != 0:
+        raise RuntimeError("Info() returned non-zero exit status")
+
+    if isinstance(info_bytes, (bytes, bytearray)):
+        return bytes(info_bytes)
+
+    try:
+        return bytes(info_bytes)
+    except Exception:
+        pass
+
+    raise RuntimeError("Info() did not return bytes")
+
+
+def parse_framework_module_id(info_text: str) -> str:
+    for line in info_text.splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        if line.startswith("framework_module_id"):
+            parts = line.split("=", 1)
+            if len(parts) != 2:
+                continue
+            value = parts[1].strip()
+            if value.startswith('"') and value.endswith('"') and len(value) >= 2:
+                value = value[1:-1]
+            if value:
+                return value
+    raise RuntimeError("framework_module_id not found")
+
+
+def main(argv: list[str]) -> int:
+    if len(argv) != 2:
+        safe_print("alterator-application-framework: <dbus_object_path>", file=sys.stderr)
+        return 2
+
+    path = argv[1]
+
+    if shutil.which("alterator-framework") is None:
+        legacy_runner = "/usr/lib/alterator-application-legacy/alterator-application-legacy"
+        if os.path.exists(legacy_runner):
+            os.execv(legacy_runner, [legacy_runner, path])
+        safe_print("alterator-application-framework: error: alterator-framework is not installed", file=sys.stderr)
+        return 1
+
+    try:
+        info_bytes = get_object_info(path)
+        module_id = parse_framework_module_id(info_bytes.decode(errors="replace"))
+    except Exception as e:
+        safe_print(f"alterator-application-framework: error: {e}", file=sys.stderr)
+        return 1
+
+    env = os.environ.copy()
+    return subprocess.call(["alterator-framework", module_id], env=env)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv))

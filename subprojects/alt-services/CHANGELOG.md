@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- move desktop file to data directory
+
+### Added
+- app icon
+
+## 0.1.10-alt1
+
+### Changed
 - tables are now compact by default
 - resource values are now top-aligned
 - added word-wrap for tooltips
@@ -16,6 +24,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - html journal displayed with wrong encoding in some browsers
 - brought back forgotten menu items in mainwindow
 - validation messages blinking while changing enum parameters
+- application coud not raise its window on Wayland
+- process could continue when window is closed by user immediately after start
+- minor memory leaks
+
+### Added
+- --replace commandline option for replacing existing window
 
 ## 0.1.9-alt1
 

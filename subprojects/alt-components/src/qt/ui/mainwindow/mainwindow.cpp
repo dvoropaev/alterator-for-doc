@@ -30,7 +30,7 @@ MainWindow::MainWindow(QAbstractItemModel *model, QWidget *parent)
 {
     this->ui->setupUi(this);
     this->settings->restoreSettings();
-    this->setWindowIcon(QIcon(":logo.png"));
+    this->setWindowIcon(QIcon(":logo.svg"));
 
     this->ui->componentsWidget->setComponentsModel(this->model);
 

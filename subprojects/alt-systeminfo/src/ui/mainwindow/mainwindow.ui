@@ -20,7 +20,8 @@
    <string>ALT Systeminfo</string>
   </property>
   <property name="windowIcon">
-   <iconset theme="alterator"/>
+   <iconset resource="../../logo.qrc">
+    <normaloff>:/logo/assets/alt-systeminfo.svg</normaloff>:/logo/assets/alt-systeminfo.svg</iconset>
   </property>
   <property name="autoFillBackground">
    <bool>true</bool>

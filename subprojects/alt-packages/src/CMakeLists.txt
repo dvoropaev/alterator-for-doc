@@ -136,6 +136,9 @@ set(TS_FILES
 				${CMAKE_CURRENT_SOURCE_DIR}/en.ts
 )
 
+set(APP_ICONS_DIR "${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps")
+set(APP_ICON "${CMAKE_CURRENT_SOURCE_DIR}/resources/alt-packages.svg")
+
 add_custom_target(app_ts
 				DEPENDS ${TS_FILES}
 				COMMAND ${Qt${QT_VERSION_MAJOR}_LUPDATE_EXECUTABLE} * -recursive ${CMAKE_CURRENT_SOURCE_DIR} -ts ${TS_FILES} -no-obsolete
@@ -157,4 +160,9 @@ target_link_libraries(${PROJECT_NAME}
 		Qt${QT_VERSION_MAJOR}::Core
 		Qt${QT_VERSION_MAJOR}::Gui
 		Qt${QT_VERSION_MAJOR}::DBus
+)
+
+install(
+    FILES ${APP_ICON}
+    DESTINATION ${APP_ICONS_DIR}
 )

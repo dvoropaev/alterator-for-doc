@@ -27,68 +27,68 @@
 <context>
     <name>ActionWizard</name>
     <message>
-        <location filename="../src/ui/wizard/ActionWizard.cpp" line="86"/>
+        <location filename="../src/ui/wizard/ActionWizard.cpp" line="88"/>
         <source>&amp;Import...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/ActionWizard.cpp" line="87"/>
+        <location filename="../src/ui/wizard/ActionWizard.cpp" line="89"/>
         <source>&amp;Export parameters...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/ActionWizard.cpp" line="88"/>
+        <location filename="../src/ui/wizard/ActionWizard.cpp" line="90"/>
         <source>&amp;Save journal...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/ActionWizard.cpp" line="89"/>
+        <location filename="../src/ui/wizard/ActionWizard.cpp" line="91"/>
         <source>Import previously saved options</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/ActionWizard.cpp" line="90"/>
+        <location filename="../src/ui/wizard/ActionWizard.cpp" line="92"/>
         <source>Save all the selected options for future reuse</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/ActionWizard.cpp" line="94"/>
+        <location filename="../src/ui/wizard/ActionWizard.cpp" line="96"/>
         <source>Import saved parameters</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/ActionWizard.cpp" line="163"/>
+        <location filename="../src/ui/wizard/ActionWizard.cpp" line="165"/>
         <source>Warning</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/ActionWizard.cpp" line="164"/>
+        <location filename="../src/ui/wizard/ActionWizard.cpp" line="166"/>
         <source>This file contains %1 for &quot;%2&quot;, but the wizard contains %3 for &quot;%4&quot;.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/ActionWizard.cpp" line="169"/>
+        <location filename="../src/ui/wizard/ActionWizard.cpp" line="171"/>
         <source>Do you want to continue importing?</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/ActionWizard.cpp" line="183"/>
-        <location filename="../src/ui/wizard/ActionWizard.cpp" line="196"/>
+        <location filename="../src/ui/wizard/ActionWizard.cpp" line="185"/>
+        <location filename="../src/ui/wizard/ActionWizard.cpp" line="198"/>
         <source>Cannot apply parameters</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/ActionWizard.cpp" line="184"/>
+        <location filename="../src/ui/wizard/ActionWizard.cpp" line="186"/>
         <source>Service is already deployed and it does not support force deployment.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/ActionWizard.cpp" line="197"/>
+        <location filename="../src/ui/wizard/ActionWizard.cpp" line="199"/>
         <source>&quot;%1&quot; is impossible because service is not deployed.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/ActionWizard.cpp" line="264"/>
+        <location filename="../src/ui/wizard/ActionWizard.cpp" line="266"/>
         <source>Export current parameters</source>
         <translation></translation>
     </message>
@@ -347,43 +347,43 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/controller/Controller.cpp" line="270"/>
+        <location filename="../src/controller/Controller.cpp" line="278"/>
         <source>Starting service</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/controller/Controller.cpp" line="296"/>
-        <location filename="../src/controller/Controller.cpp" line="310"/>
+        <location filename="../src/controller/Controller.cpp" line="304"/>
+        <location filename="../src/controller/Controller.cpp" line="318"/>
         <source>Error</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/controller/Controller.cpp" line="321"/>
+        <location filename="../src/controller/Controller.cpp" line="329"/>
         <source>Premilinary diagnostics</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/controller/Controller.cpp" line="321"/>
+        <location filename="../src/controller/Controller.cpp" line="329"/>
         <source>Post-diagnostics</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/controller/Controller.cpp" line="367"/>
+        <location filename="../src/controller/Controller.cpp" line="375"/>
         <source>Diagnostic tool &quot;%1&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/controller/Controller.cpp" line="375"/>
+        <location filename="../src/controller/Controller.cpp" line="383"/>
         <source>Running test &quot;%1&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/controller/Controller.cpp" line="296"/>
+        <location filename="../src/controller/Controller.cpp" line="304"/>
         <source>Failed to start service</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/controller/Controller.cpp" line="310"/>
+        <location filename="../src/controller/Controller.cpp" line="318"/>
         <source>Failed to stop service</source>
         <translation></translation>
     </message>
@@ -586,17 +586,17 @@ You may want to undeploy the conflicting services, or reconfigure them, if their
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/05-progress/LogWidget.cpp" line="406"/>
+        <location filename="../src/ui/wizard/05-progress/LogWidget.cpp" line="411"/>
         <source>[Success]</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/05-progress/LogWidget.cpp" line="411"/>
+        <location filename="../src/ui/wizard/05-progress/LogWidget.cpp" line="416"/>
         <source>[Warning]</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/05-progress/LogWidget.cpp" line="418"/>
+        <location filename="../src/ui/wizard/05-progress/LogWidget.cpp" line="423"/>
         <source>[Error]</source>
         <translation></translation>
     </message>
@@ -640,7 +640,7 @@ You may want to undeploy the conflicting services, or reconfigure them, if their
     </message>
     <message>
         <location filename="../src/ui/MainWindow.ui" line="210"/>
-        <location filename="../src/ui/MainWindow.cpp" line="84"/>
+        <location filename="../src/ui/MainWindow.cpp" line="88"/>
         <source>ToolBar</source>
         <translation></translation>
     </message>
@@ -780,37 +780,37 @@ You may want to undeploy the conflicting services, or reconfigure them, if their
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/MainWindow.cpp" line="85"/>
+        <location filename="../src/ui/MainWindow.cpp" line="89"/>
         <source>Enable ToolBar</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/MainWindow.cpp" line="88"/>
+        <location filename="../src/ui/MainWindow.cpp" line="92"/>
         <source>Buttons style</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/MainWindow.cpp" line="104"/>
+        <location filename="../src/ui/MainWindow.cpp" line="108"/>
         <source>Icons only</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/MainWindow.cpp" line="105"/>
+        <location filename="../src/ui/MainWindow.cpp" line="109"/>
         <source>Text only</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/MainWindow.cpp" line="106"/>
+        <location filename="../src/ui/MainWindow.cpp" line="110"/>
         <source>Text beside icon</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/MainWindow.cpp" line="107"/>
+        <location filename="../src/ui/MainWindow.cpp" line="111"/>
         <source>Text under icon</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/MainWindow.cpp" line="247"/>
+        <location filename="../src/ui/MainWindow.cpp" line="254"/>
         <source>Import saved parameters</source>
         <translation></translation>
     </message>
@@ -973,12 +973,12 @@ You may want to undeploy the conflicting services, or reconfigure them, if their
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../src/data/models/ResourceModel.cpp" line="154"/>
+        <location filename="../src/data/models/ResourceModel.cpp" line="157"/>
         <source>Name</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/data/models/ResourceModel.cpp" line="155"/>
+        <location filename="../src/data/models/ResourceModel.cpp" line="158"/>
         <source>Value</source>
         <translation></translation>
     </message>
@@ -988,32 +988,32 @@ You may want to undeploy the conflicting services, or reconfigure them, if their
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/controller/Controller.cpp" line="424"/>
+        <location filename="../src/controller/Controller.cpp" line="432"/>
         <source>Configuration</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/controller/Controller.cpp" line="425"/>
+        <location filename="../src/controller/Controller.cpp" line="433"/>
         <source>Deployment</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/controller/Controller.cpp" line="426"/>
+        <location filename="../src/controller/Controller.cpp" line="434"/>
         <source>Undeployment</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/controller/Controller.cpp" line="427"/>
+        <location filename="../src/controller/Controller.cpp" line="435"/>
         <source>Diagnostic</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/controller/Controller.cpp" line="428"/>
+        <location filename="../src/controller/Controller.cpp" line="436"/>
         <source>Backup</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/controller/Controller.cpp" line="429"/>
+        <location filename="../src/controller/Controller.cpp" line="437"/>
         <source>Restore</source>
         <translation></translation>
     </message>
@@ -1090,168 +1090,178 @@ You may want to undeploy the conflicting services, or reconfigure them, if their
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/app/ServicesApp.cpp" line="173"/>
-        <location filename="../src/app/ServicesApp.cpp" line="179"/>
-        <location filename="../src/app/ServicesApp.cpp" line="200"/>
-        <location filename="../src/app/ServicesApp.cpp" line="242"/>
-        <location filename="../src/app/ServicesApp.cpp" line="263"/>
-        <location filename="../src/app/ServicesApp.cpp" line="278"/>
+        <location filename="../src/data/Action.cpp" line="204"/>
+        <source>File open error</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/data/Action.cpp" line="204"/>
+        <source>Could not open file.</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/data/Action.cpp" line="216"/>
+        <location filename="../src/data/Action.cpp" line="222"/>
+        <location filename="../src/data/Action.cpp" line="246"/>
+        <location filename="../src/data/Action.cpp" line="287"/>
+        <location filename="../src/data/Action.cpp" line="308"/>
+        <location filename="../src/data/Action.cpp" line="323"/>
         <source>File parse error</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/app/ServicesApp.cpp" line="173"/>
-        <location filename="../src/app/ServicesApp.cpp" line="200"/>
-        <location filename="../src/app/ServicesApp.cpp" line="242"/>
-        <location filename="../src/app/ServicesApp.cpp" line="263"/>
-        <location filename="../src/app/ServicesApp.cpp" line="278"/>
+        <location filename="../src/data/Action.cpp" line="216"/>
+        <location filename="../src/data/Action.cpp" line="246"/>
+        <location filename="../src/data/Action.cpp" line="287"/>
+        <location filename="../src/data/Action.cpp" line="308"/>
+        <location filename="../src/data/Action.cpp" line="323"/>
         <source>Invalid file format.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/app/ServicesApp.cpp" line="179"/>
+        <location filename="../src/data/Action.cpp" line="222"/>
         <source>Unsupported format version.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/app/ServicesApp.cpp" line="185"/>
+        <location filename="../src/data/Action.cpp" line="229"/>
         <source>Error</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/app/ServicesApp.cpp" line="185"/>
+        <location filename="../src/data/Action.cpp" line="229"/>
         <source>Service &quot;%0&quot; does not exist</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/app/ServicesApp.cpp" line="207"/>
-        <location filename="../src/app/ServicesApp.cpp" line="213"/>
-        <location filename="../src/app/ServicesApp.cpp" line="231"/>
+        <location filename="../src/data/Action.cpp" line="252"/>
+        <location filename="../src/data/Action.cpp" line="258"/>
+        <location filename="../src/data/Action.cpp" line="276"/>
         <source>Action not applicable</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/app/ServicesApp.cpp" line="207"/>
-        <location filename="../src/app/ServicesApp.cpp" line="231"/>
+        <location filename="../src/data/Action.cpp" line="252"/>
+        <location filename="../src/data/Action.cpp" line="276"/>
         <source>Service is already deployed</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/app/ServicesApp.cpp" line="213"/>
+        <location filename="../src/data/Action.cpp" line="258"/>
         <source>Service is not deployed</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/app/ServicesApp.cpp" line="247"/>
-        <location filename="../src/app/ServicesApp.cpp" line="268"/>
-        <location filename="../src/app/ServicesApp.cpp" line="284"/>
+        <location filename="../src/data/Action.cpp" line="292"/>
+        <location filename="../src/data/Action.cpp" line="313"/>
+        <location filename="../src/data/Action.cpp" line="329"/>
         <source>Not enough data</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/app/ServicesApp.cpp" line="248"/>
+        <location filename="../src/data/Action.cpp" line="293"/>
         <source>Premilinary diagnostics:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/app/ServicesApp.cpp" line="249"/>
-        <location filename="../src/app/ServicesApp.cpp" line="270"/>
-        <location filename="../src/app/ServicesApp.cpp" line="285"/>
+        <location filename="../src/data/Action.cpp" line="294"/>
+        <location filename="../src/data/Action.cpp" line="315"/>
+        <location filename="../src/data/Action.cpp" line="330"/>
         <source>The file does not contains any existing diagnostic tests. A default diagnostic subset will be used.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/app/ServicesApp.cpp" line="269"/>
+        <location filename="../src/data/Action.cpp" line="314"/>
         <source>Post-diagnostics:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/ActionWizard.cpp" line="24"/>
+        <location filename="../src/ui/wizard/ActionWizard.cpp" line="25"/>
         <source>Deployment wizard</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/ActionWizard.cpp" line="24"/>
+        <location filename="../src/ui/wizard/ActionWizard.cpp" line="25"/>
         <source>Deployment parameters</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/ActionWizard.cpp" line="24"/>
+        <location filename="../src/ui/wizard/ActionWizard.cpp" line="25"/>
         <source>Set deployment configuration</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/ActionWizard.cpp" line="25"/>
+        <location filename="../src/ui/wizard/ActionWizard.cpp" line="26"/>
         <source>Undeployment wizard</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/ActionWizard.cpp" line="25"/>
+        <location filename="../src/ui/wizard/ActionWizard.cpp" line="26"/>
         <source>Undeployment parameters</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/ActionWizard.cpp" line="25"/>
+        <location filename="../src/ui/wizard/ActionWizard.cpp" line="26"/>
         <source>Set undeployment options</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/ActionWizard.cpp" line="26"/>
+        <location filename="../src/ui/wizard/ActionWizard.cpp" line="27"/>
         <source>Backup wizard</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/ActionWizard.cpp" line="26"/>
+        <location filename="../src/ui/wizard/ActionWizard.cpp" line="27"/>
         <source>Backup parameters</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/ActionWizard.cpp" line="26"/>
+        <location filename="../src/ui/wizard/ActionWizard.cpp" line="27"/>
         <source>Set backup options</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/ActionWizard.cpp" line="27"/>
+        <location filename="../src/ui/wizard/ActionWizard.cpp" line="28"/>
         <source>Restore wizard</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/ActionWizard.cpp" line="27"/>
+        <location filename="../src/ui/wizard/ActionWizard.cpp" line="28"/>
         <source>Restore parameters</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/ActionWizard.cpp" line="27"/>
+        <location filename="../src/ui/wizard/ActionWizard.cpp" line="28"/>
         <source>Set restore options</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/ActionWizard.cpp" line="28"/>
+        <location filename="../src/ui/wizard/ActionWizard.cpp" line="29"/>
         <source>Configuration wizard</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/ActionWizard.cpp" line="28"/>
+        <location filename="../src/ui/wizard/ActionWizard.cpp" line="29"/>
         <source>Configuration parameters</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/ActionWizard.cpp" line="28"/>
+        <location filename="../src/ui/wizard/ActionWizard.cpp" line="29"/>
         <source>Set service configuration</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/ActionWizard.cpp" line="29"/>
+        <location filename="../src/ui/wizard/ActionWizard.cpp" line="30"/>
         <source>Diagnostic wizard</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/ActionWizard.cpp" line="29"/>
+        <location filename="../src/ui/wizard/ActionWizard.cpp" line="30"/>
         <source>Diagnostic parameters</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/wizard/ActionWizard.cpp" line="29"/>
+        <location filename="../src/ui/wizard/ActionWizard.cpp" line="30"/>
         <source>Set diagnostic options</source>
         <translation></translation>
     </message>
@@ -1416,13 +1426,38 @@ Click to highlight it.</source>
 <context>
     <name>ServicesApp</name>
     <message>
-        <location filename="../src/app/ServicesApp.cpp" line="155"/>
-        <source>File open error</source>
+        <location filename="../src/app/ServicesApp.cpp" line="48"/>
+        <source>Close existing window and open a new one</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/app/ServicesApp.cpp" line="155"/>
-        <source>Could not open file.</source>
+        <location filename="../src/app/ServicesApp.cpp" line="49"/>
+        <source>Go to a specific service, specified by dbus path</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/app/ServicesApp.cpp" line="49"/>
+        <source>path</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/app/ServicesApp.cpp" line="59"/>
+        <source>Unable to connect to a session bus</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/app/ServicesApp.cpp" line="65"/>
+        <source>Application already running</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/app/ServicesApp.cpp" line="71"/>
+        <source>Attempting to replace existing window...</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/app/ServicesApp.cpp" line="79"/>
+        <source>Replacing window failed. You should close it manually</source>
         <translation></translation>
     </message>
 </context>

@@ -3,5 +3,6 @@
         <file>assets/basealt.png</file>
         <file>assets/altlinux.png</file>
         <file>assets/altlinux_rectangle.png</file>
+        <file>assets/alt-systeminfo.svg</file>
     </qresource>
 </RCC>

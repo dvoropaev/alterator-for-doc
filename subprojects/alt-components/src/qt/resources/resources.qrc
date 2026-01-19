@@ -1,7 +1,7 @@
 <!DOCTYPE RCC>
 <RCC version="1.0">
   <qresource prefix="/">
-    <file alias="logo.png">./logo.png</file>
+    <file alias="logo.svg">./logo.svg</file>
     <file alias="warning">./dialog-warning-symbolic.svg</file>
     <file alias="error">./dialog-error-symbolic.svg</file>
     <file alias="welcome-screen.en.html">./welcome-screen.en.html</file>

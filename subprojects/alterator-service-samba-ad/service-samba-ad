@@ -174,6 +174,9 @@ domain_provision() {
     local domain_realm=
     local forwarders=
     local backend_store_size=
+    local hostname=
+    local force_deploy=
+    local deployed=false
     local resolv_conf_error=false
     local krb5_conf_error=false
     local retval=0
@@ -220,6 +223,13 @@ domain_provision() {
                 value=$(get_json_value "$input_json" "$key" ".")
                 [ "$value" = "true" ] && args+=(--use-rfc2307)
                 ;;
+            hostNetBiosName)
+                value=$(get_json_value "$input_json" "$key" ".")
+                [ -n "$value" ] && hostname="$value"
+                ;;
+            force_deploy)
+                force_deploy=$(get_json_value "$input_json" "$key" ".")
+                ;;
             *)
                 false
                 ;;
@@ -254,11 +264,20 @@ domain_provision() {
         fi
     fi
 
+    deployed="$(get_deployed)"
+    if [ "$deployed" = "true" ] && [ "$force_deploy" != "true" ]; then
+        echo "ERROR: Samba AD is already deployed. Use 'force_deploy' option to re-provision."
+        return 1
+    elif [ "$deployed" = "true" ] && [ "$force_deploy" = "true" ]; then
+        echo "Warning: Forcing re-provision of Samba AD. Existing configuration will be overwritten."
+        reset_to_default
+    fi
+
     backup_config /etc/samba/smb.conf "original"
     backup_config /etc/krb5.conf "original"
     backup_config /etc/resolv.conf "original"
 
-    set_hostname "$domain_realm" || retval=1
+    set_hostname "$domain_realm" "$hostname" || retval=1
     samba-tool domain provision "${args[@]}" || retval=1
 
     if [ $retval -eq 0 ]; then
@@ -309,6 +328,7 @@ dc_join() {
     local dc_in_domain_ip=
     local server_role=
     local domain_realm=
+    local force_deploy=false
     local resolv_conf_error=false
     local krb5_conf_error=false
     local bind_setup_error=false
@@ -350,6 +370,9 @@ dc_join() {
             siteName)
                 value=$(get_json_value "$input_json" "$key" ".")
                 [ -n "$value" ] && args+=(--site "$value")
+                ;;
+            force_deploy)
+                force_deploy=$(get_json_value "$input_json" "$key" ".")
                 ;;
             *)
                 false
@@ -408,6 +431,14 @@ dc_join() {
         echo "ERROR: 'Admin password', 'Admin Login' and "DC IPv4 address" is required for joining a domain."
         retval=1
     else
+        deployed="$(get_deployed)"
+        if [ "$deployed" = "true" ] && [ "$force_deploy" != "true" ]; then
+            echo "ERROR: Samba AD is already deployed. Use 'force_deploy' option to re-provision."
+            return 1
+        elif [ "$deployed" = "true" ] && [ "$force_deploy" = "true" ]; then
+            echo "Warning: Forcing re-provision of Samba AD. Existing configuration will be overwritten."
+            reset_to_default
+        fi
         backup_config /etc/samba/smb.conf "original"
         backup_config /etc/krb5.conf "original"
         backup_config /etc/resolv.conf "original"
@@ -462,6 +493,7 @@ undeploy_service() {
     local value=
     local dc_name=
     local out=
+    local force_undeploy=false
     local args=()
     local save_current_config=false
     local reset_to_default_flag=false
@@ -484,6 +516,9 @@ undeploy_service() {
                 ;;
             resetToDefaults)
                 reset_to_default_flag=$(get_json_value "$input_json" "$key" ".")
+                ;;
+            forceUndeploy)
+                force_demote=$(get_json_value "$input_json" "$key" ".")
                 ;;
             *)
                 false
@@ -511,13 +546,31 @@ undeploy_service() {
                 reset_to_default
                 echo "System reset to default configuration."
             fi
-        else 
-            if grep -q "The attempted logon is invalid. This is either due to a bad username or authentication information" <<<"$out"; then
-                echo "ERROR: Invalid credentials provided for demotion."
-                echo "ERROR: Failed to demote domain controller."
-            else
+        else
+            if [ "$force_demote" = "true" ]; then
+                echo "Warning: Forcing demotion despite errors."
+                echo "This error will be ignored."
                 echo "$out"
-                echo "ERROR: Failed to demote domain controller."
+                if systemctl is-active --quiet samba.service; then
+                    stop_service || retval=1
+                fi
+                if [ "$save_current_config" = "true" ]; then
+                    backup_config /etc/samba/smb.conf "before_undeploy"
+                    backup_config /etc/krb5.conf "before_undeploy"
+                    backup_config /etc/resolv.conf "before_undeploy"
+                fi
+                reset_to_default
+                rm -f /var/lib/alterator/service/samba-ad/status.json
+                echo "Domain controller demoted and system reset to default configuration."
+                retval=0
+            else
+                if grep -q "The attempted logon is invalid. This is either due to a bad username or authentication information" <<<"$out"; then
+                    echo "ERROR: Invalid credentials provided for demotion."
+                    echo "ERROR: Failed to demote domain controller."
+                else
+                    echo "$out"
+                    echo "ERROR: Failed to demote domain controller."
+                fi
             fi
         fi
     fi
@@ -566,8 +619,7 @@ configure_service() {
         edit_forwarders_samba "$forwarders" || retval=1
     fi
 
-
-    restart_service
+    start_service || retval=1
 
     return $retval
 }
@@ -587,25 +639,43 @@ restore_service() {
 start_service() {
     local retval=0
     local dns_backend=
+    local samba_fail=0
+    local samba_out=
+    local bind_fail=0
+    local bind_out=
     dns_backend="$(get_dns_backend)"
 
     if [ "$dns_backend" = "BIND9_DLZ" ]; then
-        if systemctl list-units | grep -oq '\bbind.service'; then
-            systemctl restart bind.service
+        if systemctl is-active bind.service; then
+            bind_out="$(systemctl restart bind.service)" || bind_fail=1
+            enable_unit "bind.service"
+        else
+            bind_out="$(systemctl start bind.service)" || bind_fail=1
+            enable_unit "bind.service"
         fi
-        systemctl enable --now bind.service
+    else
+        if systemctl is-active bind.service; then
+            bind_out="$(systemctl disable --now bind.service)" || true
+        fi
     fi
 
-    if [ "$dns_backend" = "SAMBA_INTERNAL" ]; then
-        if systemctl list-units | grep -oq '\bbind.service'; then
-            systemctl disable --now bind.service
-        fi
+    if  systemctl is-active samba.service; then
+        samba_out="$(systemctl restart samba.service)" || samba_fail=1
+        enable_unit "samba.service"
+    else
+        samba_out="$(systemctl start samba.service)" || samba_fail=1
+        enable_unit "samba.service"
     fi
 
-    if systemctl list-units | grep -oq '\bsamba.service'; then
-        systemctl restart samba.service
+    if [ $samba_fail -eq 1 ]; then
+        echo -n "$samba_out"
+        retval=1
+    elif [ $bind_fail -eq 1 ]; then
+        echo -n "$bind_out"
+        retval=1
+    else
+        echo "Success"
     fi
-    systemctl enable --now samba.service
 
     return $retval
 }
@@ -618,24 +688,6 @@ stop_service() {
     if [ "$dns_backend" = "BIND9_DLZ" ]; then
         systemctl disable --now bind.service
     fi
-
-    return $retval
-}
-
-restart_service() {
-    local retval=0
-    local dns_backend=
-    dns_backend="$(get_dns_backend)"
-
-    if [ "$dns_backend" = "BIND9_DLZ" ]; then
-        systemctl enable --now bind.service
-    else
-        if systemctl list-units | grep -oq '\bbind.service'; then
-            systemctl disable --now bind.service
-        fi
-    fi
-
-    systemctl restart samba.service
 
     return $retval
 }

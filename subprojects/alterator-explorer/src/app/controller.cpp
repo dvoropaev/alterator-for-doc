@@ -19,6 +19,10 @@
 
 #include <QMessageBox>
 
+#include <QApplication>
+#include <KWindowSystem>
+#include <KWaylandExtras>
+
 namespace ab
 {
 class ControllerPrivate
@@ -47,13 +51,16 @@ Controller::Controller(std::shared_ptr<MainWindow> w,
                        QObject *parent)
     : QObject{parent}
     , d{new ControllerPrivate(std::move(w), std::move(m), std::move(ds), std::move(mb))}
-{
-    buildModel();
-}
+{}
 
 Controller::~Controller()
 {
     delete d;
+}
+
+model::Model* Controller::model()
+{
+    return d->model.get();
 }
 
 void Controller::moduleClicked(ao_builder::Object *object)
@@ -88,9 +95,28 @@ void Controller::moduleClicked(ao_builder::Object *object)
                                       .arg(exitCode);
                 }
             });
+
     QString exec = app->m_exec;
     exec.replace("%o", object->m_dbus_path);
-    proc->start("/bin/bash", QStringList() << "-c" << exec);
+
+    if ( KWindowSystem::isPlatformWayland() )
+    {
+        QFuture<QString> token = KWaylandExtras::xdgActivationToken(
+            qApp->activeWindow()->windowHandle(),
+            qApp->applicationName()
+        );
+
+        token.then([=](const QString& s)
+        {
+            qputenv("XDG_ACTIVATION_TOKEN", s.toUtf8());
+            auto env = QProcessEnvironment::systemEnvironment();
+            env.insert(QStringLiteral("XDG_ACTIVATION_TOKEN"), s);
+            proc->setProcessEnvironment(env);
+            proc->startDetached("/bin/bash", QStringList() << "-c" << exec);
+        });
+    }
+    else
+        proc->startDetached("/bin/bash", QStringList() << "-c" << exec);
 }
 
 void Controller::translateModel()
@@ -98,20 +124,16 @@ void Controller::translateModel()
     QLocale locale;
     QString language = locale.system().name().split("_").at(0);
     d->model->translateModel(language);
-
-    d->window->clearUi();
-    if (d->model != nullptr)
-    {
-        d->window->setModel(d->model.get());
-    }
 }
 
 void Controller::buildModel()
-{
+{    
     if (!d->dataSource->ping()){
         QMessageBox::critical(d->window.get(), tr("warning"), tr("service did not respond"));
         return;
     }
+
+    emit modelAboutToReload();
 
     d->model->clear();
 
@@ -126,6 +148,8 @@ void Controller::buildModel()
 
     d->model->build(std::move(categories), std::move(apps), std::move(objects));
     translateModel();
+
+    emit modelReloaded();
 }
 
 void Controller::switchBack()

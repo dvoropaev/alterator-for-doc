@@ -206,6 +206,8 @@ bool Controller::updateStatus(Service* service)
 
 Controller::Result Controller::call(const Action& action)
 {
+    auto lock = qApp->quitLock();
+
     auto serializedParameters = QJsonDocument{action.parameters}.toJson(QJsonDocument::Compact).append('\n');
     qDebug() << serializedParameters;
 

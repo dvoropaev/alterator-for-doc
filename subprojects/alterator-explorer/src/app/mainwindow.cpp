@@ -158,17 +158,24 @@ void MainWindow::preserveStyle()
 void MainWindow::setController(Controller *newContoller)
 {
     d->controller = newContoller;
-    connect(d->ui->actionSwitchLegacy, &QAction::triggered, d->controller, &Controller::switchBack);
-    connect(d->ui->actionRefresh, &QAction::triggered, this, [this] {
+    connect(d->controller, &Controller::modelAboutToReload, this, [this]
+    {
         d->ui->centralwidget->setEnabled(false);
+        d->ui->stackedWidget->setCurrentWidget(d->ui->busyPage);
         setCursor(Qt::WaitCursor);
-
         clearUi();
-        d->controller->buildModel();
-
-        d->ui->centralwidget->setEnabled(true);
-        unsetCursor();
     });
+    connect(d->controller, &Controller::modelReloaded, this, [this]
+    {
+        d->ui->centralwidget->setEnabled(true);
+        d->ui->stackedWidget->setCurrentWidget(d->ui->mainPage);
+        unsetCursor();
+        if ( auto* model = d->controller->model() )
+            setModel(model);
+    });
+
+    connect(d->ui->actionSwitchLegacy, &QAction::triggered, d->controller, &Controller::switchBack);
+    connect(d->ui->actionRefresh,      &QAction::triggered, d->controller, &Controller::buildModel);
 }
 
 void MainWindow::setModel(model::Model *newModel)

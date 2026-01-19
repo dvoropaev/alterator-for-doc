@@ -14,7 +14,8 @@
    <string>About Services</string>
   </property>
   <property name="windowIcon">
-   <iconset theme="alterator"/>
+   <iconset resource="../../data/icons.qrc">
+    <normaloff>:/icons/org.altlinux.alt-services.svg</normaloff>:/icons/org.altlinux.alt-services.svg</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -84,7 +85,9 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../../data/icons.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>buttonBox</sender>

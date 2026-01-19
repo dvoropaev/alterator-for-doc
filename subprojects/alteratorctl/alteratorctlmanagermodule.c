@@ -14,50 +14,60 @@
 
 typedef struct
 {
-    char *subcommand;
+    char* subcommand;
     enum manager_sub_commands id;
 } manager_module_subcommands_t;
 
-static manager_module_subcommands_t manager_module_subcommands_list[] = {{"getobjects", MANAGER_GETOBJECTS},
-                                                                         {"getifaces", MANAGER_GETIFACES},
-                                                                         {"getsignals", MANAGER_GETSIGNALS}};
+static manager_module_subcommands_t manager_module_subcommands_list[] =
+    {{"getobjects", MANAGER_GETOBJECTS},
+     {"getifaces", MANAGER_GETIFACES},
+     {"getsignals", MANAGER_GETSIGNALS}};
 
-static GObjectClass *manager_module_parent_class = NULL;
+static GObjectClass* manager_module_parent_class = NULL;
 static alterator_ctl_module_t manager_module     = {0};
 
-static void manager_module_class_init(AlteratorCtlManagerModuleClass *klass);
-static void manager_ctl_class_finalize(GObject *klass);
+static void manager_module_class_init(AlteratorCtlManagerModuleClass* klass);
+static void manager_ctl_class_finalize(GObject* klass);
 
 static void manager_module_alterator_interface_init(gpointer iface, gpointer iface_data);
 static void manager_module_alterator_interface_finalize(gpointer iface, gpointer iface_data);
 
-AlteratorCtlManagerModule *manager_module_new(gpointer app);
-void manager_module_free(AlteratorCtlManagerModule *module);
+AlteratorCtlManagerModule* manager_module_new(gpointer app);
+void manager_module_free(AlteratorCtlManagerModule* module);
 
-static void fill_command_hash_table(GHashTable *command);
+static void fill_command_hash_table(GHashTable* command);
 
-//Subcommand functions
-static int manager_module_run_subcommand_getobjects(AlteratorCtlManagerModule *module, alteratorctl_ctx_t **ctx);
-static int manager_module_run_subcommand_getifaces(AlteratorCtlManagerModule *module, alteratorctl_ctx_t **ctx);
-static int manager_module_run_subcommand_getsignals(AlteratorCtlManagerModule *module, alteratorctl_ctx_t **ctx);
-static int manager_module_help_subcommand(AlteratorCtlManagerModule *module, alteratorctl_ctx_t **ctx);
+// Subcommand functions
+static int manager_module_run_subcommand_getobjects(AlteratorCtlManagerModule* module,
+                                                    alteratorctl_ctx_t** ctx);
+static int manager_module_run_subcommand_getifaces(AlteratorCtlManagerModule* module,
+                                                   alteratorctl_ctx_t** ctx);
+static int manager_module_run_subcommand_getsignals(AlteratorCtlManagerModule* module,
+                                                    alteratorctl_ctx_t** ctx);
+static int manager_module_help_subcommand(AlteratorCtlManagerModule* module,
+                                          alteratorctl_ctx_t** ctx);
 
-static int manager_module_parse_arguments(AlteratorCtlManagerModule *module,
-                                          int argc,
-                                          char **argv,
-                                          alteratorctl_ctx_t **ctx);
+static int manager_module_parse_arguments(AlteratorCtlManagerModule* module, int argc, char** argv,
+                                          alteratorctl_ctx_t** ctx);
 
 static gint manager_module_sort_result(gconstpointer a, gconstpointer b);
 
-//Manager module handle result functions
-static int manager_module_handle_results(AlteratorCtlManagerModule *module, alteratorctl_ctx_t **ctx);
-static int manager_module_handle_getobjects_results(AlteratorCtlManagerModule *module, alteratorctl_ctx_t **ctx);
-static int manager_module_handle_getifaces_results(AlteratorCtlManagerModule *module, alteratorctl_ctx_t **ctx);
-static int manager_module_handle_getsignals_results(AlteratorCtlManagerModule *module, alteratorctl_ctx_t **ctx);
+// Manager module handle result functions
+static int manager_module_handle_results(AlteratorCtlManagerModule* module,
+                                         alteratorctl_ctx_t** ctx);
+static int manager_module_handle_getobjects_results(AlteratorCtlManagerModule* module,
+                                                    alteratorctl_ctx_t** ctx);
+static int manager_module_handle_getifaces_results(AlteratorCtlManagerModule* module,
+                                                   alteratorctl_ctx_t** ctx);
+static int manager_module_handle_getsignals_results(AlteratorCtlManagerModule* module,
+                                                    alteratorctl_ctx_t** ctx);
 
-static int manager_module_initialize_getobject_ctx(alteratorctl_ctx_t **ctx, int subcommand, int argc, char **argv);
-static int manager_module_initialize_getiface_ctx(alteratorctl_ctx_t **ctx, int subcommand, int argc, char **argv);
-static int manager_module_initialize_getsignals_ctx(alteratorctl_ctx_t **ctx, int subcommand, int argc, char **argv);
+static int manager_module_initialize_getobject_ctx(alteratorctl_ctx_t** ctx, int subcommand,
+                                                   int argc, char** argv);
+static int manager_module_initialize_getiface_ctx(alteratorctl_ctx_t** ctx, int subcommand,
+                                                  int argc, char** argv);
+static int manager_module_initialize_getsignals_ctx(alteratorctl_ctx_t** ctx, int subcommand,
+                                                    int argc, char** argv);
 
 int manager_module_print_help(gpointer self);
 
@@ -67,53 +77,55 @@ GType alterator_ctl_manager_module_get_type(void)
 
     if (!manager_module_type)
     {
-        static const GTypeInfo manager_module_info = {sizeof(AlteratorCtlManagerModuleClass), /* class structure size */
-                                                      NULL, /* base class initializer */
-                                                      NULL, /* base class finalizer */
-                                                      (GClassInitFunc) manager_module_class_init, /* class initializer */
-                                                      NULL,                                       /* class finalizer */
-                                                      NULL,                                       /* class data */
-                                                      sizeof(AlteratorCtlManagerModule), /* instance structure size */
-                                                      1,                                 /* preallocated instances */
-                                                      NULL,                              /* instance initializers */
-                                                      NULL};
+        static const GTypeInfo manager_module_info =
+            {sizeof(AlteratorCtlManagerModuleClass),     /* class structure size */
+             NULL,                                       /* base class initializer */
+             NULL,                                       /* base class finalizer */
+             (GClassInitFunc) manager_module_class_init, /* class initializer */
+             NULL,                                       /* class finalizer */
+             NULL,                                       /* class data */
+             sizeof(AlteratorCtlManagerModule),          /* instance structure size */
+             1,                                          /* preallocated instances */
+             NULL,                                       /* instance initializers */
+             NULL};
 
         const GInterfaceInfo alterator_module_interface_info = {
-            (GInterfaceInitFunc) manager_module_alterator_interface_init,         /* interface_init */
-            (GInterfaceFinalizeFunc) manager_module_alterator_interface_finalize, /* interface_finalize */
-            NULL                                                                  /* interface_data */
+            (GInterfaceInitFunc) manager_module_alterator_interface_init, /* interface_init */
+            (GInterfaceFinalizeFunc)
+                manager_module_alterator_interface_finalize, /* interface_finalize */
+            NULL                                             /* interface_data */
         };
 
         manager_module_type = g_type_register_static(G_TYPE_OBJECT, /* parent class */
                                                      "AlteratorCtlManagerModule",
-                                                     &manager_module_info,
-                                                     0);
+                                                     &manager_module_info, 0);
 
-        g_type_add_interface_static(manager_module_type, TYPE_ALTERATOR_CTL_MODULE, &alterator_module_interface_info);
+        g_type_add_interface_static(manager_module_type, TYPE_ALTERATOR_CTL_MODULE,
+                                    &alterator_module_interface_info);
     }
 
     return manager_module_type;
 }
 
-static void manager_module_class_init(AlteratorCtlManagerModuleClass *klass)
+static void manager_module_class_init(AlteratorCtlManagerModuleClass* klass)
 {
-    GObjectClass *obj_class = G_OBJECT_CLASS(klass);
+    GObjectClass* obj_class = G_OBJECT_CLASS(klass);
 
     obj_class->finalize = manager_ctl_class_finalize;
 
     manager_module_parent_class = g_type_class_peek_parent(klass);
 }
 
-static void manager_ctl_class_finalize(GObject *klass)
+static void manager_ctl_class_finalize(GObject* klass)
 {
-    AlteratorCtlManagerModuleClass *obj = (AlteratorCtlManagerModuleClass *) klass;
+    AlteratorCtlManagerModuleClass* obj = (AlteratorCtlManagerModuleClass*) klass;
 
     G_OBJECT_CLASS(manager_module_parent_class)->finalize(klass);
 }
 
 static void manager_module_alterator_interface_init(gpointer iface, gpointer iface_data)
 {
-    AlteratorCtlModuleInterface *interface = iface;
+    AlteratorCtlModuleInterface* interface = iface;
 
     interface->run_with_args = manager_module_run_with_args;
 
@@ -124,19 +136,19 @@ static void manager_module_alterator_interface_init(gpointer iface, gpointer ifa
 
 static void manager_module_alterator_interface_finalize(gpointer iface, gpointer iface_data) {}
 
-alterator_ctl_module_t *get_manager_module()
+alterator_ctl_module_t* get_manager_module()
 {
     int ret                              = 0;
     static gsize manager_ctl_module_init = 0;
     if (g_once_init_enter(&manager_ctl_module_init))
     {
-        gsize module_id_size = g_strlcpy(manager_module.id,
-                                         ALTERATOR_CTL_MANAGER_MODULE_NAME,
+        gsize module_id_size = g_strlcpy(manager_module.id, ALTERATOR_CTL_MANAGER_MODULE_NAME,
                                          strlen(ALTERATOR_CTL_MANAGER_MODULE_NAME) + 1);
 
         if (module_id_size != strlen(ALTERATOR_CTL_MANAGER_MODULE_NAME))
         {
-            g_printerr(_("Internal error in get_manager_module: unvaliable id of manager module.\n"));
+            g_printerr(
+                _("Internal error in get_manager_module: unvaliable id of manager module.\n"));
             ERR_EXIT();
         }
 
@@ -154,25 +166,27 @@ end:
     return NULL;
 }
 
-AlteratorCtlManagerModule *manager_module_new(gpointer app)
+AlteratorCtlManagerModule* manager_module_new(gpointer app)
 {
-    AlteratorCtlManagerModule *object = g_object_new(TYPE_ALTERATOR_CTL_MANAGER_MODULE, NULL);
+    AlteratorCtlManagerModule* object = g_object_new(TYPE_ALTERATOR_CTL_MANAGER_MODULE, NULL);
 
     object->commands = g_hash_table_new(g_str_hash, g_str_equal);
     fill_command_hash_table(object->commands);
 
-    object->alterator_ctl_app = (AlteratorCtlApp *) app;
+    object->alterator_ctl_app = (AlteratorCtlApp*) app;
 
-    object->gdbus_system_bus_source = alterator_gdbus_source_new(object->alterator_ctl_app->arguments->verbose,
+    object->gdbus_system_bus_source = alterator_gdbus_source_new(object->alterator_ctl_app
+                                                                     ->arguments->verbose,
                                                                  G_BUS_TYPE_SYSTEM);
 
-    object->gdbus_session_bus_source = alterator_gdbus_source_new(object->alterator_ctl_app->arguments->verbose,
+    object->gdbus_session_bus_source = alterator_gdbus_source_new(object->alterator_ctl_app
+                                                                      ->arguments->verbose,
                                                                   G_BUS_TYPE_SESSION);
 
     return object;
 }
 
-void manager_module_free(AlteratorCtlManagerModule *module)
+void manager_module_free(AlteratorCtlManagerModule* module)
 {
     g_hash_table_destroy(module->commands);
 
@@ -189,11 +203,11 @@ void manager_module_free(AlteratorCtlManagerModule *module)
     g_object_unref(module);
 }
 
-static void fill_command_hash_table(GHashTable *command)
+static void fill_command_hash_table(GHashTable* command)
 {
-    for (int i = 0; i < sizeof(manager_module_subcommands_list) / sizeof(manager_module_subcommands_t); i++)
-        g_hash_table_insert(command,
-                            manager_module_subcommands_list[i].subcommand,
+    for (int i = 0;
+         i < sizeof(manager_module_subcommands_list) / sizeof(manager_module_subcommands_t); i++)
+        g_hash_table_insert(command, manager_module_subcommands_list[i].subcommand,
                             &manager_module_subcommands_list[i].id);
 }
 
@@ -201,8 +215,8 @@ int manager_module_run(gpointer self, gpointer data)
 {
     int ret = 0;
 
-    AlteratorCtlModuleInterface *iface = GET_ALTERATOR_CTL_MODULE_INTERFACE(self);
-    AlteratorCtlManagerModule *module  = ALTERATOR_CTL_MANAGER_MODULE(self);
+    AlteratorCtlModuleInterface* iface = GET_ALTERATOR_CTL_MODULE_INTERFACE(self);
+    AlteratorCtlManagerModule* module  = ALTERATOR_CTL_MANAGER_MODULE(self);
 
     if (!self || !iface)
     {
@@ -219,7 +233,7 @@ int manager_module_run(gpointer self, gpointer data)
         ERR_EXIT();
     }
 
-    alteratorctl_ctx_t *ctx = (alteratorctl_ctx_t *) data;
+    alteratorctl_ctx_t* ctx = (alteratorctl_ctx_t*) data;
 
     switch (g_variant_get_int32(ctx->subcommands_ids))
     {
@@ -247,14 +261,15 @@ end:
     return ret;
 }
 
-int manager_module_run_subcommand_getobjects(AlteratorCtlManagerModule *module, alteratorctl_ctx_t **ctx)
+int manager_module_run_subcommand_getobjects(AlteratorCtlManagerModule* module,
+                                             alteratorctl_ctx_t** ctx)
 {
     int ret                        = 0;
-    GHashTable *system_bus_result  = NULL;
-    GHashTable *session_bus_result = NULL;
-    gchar *interface               = NULL;
-    gchar *bus                     = NULL;
-    GPtrArray *result              = NULL;
+    GHashTable* system_bus_result  = NULL;
+    GHashTable* session_bus_result = NULL;
+    gchar* interface               = NULL;
+    gchar* bus                     = NULL;
+    GPtrArray* result              = NULL;
 
     if (!module)
     {
@@ -266,70 +281,73 @@ int manager_module_run_subcommand_getobjects(AlteratorCtlManagerModule *module, 
     if ((*ctx)->parameters)
         g_variant_get((*ctx)->parameters, "(msmsmsms)", &interface, &bus, NULL, NULL);
 
-    //if no bus type calling system bus and session bus
+    // if no bus type calling system bus and session bus
     if (!bus)
     {
         if (interface)
         {
-            //calling with specified iface
+            // calling with specified iface
             module->gdbus_session_bus_source
-                ->alterator_gdbus_source_get_iface_objects((gpointer) module->gdbus_session_bus_source,
-                                                           interface,
-                                                           &session_bus_result);
+                ->alterator_gdbus_source_get_iface_objects((gpointer)
+                                                               module->gdbus_session_bus_source,
+                                                           interface, &session_bus_result);
             module->gdbus_system_bus_source
-                ->alterator_gdbus_source_get_iface_objects((gpointer) module->gdbus_system_bus_source,
-                                                           interface,
-                                                           &system_bus_result);
+                ->alterator_gdbus_source_get_iface_objects((gpointer)
+                                                               module->gdbus_system_bus_source,
+                                                           interface, &system_bus_result);
         }
         else
         {
-            //calling to get all objects
+            // calling to get all objects
             module->gdbus_session_bus_source
-                ->alterator_gdbus_source_get_all_objects((gpointer) module->gdbus_session_bus_source,
+                ->alterator_gdbus_source_get_all_objects((gpointer)
+                                                             module->gdbus_session_bus_source,
                                                          &session_bus_result);
-            module->gdbus_system_bus_source->alterator_gdbus_source_get_all_objects((gpointer)
-                                                                                        module->gdbus_system_bus_source,
-                                                                                    &system_bus_result);
+            module->gdbus_system_bus_source
+                ->alterator_gdbus_source_get_all_objects((gpointer) module->gdbus_system_bus_source,
+                                                         &system_bus_result);
         }
     }
     else
     {
-        //Call system bus
+        // Call system bus
         if (g_strcmp0(bus, ALTERATOR_MANAGER_SYSTEM_BUS_PARAMETER) == 0)
         {
             if (interface)
             {
-                //calling with specified iface
+                // calling with specified iface
                 module->gdbus_system_bus_source
-                    ->alterator_gdbus_source_get_iface_objects((gpointer) module->gdbus_system_bus_source,
-                                                               interface,
-                                                               &system_bus_result);
+                    ->alterator_gdbus_source_get_iface_objects((gpointer)
+                                                                   module->gdbus_system_bus_source,
+                                                               interface, &system_bus_result);
             }
             else
             {
-                //calling to get all objects
+                // calling to get all objects
                 module->gdbus_system_bus_source
-                    ->alterator_gdbus_source_get_all_objects((gpointer) module->gdbus_system_bus_source,
+                    ->alterator_gdbus_source_get_all_objects((gpointer)
+                                                                 module->gdbus_system_bus_source,
                                                              &system_bus_result);
             }
         }
 
-        //Call session bus
+        // Call session bus
         if (g_strcmp0(bus, ALTERATOR_MANAGER_SESSION_BUS_PARAMETER) == 0)
         {
             if (interface)
             {
-                //calling with specified iface
+                // calling with specified iface
                 module->gdbus_session_bus_source
-                    ->alterator_gdbus_source_get_iface_objects((gpointer) module->gdbus_session_bus_source,
-                                                               interface,
-                                                               &session_bus_result);
+                    ->alterator_gdbus_source_get_iface_objects((gpointer)
+                                                                   module->gdbus_session_bus_source,
+                                                               interface, &session_bus_result);
             }
             else
             {
-                //calling to get all objects
+                // calling to get all objects
                 module->gdbus_session_bus_source
-                    ->alterator_gdbus_source_get_all_objects((gpointer) module->gdbus_session_bus_source,
+                    ->alterator_gdbus_source_get_all_objects((gpointer)
+                                                                 module->gdbus_session_bus_source,
                                                              &session_bus_result);
             }
         }
@@ -337,16 +355,17 @@ int manager_module_run_subcommand_getobjects(AlteratorCtlManagerModule *module, 
 
     result = g_ptr_array_new_full(100, (GDestroyNotify) g_free);
 
-    GPtrArray *system_bus_array = g_ptr_array_new_full(100, (GDestroyNotify) g_free);
-    //Add result to array
+    GPtrArray* system_bus_array = g_ptr_array_new_full(100, (GDestroyNotify) g_free);
+    // Add result to array
     if (system_bus_result)
     {
-        GList *system_results = g_hash_table_get_keys(system_bus_result);
+        GList* system_results = g_hash_table_get_keys(system_bus_result);
 
         system_results = g_list_first(system_results);
-        for (GList *elem = system_results; elem != NULL; elem = elem->next)
+        for (GList* elem = system_results; elem != NULL; elem = elem->next)
         {
-            g_ptr_array_add(system_bus_array, g_strdup((gchar *) g_hash_table_lookup(system_bus_result, elem->data)));
+            g_ptr_array_add(system_bus_array,
+                            g_strdup((gchar*) g_hash_table_lookup(system_bus_result, elem->data)));
         }
 
         g_list_free(system_results);
@@ -358,15 +377,16 @@ int manager_module_run_subcommand_getobjects(AlteratorCtlManagerModule *module, 
         }
     }
 
-    GPtrArray *session_bus_array = g_ptr_array_new_full(100, (GDestroyNotify) g_free);
+    GPtrArray* session_bus_array = g_ptr_array_new_full(100, (GDestroyNotify) g_free);
     if (session_bus_result)
     {
-        GList *session_results = g_hash_table_get_keys(session_bus_result);
+        GList* session_results = g_hash_table_get_keys(session_bus_result);
 
         session_results = g_list_first(session_results);
-        for (GList *elem = session_results; elem != NULL; elem = elem->next)
+        for (GList* elem = session_results; elem != NULL; elem = elem->next)
         {
-            g_ptr_array_add(session_bus_array, g_strdup((gchar *) g_hash_table_lookup(session_bus_result, elem->data)));
+            g_ptr_array_add(session_bus_array,
+                            g_strdup((gchar*) g_hash_table_lookup(session_bus_result, elem->data)));
         }
 
         g_list_free(session_results);
@@ -412,18 +432,20 @@ end:
     return ret;
 }
 
-int manager_module_run_subcommand_getifaces(AlteratorCtlManagerModule *module, alteratorctl_ctx_t **ctx)
+int manager_module_run_subcommand_getifaces(AlteratorCtlManagerModule* module,
+                                            alteratorctl_ctx_t** ctx)
 {
     int ret                        = 0;
-    GHashTable *system_bus_result  = NULL;
-    GHashTable *session_bus_result = NULL;
-    gchar *object                  = NULL;
-    gchar *bus                     = NULL;
-    GPtrArray *result              = NULL;
+    GHashTable* system_bus_result  = NULL;
+    GHashTable* session_bus_result = NULL;
+    gchar* object                  = NULL;
+    gchar* bus                     = NULL;
+    GPtrArray* result              = NULL;
 
     if (!module)
     {
-        g_printerr(_("Internal error in manager module - AlteratorCtlManagerModule *module is NULL in \"manager "
+        g_printerr(_("Internal error in manager module - AlteratorCtlManagerModule *module is NULL "
+                     "in \"manager "
                      "getifaces\".\n"));
         ERR_EXIT();
     }
@@ -436,14 +458,14 @@ int manager_module_run_subcommand_getifaces(AlteratorCtlManagerModule *module, a
         if (object)
         {
             module->gdbus_session_bus_source
-                ->alterator_gdbus_source_get_object_ifaces((gpointer) module->gdbus_session_bus_source,
-                                                           object,
-                                                           &session_bus_result);
+                ->alterator_gdbus_source_get_object_ifaces((gpointer)
+                                                               module->gdbus_session_bus_source,
+                                                           object, &session_bus_result);
 
             module->gdbus_system_bus_source
-                ->alterator_gdbus_source_get_object_ifaces((gpointer) module->gdbus_system_bus_source,
-                                                           object,
-                                                           &system_bus_result);
+                ->alterator_gdbus_source_get_object_ifaces((gpointer)
+                                                               module->gdbus_system_bus_source,
+                                                           object, &system_bus_result);
         }
         else
         {
@@ -452,7 +474,8 @@ int manager_module_run_subcommand_getifaces(AlteratorCtlManagerModule *module, a
                                                         &session_bus_result);
 
             module->gdbus_system_bus_source
-                ->alterator_gdbus_source_get_all_ifaces((gpointer) module->gdbus_system_bus_source, &system_bus_result);
+                ->alterator_gdbus_source_get_all_ifaces((gpointer) module->gdbus_system_bus_source,
+                                                        &system_bus_result);
         }
     }
     else
@@ -462,14 +485,15 @@ int manager_module_run_subcommand_getifaces(AlteratorCtlManagerModule *module, a
             if (object)
             {
                 module->gdbus_system_bus_source
-                    ->alterator_gdbus_source_get_object_ifaces((gpointer) module->gdbus_system_bus_source,
-                                                               object,
-                                                               &system_bus_result);
+                    ->alterator_gdbus_source_get_object_ifaces((gpointer)
+                                                                   module->gdbus_system_bus_source,
+                                                               object, &system_bus_result);
             }
             else
             {
                 module->gdbus_system_bus_source
-                    ->alterator_gdbus_source_get_all_ifaces((gpointer) module->gdbus_system_bus_source,
+                    ->alterator_gdbus_source_get_all_ifaces((gpointer)
+                                                                module->gdbus_system_bus_source,
                                                             &system_bus_result);
             }
         }
@@ -478,14 +502,15 @@ int manager_module_run_subcommand_getifaces(AlteratorCtlManagerModule *module, a
             if (object)
             {
                 module->gdbus_session_bus_source
-                    ->alterator_gdbus_source_get_object_ifaces((gpointer) module->gdbus_session_bus_source,
-                                                               object,
-                                                               &session_bus_result);
+                    ->alterator_gdbus_source_get_object_ifaces((gpointer)
+                                                                   module->gdbus_session_bus_source,
+                                                               object, &session_bus_result);
             }
             else
             {
                 module->gdbus_session_bus_source
-                    ->alterator_gdbus_source_get_all_ifaces((gpointer) module->gdbus_session_bus_source,
+                    ->alterator_gdbus_source_get_all_ifaces((gpointer)
+                                                                module->gdbus_session_bus_source,
                                                             &session_bus_result);
             }
         }
@@ -493,16 +518,17 @@ int manager_module_run_subcommand_getifaces(AlteratorCtlManagerModule *module, a
 
     result = g_ptr_array_new_full(100, (GDestroyNotify) g_free);
 
-    GPtrArray *system_bus_array = g_ptr_array_new_full(100, (GDestroyNotify) g_free);
-    //Add result to array
+    GPtrArray* system_bus_array = g_ptr_array_new_full(100, (GDestroyNotify) g_free);
+    // Add result to array
     if (system_bus_result)
     {
-        GList *system_results = g_hash_table_get_keys(system_bus_result);
+        GList* system_results = g_hash_table_get_keys(system_bus_result);
 
         system_results = g_list_first(system_results);
-        for (GList *elem = system_results; elem != NULL; elem = elem->next)
+        for (GList* elem = system_results; elem != NULL; elem = elem->next)
         {
-            g_ptr_array_add(system_bus_array, g_strdup((gchar *) g_hash_table_lookup(system_bus_result, elem->data)));
+            g_ptr_array_add(system_bus_array,
+                            g_strdup((gchar*) g_hash_table_lookup(system_bus_result, elem->data)));
         }
 
         g_list_free(system_results);
@@ -514,15 +540,16 @@ int manager_module_run_subcommand_getifaces(AlteratorCtlManagerModule *module, a
         }
     }
 
-    GPtrArray *session_bus_array = g_ptr_array_new_full(100, (GDestroyNotify) g_free);
+    GPtrArray* session_bus_array = g_ptr_array_new_full(100, (GDestroyNotify) g_free);
     if (session_bus_result)
     {
-        GList *session_results = g_hash_table_get_keys(session_bus_result);
+        GList* session_results = g_hash_table_get_keys(session_bus_result);
 
         session_results = g_list_first(session_results);
-        for (GList *elem = session_results; elem != NULL; elem = elem->next)
+        for (GList* elem = session_results; elem != NULL; elem = elem->next)
         {
-            g_ptr_array_add(session_bus_array, g_strdup((gchar *) g_hash_table_lookup(session_bus_result, elem->data)));
+            g_ptr_array_add(session_bus_array,
+                            g_strdup((gchar*) g_hash_table_lookup(session_bus_result, elem->data)));
         }
 
         g_list_free(session_results);
@@ -568,21 +595,22 @@ end:
     return ret;
 }
 
-int manager_module_run_subcommand_getsignals(AlteratorCtlManagerModule *module, alteratorctl_ctx_t **ctx)
+int manager_module_run_subcommand_getsignals(AlteratorCtlManagerModule* module,
+                                             alteratorctl_ctx_t** ctx)
 {
     int ret                      = 0;
-    gchar *object                = NULL;
-    gchar *interface             = NULL;
-    gchar *signal                = NULL;
-    gchar *bus                   = NULL;
-    AlteratorGDBusSource *source = NULL;
-    GHashTable *result           = NULL;
+    gchar* object                = NULL;
+    gchar* interface             = NULL;
+    gchar* signal                = NULL;
+    gchar* bus                   = NULL;
+    AlteratorGDBusSource* source = NULL;
+    GHashTable* result           = NULL;
 
     if (!module || !(*ctx))
     {
-        g_printerr(
-            _("Internal error in manager module - AlteratorCtlManagerModule *module or context is NULL in \"manager "
-              "getsignals\".\n"));
+        g_printerr(_("Internal error in manager module - AlteratorCtlManagerModule *module or "
+                     "context is NULL in \"manager "
+                     "getsignals\".\n"));
         ERR_EXIT();
     }
 
@@ -592,7 +620,7 @@ int manager_module_run_subcommand_getsignals(AlteratorCtlManagerModule *module, 
     if (!object || !interface || !signal || !bus)
     {
         g_printerr(_("Wrong arguments in manager module method GetSignals().\n"));
-        AlteratorCtlModuleInterface *iface = GET_ALTERATOR_CTL_MODULE_INTERFACE((void *) module);
+        AlteratorCtlModuleInterface* iface = GET_ALTERATOR_CTL_MODULE_INTERFACE((void*) module);
         iface->print_help(module);
         ERR_EXIT();
     }
@@ -602,9 +630,11 @@ int manager_module_run_subcommand_getsignals(AlteratorCtlManagerModule *module, 
     else
         source = module->gdbus_session_bus_source;
 
-    //Check object
+    // Check object
     int object_exist = 0;
-    if (module->gdbus_system_bus_source->alterator_gdbus_source_check_object_by_path(source, object, &object_exist) < 0)
+    if (module->gdbus_system_bus_source->alterator_gdbus_source_check_object_by_path(source, object,
+                                                                                     &object_exist)
+        < 0)
     {
         g_printerr(_("Error when checking the presence of an object %s on D-Bus.\n"), object);
         ERR_EXIT();
@@ -616,7 +646,7 @@ int manager_module_run_subcommand_getsignals(AlteratorCtlManagerModule *module, 
         ERR_EXIT();
     }
 
-    //check interface of the object
+    // check interface of the object
     int iface_exists = 0;
     if (module->gdbus_system_bus_source->alterator_gdbus_source_check_object_by_iface(source,
                                                                                       object,
@@ -624,7 +654,8 @@ int manager_module_run_subcommand_getsignals(AlteratorCtlManagerModule *module, 
                                                                                       &iface_exists)
         < 0)
     {
-        g_printerr(_("Error when checking if an object: %s has an interface %s.\n"), object, interface);
+        g_printerr(_("Error when checking if an object: %s has an interface %s.\n"), object,
+                   interface);
         ERR_EXIT();
     }
 
@@ -634,7 +665,8 @@ int manager_module_run_subcommand_getsignals(AlteratorCtlManagerModule *module, 
         ERR_EXIT();
     }
 
-    source->alterator_gdbus_source_get_signals((gpointer) source, object, interface, signal, &result);
+    source->alterator_gdbus_source_get_signals((gpointer) source, object, interface, signal,
+                                               &result);
 
     (*ctx)->results      = result;
     (*ctx)->free_results = (void (*)(gpointer results)) g_hash_table_unref;
@@ -648,11 +680,12 @@ end:
     return ret;
 }
 
-static int manager_module_help_subcommand(AlteratorCtlManagerModule *module, alteratorctl_ctx_t **ctx)
+static int manager_module_help_subcommand(AlteratorCtlManagerModule* module,
+                                          alteratorctl_ctx_t** ctx)
 {
     int ret = 0;
 
-    AlteratorCtlModuleInterface *iface = GET_ALTERATOR_CTL_MODULE_INTERFACE(module);
+    AlteratorCtlModuleInterface* iface = GET_ALTERATOR_CTL_MODULE_INTERFACE(module);
 
     iface->print_help(module);
 
@@ -660,15 +693,16 @@ end:
     return ret;
 }
 
-int manager_module_run_with_args(gpointer self, int argc, char **argv)
+int manager_module_run_with_args(gpointer self, int argc, char** argv)
 {
     int ret                           = 0;
-    alteratorctl_ctx_t *ctx           = NULL;
-    AlteratorCtlManagerModule *module = ALTERATOR_CTL_MANAGER_MODULE(self);
+    alteratorctl_ctx_t* ctx           = NULL;
+    AlteratorCtlManagerModule* module = ALTERATOR_CTL_MANAGER_MODULE(self);
 
     if (!module)
     {
-        g_printerr(_("Internal data error in manager module with args: AlteratorCtlDiagModule *module is NULL.\n"));
+        g_printerr(_("Internal data error in manager module with args: AlteratorCtlDiagModule "
+                     "*module is NULL.\n"));
         ERR_EXIT();
     }
 
@@ -687,7 +721,8 @@ end:
     return ret;
 }
 
-static int manager_module_handle_results(AlteratorCtlManagerModule *module, alteratorctl_ctx_t **ctx)
+static int manager_module_handle_results(AlteratorCtlManagerModule* module,
+                                         alteratorctl_ctx_t** ctx)
 {
     int ret = 0;
     if (module->alterator_ctl_app->arguments->module_help)
@@ -695,7 +730,8 @@ static int manager_module_handle_results(AlteratorCtlManagerModule *module, alte
 
     if (!module || !(*ctx))
     {
-        g_printerr(_("Internal error in manager module when handle results: *module or *context is NULL.\n"));
+        g_printerr(_("Internal error in manager module when handle results: *module or *context is "
+                     "NULL.\n"));
         ERR_EXIT();
     }
 
@@ -727,22 +763,24 @@ end:
     return ret;
 }
 
-static int manager_module_handle_getobjects_results(AlteratorCtlManagerModule *module, alteratorctl_ctx_t **ctx)
+static int manager_module_handle_getobjects_results(AlteratorCtlManagerModule* module,
+                                                    alteratorctl_ctx_t** ctx)
 {
     int ret            = 0;
-    GPtrArray *objects = NULL;
-    GString *output    = g_string_new("");
+    GPtrArray* objects = NULL;
+    GString* output    = g_string_new("");
 
     if (!(*ctx)->results)
     {
-        g_printerr(_("D-Bus error in manager getobjects handle result: failed to produce a result.\n"));
+        g_printerr(
+            _("D-Bus error in manager getobjects handle result: failed to produce a result.\n"));
         ERR_EXIT();
     }
 
     objects = (*ctx)->results;
 
     for (guint i = 0; i < objects->len; i++)
-        g_string_append_printf(output, "%s\n", (gchar *) g_ptr_array_index(objects, i));
+        g_string_append_printf(output, "%s\n", (gchar*) g_ptr_array_index(objects, i));
 
     print_with_pager(output->str);
 
@@ -753,22 +791,24 @@ end:
     return ret;
 }
 
-static int manager_module_handle_getifaces_results(AlteratorCtlManagerModule *module, alteratorctl_ctx_t **ctx)
+static int manager_module_handle_getifaces_results(AlteratorCtlManagerModule* module,
+                                                   alteratorctl_ctx_t** ctx)
 {
     int ret           = 0;
-    GPtrArray *ifaces = NULL;
-    GString *output   = g_string_new("");
+    GPtrArray* ifaces = NULL;
+    GString* output   = g_string_new("");
 
     if (!(*ctx)->results)
     {
-        g_printerr(_("D-Bus error in manager getifaces handle result: failed to produce a result.\n"));
+        g_printerr(
+            _("D-Bus error in manager getifaces handle result: failed to produce a result.\n"));
         ERR_EXIT();
     }
 
     ifaces = (*ctx)->results;
 
     for (guint i = 0; i < ifaces->len; i++)
-        g_string_append_printf(output, "%s\n", (gchar *) g_ptr_array_index(ifaces, i));
+        g_string_append_printf(output, "%s\n", (gchar*) g_ptr_array_index(ifaces, i));
 
     print_with_pager(output->str);
 
@@ -779,16 +819,18 @@ end:
     return ret;
 }
 
-static int manager_module_handle_getsignals_results(AlteratorCtlManagerModule *module, alteratorctl_ctx_t **ctx)
+static int manager_module_handle_getsignals_results(AlteratorCtlManagerModule* module,
+                                                    alteratorctl_ctx_t** ctx)
 {
     int ret                   = 0;
-    GHashTable *signals_table = NULL;
-    GPtrArray *signals        = NULL;
-    GString *output           = g_string_new("");
+    GHashTable* signals_table = NULL;
+    GPtrArray* signals        = NULL;
+    GString* output           = g_string_new("");
 
     if (!(*ctx)->results)
     {
-        g_printerr(_("D-Bus error in manager getsignals handle result: failed to produce a result.\n"));
+        g_printerr(
+            _("D-Bus error in manager getsignals handle result: failed to produce a result.\n"));
         ERR_EXIT();
     }
 
@@ -827,12 +869,12 @@ static int manager_module_handle_getsignals_results(AlteratorCtlManagerModule *m
     g_hash_table_iter_init(&iter, signals_table);
     gpointer key = NULL;
     while (g_hash_table_iter_next(&iter, &key, NULL))
-        g_ptr_array_add(signals, g_strdup((gchar *) key));
+        g_ptr_array_add(signals, g_strdup((gchar*) key));
 
     g_ptr_array_sort(signals, manager_module_sort_result);
 
     for (guint i = 0; i < signals->len; i++)
-        g_string_append_printf(output, "%s\n", (gchar *) g_ptr_array_index(signals, i));
+        g_string_append_printf(output, "%s\n", (gchar*) g_ptr_array_index(signals, i));
 
     print_with_pager(output->str);
 
@@ -869,15 +911,17 @@ int manager_module_print_help(gpointer self)
     return 0;
 }
 
-int manager_module_parse_arguments(AlteratorCtlManagerModule *module, int argc, char **argv, alteratorctl_ctx_t **ctx)
+int manager_module_parse_arguments(AlteratorCtlManagerModule* module, int argc, char** argv,
+                                   alteratorctl_ctx_t** ctx)
 {
     int ret = 0;
 
-    AlteratorCtlModuleInterface *iface = GET_ALTERATOR_CTL_MODULE_INTERFACE((void *) module);
+    AlteratorCtlModuleInterface* iface = GET_ALTERATOR_CTL_MODULE_INTERFACE((void*) module);
 
     if (!iface)
     {
-        g_printerr(_("Internal error in manager module while parsing arguments: *iface is NULL.\n"));
+        g_printerr(
+            _("Internal error in manager module while parsing arguments: *iface is NULL.\n"));
         ERR_EXIT();
     }
 
@@ -934,14 +978,16 @@ end:
 
 static gint manager_module_sort_result(gconstpointer a, gconstpointer b)
 {
-    return g_utf8_collate((const gchar *) ((GPtrArray *) a)->pdata, (const gchar *) ((GPtrArray *) b)->pdata);
+    return g_utf8_collate((const gchar*) ((GPtrArray*) a)->pdata,
+                          (const gchar*) ((GPtrArray*) b)->pdata);
 }
 
-static int manager_module_initialize_getobject_ctx(alteratorctl_ctx_t **ctx, int subcommand, int argc, char **argv)
+static int manager_module_initialize_getobject_ctx(alteratorctl_ctx_t** ctx, int subcommand,
+                                                   int argc, char** argv)
 {
     int ret    = 0;
-    char *bus  = NULL;
-    char *path = NULL;
+    char* bus  = NULL;
+    char* path = NULL;
 
     if (argc > 5)
     {
@@ -949,10 +995,10 @@ static int manager_module_initialize_getobject_ctx(alteratorctl_ctx_t **ctx, int
         ERR_EXIT();
     }
 
-    if (argc == 3) //Only getobjects command
+    if (argc == 3) // Only getobjects command
         (*ctx) = alteratorctl_ctx_init_manager(subcommand, NULL, NULL, NULL, NULL, NULL, NULL);
 
-    //Get bus and interface
+    // Get bus and interface
     for (int i = 3; i < argc; i++)
     {
         if (g_str_has_prefix(argv[i], "--"))
@@ -967,7 +1013,7 @@ static int manager_module_initialize_getobject_ctx(alteratorctl_ctx_t **ctx, int
             path = argv[i];
     }
 
-    //validate the bus
+    // validate the bus
     if (bus)
     {
         if (g_strcmp0(bus, ALTERATOR_MANAGER_SYSTEM_BUS_PARAMETER) != 0
@@ -978,7 +1024,8 @@ static int manager_module_initialize_getobject_ctx(alteratorctl_ctx_t **ctx, int
         }
     }
 
-    (*ctx) = !(*ctx) ? alteratorctl_ctx_init_manager(subcommand, path, bus, NULL, NULL, NULL, NULL) : (*ctx);
+    (*ctx) = !(*ctx) ? alteratorctl_ctx_init_manager(subcommand, path, bus, NULL, NULL, NULL, NULL)
+                     : (*ctx);
     if (!(*ctx))
     {
         g_printerr(_("Can't initialize context in manager module getobjects subcommand.\n"));
@@ -989,11 +1036,12 @@ end:
     return ret;
 }
 
-static int manager_module_initialize_getiface_ctx(alteratorctl_ctx_t **ctx, int subcommand, int argc, char **argv)
+static int manager_module_initialize_getiface_ctx(alteratorctl_ctx_t** ctx, int subcommand,
+                                                  int argc, char** argv)
 {
     int ret     = 0;
-    char *bus   = NULL;
-    char *iface = NULL;
+    char* bus   = NULL;
+    char* iface = NULL;
 
     if (argc > 5)
     {
@@ -1001,10 +1049,10 @@ static int manager_module_initialize_getiface_ctx(alteratorctl_ctx_t **ctx, int 
         ERR_EXIT();
     }
 
-    if (argc == 3) //Only getobjects command
+    if (argc == 3) // Only getobjects command
         (*ctx) = alteratorctl_ctx_init_manager(subcommand, NULL, NULL, NULL, NULL, NULL, NULL);
 
-    //Get bus and interface
+    // Get bus and interface
     for (int i = 3; i < argc; i++)
     {
         if (g_str_has_prefix(argv[i], "--"))
@@ -1013,7 +1061,7 @@ static int manager_module_initialize_getiface_ctx(alteratorctl_ctx_t **ctx, int 
             iface = argv[i];
     }
 
-    //validate the bus
+    // validate the bus
     if (bus)
     {
         if (g_strcmp0(bus, ALTERATOR_MANAGER_SYSTEM_BUS_PARAMETER) != 0
@@ -1035,10 +1083,11 @@ end:
     return ret;
 }
 
-static int manager_module_initialize_getsignals_ctx(alteratorctl_ctx_t **ctx, int subcommand, int argc, char **argv)
+static int manager_module_initialize_getsignals_ctx(alteratorctl_ctx_t** ctx, int subcommand,
+                                                    int argc, char** argv)
 {
     int ret   = 0;
-    char *bus = NULL;
+    char* bus = NULL;
 
     if (argc != 7)
     {
@@ -1046,14 +1095,14 @@ static int manager_module_initialize_getsignals_ctx(alteratorctl_ctx_t **ctx, in
         ERR_EXIT();
     }
 
-    //Get bus
+    // Get bus
     for (int i = 3; i < argc; i++)
     {
         if (g_str_has_prefix(argv[i], "--"))
             bus = argv[i]; // this is the bus
     }
 
-    //validate the bus
+    // validate the bus
     if (bus)
     {
         if (g_strcmp0(bus, ALTERATOR_MANAGER_SYSTEM_BUS_PARAMETER) != 0

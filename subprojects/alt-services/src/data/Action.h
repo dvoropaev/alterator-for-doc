@@ -64,6 +64,8 @@ public:
      */
     QByteArray serialize() const;
 
+    static std::optional<Action> importFromFile(const QString& filename);
+
 private:
     QJsonObject saveTests(DiagTool::Test::Mode mode) const;
 };

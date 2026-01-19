@@ -719,7 +719,23 @@ tl::expected<std::chrono::system_clock::time_point, DBusManager::Error> DBusMana
                 });
             }
             QString format = "yyyy-MM-dd HH:mm:ss 'UTC'";
-            QDateTime lastUpdateDateTime = QDateTime::fromString(args.first().toStringList().first(), format);
+            QStringList reply = args.first().toStringList();
+
+            if (reply.isEmpty())
+            {
+                return tl::unexpected(Error{
+                    .type = Error::Type::Reply,
+                    .service = dbus::ALTERATOR_MANAGER_SERVICE_NAME,
+                    .interface = dbus::APT1_INTERFACE_NAME,
+                    .object = dbus::APT_PATH,
+                    .method = method,
+                    .code = 255,
+                    .data = {{dbus::ERROR_SERVER_KEY_DATA, std::string("no records")}},
+                });
+            }
+
+            QDateTime lastUpdateDateTime = QDateTime::fromString(reply.first(), format);
+
             if (!lastUpdateDateTime.isValid())
             {
                 return tl::unexpected(Error{

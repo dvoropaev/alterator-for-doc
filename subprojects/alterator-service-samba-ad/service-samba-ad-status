@@ -60,7 +60,7 @@ get_mdb_size() {
 
 get_realm() {
     local realm
-    realm=$(grep '^\s*realm\s*=' "$SMB_CONF" | awk -F= '{gsub(/^[ \t]+|[ \t]+$/, "", $2); print $2}')
+    realm=$(grep '^\s*realm\s*=' "$SMB_CONF" | awk -F= '{gsub(/^[ \t]+|[ \t]+$/, "", $2); print tolower($2)}')
     echo "$realm"
     return 0
 }
@@ -73,6 +73,12 @@ get_netbios_domain_name() {
     echo "$net_bios_name"
     return 0
 }
+get_hostname() {
+    local hostname=
+    hostname="$(hostname -s)"
+    echo "$hostname"
+    return 0
+}   
 
 get_site_name() {
     local site_name=
@@ -143,7 +149,7 @@ get_rfc2307() {
 get_dns_backend() {
     local server_services=
     local dns_backend=
-    server_services="$(grep '^\s*server services\s*=' "$SMB_CONF")" || dns_backend="SAMBA_INTERNAL"
+    server_services="$(grep '^\s*server services\s*=' "$SMB_CONF" 2>/dev/null)" || dns_backend="SAMBA_INTERNAL"
 
     if [ -z "$server_services" ]; then
         dns_backend="SAMBA_INTERNAL"
@@ -158,7 +164,7 @@ get_dns_backend() {
 
 get_forwarders_samba_internal() {
     local forwarders=
-    forwarders=$(grep '^\s*dns forwarder\s*=' "$SMB_CONF" | awk -F= '{gsub(/^[ \t]+|[ \t]+$/, "", $2); print $2}' | sed 's/\[//g; s/\]//g') || retval=1
+    forwarders=$(grep '^\s*dns forwarder\s*=' "$SMB_CONF" |  grep 'forwarder' | cut -f 2 -d "[" | cut -f 1 -d "]" | sed 's/,/ /g') || retval=1
     if [ -z "$forwarders" ]; then
         forwarders=""
     fi
@@ -269,11 +275,51 @@ remove_array(){
     return 0
 }
 
+remove_bind_data_from_samba_internal() {
+    local tmp_file=
+    tmp_file=$(mktemp)
+
+    jq '
+        del(.dnsSettings.dnsBackend.SAMBA_INTERNAL.bindSettings)
+    ' "$STATUS_FILE" > "$tmp_file"
+
+    mv "$tmp_file" "$STATUS_FILE"
+
+    return 0
+}
+
+remove_samba_internal() {
+    local tmp_file=
+    tmp_file=$(mktemp)
+
+    jq '
+        del(.dnsSettings.dnsBackend.SAMBA_INTERNAL)
+    ' "$STATUS_FILE" > "$tmp_file"
+
+    mv "$tmp_file" "$STATUS_FILE"
+
+    return 0
+}
+
 update_enum_value () {
     local path="$1"
     local newkey="$2"
     local tmp_file=
     tmp_file=$(mktemp)
+
+    if ! jq -e --arg p "$path" '
+        def path_to_array($p): ($p | ltrimstr(".") | split("."));
+        (path_to_array($p)) as $pa
+        | getpath($pa)
+        ' "$STATUS_FILE" >/dev/null; then
+        jq --arg p "$path" --arg new "$newkey" '
+        def path_to_array($p): ($p | ltrimstr(".") | split("."));
+        (path_to_array($p)) as $pa
+        | setpath($pa; {($new): {}})
+        ' "$STATUS_FILE" > "$tmp_file"
+        mv "$tmp_file" "$STATUS_FILE"
+        tmp_file=$(mktemp)
+    fi
 
     jq --arg p "$path" --arg new "$newkey" '
         def to_obj:
@@ -408,6 +454,7 @@ remove_bool_quotes() {
 update_status() {
     local realm=
     local netBiosName=
+    local hostname=
     local siteName=
     local functionalLevel=
     local serverRole=
@@ -429,7 +476,7 @@ update_status() {
     else
         realm=$(get_realm) || retval=1
         netBiosName="$(get_netbios_domain_name)" || retval=1
-        
+        hostname="$(get_hostname)" || retval=1
         siteName="$(get_site_name)" || retval=1
         functionalLevel="$(get_functional_level)" || retval=1
         serverRole="$(get_server_role)" || retval=1
@@ -444,7 +491,9 @@ update_status() {
         fi
         if [ "$dnsBackend" = "SAMBA_INTERNAL" ]; then
             forwarders="$(get_forwarders_samba_internal)" || retval=1
+            remove_bind_data_from_samba_internal || retval=1
         else
+            remove_samba_internal || retval=1
             forwarders="$(get_forwarders_bind9_dlz)" || retval=1
             listen_on_ipv4="$(get_listen_on_bind9_ipv4) "|| retval=1
             listen_on_ipv6="$(get_listen_on_bind9_ipv6)" || retval=1
@@ -469,13 +518,14 @@ update_status() {
             update_status_help "realm" "$realm"
             update_status_help "netBiosName" "$netBiosName" 
             update_status_help "siteName" "$siteName" 
-            update_enum_value "functionalLevel" "$functionalLevel" 
             update_enum_value "serverRole" "$serverRole" 
             update_status_help "useRfc2307" $useRfc2307
-            update_enum_value "backendStore" "$backendStore" 
+            update_enum_value "backendStore" "$backendStore"
+            update_enum_value "functionalLevel" "$functionalLevel"
             update_enum_value  "dnsSettings.dnsBackend" "$dnsBackend"
             update_status_help "deployed" $deployed
             update_status_help "started" $started
+            update_status_help  "hostNetBiosName" "$hostname"
             if [ -n "$forwarders" ]; then   
                 update_status_help "forwarders" "$forwarders" "dnsSettings" "true"
             else

@@ -36,104 +36,117 @@
 
 typedef struct systeminfo_module_subcommands_t
 {
-    char *subcommand;
+    char* subcommand;
     enum systeminfo_sub_commands id;
 } systeminfo_module_subcommands_t;
 
-static systeminfo_module_subcommands_t systeminfo_module_subcommands_list[]
-    = {{"description", SYSTEMINFO_GET_DESCRIPTION},
-       {"hostname", SYSTEMINFO_GET_HOST_NAME},
-       {"name", SYSTEMINFO_GET_OPERATION_SYSTEM_NAME},
-       {"arch", SYSTEMINFO_GET_ARCH},
-       {"branch", SYSTEMINFO_GET_BRANCH},
-       {"kernel", SYSTEMINFO_GET_KERNEL},
-       {"cpu", SYSTEMINFO_GET_CPU},
-       {"gpu", SYSTEMINFO_GET_GPU},
-       {"memory", SYSTEMINFO_GET_MEMORY},
-       {"drive", SYSTEMINFO_GET_DRIVE},
-       {"monitor", SYSTEMINFO_GET_MONITOR},
-       {"motherboard", SYSTEMINFO_GET_MOTHERBOARD},
-       {"locales", SYSTEMINFO_GET_LOCALES},
-       {"desktops", SYSTEMINFO_GET_DESKTOP_ENVIRONMENT}};
+static systeminfo_module_subcommands_t systeminfo_module_subcommands_list[] =
+    {{"description", SYSTEMINFO_GET_DESCRIPTION},
+     {"hostname", SYSTEMINFO_GET_HOST_NAME},
+     {"name", SYSTEMINFO_GET_OPERATION_SYSTEM_NAME},
+     {"arch", SYSTEMINFO_GET_ARCH},
+     {"branch", SYSTEMINFO_GET_BRANCH},
+     {"kernel", SYSTEMINFO_GET_KERNEL},
+     {"cpu", SYSTEMINFO_GET_CPU},
+     {"gpu", SYSTEMINFO_GET_GPU},
+     {"memory", SYSTEMINFO_GET_MEMORY},
+     {"drive", SYSTEMINFO_GET_DRIVE},
+     {"monitor", SYSTEMINFO_GET_MONITOR},
+     {"motherboard", SYSTEMINFO_GET_MOTHERBOARD},
+     {"locales", SYSTEMINFO_GET_LOCALES},
+     {"desktops", SYSTEMINFO_GET_DESKTOP_ENVIRONMENT}};
 
-static GObjectClass *systeminfo_module_parent_class = NULL;
+static GObjectClass* systeminfo_module_parent_class = NULL;
 static alterator_ctl_module_t systeminfo_module     = {0};
 static gboolean is_dbus_call_error                  = FALSE;
 
-static void systeminfo_module_class_init(AlteratorCtlSystemInfoModuleClass *klass);
-static void systeminfo_ctl_class_finalize(GObject *klass);
+static void systeminfo_module_class_init(AlteratorCtlSystemInfoModuleClass* klass);
+static void systeminfo_ctl_class_finalize(GObject* klass);
 
 static void systeminfo_module_alterator_interface_init(gpointer iface, gpointer iface_data);
 static void systeminfo_module_alterator_interface_finalize(gpointer iface, gpointer iface_data);
 
-AlteratorCtlSystemInfoModule *systeminfo_module_new(gpointer app);
-void systeminfo_module_free(AlteratorCtlSystemInfoModule *module);
+AlteratorCtlSystemInfoModule* systeminfo_module_new(gpointer app);
+void systeminfo_module_free(AlteratorCtlSystemInfoModule* module);
 
-static void fill_command_hash_table(GHashTable *command);
+static void fill_command_hash_table(GHashTable* command);
 
-static int systeminfo_module_parse_arguments(AlteratorCtlSystemInfoModule *module,
-                                             int argc,
-                                             char **argv,
-                                             alteratorctl_ctx_t **ctx);
-static int systeminfo_module_get_description_subcommand(AlteratorCtlSystemInfoModule *module, alteratorctl_ctx_t **ctx);
-static int systeminfo_module_get_hostname_subcommand(AlteratorCtlSystemInfoModule *module, alteratorctl_ctx_t **ctx);
-static int systeminfo_module_get_operation_system_name_subcommand(AlteratorCtlSystemInfoModule *module,
-                                                                  alteratorctl_ctx_t **ctx);
-static int systeminfo_module_get_arch_subcommand(AlteratorCtlSystemInfoModule *module, alteratorctl_ctx_t **ctx);
-static int systeminfo_module_get_branch_subcommand(AlteratorCtlSystemInfoModule *module, alteratorctl_ctx_t **ctx);
-static int systeminfo_module_get_kernel_subcommand(AlteratorCtlSystemInfoModule *module, alteratorctl_ctx_t **ctx);
-static int systeminfo_module_get_cpu_subcommand(AlteratorCtlSystemInfoModule *module, alteratorctl_ctx_t **ctx);
-static int systeminfo_module_get_gpu_subcommand(AlteratorCtlSystemInfoModule *module, alteratorctl_ctx_t **ctx);
-static int systeminfo_module_get_memory_subcommand(AlteratorCtlSystemInfoModule *module, alteratorctl_ctx_t **ctx);
-static int systeminfo_module_get_drive_subcommand(AlteratorCtlSystemInfoModule *module, alteratorctl_ctx_t **ctx);
-static int systeminfo_module_get_monitor_subcommand(AlteratorCtlSystemInfoModule *module, alteratorctl_ctx_t **ctx);
-static int systeminfo_module_get_motherboard_subcommand(AlteratorCtlSystemInfoModule *module, alteratorctl_ctx_t **ctx);
-static int systeminfo_module_get_locales_subcommand(AlteratorCtlSystemInfoModule *module, alteratorctl_ctx_t **ctx);
-static int systeminfo_module_get_desktops_subcommand(AlteratorCtlSystemInfoModule *module, alteratorctl_ctx_t **ctx);
+static int systeminfo_module_parse_arguments(AlteratorCtlSystemInfoModule* module, int argc,
+                                             char** argv, alteratorctl_ctx_t** ctx);
+static int systeminfo_module_get_description_subcommand(AlteratorCtlSystemInfoModule* module,
+                                                        alteratorctl_ctx_t** ctx);
+static int systeminfo_module_get_hostname_subcommand(AlteratorCtlSystemInfoModule* module,
+                                                     alteratorctl_ctx_t** ctx);
+static int
+systeminfo_module_get_operation_system_name_subcommand(AlteratorCtlSystemInfoModule* module,
+                                                       alteratorctl_ctx_t** ctx);
+static int systeminfo_module_get_arch_subcommand(AlteratorCtlSystemInfoModule* module,
+                                                 alteratorctl_ctx_t** ctx);
+static int systeminfo_module_get_branch_subcommand(AlteratorCtlSystemInfoModule* module,
+                                                   alteratorctl_ctx_t** ctx);
+static int systeminfo_module_get_kernel_subcommand(AlteratorCtlSystemInfoModule* module,
+                                                   alteratorctl_ctx_t** ctx);
+static int systeminfo_module_get_cpu_subcommand(AlteratorCtlSystemInfoModule* module,
+                                                alteratorctl_ctx_t** ctx);
+static int systeminfo_module_get_gpu_subcommand(AlteratorCtlSystemInfoModule* module,
+                                                alteratorctl_ctx_t** ctx);
+static int systeminfo_module_get_memory_subcommand(AlteratorCtlSystemInfoModule* module,
+                                                   alteratorctl_ctx_t** ctx);
+static int systeminfo_module_get_drive_subcommand(AlteratorCtlSystemInfoModule* module,
+                                                  alteratorctl_ctx_t** ctx);
+static int systeminfo_module_get_monitor_subcommand(AlteratorCtlSystemInfoModule* module,
+                                                    alteratorctl_ctx_t** ctx);
+static int systeminfo_module_get_motherboard_subcommand(AlteratorCtlSystemInfoModule* module,
+                                                        alteratorctl_ctx_t** ctx);
+static int systeminfo_module_get_locales_subcommand(AlteratorCtlSystemInfoModule* module,
+                                                    alteratorctl_ctx_t** ctx);
+static int systeminfo_module_get_desktops_subcommand(AlteratorCtlSystemInfoModule* module,
+                                                     alteratorctl_ctx_t** ctx);
 
-static int systeminfo_module_handle_results(AlteratorCtlSystemInfoModule *module, alteratorctl_ctx_t **ctx);
-static int systeminfo_module_get_license_handle_result(AlteratorCtlSystemInfoModule *module, alteratorctl_ctx_t **ctx);
-static int systeminfo_module_get_description_handle_result(AlteratorCtlSystemInfoModule *module,
-                                                           alteratorctl_ctx_t **ctx);
-static int systeminfo_module_get_hostname_handle_result(AlteratorCtlSystemInfoModule *module,
-                                                        alteratorctl_ctx_t **ctx,
-                                                        GPtrArray **result_str);
-static int systeminfo_module_get_operation_system_name_handle_result(AlteratorCtlSystemInfoModule *module,
-                                                                     alteratorctl_ctx_t **ctx,
-                                                                     GPtrArray **result_str);
-static int systeminfo_module_get_arch_handle_result(AlteratorCtlSystemInfoModule *module,
-                                                    alteratorctl_ctx_t **ctx,
-                                                    GPtrArray **result_str);
-static int systeminfo_module_get_branch_handle_result(AlteratorCtlSystemInfoModule *module,
-                                                      alteratorctl_ctx_t **ctx,
-                                                      GPtrArray **result_str);
-static int systeminfo_module_get_kernel_handle_result(AlteratorCtlSystemInfoModule *module,
-                                                      alteratorctl_ctx_t **ctx,
-                                                      GPtrArray **result_str);
-static int systeminfo_module_get_cpu_handle_result(AlteratorCtlSystemInfoModule *module,
-                                                   alteratorctl_ctx_t **ctx,
-                                                   GPtrArray **result_str);
-static int systeminfo_module_get_gpu_handle_result(AlteratorCtlSystemInfoModule *module,
-                                                   alteratorctl_ctx_t **ctx,
-                                                   GPtrArray **result_str);
-static int systeminfo_module_get_memory_handle_result(AlteratorCtlSystemInfoModule *module,
-                                                      alteratorctl_ctx_t **ctx,
-                                                      GPtrArray **result_str);
-static int systeminfo_module_get_drive_handle_result(AlteratorCtlSystemInfoModule *module,
-                                                     alteratorctl_ctx_t **ctx,
-                                                     GPtrArray **result_str);
-static int systeminfo_module_get_monitor_handle_result(AlteratorCtlSystemInfoModule *module,
-                                                       alteratorctl_ctx_t **ctx,
-                                                       GPtrArray **result_str);
-static int systeminfo_module_get_motherboard_handle_result(AlteratorCtlSystemInfoModule *module,
-                                                           alteratorctl_ctx_t **ctx,
-                                                           GPtrArray **result_str);
-static int systeminfo_module_get_locales_handle_result(AlteratorCtlSystemInfoModule *module,
-                                                       alteratorctl_ctx_t **ctx,
-                                                       GPtrArray **result_str);
-static int systeminfo_module_get_desktops_handle_result(AlteratorCtlSystemInfoModule *module,
-                                                        alteratorctl_ctx_t **ctx,
-                                                        GPtrArray **result_str);
+static int systeminfo_module_handle_results(AlteratorCtlSystemInfoModule* module,
+                                            alteratorctl_ctx_t** ctx);
+static int systeminfo_module_get_license_handle_result(AlteratorCtlSystemInfoModule* module,
+                                                       alteratorctl_ctx_t** ctx);
+static int systeminfo_module_get_description_handle_result(AlteratorCtlSystemInfoModule* module,
+                                                           alteratorctl_ctx_t** ctx);
+static int systeminfo_module_get_hostname_handle_result(AlteratorCtlSystemInfoModule* module,
+                                                        alteratorctl_ctx_t** ctx,
+                                                        GPtrArray** result_str);
+static int systeminfo_module_get_operation_system_name_handle_result(
+    AlteratorCtlSystemInfoModule* module, alteratorctl_ctx_t** ctx, GPtrArray** result_str);
+static int systeminfo_module_get_arch_handle_result(AlteratorCtlSystemInfoModule* module,
+                                                    alteratorctl_ctx_t** ctx,
+                                                    GPtrArray** result_str);
+static int systeminfo_module_get_branch_handle_result(AlteratorCtlSystemInfoModule* module,
+                                                      alteratorctl_ctx_t** ctx,
+                                                      GPtrArray** result_str);
+static int systeminfo_module_get_kernel_handle_result(AlteratorCtlSystemInfoModule* module,
+                                                      alteratorctl_ctx_t** ctx,
+                                                      GPtrArray** result_str);
+static int systeminfo_module_get_cpu_handle_result(AlteratorCtlSystemInfoModule* module,
+                                                   alteratorctl_ctx_t** ctx,
+                                                   GPtrArray** result_str);
+static int systeminfo_module_get_gpu_handle_result(AlteratorCtlSystemInfoModule* module,
+                                                   alteratorctl_ctx_t** ctx,
+                                                   GPtrArray** result_str);
+static int systeminfo_module_get_memory_handle_result(AlteratorCtlSystemInfoModule* module,
+                                                      alteratorctl_ctx_t** ctx,
+                                                      GPtrArray** result_str);
+static int systeminfo_module_get_drive_handle_result(AlteratorCtlSystemInfoModule* module,
+                                                     alteratorctl_ctx_t** ctx,
+                                                     GPtrArray** result_str);
+static int systeminfo_module_get_monitor_handle_result(AlteratorCtlSystemInfoModule* module,
+                                                       alteratorctl_ctx_t** ctx,
+                                                       GPtrArray** result_str);
+static int systeminfo_module_get_motherboard_handle_result(AlteratorCtlSystemInfoModule* module,
+                                                           alteratorctl_ctx_t** ctx,
+                                                           GPtrArray** result_str);
+static int systeminfo_module_get_locales_handle_result(AlteratorCtlSystemInfoModule* module,
+                                                       alteratorctl_ctx_t** ctx,
+                                                       GPtrArray** result_str);
+static int systeminfo_module_get_desktops_handle_result(AlteratorCtlSystemInfoModule* module,
+                                                        alteratorctl_ctx_t** ctx,
+                                                        GPtrArray** result_str);
 
 static gint systeminfo_module_sort_result(gconstpointer a, gconstpointer b);
 
@@ -143,54 +156,55 @@ GType alterator_ctl_systeminfo_module_get_type(void)
 
     if (!systeminfo_module_type)
     {
-        static const GTypeInfo systeminfo_module_info
-            = {sizeof(AlteratorCtlSystemInfoModuleClass),     /* class structure size */
-               NULL,                                          /* base class initializer */
-               NULL,                                          /* base class finalizer */
-               (GClassInitFunc) systeminfo_module_class_init, /* class initializer */
-               NULL,                                          /* class finalizer */
-               NULL,                                          /* class data */
-               sizeof(AlteratorCtlSystemInfoModule),          /* instance structure size */
-               1,                                             /* preallocated instances */
-               NULL,                                          /* instance initializers */
-               NULL};
+        static const GTypeInfo systeminfo_module_info =
+            {sizeof(AlteratorCtlSystemInfoModuleClass),     /* class structure size */
+             NULL,                                          /* base class initializer */
+             NULL,                                          /* base class finalizer */
+             (GClassInitFunc) systeminfo_module_class_init, /* class initializer */
+             NULL,                                          /* class finalizer */
+             NULL,                                          /* class data */
+             sizeof(AlteratorCtlSystemInfoModule),          /* instance structure size */
+             1,                                             /* preallocated instances */
+             NULL,                                          /* instance initializers */
+             NULL};
 
         const GInterfaceInfo alterator_module_interface_info = {
-            (GInterfaceInitFunc) systeminfo_module_alterator_interface_init,         /* interface_init */
-            (GInterfaceFinalizeFunc) systeminfo_module_alterator_interface_finalize, /* interface_finalize */
-            NULL                                                                     /* interface_data */
+            (GInterfaceInitFunc) systeminfo_module_alterator_interface_init, /* interface_init */
+            (GInterfaceFinalizeFunc)
+                systeminfo_module_alterator_interface_finalize, /* interface_finalize */
+            NULL                                                /* interface_data */
         };
 
         systeminfo_module_type = g_type_register_static(G_TYPE_OBJECT, /* parent class */
                                                         "AlteratorCtlSystemInfoModule",
-                                                        &systeminfo_module_info,
-                                                        0);
+                                                        &systeminfo_module_info, 0);
 
-        g_type_add_interface_static(systeminfo_module_type, TYPE_ALTERATOR_CTL_MODULE, &alterator_module_interface_info);
+        g_type_add_interface_static(systeminfo_module_type, TYPE_ALTERATOR_CTL_MODULE,
+                                    &alterator_module_interface_info);
     }
 
     return systeminfo_module_type;
 }
 
-static void systeminfo_module_class_init(AlteratorCtlSystemInfoModuleClass *klass)
+static void systeminfo_module_class_init(AlteratorCtlSystemInfoModuleClass* klass)
 {
-    GObjectClass *obj_class = G_OBJECT_CLASS(klass);
+    GObjectClass* obj_class = G_OBJECT_CLASS(klass);
 
     obj_class->finalize = systeminfo_ctl_class_finalize;
 
     systeminfo_module_parent_class = g_type_class_peek_parent(klass);
 }
 
-static void systeminfo_ctl_class_finalize(GObject *klass)
+static void systeminfo_ctl_class_finalize(GObject* klass)
 {
-    AlteratorCtlSystemInfoModuleClass *obj = (AlteratorCtlSystemInfoModuleClass *) klass;
+    AlteratorCtlSystemInfoModuleClass* obj = (AlteratorCtlSystemInfoModuleClass*) klass;
 
     G_OBJECT_CLASS(systeminfo_module_parent_class)->finalize(klass);
 }
 
 static void systeminfo_module_alterator_interface_init(gpointer iface, gpointer iface_data)
 {
-    AlteratorCtlModuleInterface *interface = iface;
+    AlteratorCtlModuleInterface* interface = iface;
 
     interface->run_with_args = systeminfo_module_run_with_args;
 
@@ -201,19 +215,19 @@ static void systeminfo_module_alterator_interface_init(gpointer iface, gpointer 
 
 static void systeminfo_module_alterator_interface_finalize(gpointer iface, gpointer iface_data) {}
 
-alterator_ctl_module_t *get_systeminfo_module()
+alterator_ctl_module_t* get_systeminfo_module()
 {
     int ret                                 = 0;
     static gsize systeminfo_ctl_module_init = 0;
     if (g_once_init_enter(&systeminfo_ctl_module_init))
     {
-        gsize module_id_size = g_strlcpy(systeminfo_module.id,
-                                         ALTERATOR_CTL_SYSTEMINFO_MODULE_NAME,
+        gsize module_id_size = g_strlcpy(systeminfo_module.id, ALTERATOR_CTL_SYSTEMINFO_MODULE_NAME,
                                          strlen(ALTERATOR_CTL_SYSTEMINFO_MODULE_NAME) + 1);
 
         if (module_id_size != strlen(ALTERATOR_CTL_SYSTEMINFO_MODULE_NAME))
         {
-            g_printerr(_("Internal error in get_systeminfo_module: unvaliable id of systeminfo module.\n"));
+            g_printerr(_(
+                "Internal error in get_systeminfo_module: unvaliable id of systeminfo module.\n"));
             ERR_EXIT();
         }
 
@@ -231,21 +245,22 @@ end:
     return NULL;
 }
 
-AlteratorCtlSystemInfoModule *systeminfo_module_new(gpointer app)
+AlteratorCtlSystemInfoModule* systeminfo_module_new(gpointer app)
 {
-    AlteratorCtlSystemInfoModule *object = g_object_new(TYPE_ALTERATOR_CTL_SYSTEMINFO_MODULE, NULL);
+    AlteratorCtlSystemInfoModule* object = g_object_new(TYPE_ALTERATOR_CTL_SYSTEMINFO_MODULE, NULL);
 
     object->commands = g_hash_table_new(g_str_hash, g_str_equal);
     fill_command_hash_table(object->commands);
 
-    object->alterator_ctl_app = (AlteratorCtlApp *) app;
+    object->alterator_ctl_app = (AlteratorCtlApp*) app;
 
-    object->gdbus_source = alterator_gdbus_source_new(object->alterator_ctl_app->arguments->verbose, G_BUS_TYPE_SYSTEM);
+    object->gdbus_source = alterator_gdbus_source_new(object->alterator_ctl_app->arguments->verbose,
+                                                      G_BUS_TYPE_SYSTEM);
 
     return object;
 }
 
-void systeminfo_module_free(AlteratorCtlSystemInfoModule *module)
+void systeminfo_module_free(AlteratorCtlSystemInfoModule* module)
 {
     g_hash_table_destroy(module->commands);
 
@@ -257,25 +272,25 @@ void systeminfo_module_free(AlteratorCtlSystemInfoModule *module)
     g_object_unref(module);
 }
 
-static void fill_command_hash_table(GHashTable *command)
+static void fill_command_hash_table(GHashTable* command)
 {
-    for (int i = 0; i < sizeof(systeminfo_module_subcommands_list) / sizeof(systeminfo_module_subcommands_t); i++)
-        g_hash_table_insert(command,
-                            systeminfo_module_subcommands_list[i].subcommand,
+    for (int i = 0;
+         i < sizeof(systeminfo_module_subcommands_list) / sizeof(systeminfo_module_subcommands_t);
+         i++)
+        g_hash_table_insert(command, systeminfo_module_subcommands_list[i].subcommand,
                             &systeminfo_module_subcommands_list[i].id);
 }
 
-static int systeminfo_module_parse_arguments(AlteratorCtlSystemInfoModule *module,
-                                             int argc,
-                                             char **argv,
-                                             alteratorctl_ctx_t **ctx)
+static int systeminfo_module_parse_arguments(AlteratorCtlSystemInfoModule* module, int argc,
+                                             char** argv, alteratorctl_ctx_t** ctx)
 {
     int ret                            = 0;
-    AlteratorCtlModuleInterface *iface = GET_ALTERATOR_CTL_MODULE_INTERFACE((void *) module);
+    AlteratorCtlModuleInterface* iface = GET_ALTERATOR_CTL_MODULE_INTERFACE((void*) module);
 
     if (!iface)
     {
-        g_printerr(_("Internal error in systeminfo module while parsing arguments: *iface is NULL.\n"));
+        g_printerr(
+            _("Internal error in systeminfo module while parsing arguments: *iface is NULL.\n"));
         ERR_EXIT();
     }
 
@@ -368,16 +383,16 @@ end:
     return ret;
 }
 
-int systeminfo_module_run_with_args(gpointer self, int argc, char **argv)
+int systeminfo_module_run_with_args(gpointer self, int argc, char** argv)
 {
     int ret                              = 0;
-    alteratorctl_ctx_t *ctx              = NULL;
-    AlteratorCtlSystemInfoModule *module = ALTERATOR_CTL_SYSTEMINFO_MODULE(self);
+    alteratorctl_ctx_t* ctx              = NULL;
+    AlteratorCtlSystemInfoModule* module = ALTERATOR_CTL_SYSTEMINFO_MODULE(self);
 
     if (!module)
     {
-        g_printerr(
-            _("Internal data error in systeminfo module with args: AlteratorCtlSystemInfoModule *module is NULL.\n"));
+        g_printerr(_("Internal data error in systeminfo module with args: "
+                     "AlteratorCtlSystemInfoModule *module is NULL.\n"));
         ERR_EXIT();
     }
 
@@ -399,8 +414,8 @@ end:
 int systeminfo_module_run(gpointer self, gpointer data)
 {
     int ret                              = 0;
-    AlteratorCtlModuleInterface *iface   = GET_ALTERATOR_CTL_MODULE_INTERFACE(self);
-    AlteratorCtlSystemInfoModule *module = ALTERATOR_CTL_SYSTEMINFO_MODULE(self);
+    AlteratorCtlModuleInterface* iface   = GET_ALTERATOR_CTL_MODULE_INTERFACE(self);
+    AlteratorCtlSystemInfoModule* module = ALTERATOR_CTL_SYSTEMINFO_MODULE(self);
 
     if (module->alterator_ctl_app->arguments->module_help)
         goto end;
@@ -411,7 +426,7 @@ int systeminfo_module_run(gpointer self, gpointer data)
         ERR_EXIT();
     }
 
-    alteratorctl_ctx_t *ctx = (alteratorctl_ctx_t *) data;
+    alteratorctl_ctx_t* ctx = (alteratorctl_ctx_t*) data;
 
     switch (g_variant_get_int32(ctx->subcommands_ids))
     {
@@ -494,31 +509,32 @@ end:
     return ret;
 }
 
-static int systeminfo_module_get_license_subcommand(AlteratorCtlSystemInfoModule *module, alteratorctl_ctx_t **ctx)
+static int systeminfo_module_get_license_subcommand(AlteratorCtlSystemInfoModule* module,
+                                                    alteratorctl_ctx_t** ctx)
 {
     int ret                 = 0;
-    dbus_ctx_t *d_ctx       = NULL;
-    GError *dbus_call_error = NULL;
-    gchar *locale           = NULL;
+    dbus_ctx_t* d_ctx       = NULL;
+    GError* dbus_call_error = NULL;
+    gchar* locale           = NULL;
 
     if (!module)
     {
-        g_printerr(
-            _("Internal error in systeminfo module - AlteratorCtlSystemInfoModule *module is NULL in \"systeminfo "
-              "license\".\n"));
+        g_printerr(_("Internal error in systeminfo module - AlteratorCtlSystemInfoModule *module "
+                     "is NULL in \"systeminfo "
+                     "license\".\n"));
         ERR_EXIT();
     }
 
     if (!(locale = alterator_ctl_get_effective_locale()))
         ERR_EXIT();
 
-    if (module->gdbus_source->alterator_gdbus_source_set_env_value(module->gdbus_source, "LC_ALL", locale) < 0)
+    if (module->gdbus_source->alterator_gdbus_source_set_env_value(module->gdbus_source, "LC_ALL",
+                                                                   locale)
+        < 0)
         ERR_EXIT();
 
-    d_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME,
-                          ALTERATOR_SYSTEMINFO_PATH,
-                          SYSTEMINFO_INTERFACE_NAME,
-                          SYSTEMINFO_GET_LICENSE_METHOD_NAME,
+    d_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME, ALTERATOR_SYSTEMINFO_PATH,
+                          SYSTEMINFO_INTERFACE_NAME, SYSTEMINFO_GET_LICENSE_METHOD_NAME,
                           module->alterator_ctl_app->arguments->verbose);
 
     if (!d_ctx)
@@ -537,8 +553,7 @@ static int systeminfo_module_get_license_subcommand(AlteratorCtlSystemInfoModule
     {
         g_printerr(_("Object %s and/or interface %s doesn't "
                      "exists.\n"),
-                   ALTERATOR_SYSTEMINFO_PATH,
-                   SYSTEMINFO_INTERFACE_NAME);
+                   ALTERATOR_SYSTEMINFO_PATH, SYSTEMINFO_INTERFACE_NAME);
         is_dbus_call_error = TRUE;
         ERR_EXIT();
     }
@@ -553,7 +568,8 @@ static int systeminfo_module_get_license_subcommand(AlteratorCtlSystemInfoModule
         (*ctx)->results = (gpointer) g_variant_ref(d_ctx->result);
     else
     {
-        g_printerr(_("D-Bus error in systeminfo module while calling GetLicense(): failed to produce a result\n"));
+        g_printerr(_("D-Bus error in systeminfo module while calling GetLicense(): failed to "
+                     "produce a result\n"));
         ERR_EXIT();
     }
 
@@ -568,13 +584,15 @@ end:
     return ret;
 }
 
-static int systeminfo_module_get_description_subcommand(AlteratorCtlSystemInfoModule *module, alteratorctl_ctx_t **ctx)
+static int systeminfo_module_get_description_subcommand(AlteratorCtlSystemInfoModule* module,
+                                                        alteratorctl_ctx_t** ctx)
 {
     int ret                  = 0;
-    GVariant *result         = NULL;
-    GVariantBuilder *builder = NULL;
+    GVariant* result         = NULL;
+    GVariantBuilder* builder = NULL;
 
-    (*ctx)->results = (gpointer) g_hash_table_new_full(g_str_hash, g_str_equal, NULL, (GDestroyNotify) g_variant_unref);
+    (*ctx)->results      = (gpointer) g_hash_table_new_full(g_str_hash, g_str_equal, NULL,
+                                                            (GDestroyNotify) g_variant_unref);
     (*ctx)->free_results = (gpointer) g_hash_table_unref;
 
     if (systeminfo_module_get_hostname_subcommand(module, ctx) < 0)
@@ -619,7 +637,7 @@ static int systeminfo_module_get_description_subcommand(AlteratorCtlSystemInfoMo
     builder = g_variant_builder_new(G_VARIANT_TYPE("a{sv}"));
 
     GHashTableIter iter;
-    g_hash_table_iter_init(&iter, (GHashTable *) (*ctx)->results);
+    g_hash_table_iter_init(&iter, (GHashTable*) (*ctx)->results);
     gpointer key = NULL, value = NULL;
     while (g_hash_table_iter_next(&iter, &key, &value))
         g_variant_builder_add(builder, "{sv}", key, value);
@@ -627,11 +645,12 @@ static int systeminfo_module_get_description_subcommand(AlteratorCtlSystemInfoMo
     result = g_variant_builder_end(builder);
     if (!result)
     {
-        g_printerr(_("Failed to save the result of describing all the information about the system.\n"));
+        g_printerr(
+            _("Failed to save the result of describing all the information about the system.\n"));
         ERR_EXIT();
     }
 
-    g_hash_table_unref((GHashTable *) (*ctx)->results);
+    g_hash_table_unref((GHashTable*) (*ctx)->results);
     (*ctx)->results      = g_variant_ref(result);
     (*ctx)->free_results = (gpointer) g_variant_unref;
 
@@ -645,24 +664,23 @@ end:
     return ret;
 }
 
-static int systeminfo_module_get_hostname_subcommand(AlteratorCtlSystemInfoModule *module, alteratorctl_ctx_t **ctx)
+static int systeminfo_module_get_hostname_subcommand(AlteratorCtlSystemInfoModule* module,
+                                                     alteratorctl_ctx_t** ctx)
 {
     int ret                 = 0;
-    dbus_ctx_t *d_ctx       = NULL;
-    GError *dbus_call_error = NULL;
+    dbus_ctx_t* d_ctx       = NULL;
+    GError* dbus_call_error = NULL;
 
     if (!module)
     {
-        g_printerr(
-            _("Internal error in systeminfo module - AlteratorCtlSystemInfoModule *module is NULL in \"systeminfo "
-              "device\".\n"));
+        g_printerr(_("Internal error in systeminfo module - AlteratorCtlSystemInfoModule *module "
+                     "is NULL in \"systeminfo "
+                     "device\".\n"));
         ERR_EXIT();
     }
 
-    d_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME,
-                          ALTERATOR_SYSTEMINFO_PATH,
-                          SYSTEMINFO_INTERFACE_NAME,
-                          SYSTEMINFO_GET_HOST_NAME_METHOD_NAME,
+    d_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME, ALTERATOR_SYSTEMINFO_PATH,
+                          SYSTEMINFO_INTERFACE_NAME, SYSTEMINFO_GET_HOST_NAME_METHOD_NAME,
                           module->alterator_ctl_app->arguments->verbose);
 
     if (!d_ctx)
@@ -681,8 +699,7 @@ static int systeminfo_module_get_hostname_subcommand(AlteratorCtlSystemInfoModul
     {
         g_printerr(_("Object %s and/or interface %s doesn't "
                      "exists.\n"),
-                   ALTERATOR_SYSTEMINFO_PATH,
-                   SYSTEMINFO_INTERFACE_NAME);
+                   ALTERATOR_SYSTEMINFO_PATH, SYSTEMINFO_INTERFACE_NAME);
         is_dbus_call_error = TRUE;
         ERR_EXIT();
     }
@@ -695,14 +712,15 @@ static int systeminfo_module_get_hostname_subcommand(AlteratorCtlSystemInfoModul
 
     if (d_ctx->result)
         if ((*ctx)->results)
-            g_hash_table_insert((GHashTable *) (*ctx)->results,
+            g_hash_table_insert((GHashTable*) (*ctx)->results,
                                 (gpointer) SYSTEMINFO_DESCRIPRION_HOST_NAME_KEY,
                                 (gpointer) (g_variant_ref(d_ctx->result)));
         else
             (*ctx)->results = (gpointer) g_variant_ref(d_ctx->result);
     else
     {
-        g_printerr(_("D-Bus error in systeminfo module while calling GetDeviceName(): failed to produce a result.\n"));
+        g_printerr(_("D-Bus error in systeminfo module while calling GetDeviceName(): failed to "
+                     "produce a result.\n"));
         ERR_EXIT();
     }
 
@@ -715,30 +733,30 @@ end:
     return ret;
 }
 
-static int systeminfo_module_get_operation_system_name_subcommand(AlteratorCtlSystemInfoModule *module,
-                                                                  alteratorctl_ctx_t **ctx)
+static int
+systeminfo_module_get_operation_system_name_subcommand(AlteratorCtlSystemInfoModule* module,
+                                                       alteratorctl_ctx_t** ctx)
 {
     int ret                 = 0;
-    dbus_ctx_t *d_ctx       = NULL;
-    GError *dbus_call_error = NULL;
+    dbus_ctx_t* d_ctx       = NULL;
+    GError* dbus_call_error = NULL;
 
     if (!module)
     {
-        g_printerr(
-            _("Internal error in systeminfo module - AlteratorCtlSystemInfoModule *module is NULL in \"systeminfo "
-              "name\".\n"));
+        g_printerr(_("Internal error in systeminfo module - AlteratorCtlSystemInfoModule *module "
+                     "is NULL in \"systeminfo "
+                     "name\".\n"));
         ERR_EXIT();
     }
 
-    d_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME,
-                          ALTERATOR_SYSTEMINFO_PATH,
-                          SYSTEMINFO_INTERFACE_NAME,
-                          SYSTEMINFO_GET_SYSTEM_NAME_METHOD_NAME,
+    d_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME, ALTERATOR_SYSTEMINFO_PATH,
+                          SYSTEMINFO_INTERFACE_NAME, SYSTEMINFO_GET_SYSTEM_NAME_METHOD_NAME,
                           module->alterator_ctl_app->arguments->verbose);
 
     if (!d_ctx)
     {
-        g_printerr(_("Can't allocate dbus_ctx_t in systeminfo_module_get_operation_system_name_subcommand\n"));
+        g_printerr(_("Can't allocate dbus_ctx_t in "
+                     "systeminfo_module_get_operation_system_name_subcommand\n"));
         ERR_EXIT();
     }
 
@@ -752,8 +770,7 @@ static int systeminfo_module_get_operation_system_name_subcommand(AlteratorCtlSy
     {
         g_printerr(_("Object %s and/or interface %s doesn't "
                      "exists.\n"),
-                   ALTERATOR_SYSTEMINFO_PATH,
-                   SYSTEMINFO_INTERFACE_NAME);
+                   ALTERATOR_SYSTEMINFO_PATH, SYSTEMINFO_INTERFACE_NAME);
         is_dbus_call_error = TRUE;
         ERR_EXIT();
     }
@@ -766,14 +783,15 @@ static int systeminfo_module_get_operation_system_name_subcommand(AlteratorCtlSy
 
     if (d_ctx->result)
         if ((*ctx)->results)
-            g_hash_table_insert((GHashTable *) (*ctx)->results,
+            g_hash_table_insert((GHashTable*) (*ctx)->results,
                                 (gpointer) SYSTEMINFO_DESCRIPRION_OS_NAME_KEY,
                                 (gpointer) (g_variant_ref(d_ctx->result)));
         else
             (*ctx)->results = (gpointer) g_variant_ref(d_ctx->result);
     else
     {
-        g_printerr(_("D-Bus error in systeminfo module while calling GetOperationSystemName(): failed to produce a "
+        g_printerr(_("D-Bus error in systeminfo module while calling GetOperationSystemName(): "
+                     "failed to produce a "
                      "result.\n"));
         ERR_EXIT();
     }
@@ -787,24 +805,23 @@ end:
     return ret;
 }
 
-static int systeminfo_module_get_arch_subcommand(AlteratorCtlSystemInfoModule *module, alteratorctl_ctx_t **ctx)
+static int systeminfo_module_get_arch_subcommand(AlteratorCtlSystemInfoModule* module,
+                                                 alteratorctl_ctx_t** ctx)
 {
     int ret                 = 0;
-    dbus_ctx_t *d_ctx       = NULL;
-    GError *dbus_call_error = NULL;
+    dbus_ctx_t* d_ctx       = NULL;
+    GError* dbus_call_error = NULL;
 
     if (!module)
     {
-        g_printerr(
-            _("Internal error in systeminfo module - AlteratorCtlSystemInfoModule *module is NULL in \"systeminfo "
-              "arch\".\n"));
+        g_printerr(_("Internal error in systeminfo module - AlteratorCtlSystemInfoModule *module "
+                     "is NULL in \"systeminfo "
+                     "arch\".\n"));
         ERR_EXIT();
     }
 
-    d_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME,
-                          ALTERATOR_SYSTEMINFO_PATH,
-                          SYSTEMINFO_INTERFACE_NAME,
-                          SYSTEMINFO_GET_SYSTEM_ARCH_METHOD_NAME,
+    d_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME, ALTERATOR_SYSTEMINFO_PATH,
+                          SYSTEMINFO_INTERFACE_NAME, SYSTEMINFO_GET_SYSTEM_ARCH_METHOD_NAME,
                           module->alterator_ctl_app->arguments->verbose);
 
     if (!d_ctx)
@@ -823,8 +840,7 @@ static int systeminfo_module_get_arch_subcommand(AlteratorCtlSystemInfoModule *m
     {
         g_printerr(_("Object %s and/or interface %s doesn't "
                      "exists.\n"),
-                   ALTERATOR_SYSTEMINFO_PATH,
-                   SYSTEMINFO_INTERFACE_NAME);
+                   ALTERATOR_SYSTEMINFO_PATH, SYSTEMINFO_INTERFACE_NAME);
         is_dbus_call_error = TRUE;
         ERR_EXIT();
     }
@@ -837,14 +853,15 @@ static int systeminfo_module_get_arch_subcommand(AlteratorCtlSystemInfoModule *m
 
     if (d_ctx->result)
         if ((*ctx)->results)
-            g_hash_table_insert((GHashTable *) (*ctx)->results,
+            g_hash_table_insert((GHashTable*) (*ctx)->results,
                                 (gpointer) SYSTEMINFO_DESCRIPRION_ARCH_KEY,
                                 (gpointer) (g_variant_ref(d_ctx->result)));
         else
             (*ctx)->results = (gpointer) g_variant_ref(d_ctx->result);
     else if (!(*ctx)->results) // Hide property if no value is received
     {
-        g_printerr(_("D-Bus error in systeminfo module while calling Arch(): failed to produce a result.\n"));
+        g_printerr(_("D-Bus error in systeminfo module while calling Arch(): failed to produce a "
+                     "result.\n"));
         ERR_EXIT();
     }
 
@@ -857,24 +874,23 @@ end:
     return ret;
 }
 
-static int systeminfo_module_get_branch_subcommand(AlteratorCtlSystemInfoModule *module, alteratorctl_ctx_t **ctx)
+static int systeminfo_module_get_branch_subcommand(AlteratorCtlSystemInfoModule* module,
+                                                   alteratorctl_ctx_t** ctx)
 {
     int ret                 = 0;
-    dbus_ctx_t *d_ctx       = NULL;
-    GError *dbus_call_error = NULL;
+    dbus_ctx_t* d_ctx       = NULL;
+    GError* dbus_call_error = NULL;
 
     if (!module)
     {
-        g_printerr(
-            _("Internal error in systeminfo module - AlteratorCtlSystemInfoModule *module is NULL in \"systeminfo "
-              "branch\".\n"));
+        g_printerr(_("Internal error in systeminfo module - AlteratorCtlSystemInfoModule *module "
+                     "is NULL in \"systeminfo "
+                     "branch\".\n"));
         ERR_EXIT();
     }
 
-    d_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME,
-                          ALTERATOR_SYSTEMINFO_PATH,
-                          SYSTEMINFO_INTERFACE_NAME,
-                          SYSTEMINFO_GET_BRANCH_METHOD_NAME,
+    d_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME, ALTERATOR_SYSTEMINFO_PATH,
+                          SYSTEMINFO_INTERFACE_NAME, SYSTEMINFO_GET_BRANCH_METHOD_NAME,
                           module->alterator_ctl_app->arguments->verbose);
 
     if (!d_ctx)
@@ -893,8 +909,7 @@ static int systeminfo_module_get_branch_subcommand(AlteratorCtlSystemInfoModule 
     {
         g_printerr(_("Object %s and/or interface %s doesn't "
                      "exists.\n"),
-                   ALTERATOR_SYSTEMINFO_PATH,
-                   SYSTEMINFO_INTERFACE_NAME);
+                   ALTERATOR_SYSTEMINFO_PATH, SYSTEMINFO_INTERFACE_NAME);
         is_dbus_call_error = TRUE;
         ERR_EXIT();
     }
@@ -907,14 +922,15 @@ static int systeminfo_module_get_branch_subcommand(AlteratorCtlSystemInfoModule 
 
     if (d_ctx->result)
         if ((*ctx)->results)
-            g_hash_table_insert((GHashTable *) (*ctx)->results,
+            g_hash_table_insert((GHashTable*) (*ctx)->results,
                                 (gpointer) SYSTEMINFO_DESCRIPRION_BRANCH_KEY,
                                 (gpointer) (g_variant_ref(d_ctx->result)));
         else
             (*ctx)->results = (gpointer) g_variant_ref(d_ctx->result);
     else if (!(*ctx)->results) // Hide property if no value is received
     {
-        g_printerr(_("D-Bus error in systeminfo module while calling GetBranch(): failed to produce a result.\n"));
+        g_printerr(_("D-Bus error in systeminfo module while calling GetBranch(): failed to "
+                     "produce a result.\n"));
         ERR_EXIT();
     }
 
@@ -927,24 +943,23 @@ end:
     return ret;
 }
 
-static int systeminfo_module_get_kernel_subcommand(AlteratorCtlSystemInfoModule *module, alteratorctl_ctx_t **ctx)
+static int systeminfo_module_get_kernel_subcommand(AlteratorCtlSystemInfoModule* module,
+                                                   alteratorctl_ctx_t** ctx)
 {
     int ret                 = 0;
-    dbus_ctx_t *d_ctx       = NULL;
-    GError *dbus_call_error = NULL;
+    dbus_ctx_t* d_ctx       = NULL;
+    GError* dbus_call_error = NULL;
 
     if (!module)
     {
-        g_printerr(
-            _("Internal error in systeminfo module - AlteratorCtlSystemInfoModule *module is NULL in \"systeminfo "
-              "kernel\".\n"));
+        g_printerr(_("Internal error in systeminfo module - AlteratorCtlSystemInfoModule *module "
+                     "is NULL in \"systeminfo "
+                     "kernel\".\n"));
         ERR_EXIT();
     }
 
-    d_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME,
-                          ALTERATOR_SYSTEMINFO_PATH,
-                          SYSTEMINFO_INTERFACE_NAME,
-                          SYSTEMINFO_GET_KERNEL_METHOD_NAME,
+    d_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME, ALTERATOR_SYSTEMINFO_PATH,
+                          SYSTEMINFO_INTERFACE_NAME, SYSTEMINFO_GET_KERNEL_METHOD_NAME,
                           module->alterator_ctl_app->arguments->verbose);
 
     if (!d_ctx)
@@ -963,8 +978,7 @@ static int systeminfo_module_get_kernel_subcommand(AlteratorCtlSystemInfoModule 
     {
         g_printerr(_("Object %s and/or interface %s doesn't "
                      "exists.\n"),
-                   ALTERATOR_SYSTEMINFO_PATH,
-                   SYSTEMINFO_INTERFACE_NAME);
+                   ALTERATOR_SYSTEMINFO_PATH, SYSTEMINFO_INTERFACE_NAME);
         is_dbus_call_error = TRUE;
         ERR_EXIT();
     }
@@ -977,14 +991,15 @@ static int systeminfo_module_get_kernel_subcommand(AlteratorCtlSystemInfoModule 
 
     if (d_ctx->result)
         if ((*ctx)->results)
-            g_hash_table_insert((GHashTable *) (*ctx)->results,
+            g_hash_table_insert((GHashTable*) (*ctx)->results,
                                 (gpointer) SYSTEMINFO_DESCRIPRION_KERNEL_KEY,
                                 (gpointer) (g_variant_ref(d_ctx->result)));
         else
             (*ctx)->results = (gpointer) g_variant_ref(d_ctx->result);
     else if (!(*ctx)->results) // Hide property if no value is received
     {
-        g_printerr(_("D-Bus error in systeminfo module while calling GetKernel(): failed to produce a result.\n"));
+        g_printerr(_("D-Bus error in systeminfo module while calling GetKernel(): failed to "
+                     "produce a result.\n"));
         ERR_EXIT();
     }
 
@@ -997,23 +1012,22 @@ end:
     return ret;
 }
 
-static int systeminfo_module_get_cpu_subcommand(AlteratorCtlSystemInfoModule *module, alteratorctl_ctx_t **ctx)
+static int systeminfo_module_get_cpu_subcommand(AlteratorCtlSystemInfoModule* module,
+                                                alteratorctl_ctx_t** ctx)
 {
     int ret                 = 0;
-    dbus_ctx_t *d_ctx       = NULL;
-    GError *dbus_call_error = NULL;
+    dbus_ctx_t* d_ctx       = NULL;
+    GError* dbus_call_error = NULL;
 
     if (!module)
     {
-        g_printerr(
-            _("Internal error in systeminfo module - AlteratorCtlSystemInfoModule *module is NULL in \"systeminfo "
-              "cpu\".\n"));
+        g_printerr(_("Internal error in systeminfo module - AlteratorCtlSystemInfoModule *module "
+                     "is NULL in \"systeminfo "
+                     "cpu\".\n"));
         ERR_EXIT();
     }
-    d_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME,
-                          ALTERATOR_SYSTEMINFO_PATH,
-                          SYSTEMINFO_INTERFACE_NAME,
-                          SYSTEMINFO_GET_CPU_METHOD_NAME,
+    d_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME, ALTERATOR_SYSTEMINFO_PATH,
+                          SYSTEMINFO_INTERFACE_NAME, SYSTEMINFO_GET_CPU_METHOD_NAME,
                           module->alterator_ctl_app->arguments->verbose);
 
     if (!d_ctx)
@@ -1032,8 +1046,7 @@ static int systeminfo_module_get_cpu_subcommand(AlteratorCtlSystemInfoModule *mo
     {
         g_printerr(_("Object %s and/or interface %s doesn't "
                      "exists.\n"),
-                   ALTERATOR_SYSTEMINFO_PATH,
-                   SYSTEMINFO_INTERFACE_NAME);
+                   ALTERATOR_SYSTEMINFO_PATH, SYSTEMINFO_INTERFACE_NAME);
         is_dbus_call_error = TRUE;
         ERR_EXIT();
     }
@@ -1046,14 +1059,15 @@ static int systeminfo_module_get_cpu_subcommand(AlteratorCtlSystemInfoModule *mo
 
     if (d_ctx->result)
         if ((*ctx)->results)
-            g_hash_table_insert((GHashTable *) (*ctx)->results,
+            g_hash_table_insert((GHashTable*) (*ctx)->results,
                                 (gpointer) SYSTEMINFO_DESCRIPRION_CPU_KEY,
                                 (gpointer) (g_variant_ref(d_ctx->result)));
         else
             (*ctx)->results = (gpointer) g_variant_ref(d_ctx->result);
     else if (!(*ctx)->results) // Hide property if no value is received
     {
-        g_printerr(_("D-Bus error in systeminfo module while calling GetCPU(): failed to produce a result.\n"));
+        g_printerr(_("D-Bus error in systeminfo module while calling GetCPU(): failed to produce a "
+                     "result.\n"));
         ERR_EXIT();
     }
 
@@ -1066,24 +1080,23 @@ end:
     return ret;
 }
 
-static int systeminfo_module_get_gpu_subcommand(AlteratorCtlSystemInfoModule *module, alteratorctl_ctx_t **ctx)
+static int systeminfo_module_get_gpu_subcommand(AlteratorCtlSystemInfoModule* module,
+                                                alteratorctl_ctx_t** ctx)
 {
     int ret                 = 0;
-    dbus_ctx_t *d_ctx       = NULL;
-    GError *dbus_call_error = NULL;
+    dbus_ctx_t* d_ctx       = NULL;
+    GError* dbus_call_error = NULL;
 
     if (!module)
     {
-        g_printerr(
-            _("Internal error in systeminfo module - AlteratorCtlSystemInfoModule *module is NULL in \"systeminfo "
-              "gpu\".\n"));
+        g_printerr(_("Internal error in systeminfo module - AlteratorCtlSystemInfoModule *module "
+                     "is NULL in \"systeminfo "
+                     "gpu\".\n"));
         ERR_EXIT();
     }
 
-    d_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME,
-                          ALTERATOR_SYSTEMINFO_PATH,
-                          SYSTEMINFO_INTERFACE_NAME,
-                          SYSTEMINFO_GET_GPU_METHOD_NAME,
+    d_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME, ALTERATOR_SYSTEMINFO_PATH,
+                          SYSTEMINFO_INTERFACE_NAME, SYSTEMINFO_GET_GPU_METHOD_NAME,
                           module->alterator_ctl_app->arguments->verbose);
 
     if (!d_ctx)
@@ -1102,8 +1115,7 @@ static int systeminfo_module_get_gpu_subcommand(AlteratorCtlSystemInfoModule *mo
     {
         g_printerr(_("Object %s and/or interface %s doesn't "
                      "exists.\n"),
-                   ALTERATOR_SYSTEMINFO_PATH,
-                   SYSTEMINFO_INTERFACE_NAME);
+                   ALTERATOR_SYSTEMINFO_PATH, SYSTEMINFO_INTERFACE_NAME);
         is_dbus_call_error = TRUE;
         ERR_EXIT();
     }
@@ -1116,14 +1128,15 @@ static int systeminfo_module_get_gpu_subcommand(AlteratorCtlSystemInfoModule *mo
 
     if (d_ctx->result)
         if ((*ctx)->results)
-            g_hash_table_insert((GHashTable *) (*ctx)->results,
+            g_hash_table_insert((GHashTable*) (*ctx)->results,
                                 (gpointer) SYSTEMINFO_DESCRIPRION_GPU_KEY,
                                 (gpointer) (g_variant_ref(d_ctx->result)));
         else
             (*ctx)->results = (gpointer) g_variant_ref(d_ctx->result);
     else if (!(*ctx)->results) // Hide property if no value is received
     {
-        g_printerr(_("D-Bus error in systeminfo module while calling GetGPU(): failed to produce a result.\n"));
+        g_printerr(_("D-Bus error in systeminfo module while calling GetGPU(): failed to produce a "
+                     "result.\n"));
         ERR_EXIT();
     }
 
@@ -1136,24 +1149,23 @@ end:
     return ret;
 }
 
-static int systeminfo_module_get_memory_subcommand(AlteratorCtlSystemInfoModule *module, alteratorctl_ctx_t **ctx)
+static int systeminfo_module_get_memory_subcommand(AlteratorCtlSystemInfoModule* module,
+                                                   alteratorctl_ctx_t** ctx)
 {
     int ret                 = 0;
-    dbus_ctx_t *d_ctx       = NULL;
-    GError *dbus_call_error = NULL;
+    dbus_ctx_t* d_ctx       = NULL;
+    GError* dbus_call_error = NULL;
 
     if (!module)
     {
-        g_printerr(
-            _("Internal error in systeminfo module - AlteratorCtlSystemInfoModule *module is NULL in \"systeminfo "
-              "memory\".\n"));
+        g_printerr(_("Internal error in systeminfo module - AlteratorCtlSystemInfoModule *module "
+                     "is NULL in \"systeminfo "
+                     "memory\".\n"));
         ERR_EXIT();
     }
 
-    d_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME,
-                          ALTERATOR_SYSTEMINFO_PATH,
-                          SYSTEMINFO_INTERFACE_NAME,
-                          SYSTEMINFO_GET_MEMORY_METHOD_NAME,
+    d_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME, ALTERATOR_SYSTEMINFO_PATH,
+                          SYSTEMINFO_INTERFACE_NAME, SYSTEMINFO_GET_MEMORY_METHOD_NAME,
                           module->alterator_ctl_app->arguments->verbose);
 
     if (!d_ctx)
@@ -1172,8 +1184,7 @@ static int systeminfo_module_get_memory_subcommand(AlteratorCtlSystemInfoModule 
     {
         g_printerr(_("Object %s and/or interface %s doesn't "
                      "exists.\n"),
-                   ALTERATOR_SYSTEMINFO_PATH,
-                   SYSTEMINFO_INTERFACE_NAME);
+                   ALTERATOR_SYSTEMINFO_PATH, SYSTEMINFO_INTERFACE_NAME);
         is_dbus_call_error = TRUE;
         ERR_EXIT();
     }
@@ -1186,14 +1197,15 @@ static int systeminfo_module_get_memory_subcommand(AlteratorCtlSystemInfoModule 
 
     if (d_ctx->result)
         if ((*ctx)->results)
-            g_hash_table_insert((GHashTable *) (*ctx)->results,
+            g_hash_table_insert((GHashTable*) (*ctx)->results,
                                 (gpointer) SYSTEMINFO_DESCRIPRION_MEMORY_KEY,
                                 (gpointer) (g_variant_ref(d_ctx->result)));
         else
             (*ctx)->results = (gpointer) g_variant_ref(d_ctx->result);
     else if (!(*ctx)->results) // Hide property if no value is received
     {
-        g_printerr(_("D-Bus error in systeminfo module while calling GetMemory(): failed to produce a result.\n"));
+        g_printerr(_("D-Bus error in systeminfo module while calling GetMemory(): failed to "
+                     "produce a result.\n"));
         ERR_EXIT();
     }
 
@@ -1206,24 +1218,23 @@ end:
     return ret;
 }
 
-static int systeminfo_module_get_drive_subcommand(AlteratorCtlSystemInfoModule *module, alteratorctl_ctx_t **ctx)
+static int systeminfo_module_get_drive_subcommand(AlteratorCtlSystemInfoModule* module,
+                                                  alteratorctl_ctx_t** ctx)
 {
     int ret                 = 0;
-    dbus_ctx_t *d_ctx       = NULL;
-    GError *dbus_call_error = NULL;
+    dbus_ctx_t* d_ctx       = NULL;
+    GError* dbus_call_error = NULL;
 
     if (!module)
     {
-        g_printerr(
-            _("Internal error in systeminfo module - AlteratorCtlSystemInfoModule *module is NULL in \"systeminfo "
-              "drive\".\n"));
+        g_printerr(_("Internal error in systeminfo module - AlteratorCtlSystemInfoModule *module "
+                     "is NULL in \"systeminfo "
+                     "drive\".\n"));
         ERR_EXIT();
     }
 
-    d_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME,
-                          ALTERATOR_SYSTEMINFO_PATH,
-                          SYSTEMINFO_INTERFACE_NAME,
-                          SYSTEMINFO_GET_DRIVE_METHOD_NAME,
+    d_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME, ALTERATOR_SYSTEMINFO_PATH,
+                          SYSTEMINFO_INTERFACE_NAME, SYSTEMINFO_GET_DRIVE_METHOD_NAME,
                           module->alterator_ctl_app->arguments->verbose);
 
     if (!d_ctx)
@@ -1242,8 +1253,7 @@ static int systeminfo_module_get_drive_subcommand(AlteratorCtlSystemInfoModule *
     {
         g_printerr(_("Object %s and/or interface %s doesn't "
                      "exists.\n"),
-                   ALTERATOR_SYSTEMINFO_PATH,
-                   SYSTEMINFO_INTERFACE_NAME);
+                   ALTERATOR_SYSTEMINFO_PATH, SYSTEMINFO_INTERFACE_NAME);
         is_dbus_call_error = TRUE;
         ERR_EXIT();
     }
@@ -1256,14 +1266,15 @@ static int systeminfo_module_get_drive_subcommand(AlteratorCtlSystemInfoModule *
 
     if (d_ctx->result)
         if ((*ctx)->results)
-            g_hash_table_insert((GHashTable *) (*ctx)->results,
+            g_hash_table_insert((GHashTable*) (*ctx)->results,
                                 (gpointer) SYSTEMINFO_DESCRIPRION_DRIVE_KEY,
                                 (gpointer) (g_variant_ref(d_ctx->result)));
         else
             (*ctx)->results = (gpointer) g_variant_ref(d_ctx->result);
     else if (!(*ctx)->results) // Hide property if no value is received
     {
-        g_printerr(_("D-Bus error in systeminfo module while calling GetDrive(): failed to produce a result.\n"));
+        g_printerr(_("D-Bus error in systeminfo module while calling GetDrive(): failed to produce "
+                     "a result.\n"));
         ERR_EXIT();
     }
 
@@ -1276,24 +1287,23 @@ end:
     return ret;
 }
 
-static int systeminfo_module_get_monitor_subcommand(AlteratorCtlSystemInfoModule *module, alteratorctl_ctx_t **ctx)
+static int systeminfo_module_get_monitor_subcommand(AlteratorCtlSystemInfoModule* module,
+                                                    alteratorctl_ctx_t** ctx)
 {
     int ret                 = 0;
-    dbus_ctx_t *d_ctx       = NULL;
-    GError *dbus_call_error = NULL;
+    dbus_ctx_t* d_ctx       = NULL;
+    GError* dbus_call_error = NULL;
 
     if (!module)
     {
-        g_printerr(
-            _("Internal error in systeminfo module - AlteratorCtlSystemInfoModule *module is NULL in \"systeminfo "
-              "monitor\".\n"));
+        g_printerr(_("Internal error in systeminfo module - AlteratorCtlSystemInfoModule *module "
+                     "is NULL in \"systeminfo "
+                     "monitor\".\n"));
         ERR_EXIT();
     }
 
-    d_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME,
-                          ALTERATOR_SYSTEMINFO_PATH,
-                          SYSTEMINFO_INTERFACE_NAME,
-                          SYSTEMINFO_GET_MONITOR_METHOD_NAME,
+    d_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME, ALTERATOR_SYSTEMINFO_PATH,
+                          SYSTEMINFO_INTERFACE_NAME, SYSTEMINFO_GET_MONITOR_METHOD_NAME,
                           module->alterator_ctl_app->arguments->verbose);
 
     if (!d_ctx)
@@ -1312,8 +1322,7 @@ static int systeminfo_module_get_monitor_subcommand(AlteratorCtlSystemInfoModule
     {
         g_printerr(_("Object %s and/or interface %s doesn't "
                      "exists.\n"),
-                   ALTERATOR_SYSTEMINFO_PATH,
-                   SYSTEMINFO_INTERFACE_NAME);
+                   ALTERATOR_SYSTEMINFO_PATH, SYSTEMINFO_INTERFACE_NAME);
         is_dbus_call_error = TRUE;
         ERR_EXIT();
     }
@@ -1326,14 +1335,15 @@ static int systeminfo_module_get_monitor_subcommand(AlteratorCtlSystemInfoModule
 
     if (d_ctx->result)
         if ((*ctx)->results)
-            g_hash_table_insert((GHashTable *) (*ctx)->results,
+            g_hash_table_insert((GHashTable*) (*ctx)->results,
                                 (gpointer) SYSTEMINFO_DESCRIPRION_MONITOR_KEY,
                                 (gpointer) (g_variant_ref(d_ctx->result)));
         else
             (*ctx)->results = (gpointer) g_variant_ref(d_ctx->result);
     else if (!(*ctx)->results) // Hide property if no value is received
     {
-        g_printerr(_("D-Bus error in systeminfo module while calling GetMonitor(): failed to produce a result.\n"));
+        g_printerr(_("D-Bus error in systeminfo module while calling GetMonitor(): failed to "
+                     "produce a result.\n"));
         ERR_EXIT();
     }
 
@@ -1346,28 +1356,28 @@ end:
     return ret;
 }
 
-static int systeminfo_module_get_motherboard_subcommand(AlteratorCtlSystemInfoModule *module, alteratorctl_ctx_t **ctx)
+static int systeminfo_module_get_motherboard_subcommand(AlteratorCtlSystemInfoModule* module,
+                                                        alteratorctl_ctx_t** ctx)
 {
     int ret                 = 0;
-    dbus_ctx_t *d_ctx       = NULL;
-    GError *dbus_call_error = NULL;
+    dbus_ctx_t* d_ctx       = NULL;
+    GError* dbus_call_error = NULL;
 
     if (!module)
     {
-        g_printerr(
-            _("Internal error in systeminfo module - AlteratorCtlSystemInfoModule *module is NULL in \"systeminfo "
-              "motherboard\".\n"));
+        g_printerr(_("Internal error in systeminfo module - AlteratorCtlSystemInfoModule *module "
+                     "is NULL in \"systeminfo "
+                     "motherboard\".\n"));
         ERR_EXIT();
     }
-    d_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME,
-                          ALTERATOR_SYSTEMINFO_PATH,
-                          SYSTEMINFO_INTERFACE_NAME,
-                          SYSTEMINFO_GET_MOTHERBOARD_METHOD_NAME,
+    d_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME, ALTERATOR_SYSTEMINFO_PATH,
+                          SYSTEMINFO_INTERFACE_NAME, SYSTEMINFO_GET_MOTHERBOARD_METHOD_NAME,
                           module->alterator_ctl_app->arguments->verbose);
 
     if (!d_ctx)
     {
-        g_printerr(_("Can't allocate dbus_ctx_t in systeminfo_module_get_motherboard_subcommand\n"));
+        g_printerr(
+            _("Can't allocate dbus_ctx_t in systeminfo_module_get_motherboard_subcommand\n"));
         ERR_EXIT();
     }
 
@@ -1381,8 +1391,7 @@ static int systeminfo_module_get_motherboard_subcommand(AlteratorCtlSystemInfoMo
     {
         g_printerr(_("Object %s and/or interface %s doesn't "
                      "exists.\n"),
-                   ALTERATOR_SYSTEMINFO_PATH,
-                   SYSTEMINFO_INTERFACE_NAME);
+                   ALTERATOR_SYSTEMINFO_PATH, SYSTEMINFO_INTERFACE_NAME);
         is_dbus_call_error = TRUE;
         ERR_EXIT();
     }
@@ -1395,14 +1404,15 @@ static int systeminfo_module_get_motherboard_subcommand(AlteratorCtlSystemInfoMo
 
     if (d_ctx->result)
         if ((*ctx)->results)
-            g_hash_table_insert((GHashTable *) (*ctx)->results,
+            g_hash_table_insert((GHashTable*) (*ctx)->results,
                                 (gpointer) SYSTEMINFO_DESCRIPRION_MOTHERBOARD_KEY,
                                 (gpointer) (g_variant_ref(d_ctx->result)));
         else
             (*ctx)->results = (gpointer) g_variant_ref(d_ctx->result);
     else if (!(*ctx)->results) // Hide property if no value is received
     {
-        g_printerr(_("D-Bus error in systeminfo module while calling GetMotherboard(): failed to produce a result.\n"));
+        g_printerr(_("D-Bus error in systeminfo module while calling GetMotherboard(): failed to "
+                     "produce a result.\n"));
         ERR_EXIT();
     }
 
@@ -1415,24 +1425,23 @@ end:
     return ret;
 }
 
-static int systeminfo_module_get_locales_subcommand(AlteratorCtlSystemInfoModule *module, alteratorctl_ctx_t **ctx)
+static int systeminfo_module_get_locales_subcommand(AlteratorCtlSystemInfoModule* module,
+                                                    alteratorctl_ctx_t** ctx)
 {
     int ret                 = 0;
-    dbus_ctx_t *d_ctx       = NULL;
-    GError *dbus_call_error = NULL;
+    dbus_ctx_t* d_ctx       = NULL;
+    GError* dbus_call_error = NULL;
 
     if (!module)
     {
-        g_printerr(
-            _("Internal error in systeminfo module - AlteratorCtlSystemInfoModule *module is NULL in \"systeminfo "
-              "locales\".\n"));
+        g_printerr(_("Internal error in systeminfo module - AlteratorCtlSystemInfoModule *module "
+                     "is NULL in \"systeminfo "
+                     "locales\".\n"));
         ERR_EXIT();
     }
 
-    d_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME,
-                          ALTERATOR_SYSTEMINFO_PATH,
-                          SYSTEMINFO_INTERFACE_NAME,
-                          SYSTEMINFO_GET_LOCALES_METHOD_NAME,
+    d_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME, ALTERATOR_SYSTEMINFO_PATH,
+                          SYSTEMINFO_INTERFACE_NAME, SYSTEMINFO_GET_LOCALES_METHOD_NAME,
                           module->alterator_ctl_app->arguments->verbose);
 
     if (!d_ctx)
@@ -1451,8 +1460,7 @@ static int systeminfo_module_get_locales_subcommand(AlteratorCtlSystemInfoModule
     {
         g_printerr(_("Object %s and/or interface %s doesn't "
                      "exists.\n"),
-                   ALTERATOR_SYSTEMINFO_PATH,
-                   SYSTEMINFO_INTERFACE_NAME);
+                   ALTERATOR_SYSTEMINFO_PATH, SYSTEMINFO_INTERFACE_NAME);
         is_dbus_call_error = TRUE;
         ERR_EXIT();
     }
@@ -1465,14 +1473,15 @@ static int systeminfo_module_get_locales_subcommand(AlteratorCtlSystemInfoModule
 
     if (d_ctx->result)
         if ((*ctx)->results)
-            g_hash_table_insert((GHashTable *) (*ctx)->results,
+            g_hash_table_insert((GHashTable*) (*ctx)->results,
                                 (gpointer) SYSTEMINFO_DESCRIPRION_LOCALES_KEY,
                                 (gpointer) (g_variant_ref(d_ctx->result)));
         else
             (*ctx)->results = (gpointer) g_variant_ref(d_ctx->result);
     else if (!(*ctx)->results) // Hide property if no value is received
     {
-        g_printerr(_("D-Bus error in systeminfo module while calling GetLocales(): failed to produce a result.\n"));
+        g_printerr(_("D-Bus error in systeminfo module while calling GetLocales(): failed to "
+                     "produce a result.\n"));
         ERR_EXIT();
     }
 
@@ -1485,22 +1494,22 @@ end:
     return ret;
 }
 
-static int systeminfo_module_get_desktops_subcommand(AlteratorCtlSystemInfoModule *module, alteratorctl_ctx_t **ctx)
+static int systeminfo_module_get_desktops_subcommand(AlteratorCtlSystemInfoModule* module,
+                                                     alteratorctl_ctx_t** ctx)
 {
     int ret                 = 0;
-    dbus_ctx_t *d_ctx       = NULL;
-    GError *dbus_call_error = NULL;
+    dbus_ctx_t* d_ctx       = NULL;
+    GError* dbus_call_error = NULL;
 
     if (!module)
     {
-        g_printerr(
-            _("Internal error in systeminfo module - AlteratorCtlSystemInfoModule *module is NULL in \"systeminfo "
-              "desktops\".\n"));
+        g_printerr(_("Internal error in systeminfo module - AlteratorCtlSystemInfoModule *module "
+                     "is NULL in \"systeminfo "
+                     "desktops\".\n"));
         ERR_EXIT();
     }
 
-    d_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME,
-                          ALTERATOR_SYSTEMINFO_PATH,
+    d_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME, ALTERATOR_SYSTEMINFO_PATH,
                           SYSTEMINFO_INTERFACE_NAME,
                           SYSTEMINFO_GET_DESKTOP_ENVIRONMENTS_METHOD_NAME,
                           module->alterator_ctl_app->arguments->verbose);
@@ -1521,8 +1530,7 @@ static int systeminfo_module_get_desktops_subcommand(AlteratorCtlSystemInfoModul
     {
         g_printerr(_("Object %s and/or interface %s doesn't "
                      "exists.\n"),
-                   ALTERATOR_SYSTEMINFO_PATH,
-                   SYSTEMINFO_INTERFACE_NAME);
+                   ALTERATOR_SYSTEMINFO_PATH, SYSTEMINFO_INTERFACE_NAME);
         is_dbus_call_error = TRUE;
         ERR_EXIT();
     }
@@ -1535,14 +1543,15 @@ static int systeminfo_module_get_desktops_subcommand(AlteratorCtlSystemInfoModul
 
     if (d_ctx->result)
         if ((*ctx)->results)
-            g_hash_table_insert((GHashTable *) (*ctx)->results,
+            g_hash_table_insert((GHashTable*) (*ctx)->results,
                                 (gpointer) SYSTEMINFO_DESCRIPRION_DESKTOPS_ENVIRONMENTS_KEY,
                                 (gpointer) (g_variant_ref(d_ctx->result)));
         else
             (*ctx)->results = (gpointer) g_variant_ref(d_ctx->result);
     else if (!(*ctx)->results) // Hide property if no value is received
     {
-        g_printerr(_("D-Bus error in systeminfo module while calling ListDesktopEnvironments(): failed to produce a "
+        g_printerr(_("D-Bus error in systeminfo module while calling ListDesktopEnvironments(): "
+                     "failed to produce a "
                      "result.\n"));
         ERR_EXIT();
     }
@@ -1556,7 +1565,8 @@ end:
     return ret;
 }
 
-static int systeminfo_module_handle_results(AlteratorCtlSystemInfoModule *module, alteratorctl_ctx_t **ctx)
+static int systeminfo_module_handle_results(AlteratorCtlSystemInfoModule* module,
+                                            alteratorctl_ctx_t** ctx)
 {
     int ret = 0;
     if (!module)
@@ -1655,16 +1665,18 @@ end:
     return ret;
 }
 
-static int systeminfo_module_get_license_handle_result(AlteratorCtlSystemInfoModule *module, alteratorctl_ctx_t **ctx)
+static int systeminfo_module_get_license_handle_result(AlteratorCtlSystemInfoModule* module,
+                                                       alteratorctl_ctx_t** ctx)
 {
     int ret                 = 0;
-    GVariant *answer_array  = NULL;
-    gchar *dbus_result_text = NULL;
-    GVariant *exit_code     = NULL;
+    GVariant* answer_array  = NULL;
+    gchar* dbus_result_text = NULL;
+    GVariant* exit_code     = NULL;
 
     if (!(*ctx)->results)
     {
-        g_printerr(_("D-Bus error in systeminfo license handle result: failed to produce a result.\n"));
+        g_printerr(
+            _("D-Bus error in systeminfo license handle result: failed to produce a result.\n"));
         ERR_EXIT();
     }
 
@@ -1711,11 +1723,11 @@ end:
     return ret;
 }
 
-static int systeminfo_module_get_description_handle_result(AlteratorCtlSystemInfoModule *module,
-                                                           alteratorctl_ctx_t **ctx)
+static int systeminfo_module_get_description_handle_result(AlteratorCtlSystemInfoModule* module,
+                                                           alteratorctl_ctx_t** ctx)
 {
     int ret           = 0;
-    GPtrArray *result = g_ptr_array_new_full(0, (GDestroyNotify) g_free);
+    GPtrArray* result = g_ptr_array_new_full(0, (GDestroyNotify) g_free);
 
     if (systeminfo_module_get_hostname_handle_result(module, ctx, &result) < 0)
         ERR_EXIT();
@@ -1758,7 +1770,7 @@ static int systeminfo_module_get_description_handle_result(AlteratorCtlSystemInf
 
     g_ptr_array_sort(result, systeminfo_module_sort_result);
     for (gsize i = 0; i < result->len; i++)
-        g_print("%s\n", (gchar *) result->pdata[i]);
+        g_print("%s\n", (gchar*) result->pdata[i]);
 
 end:
     if (result)
@@ -1767,22 +1779,23 @@ end:
     return ret;
 }
 
-static int systeminfo_module_get_hostname_handle_result(AlteratorCtlSystemInfoModule *module,
-                                                        alteratorctl_ctx_t **ctx,
-                                                        GPtrArray **result_str)
+static int systeminfo_module_get_hostname_handle_result(AlteratorCtlSystemInfoModule* module,
+                                                        alteratorctl_ctx_t** ctx,
+                                                        GPtrArray** result_str)
 {
     int ret                         = 0;
-    GVariant *answer                = NULL;
-    GVariantDict *answer_dictionary = NULL;
-    GVariant *dict_value            = NULL;
-    GVariant *exit_code             = NULL;
-    gchar *textual_result           = NULL;
+    GVariant* answer                = NULL;
+    GVariantDict* answer_dictionary = NULL;
+    GVariant* dict_value            = NULL;
+    GVariant* exit_code             = NULL;
+    gchar* textual_result           = NULL;
 
     if (!(*ctx)->results)
     {
         if (g_variant_is_of_type((*ctx)->results, G_VARIANT_TYPE("a{sv}")))
             return ret;
-        g_printerr(_("D-Bus error in systeminfo hostname handle result: failed to produce a result.\n"));
+        g_printerr(
+            _("D-Bus error in systeminfo hostname handle result: failed to produce a result.\n"));
         ERR_EXIT();
     }
 
@@ -1801,22 +1814,25 @@ static int systeminfo_module_get_hostname_handle_result(AlteratorCtlSystemInfoMo
             ERR_EXIT();
         }
 
-        answer_dictionary = g_variant_dict_new((GVariant *) (*ctx)->results);
-        if (!(dict_value = g_variant_dict_lookup_value(answer_dictionary, SYSTEMINFO_DESCRIPRION_HOST_NAME_KEY, NULL)))
+        answer_dictionary = g_variant_dict_new((GVariant*) (*ctx)->results);
+        if (!(dict_value = g_variant_dict_lookup_value(answer_dictionary,
+                                                       SYSTEMINFO_DESCRIPRION_HOST_NAME_KEY, NULL)))
         {
             g_printerr(_("Failed to get host name.\n"));
             ERR_EXIT();
         }
     }
 
-    answer = dict_value ? g_variant_get_child_value(dict_value, 0) : g_variant_get_child_value((*ctx)->results, 0);
+    answer = dict_value ? g_variant_get_child_value(dict_value, 0)
+                        : g_variant_get_child_value((*ctx)->results, 0);
 
-    gchar **str_result_part_arr = (gchar **) g_variant_dup_strv(answer, NULL);
-    gchar *str_result_part      = str_result_part_arr ? g_strjoinv(NULL, str_result_part_arr) : NULL;
+    gchar** str_result_part_arr = (gchar**) g_variant_dup_strv(answer, NULL);
+    gchar* str_result_part = str_result_part_arr ? g_strjoinv(NULL, str_result_part_arr) : NULL;
     if (str_result_part && strlen(str_result_part))
     {
         if (answer_dictionary)
-            textual_result = g_strconcat(SYSTEMINFO_DESCRIPRION_HOST_NAME_KEY, " ", str_result_part, NULL);
+            textual_result = g_strconcat(SYSTEMINFO_DESCRIPRION_HOST_NAME_KEY, " ", str_result_part,
+                                         NULL);
         else
             textual_result = g_strdup(str_result_part);
     }
@@ -1833,7 +1849,8 @@ static int systeminfo_module_get_hostname_handle_result(AlteratorCtlSystemInfoMo
     g_free(str_result_part);
     g_strfreev(str_result_part_arr);
 
-    exit_code = dict_value ? g_variant_get_child_value(dict_value, 1) : g_variant_get_child_value((*ctx)->results, 1);
+    exit_code = dict_value ? g_variant_get_child_value(dict_value, 1)
+                           : g_variant_get_child_value((*ctx)->results, 1);
     ret       = g_variant_get_int32(exit_code);
 
     if (!g_variant_is_of_type((*ctx)->results, G_VARIANT_TYPE("a{sv}")) && ret)
@@ -1873,22 +1890,22 @@ end:
     return ret;
 }
 
-static int systeminfo_module_get_operation_system_name_handle_result(AlteratorCtlSystemInfoModule *module,
-                                                                     alteratorctl_ctx_t **ctx,
-                                                                     GPtrArray **result_str)
+static int systeminfo_module_get_operation_system_name_handle_result(
+    AlteratorCtlSystemInfoModule* module, alteratorctl_ctx_t** ctx, GPtrArray** result_str)
 {
     int ret                         = 0;
-    GVariant *answer                = NULL;
-    GVariantDict *answer_dictionary = NULL;
-    GVariant *dict_value            = NULL;
-    GVariant *exit_code             = NULL;
-    gchar *textual_result           = NULL;
+    GVariant* answer                = NULL;
+    GVariantDict* answer_dictionary = NULL;
+    GVariant* dict_value            = NULL;
+    GVariant* exit_code             = NULL;
+    gchar* textual_result           = NULL;
 
     if (!(*ctx)->results)
     {
         if (g_variant_is_of_type((*ctx)->results, G_VARIANT_TYPE("a{sv}")))
             return ret;
-        g_printerr(_("D-Bus error in systeminfo name handle result: failed to produce a result.\n"));
+        g_printerr(
+            _("D-Bus error in systeminfo name handle result: failed to produce a result.\n"));
         ERR_EXIT();
     }
 
@@ -1907,22 +1924,25 @@ static int systeminfo_module_get_operation_system_name_handle_result(AlteratorCt
             ERR_EXIT();
         }
 
-        answer_dictionary = g_variant_dict_new((GVariant *) (*ctx)->results);
-        if (!(dict_value = g_variant_dict_lookup_value(answer_dictionary, SYSTEMINFO_DESCRIPRION_OS_NAME_KEY, NULL)))
+        answer_dictionary = g_variant_dict_new((GVariant*) (*ctx)->results);
+        if (!(dict_value = g_variant_dict_lookup_value(answer_dictionary,
+                                                       SYSTEMINFO_DESCRIPRION_OS_NAME_KEY, NULL)))
         {
             g_printerr(_("Failed to get OS name.\n"));
             ERR_EXIT();
         }
     }
 
-    answer = dict_value ? g_variant_get_child_value(dict_value, 0) : g_variant_get_child_value((*ctx)->results, 0);
+    answer = dict_value ? g_variant_get_child_value(dict_value, 0)
+                        : g_variant_get_child_value((*ctx)->results, 0);
 
-    gchar **str_result_part_arr = (gchar **) g_variant_dup_strv(answer, NULL);
-    gchar *str_result_part      = str_result_part_arr ? g_strjoinv(NULL, str_result_part_arr) : NULL;
+    gchar** str_result_part_arr = (gchar**) g_variant_dup_strv(answer, NULL);
+    gchar* str_result_part = str_result_part_arr ? g_strjoinv(NULL, str_result_part_arr) : NULL;
     if (str_result_part && strlen(str_result_part))
     {
         if (answer_dictionary)
-            textual_result = g_strconcat(SYSTEMINFO_DESCRIPRION_OS_NAME_KEY, " ", str_result_part, NULL);
+            textual_result = g_strconcat(SYSTEMINFO_DESCRIPRION_OS_NAME_KEY, " ", str_result_part,
+                                         NULL);
         else
             textual_result = g_strdup(str_result_part);
     }
@@ -1939,7 +1959,8 @@ static int systeminfo_module_get_operation_system_name_handle_result(AlteratorCt
     g_free(str_result_part);
     g_strfreev(str_result_part_arr);
 
-    exit_code = dict_value ? g_variant_get_child_value(dict_value, 1) : g_variant_get_child_value((*ctx)->results, 1);
+    exit_code = dict_value ? g_variant_get_child_value(dict_value, 1)
+                           : g_variant_get_child_value((*ctx)->results, 1);
     ret       = g_variant_get_int32(exit_code);
 
     if (!g_variant_is_of_type((*ctx)->results, G_VARIANT_TYPE("a{sv}")) && ret)
@@ -1979,22 +2000,23 @@ end:
     return ret;
 }
 
-static int systeminfo_module_get_arch_handle_result(AlteratorCtlSystemInfoModule *module,
-                                                    alteratorctl_ctx_t **ctx,
-                                                    GPtrArray **result_str)
+static int systeminfo_module_get_arch_handle_result(AlteratorCtlSystemInfoModule* module,
+                                                    alteratorctl_ctx_t** ctx,
+                                                    GPtrArray** result_str)
 {
     int ret                         = 0;
-    GVariant *answer                = NULL;
-    GVariantDict *answer_dictionary = NULL;
-    GVariant *dict_value            = NULL;
-    GVariant *exit_code             = NULL;
-    gchar *textual_result           = NULL;
+    GVariant* answer                = NULL;
+    GVariantDict* answer_dictionary = NULL;
+    GVariant* dict_value            = NULL;
+    GVariant* exit_code             = NULL;
+    gchar* textual_result           = NULL;
 
     if (!(*ctx)->results)
     {
         if (g_variant_is_of_type((*ctx)->results, G_VARIANT_TYPE("a{sv}")))
             return ret;
-        g_printerr(_("D-Bus error in systeminfo arch handle result: failed to produce a result.\n"));
+        g_printerr(
+            _("D-Bus error in systeminfo arch handle result: failed to produce a result.\n"));
         ERR_EXIT();
         return ret;
     }
@@ -2014,22 +2036,25 @@ static int systeminfo_module_get_arch_handle_result(AlteratorCtlSystemInfoModule
             ERR_EXIT();
         }
 
-        answer_dictionary = g_variant_dict_new((GVariant *) (*ctx)->results);
-        if (!(dict_value = g_variant_dict_lookup_value(answer_dictionary, SYSTEMINFO_DESCRIPRION_ARCH_KEY, NULL)))
+        answer_dictionary = g_variant_dict_new((GVariant*) (*ctx)->results);
+        if (!(dict_value = g_variant_dict_lookup_value(answer_dictionary,
+                                                       SYSTEMINFO_DESCRIPRION_ARCH_KEY, NULL)))
         {
             g_printerr(_("Failed to get arch.\n"));
             ERR_EXIT();
         }
     }
 
-    answer = dict_value ? g_variant_get_child_value(dict_value, 0) : g_variant_get_child_value((*ctx)->results, 0);
+    answer = dict_value ? g_variant_get_child_value(dict_value, 0)
+                        : g_variant_get_child_value((*ctx)->results, 0);
 
-    gchar **str_result_part_arr = (gchar **) g_variant_dup_strv(answer, NULL);
-    gchar *str_result_part      = str_result_part_arr ? g_strjoinv(NULL, str_result_part_arr) : NULL;
+    gchar** str_result_part_arr = (gchar**) g_variant_dup_strv(answer, NULL);
+    gchar* str_result_part = str_result_part_arr ? g_strjoinv(NULL, str_result_part_arr) : NULL;
     if (str_result_part && strlen(str_result_part))
     {
         if (answer_dictionary)
-            textual_result = g_strconcat(SYSTEMINFO_DESCRIPRION_ARCH_KEY, " ", str_result_part, NULL);
+            textual_result = g_strconcat(SYSTEMINFO_DESCRIPRION_ARCH_KEY, " ", str_result_part,
+                                         NULL);
         else
             textual_result = g_strdup(str_result_part);
     }
@@ -2046,7 +2071,8 @@ static int systeminfo_module_get_arch_handle_result(AlteratorCtlSystemInfoModule
     g_free(str_result_part);
     g_strfreev(str_result_part_arr);
 
-    exit_code = dict_value ? g_variant_get_child_value(dict_value, 1) : g_variant_get_child_value((*ctx)->results, 1);
+    exit_code = dict_value ? g_variant_get_child_value(dict_value, 1)
+                           : g_variant_get_child_value((*ctx)->results, 1);
     ret       = g_variant_get_int32(exit_code);
 
     if (!g_variant_is_of_type((*ctx)->results, G_VARIANT_TYPE("a{sv}")) && ret)
@@ -2086,22 +2112,23 @@ end:
     return ret;
 }
 
-static int systeminfo_module_get_branch_handle_result(AlteratorCtlSystemInfoModule *module,
-                                                      alteratorctl_ctx_t **ctx,
-                                                      GPtrArray **result_str)
+static int systeminfo_module_get_branch_handle_result(AlteratorCtlSystemInfoModule* module,
+                                                      alteratorctl_ctx_t** ctx,
+                                                      GPtrArray** result_str)
 {
     int ret                         = 0;
-    GVariant *answer                = NULL;
-    GVariantDict *answer_dictionary = NULL;
-    GVariant *dict_value            = NULL;
-    GVariant *exit_code             = NULL;
-    gchar *textual_result           = NULL;
+    GVariant* answer                = NULL;
+    GVariantDict* answer_dictionary = NULL;
+    GVariant* dict_value            = NULL;
+    GVariant* exit_code             = NULL;
+    gchar* textual_result           = NULL;
 
     if (!(*ctx)->results)
     {
         if (g_variant_is_of_type((*ctx)->results, G_VARIANT_TYPE("a{sv}")))
             return ret;
-        g_printerr(_("D-Bus error in systeminfo branch handle result: failed to produce a result.\n"));
+        g_printerr(
+            _("D-Bus error in systeminfo branch handle result: failed to produce a result.\n"));
         ERR_EXIT();
     }
 
@@ -2120,22 +2147,25 @@ static int systeminfo_module_get_branch_handle_result(AlteratorCtlSystemInfoModu
             ERR_EXIT();
         }
 
-        answer_dictionary = g_variant_dict_new((GVariant *) (*ctx)->results);
-        if (!(dict_value = g_variant_dict_lookup_value(answer_dictionary, SYSTEMINFO_DESCRIPRION_BRANCH_KEY, NULL)))
+        answer_dictionary = g_variant_dict_new((GVariant*) (*ctx)->results);
+        if (!(dict_value = g_variant_dict_lookup_value(answer_dictionary,
+                                                       SYSTEMINFO_DESCRIPRION_BRANCH_KEY, NULL)))
         {
             g_printerr(_("Failed to get branch name.\n"));
             ERR_EXIT();
         }
     }
 
-    answer = dict_value ? g_variant_get_child_value(dict_value, 0) : g_variant_get_child_value((*ctx)->results, 0);
+    answer = dict_value ? g_variant_get_child_value(dict_value, 0)
+                        : g_variant_get_child_value((*ctx)->results, 0);
 
-    gchar **str_result_part_arr = (gchar **) g_variant_dup_strv(answer, NULL);
-    gchar *str_result_part      = str_result_part_arr ? g_strjoinv(NULL, str_result_part_arr) : NULL;
+    gchar** str_result_part_arr = (gchar**) g_variant_dup_strv(answer, NULL);
+    gchar* str_result_part = str_result_part_arr ? g_strjoinv(NULL, str_result_part_arr) : NULL;
     if (str_result_part && strlen(str_result_part))
     {
         if (answer_dictionary)
-            textual_result = g_strconcat(SYSTEMINFO_DESCRIPRION_BRANCH_KEY, " ", str_result_part, NULL);
+            textual_result = g_strconcat(SYSTEMINFO_DESCRIPRION_BRANCH_KEY, " ", str_result_part,
+                                         NULL);
         else
             textual_result = g_strdup(str_result_part);
     }
@@ -2152,7 +2182,8 @@ static int systeminfo_module_get_branch_handle_result(AlteratorCtlSystemInfoModu
     g_free(str_result_part);
     g_strfreev(str_result_part_arr);
 
-    exit_code = dict_value ? g_variant_get_child_value(dict_value, 1) : g_variant_get_child_value((*ctx)->results, 1);
+    exit_code = dict_value ? g_variant_get_child_value(dict_value, 1)
+                           : g_variant_get_child_value((*ctx)->results, 1);
     ret       = g_variant_get_int32(exit_code);
 
     if (!g_variant_is_of_type((*ctx)->results, G_VARIANT_TYPE("a{sv}")) && ret)
@@ -2192,22 +2223,23 @@ end:
     return ret;
 }
 
-static int systeminfo_module_get_kernel_handle_result(AlteratorCtlSystemInfoModule *module,
-                                                      alteratorctl_ctx_t **ctx,
-                                                      GPtrArray **result_str)
+static int systeminfo_module_get_kernel_handle_result(AlteratorCtlSystemInfoModule* module,
+                                                      alteratorctl_ctx_t** ctx,
+                                                      GPtrArray** result_str)
 {
     int ret                         = 0;
-    GVariant *answer                = NULL;
-    GVariantDict *answer_dictionary = NULL;
-    GVariant *dict_value            = NULL;
-    GVariant *exit_code             = NULL;
-    gchar *textual_result           = NULL;
+    GVariant* answer                = NULL;
+    GVariantDict* answer_dictionary = NULL;
+    GVariant* dict_value            = NULL;
+    GVariant* exit_code             = NULL;
+    gchar* textual_result           = NULL;
 
     if (!(*ctx)->results)
     {
         if (g_variant_is_of_type((*ctx)->results, G_VARIANT_TYPE("a{sv}")))
             return ret;
-        g_printerr(_("D-Bus error in systeminfo kernel handle result: failed to produce a result.\n"));
+        g_printerr(
+            _("D-Bus error in systeminfo kernel handle result: failed to produce a result.\n"));
         ERR_EXIT();
     }
 
@@ -2226,22 +2258,25 @@ static int systeminfo_module_get_kernel_handle_result(AlteratorCtlSystemInfoModu
             ERR_EXIT();
         }
 
-        answer_dictionary = g_variant_dict_new((GVariant *) (*ctx)->results);
-        if (!(dict_value = g_variant_dict_lookup_value(answer_dictionary, SYSTEMINFO_DESCRIPRION_KERNEL_KEY, NULL)))
+        answer_dictionary = g_variant_dict_new((GVariant*) (*ctx)->results);
+        if (!(dict_value = g_variant_dict_lookup_value(answer_dictionary,
+                                                       SYSTEMINFO_DESCRIPRION_KERNEL_KEY, NULL)))
         {
             g_printerr(_("Failed to get kernel.\n"));
             ERR_EXIT();
         }
     }
 
-    answer = dict_value ? g_variant_get_child_value(dict_value, 0) : g_variant_get_child_value((*ctx)->results, 0);
+    answer = dict_value ? g_variant_get_child_value(dict_value, 0)
+                        : g_variant_get_child_value((*ctx)->results, 0);
 
-    gchar **str_result_part_arr = (gchar **) g_variant_dup_strv(answer, NULL);
-    gchar *str_result_part      = str_result_part_arr ? g_strjoinv(NULL, str_result_part_arr) : NULL;
+    gchar** str_result_part_arr = (gchar**) g_variant_dup_strv(answer, NULL);
+    gchar* str_result_part = str_result_part_arr ? g_strjoinv(NULL, str_result_part_arr) : NULL;
     if (str_result_part && strlen(str_result_part))
     {
         if (answer_dictionary)
-            textual_result = g_strconcat(SYSTEMINFO_DESCRIPRION_KERNEL_KEY, " ", str_result_part, NULL);
+            textual_result = g_strconcat(SYSTEMINFO_DESCRIPRION_KERNEL_KEY, " ", str_result_part,
+                                         NULL);
         else
             textual_result = g_strdup(str_result_part);
     }
@@ -2258,7 +2293,8 @@ static int systeminfo_module_get_kernel_handle_result(AlteratorCtlSystemInfoModu
     g_free(str_result_part);
     g_strfreev(str_result_part_arr);
 
-    exit_code = dict_value ? g_variant_get_child_value(dict_value, 1) : g_variant_get_child_value((*ctx)->results, 1);
+    exit_code = dict_value ? g_variant_get_child_value(dict_value, 1)
+                           : g_variant_get_child_value((*ctx)->results, 1);
     ret       = g_variant_get_int32(exit_code);
 
     if (!g_variant_is_of_type((*ctx)->results, G_VARIANT_TYPE("a{sv}")) && ret)
@@ -2298,17 +2334,16 @@ end:
     return ret;
 }
 
-static int systeminfo_module_get_cpu_handle_result(AlteratorCtlSystemInfoModule *module,
-                                                   alteratorctl_ctx_t **ctx,
-                                                   GPtrArray **result_str)
+static int systeminfo_module_get_cpu_handle_result(AlteratorCtlSystemInfoModule* module,
+                                                   alteratorctl_ctx_t** ctx, GPtrArray** result_str)
 {
     int ret                         = 0;
-    GVariant *answer                = NULL;
-    GVariantDict *answer_dictionary = NULL;
-    GVariant *dict_value            = NULL;
-    GVariant *exit_code             = NULL;
-    GString *result                 = g_string_new(NULL);
-    gchar **str_result_part_arr     = NULL;
+    GVariant* answer                = NULL;
+    GVariantDict* answer_dictionary = NULL;
+    GVariant* dict_value            = NULL;
+    GVariant* exit_code             = NULL;
+    GString* result                 = g_string_new(NULL);
+    gchar** str_result_part_arr     = NULL;
 
     if (!(*ctx)->results)
     {
@@ -2333,16 +2368,18 @@ static int systeminfo_module_get_cpu_handle_result(AlteratorCtlSystemInfoModule 
             ERR_EXIT();
         }
 
-        answer_dictionary = g_variant_dict_new((GVariant *) (*ctx)->results);
-        if (!(dict_value = g_variant_dict_lookup_value(answer_dictionary, SYSTEMINFO_DESCRIPRION_CPU_KEY, NULL)))
+        answer_dictionary = g_variant_dict_new((GVariant*) (*ctx)->results);
+        if (!(dict_value = g_variant_dict_lookup_value(answer_dictionary,
+                                                       SYSTEMINFO_DESCRIPRION_CPU_KEY, NULL)))
         {
             g_printerr(_("Failed to get cpu.\n"));
             ERR_EXIT();
         }
     }
 
-    answer = dict_value ? g_variant_get_child_value(dict_value, 0) : g_variant_get_child_value((*ctx)->results, 0);
-    str_result_part_arr = (gchar **) g_variant_dup_strv(answer, NULL);
+    answer              = dict_value ? g_variant_get_child_value(dict_value, 0)
+                                     : g_variant_get_child_value((*ctx)->results, 0);
+    str_result_part_arr = (gchar**) g_variant_dup_strv(answer, NULL);
     if (!str_result_part_arr || (str_result_part_arr && !g_strv_length(str_result_part_arr)))
     {
         if (!answer_dictionary)
@@ -2354,7 +2391,8 @@ static int systeminfo_module_get_cpu_handle_result(AlteratorCtlSystemInfoModule 
         goto end;
     }
 
-    exit_code = dict_value ? g_variant_get_child_value(dict_value, 1) : g_variant_get_child_value((*ctx)->results, 1);
+    exit_code = dict_value ? g_variant_get_child_value(dict_value, 1)
+                           : g_variant_get_child_value((*ctx)->results, 1);
     ret       = g_variant_get_int32(exit_code);
 
     if (!g_variant_is_of_type((*ctx)->results, G_VARIANT_TYPE("a{sv}")) && ret)
@@ -2432,16 +2470,15 @@ end:
     return ret;
 }
 
-static int systeminfo_module_get_gpu_handle_result(AlteratorCtlSystemInfoModule *module,
-                                                   alteratorctl_ctx_t **ctx,
-                                                   GPtrArray **result_str)
+static int systeminfo_module_get_gpu_handle_result(AlteratorCtlSystemInfoModule* module,
+                                                   alteratorctl_ctx_t** ctx, GPtrArray** result_str)
 {
     int ret                         = 0;
-    GVariant *answer                = NULL;
-    GVariantDict *answer_dictionary = NULL;
-    GVariant *dict_value            = NULL;
-    GVariant *exit_code             = NULL;
-    gchar *textual_result           = NULL;
+    GVariant* answer                = NULL;
+    GVariantDict* answer_dictionary = NULL;
+    GVariant* dict_value            = NULL;
+    GVariant* exit_code             = NULL;
+    gchar* textual_result           = NULL;
 
     if (!(*ctx)->results)
     {
@@ -2466,22 +2503,25 @@ static int systeminfo_module_get_gpu_handle_result(AlteratorCtlSystemInfoModule 
             ERR_EXIT();
         }
 
-        answer_dictionary = g_variant_dict_new((GVariant *) (*ctx)->results);
-        if (!(dict_value = g_variant_dict_lookup_value(answer_dictionary, SYSTEMINFO_DESCRIPRION_GPU_KEY, NULL)))
+        answer_dictionary = g_variant_dict_new((GVariant*) (*ctx)->results);
+        if (!(dict_value = g_variant_dict_lookup_value(answer_dictionary,
+                                                       SYSTEMINFO_DESCRIPRION_GPU_KEY, NULL)))
         {
             g_printerr(_("Failed to get gpu.\n"));
             ERR_EXIT();
         }
     }
 
-    answer = dict_value ? g_variant_get_child_value(dict_value, 0) : g_variant_get_child_value((*ctx)->results, 0);
+    answer = dict_value ? g_variant_get_child_value(dict_value, 0)
+                        : g_variant_get_child_value((*ctx)->results, 0);
 
-    gchar **str_result_part_arr = (gchar **) g_variant_dup_strv(answer, NULL);
-    gchar *str_result_part      = str_result_part_arr ? g_strjoinv(NULL, str_result_part_arr) : NULL;
+    gchar** str_result_part_arr = (gchar**) g_variant_dup_strv(answer, NULL);
+    gchar* str_result_part = str_result_part_arr ? g_strjoinv(NULL, str_result_part_arr) : NULL;
     if (str_result_part && strlen(str_result_part))
     {
         if (answer_dictionary)
-            textual_result = g_strconcat(SYSTEMINFO_DESCRIPRION_GPU_KEY, " ", str_result_part, NULL);
+            textual_result = g_strconcat(SYSTEMINFO_DESCRIPRION_GPU_KEY, " ", str_result_part,
+                                         NULL);
         else
             textual_result = g_strdup(str_result_part);
     }
@@ -2498,7 +2538,8 @@ static int systeminfo_module_get_gpu_handle_result(AlteratorCtlSystemInfoModule 
     g_free(str_result_part);
     g_strfreev(str_result_part_arr);
 
-    exit_code = dict_value ? g_variant_get_child_value(dict_value, 1) : g_variant_get_child_value((*ctx)->results, 1);
+    exit_code = dict_value ? g_variant_get_child_value(dict_value, 1)
+                           : g_variant_get_child_value((*ctx)->results, 1);
     ret       = g_variant_get_int32(exit_code);
 
     if (!g_variant_is_of_type((*ctx)->results, G_VARIANT_TYPE("a{sv}")) && ret)
@@ -2538,22 +2579,23 @@ end:
     return ret;
 }
 
-static int systeminfo_module_get_memory_handle_result(AlteratorCtlSystemInfoModule *module,
-                                                      alteratorctl_ctx_t **ctx,
-                                                      GPtrArray **result_str)
+static int systeminfo_module_get_memory_handle_result(AlteratorCtlSystemInfoModule* module,
+                                                      alteratorctl_ctx_t** ctx,
+                                                      GPtrArray** result_str)
 {
     int ret                         = 0;
-    GVariant *answer                = NULL;
-    GVariantDict *answer_dictionary = NULL;
-    GVariant *dict_value            = NULL;
-    GVariant *exit_code             = NULL;
-    gchar *textual_result           = NULL;
+    GVariant* answer                = NULL;
+    GVariantDict* answer_dictionary = NULL;
+    GVariant* dict_value            = NULL;
+    GVariant* exit_code             = NULL;
+    gchar* textual_result           = NULL;
 
     if (!(*ctx)->results)
     {
         if (g_variant_is_of_type((*ctx)->results, G_VARIANT_TYPE("a{sv}")))
             return ret;
-        g_printerr(_("D-Bus error in systeminfo memory handle result: failed to produce a result.\n"));
+        g_printerr(
+            _("D-Bus error in systeminfo memory handle result: failed to produce a result.\n"));
         ERR_EXIT();
     }
 
@@ -2572,22 +2614,25 @@ static int systeminfo_module_get_memory_handle_result(AlteratorCtlSystemInfoModu
             ERR_EXIT();
         }
 
-        answer_dictionary = g_variant_dict_new((GVariant *) (*ctx)->results);
-        if (!(dict_value = g_variant_dict_lookup_value(answer_dictionary, SYSTEMINFO_DESCRIPRION_MEMORY_KEY, NULL)))
+        answer_dictionary = g_variant_dict_new((GVariant*) (*ctx)->results);
+        if (!(dict_value = g_variant_dict_lookup_value(answer_dictionary,
+                                                       SYSTEMINFO_DESCRIPRION_MEMORY_KEY, NULL)))
         {
             g_printerr(_("Failed to get memory.\n"));
             ERR_EXIT();
         }
     }
 
-    answer = dict_value ? g_variant_get_child_value(dict_value, 0) : g_variant_get_child_value((*ctx)->results, 0);
+    answer = dict_value ? g_variant_get_child_value(dict_value, 0)
+                        : g_variant_get_child_value((*ctx)->results, 0);
 
-    gchar **str_result_part_arr = (gchar **) g_variant_dup_strv(answer, NULL);
-    gchar *str_result_part      = str_result_part_arr ? g_strjoinv(NULL, str_result_part_arr) : NULL;
+    gchar** str_result_part_arr = (gchar**) g_variant_dup_strv(answer, NULL);
+    gchar* str_result_part = str_result_part_arr ? g_strjoinv(NULL, str_result_part_arr) : NULL;
     if (str_result_part && strlen(str_result_part))
     {
         if (answer_dictionary)
-            textual_result = g_strconcat(SYSTEMINFO_DESCRIPRION_MEMORY_KEY, " ", str_result_part, NULL);
+            textual_result = g_strconcat(SYSTEMINFO_DESCRIPRION_MEMORY_KEY, " ", str_result_part,
+                                         NULL);
         else
             textual_result = g_strdup(str_result_part);
     }
@@ -2604,7 +2649,8 @@ static int systeminfo_module_get_memory_handle_result(AlteratorCtlSystemInfoModu
     g_free(str_result_part);
     g_strfreev(str_result_part_arr);
 
-    exit_code = dict_value ? g_variant_get_child_value(dict_value, 1) : g_variant_get_child_value((*ctx)->results, 1);
+    exit_code = dict_value ? g_variant_get_child_value(dict_value, 1)
+                           : g_variant_get_child_value((*ctx)->results, 1);
     ret       = g_variant_get_int32(exit_code);
 
     if (!g_variant_is_of_type((*ctx)->results, G_VARIANT_TYPE("a{sv}")) && ret)
@@ -2644,22 +2690,23 @@ end:
     return ret;
 }
 
-static int systeminfo_module_get_drive_handle_result(AlteratorCtlSystemInfoModule *module,
-                                                     alteratorctl_ctx_t **ctx,
-                                                     GPtrArray **result_str)
+static int systeminfo_module_get_drive_handle_result(AlteratorCtlSystemInfoModule* module,
+                                                     alteratorctl_ctx_t** ctx,
+                                                     GPtrArray** result_str)
 {
     int ret                         = 0;
-    GVariant *answer                = NULL;
-    GVariantDict *answer_dictionary = NULL;
-    GVariant *dict_value            = NULL;
-    GVariant *exit_code             = NULL;
-    gchar *textual_result           = NULL;
+    GVariant* answer                = NULL;
+    GVariantDict* answer_dictionary = NULL;
+    GVariant* dict_value            = NULL;
+    GVariant* exit_code             = NULL;
+    gchar* textual_result           = NULL;
 
     if (!(*ctx)->results)
     {
         if (g_variant_is_of_type((*ctx)->results, G_VARIANT_TYPE("a{sv}")))
             return ret;
-        g_printerr(_("D-Bus error in systeminfo drive handle result: failed to produce a result.\n"));
+        g_printerr(
+            _("D-Bus error in systeminfo drive handle result: failed to produce a result.\n"));
         ERR_EXIT();
     }
 
@@ -2678,8 +2725,9 @@ static int systeminfo_module_get_drive_handle_result(AlteratorCtlSystemInfoModul
             ERR_EXIT();
         }
 
-        answer_dictionary = g_variant_dict_new((GVariant *) (*ctx)->results);
-        dict_value        = g_variant_dict_lookup_value(answer_dictionary, SYSTEMINFO_DESCRIPRION_DRIVE_KEY, NULL);
+        answer_dictionary = g_variant_dict_new((GVariant*) (*ctx)->results);
+        dict_value        = g_variant_dict_lookup_value(answer_dictionary,
+                                                        SYSTEMINFO_DESCRIPRION_DRIVE_KEY, NULL);
         if (!dict_value)
         {
             g_printerr(_("Failed to get drive volume.\n"));
@@ -2687,14 +2735,16 @@ static int systeminfo_module_get_drive_handle_result(AlteratorCtlSystemInfoModul
         }
     }
 
-    answer = dict_value ? g_variant_get_child_value(dict_value, 0) : g_variant_get_child_value((*ctx)->results, 0);
+    answer = dict_value ? g_variant_get_child_value(dict_value, 0)
+                        : g_variant_get_child_value((*ctx)->results, 0);
 
-    gchar **str_result_part_arr = (gchar **) g_variant_dup_strv(answer, NULL);
-    gchar *str_result_part      = str_result_part_arr ? g_strjoinv(NULL, str_result_part_arr) : NULL;
+    gchar** str_result_part_arr = (gchar**) g_variant_dup_strv(answer, NULL);
+    gchar* str_result_part = str_result_part_arr ? g_strjoinv(NULL, str_result_part_arr) : NULL;
     if (str_result_part && strlen(str_result_part))
     {
         if (answer_dictionary)
-            textual_result = g_strconcat(SYSTEMINFO_DESCRIPRION_DRIVE_KEY, " ", str_result_part, NULL);
+            textual_result = g_strconcat(SYSTEMINFO_DESCRIPRION_DRIVE_KEY, " ", str_result_part,
+                                         NULL);
         else
             textual_result = g_strdup(str_result_part);
     }
@@ -2711,7 +2761,8 @@ static int systeminfo_module_get_drive_handle_result(AlteratorCtlSystemInfoModul
     g_free(str_result_part);
     g_strfreev(str_result_part_arr);
 
-    exit_code = dict_value ? g_variant_get_child_value(dict_value, 1) : g_variant_get_child_value((*ctx)->results, 1);
+    exit_code = dict_value ? g_variant_get_child_value(dict_value, 1)
+                           : g_variant_get_child_value((*ctx)->results, 1);
     ret       = g_variant_get_int32(exit_code);
 
     if (!g_variant_is_of_type((*ctx)->results, G_VARIANT_TYPE("a{sv}")) && ret)
@@ -2751,22 +2802,23 @@ end:
     return ret;
 }
 
-static int systeminfo_module_get_monitor_handle_result(AlteratorCtlSystemInfoModule *module,
-                                                       alteratorctl_ctx_t **ctx,
-                                                       GPtrArray **result_str)
+static int systeminfo_module_get_monitor_handle_result(AlteratorCtlSystemInfoModule* module,
+                                                       alteratorctl_ctx_t** ctx,
+                                                       GPtrArray** result_str)
 {
     int ret                         = 0;
-    GVariant *answer                = NULL;
-    GVariantDict *answer_dictionary = NULL;
-    GVariant *dict_value            = NULL;
-    GVariant *exit_code             = NULL;
-    gchar *textual_result           = NULL;
+    GVariant* answer                = NULL;
+    GVariantDict* answer_dictionary = NULL;
+    GVariant* dict_value            = NULL;
+    GVariant* exit_code             = NULL;
+    gchar* textual_result           = NULL;
 
     if (!(*ctx)->results)
     {
         if (g_variant_is_of_type((*ctx)->results, G_VARIANT_TYPE("a{sv}")))
             return ret;
-        g_printerr(_("D-Bus error in systeminfo monitor handle result: failed to produce a result.\n"));
+        g_printerr(
+            _("D-Bus error in systeminfo monitor handle result: failed to produce a result.\n"));
         ERR_EXIT();
     }
 
@@ -2785,8 +2837,9 @@ static int systeminfo_module_get_monitor_handle_result(AlteratorCtlSystemInfoMod
             ERR_EXIT();
         }
 
-        answer_dictionary = g_variant_dict_new((GVariant *) (*ctx)->results);
-        dict_value        = g_variant_dict_lookup_value(answer_dictionary, SYSTEMINFO_DESCRIPRION_MONITOR_KEY, NULL);
+        answer_dictionary = g_variant_dict_new((GVariant*) (*ctx)->results);
+        dict_value        = g_variant_dict_lookup_value(answer_dictionary,
+                                                        SYSTEMINFO_DESCRIPRION_MONITOR_KEY, NULL);
         if (!dict_value)
         {
             g_printerr(_("Failed to get monitor.\n"));
@@ -2794,13 +2847,15 @@ static int systeminfo_module_get_monitor_handle_result(AlteratorCtlSystemInfoMod
         }
     }
 
-    answer = dict_value ? g_variant_get_child_value(dict_value, 0) : g_variant_get_child_value((*ctx)->results, 0);
-    gchar **str_result_part_arr = (gchar **) g_variant_dup_strv(answer, NULL);
-    gchar *str_result_part      = str_result_part_arr ? g_strjoinv(", ", str_result_part_arr) : NULL;
+    answer                      = dict_value ? g_variant_get_child_value(dict_value, 0)
+                                             : g_variant_get_child_value((*ctx)->results, 0);
+    gchar** str_result_part_arr = (gchar**) g_variant_dup_strv(answer, NULL);
+    gchar* str_result_part = str_result_part_arr ? g_strjoinv(", ", str_result_part_arr) : NULL;
     if (str_result_part && strlen(str_result_part))
     {
         if (answer_dictionary)
-            textual_result = g_strconcat(SYSTEMINFO_DESCRIPRION_MONITOR_KEY, " ", str_result_part, NULL);
+            textual_result = g_strconcat(SYSTEMINFO_DESCRIPRION_MONITOR_KEY, " ", str_result_part,
+                                         NULL);
         else
             textual_result = g_strdup(str_result_part);
     }
@@ -2817,7 +2872,8 @@ static int systeminfo_module_get_monitor_handle_result(AlteratorCtlSystemInfoMod
     g_free(str_result_part);
     g_strfreev(str_result_part_arr);
 
-    exit_code = dict_value ? g_variant_get_child_value(dict_value, 1) : g_variant_get_child_value((*ctx)->results, 1);
+    exit_code = dict_value ? g_variant_get_child_value(dict_value, 1)
+                           : g_variant_get_child_value((*ctx)->results, 1);
     ret       = g_variant_get_int32(exit_code);
 
     if (!g_variant_is_of_type((*ctx)->results, G_VARIANT_TYPE("a{sv}")) && ret)
@@ -2858,22 +2914,23 @@ end:
     return ret;
 }
 
-static int systeminfo_module_get_motherboard_handle_result(AlteratorCtlSystemInfoModule *module,
-                                                           alteratorctl_ctx_t **ctx,
-                                                           GPtrArray **result_str)
+static int systeminfo_module_get_motherboard_handle_result(AlteratorCtlSystemInfoModule* module,
+                                                           alteratorctl_ctx_t** ctx,
+                                                           GPtrArray** result_str)
 {
     int ret                         = 0;
-    GVariant *answer                = NULL;
-    GVariantDict *answer_dictionary = NULL;
-    GVariant *dict_value            = NULL;
-    GVariant *exit_code             = NULL;
-    gchar *textual_result           = NULL;
+    GVariant* answer                = NULL;
+    GVariantDict* answer_dictionary = NULL;
+    GVariant* dict_value            = NULL;
+    GVariant* exit_code             = NULL;
+    gchar* textual_result           = NULL;
 
     if (!(*ctx)->results)
     {
         if (g_variant_is_of_type((*ctx)->results, G_VARIANT_TYPE("a{sv}")))
             return ret;
-        g_printerr(_("D-Bus error in systeminfo motherboard handle result: failed to produce a result.\n"));
+        g_printerr(_(
+            "D-Bus error in systeminfo motherboard handle result: failed to produce a result.\n"));
         ERR_EXIT();
     }
 
@@ -2892,8 +2949,9 @@ static int systeminfo_module_get_motherboard_handle_result(AlteratorCtlSystemInf
             ERR_EXIT();
         }
 
-        answer_dictionary = g_variant_dict_new((GVariant *) (*ctx)->results);
-        dict_value = g_variant_dict_lookup_value(answer_dictionary, SYSTEMINFO_DESCRIPRION_MOTHERBOARD_KEY, NULL);
+        answer_dictionary = g_variant_dict_new((GVariant*) (*ctx)->results);
+        dict_value        = g_variant_dict_lookup_value(answer_dictionary,
+                                                        SYSTEMINFO_DESCRIPRION_MOTHERBOARD_KEY, NULL);
         if (!dict_value)
         {
             g_printerr(_("Failed to get motherboard.\n"));
@@ -2901,13 +2959,15 @@ static int systeminfo_module_get_motherboard_handle_result(AlteratorCtlSystemInf
         }
     }
 
-    answer = dict_value ? g_variant_get_child_value(dict_value, 0) : g_variant_get_child_value((*ctx)->results, 0);
-    gchar **str_result_part_arr = (gchar **) g_variant_dup_strv(answer, NULL);
-    gchar *str_result_part      = str_result_part_arr ? g_strjoinv(NULL, str_result_part_arr) : NULL;
+    answer                      = dict_value ? g_variant_get_child_value(dict_value, 0)
+                                             : g_variant_get_child_value((*ctx)->results, 0);
+    gchar** str_result_part_arr = (gchar**) g_variant_dup_strv(answer, NULL);
+    gchar* str_result_part = str_result_part_arr ? g_strjoinv(NULL, str_result_part_arr) : NULL;
     if (str_result_part && strlen(str_result_part))
     {
         if (answer_dictionary)
-            textual_result = g_strconcat(SYSTEMINFO_DESCRIPRION_MOTHERBOARD_KEY, " ", str_result_part, NULL);
+            textual_result = g_strconcat(SYSTEMINFO_DESCRIPRION_MOTHERBOARD_KEY, " ",
+                                         str_result_part, NULL);
         else
             textual_result = g_strdup(str_result_part);
     }
@@ -2924,7 +2984,8 @@ static int systeminfo_module_get_motherboard_handle_result(AlteratorCtlSystemInf
     g_free(str_result_part);
     g_strfreev(str_result_part_arr);
 
-    exit_code = dict_value ? g_variant_get_child_value(dict_value, 1) : g_variant_get_child_value((*ctx)->results, 1);
+    exit_code = dict_value ? g_variant_get_child_value(dict_value, 1)
+                           : g_variant_get_child_value((*ctx)->results, 1);
     ret       = g_variant_get_int32(exit_code);
 
     if (!g_variant_is_of_type((*ctx)->results, G_VARIANT_TYPE("a{sv}")) && ret)
@@ -2964,22 +3025,23 @@ end:
     return ret;
 }
 
-static int systeminfo_module_get_locales_handle_result(AlteratorCtlSystemInfoModule *module,
-                                                       alteratorctl_ctx_t **ctx,
-                                                       GPtrArray **result_str)
+static int systeminfo_module_get_locales_handle_result(AlteratorCtlSystemInfoModule* module,
+                                                       alteratorctl_ctx_t** ctx,
+                                                       GPtrArray** result_str)
 {
     int ret                         = 0;
-    GVariant *answer                = NULL;
-    GVariantDict *answer_dictionary = NULL;
-    GVariant *dict_value            = NULL;
-    GVariant *exit_code             = NULL;
-    gchar *textual_result           = NULL;
+    GVariant* answer                = NULL;
+    GVariantDict* answer_dictionary = NULL;
+    GVariant* dict_value            = NULL;
+    GVariant* exit_code             = NULL;
+    gchar* textual_result           = NULL;
 
     if (!(*ctx)->results)
     {
         if (g_variant_is_of_type((*ctx)->results, G_VARIANT_TYPE("a{sv}")))
             return ret;
-        g_printerr(_("D-Bus error in systeminfo locales handle result: failed to produce a result.\n"));
+        g_printerr(
+            _("D-Bus error in systeminfo locales handle result: failed to produce a result.\n"));
         ERR_EXIT();
     }
 
@@ -2998,8 +3060,9 @@ static int systeminfo_module_get_locales_handle_result(AlteratorCtlSystemInfoMod
             ERR_EXIT();
         }
 
-        answer_dictionary = g_variant_dict_new((GVariant *) (*ctx)->results);
-        dict_value        = g_variant_dict_lookup_value(answer_dictionary, SYSTEMINFO_DESCRIPRION_LOCALES_KEY, NULL);
+        answer_dictionary = g_variant_dict_new((GVariant*) (*ctx)->results);
+        dict_value        = g_variant_dict_lookup_value(answer_dictionary,
+                                                        SYSTEMINFO_DESCRIPRION_LOCALES_KEY, NULL);
         if (!dict_value)
         {
             g_printerr(_("Failed to get locales.\n"));
@@ -3007,14 +3070,16 @@ static int systeminfo_module_get_locales_handle_result(AlteratorCtlSystemInfoMod
         }
     }
 
-    answer = dict_value ? g_variant_get_child_value(dict_value, 0) : g_variant_get_child_value((*ctx)->results, 0);
+    answer = dict_value ? g_variant_get_child_value(dict_value, 0)
+                        : g_variant_get_child_value((*ctx)->results, 0);
 
-    gchar **str_result_part_arr = (gchar **) g_variant_dup_strv(answer, NULL);
-    gchar *str_result_part      = str_result_part_arr ? g_strjoinv(NULL, str_result_part_arr) : NULL;
+    gchar** str_result_part_arr = (gchar**) g_variant_dup_strv(answer, NULL);
+    gchar* str_result_part = str_result_part_arr ? g_strjoinv(NULL, str_result_part_arr) : NULL;
     if (str_result_part && strlen(str_result_part))
     {
         if (answer_dictionary)
-            textual_result = g_strconcat(SYSTEMINFO_DESCRIPRION_LOCALES_KEY, " ", str_result_part, NULL);
+            textual_result = g_strconcat(SYSTEMINFO_DESCRIPRION_LOCALES_KEY, " ", str_result_part,
+                                         NULL);
         else
             textual_result = g_strdup(str_result_part);
     }
@@ -3031,7 +3096,8 @@ static int systeminfo_module_get_locales_handle_result(AlteratorCtlSystemInfoMod
     g_free(str_result_part);
     g_strfreev(str_result_part_arr);
 
-    exit_code = dict_value ? g_variant_get_child_value(dict_value, 1) : g_variant_get_child_value((*ctx)->results, 1);
+    exit_code = dict_value ? g_variant_get_child_value(dict_value, 1)
+                           : g_variant_get_child_value((*ctx)->results, 1);
     ret       = g_variant_get_int32(exit_code);
 
     if (!g_variant_is_of_type((*ctx)->results, G_VARIANT_TYPE("a{sv}")) && ret)
@@ -3071,22 +3137,23 @@ end:
     return ret;
 }
 
-static int systeminfo_module_get_desktops_handle_result(AlteratorCtlSystemInfoModule *module,
-                                                        alteratorctl_ctx_t **ctx,
-                                                        GPtrArray **result_str)
+static int systeminfo_module_get_desktops_handle_result(AlteratorCtlSystemInfoModule* module,
+                                                        alteratorctl_ctx_t** ctx,
+                                                        GPtrArray** result_str)
 {
     int ret                         = 0;
-    GVariant *answer                = NULL;
-    GVariantDict *answer_dictionary = NULL;
-    GVariant *dict_value            = NULL;
-    GVariant *exit_code             = NULL;
-    gchar *textual_result           = NULL;
+    GVariant* answer                = NULL;
+    GVariantDict* answer_dictionary = NULL;
+    GVariant* dict_value            = NULL;
+    GVariant* exit_code             = NULL;
+    gchar* textual_result           = NULL;
 
     if (!(*ctx)->results)
     {
         if (g_variant_is_of_type((*ctx)->results, G_VARIANT_TYPE("a{sv}")))
             return ret;
-        g_printerr(_("D-Bus error in systeminfo desktops handle result: failed to produce a result.\n"));
+        g_printerr(
+            _("D-Bus error in systeminfo desktops handle result: failed to produce a result.\n"));
         ERR_EXIT();
     }
 
@@ -3105,10 +3172,10 @@ static int systeminfo_module_get_desktops_handle_result(AlteratorCtlSystemInfoMo
             ERR_EXIT();
         }
 
-        answer_dictionary = g_variant_dict_new((GVariant *) (*ctx)->results);
+        answer_dictionary = g_variant_dict_new((GVariant*) (*ctx)->results);
         dict_value        = g_variant_dict_lookup_value(answer_dictionary,
-                                                 SYSTEMINFO_DESCRIPRION_DESKTOPS_ENVIRONMENTS_KEY,
-                                                 NULL);
+                                                        SYSTEMINFO_DESCRIPRION_DESKTOPS_ENVIRONMENTS_KEY,
+                                                        NULL);
         if (!dict_value)
         {
             g_printerr(_("Failed to get desktops.\n"));
@@ -3116,14 +3183,16 @@ static int systeminfo_module_get_desktops_handle_result(AlteratorCtlSystemInfoMo
         }
     }
 
-    answer = dict_value ? g_variant_get_child_value(dict_value, 0) : g_variant_get_child_value((*ctx)->results, 0);
+    answer = dict_value ? g_variant_get_child_value(dict_value, 0)
+                        : g_variant_get_child_value((*ctx)->results, 0);
 
-    gchar **str_result_part_arr = (gchar **) g_variant_dup_strv(answer, NULL);
-    gchar *str_result_part      = str_result_part_arr ? g_strjoinv(NULL, str_result_part_arr) : NULL;
+    gchar** str_result_part_arr = (gchar**) g_variant_dup_strv(answer, NULL);
+    gchar* str_result_part = str_result_part_arr ? g_strjoinv(NULL, str_result_part_arr) : NULL;
     if (str_result_part && strlen(str_result_part))
     {
         if (answer_dictionary)
-            textual_result = g_strconcat(SYSTEMINFO_DESCRIPRION_DESKTOPS_ENVIRONMENTS_KEY, " ", str_result_part, NULL);
+            textual_result = g_strconcat(SYSTEMINFO_DESCRIPRION_DESKTOPS_ENVIRONMENTS_KEY, " ",
+                                         str_result_part, NULL);
         else
             textual_result = g_strdup(str_result_part);
     }
@@ -3140,7 +3209,8 @@ static int systeminfo_module_get_desktops_handle_result(AlteratorCtlSystemInfoMo
     g_free(str_result_part);
     g_strfreev(str_result_part_arr);
 
-    exit_code = dict_value ? g_variant_get_child_value(dict_value, 1) : g_variant_get_child_value((*ctx)->results, 1);
+    exit_code = dict_value ? g_variant_get_child_value(dict_value, 1)
+                           : g_variant_get_child_value((*ctx)->results, 1);
     ret       = g_variant_get_int32(exit_code);
 
     if (!g_variant_is_of_type((*ctx)->results, G_VARIANT_TYPE("a{sv}")) && ret)
@@ -3213,5 +3283,6 @@ end:
 
 static gint systeminfo_module_sort_result(gconstpointer a, gconstpointer b)
 {
-    return g_utf8_collate((const gchar *) ((GPtrArray *) a)->pdata, (const gchar *) ((GPtrArray *) b)->pdata);
+    return g_utf8_collate((const gchar*) ((GPtrArray*) a)->pdata,
+                          (const gchar*) ((GPtrArray*) b)->pdata);
 }

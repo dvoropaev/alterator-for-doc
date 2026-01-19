@@ -18,25 +18,23 @@
 
 typedef struct editions_module_subcommands_t
 {
-    char *subcommand;
+    char* subcommand;
     enum editions_sub_commands id;
 } editions_module_subcommands_t;
 
 typedef struct edition_data_t
 {
-    gchar *name;
-    gchar *display_name;
-    gchar *path;
+    gchar* name;
+    gchar* display_name;
+    gchar* path;
 } edition_data_t;
 
-static editions_module_subcommands_t editions_module_subcommands_list[] = {{"list", EDITIONS_LIST},
-                                                                           {"description", EDITIONS_DESCRIPTION},
-                                                                           {"license", EDITIONS_LICENSE},
-                                                                           {"info", EDITIONS_INFO},
-                                                                           {"set", EDITIONS_SET},
-                                                                           {"get", EDITIONS_GET}};
+static editions_module_subcommands_t editions_module_subcommands_list[] =
+    {{"list", EDITIONS_LIST},       {"description", EDITIONS_DESCRIPTION},
+     {"license", EDITIONS_LICENSE}, {"info", EDITIONS_INFO},
+     {"set", EDITIONS_SET},         {"get", EDITIONS_GET}};
 
-static GObjectClass *editions_module_parent_class = NULL;
+static GObjectClass* editions_module_parent_class = NULL;
 static alterator_ctl_module_t editions_module     = {0};
 static gboolean is_dbus_call_error                = FALSE;
 
@@ -47,57 +45,67 @@ static gboolean display_name_only      = FALSE;
 static gboolean no_display_name        = FALSE;
 static gboolean hide_installed_markers = FALSE;
 
-static void editions_module_class_init(AlteratorCtlEditionsModuleClass *klass);
-static void editions_ctl_class_finalize(GObject *klass);
+static void editions_module_class_init(AlteratorCtlEditionsModuleClass* klass);
+static void editions_ctl_class_finalize(GObject* klass);
 
 static void editions_module_alterator_interface_init(gpointer iface, gpointer iface_data);
 static void editions_module_alterator_interface_finalize(gpointer iface, gpointer iface_data);
 
-AlteratorCtlEditionsModule *editions_module_new(gpointer app);
-void editions_module_free(AlteratorCtlEditionsModule *module);
+AlteratorCtlEditionsModule* editions_module_new(gpointer app);
+void editions_module_free(AlteratorCtlEditionsModule* module);
 
-static void fill_command_hash_table(GHashTable *command);
+static void fill_command_hash_table(GHashTable* command);
 
-static int editions_module_parse_options(AlteratorCtlEditionsModule *module, int *argc, char **argv);
-static int editions_module_parse_arguments(AlteratorCtlEditionsModule *module,
-                                           int argc,
-                                           char **argv,
-                                           alteratorctl_ctx_t **ctx);
+static int editions_module_parse_options(AlteratorCtlEditionsModule* module, int* argc,
+                                         char** argv);
+static int editions_module_parse_arguments(AlteratorCtlEditionsModule* module, int argc,
+                                           char** argv, alteratorctl_ctx_t** ctx);
 
-static int editions_module_get_display_name(AlteratorCtlEditionsModule *module,
-                                            const gchar *edition_str_id,
-                                            GNode *data,
-                                            gchar **result);
-static edition_data_t *editions_module_edition_data_new(AlteratorCtlEditionsModule *module,
-                                                        const gchar *edition_str_id,
-                                                        GNode *edition_node);
-static int editions_module_edition_data_free(edition_data_t *data);
+static int editions_module_get_display_name(AlteratorCtlEditionsModule* module,
+                                            const gchar* edition_str_id, GNode* data,
+                                            gchar** result);
+static edition_data_t* editions_module_edition_data_new(AlteratorCtlEditionsModule* module,
+                                                        const gchar* edition_str_id,
+                                                        GNode* edition_node);
+static int editions_module_edition_data_free(edition_data_t* data);
 static gint editions_module_sort_result(gconstpointer a, gconstpointer b, gpointer user_data);
 
-static int editions_module_description_subcommand(AlteratorCtlEditionsModule *module, alteratorctl_ctx_t **ctx);
-static int editions_module_license_subcommand(AlteratorCtlEditionsModule *module, alteratorctl_ctx_t **ctx);
-static int editions_module_list_subcommand(AlteratorCtlEditionsModule *module, alteratorctl_ctx_t **ctx);
-static int editions_module_info_subcommand(AlteratorCtlEditionsModule *module, alteratorctl_ctx_t **ctx);
-static int editions_module_set_current_subcommand(AlteratorCtlEditionsModule *module, alteratorctl_ctx_t **ctx);
-static int editions_module_get_current_subcommand(AlteratorCtlEditionsModule *module, alteratorctl_ctx_t **ctx);
+static int editions_module_description_subcommand(AlteratorCtlEditionsModule* module,
+                                                  alteratorctl_ctx_t** ctx);
+static int editions_module_license_subcommand(AlteratorCtlEditionsModule* module,
+                                              alteratorctl_ctx_t** ctx);
+static int editions_module_list_subcommand(AlteratorCtlEditionsModule* module,
+                                           alteratorctl_ctx_t** ctx);
+static int editions_module_info_subcommand(AlteratorCtlEditionsModule* module,
+                                           alteratorctl_ctx_t** ctx);
+static int editions_module_set_current_subcommand(AlteratorCtlEditionsModule* module,
+                                                  alteratorctl_ctx_t** ctx);
+static int editions_module_get_current_subcommand(AlteratorCtlEditionsModule* module,
+                                                  alteratorctl_ctx_t** ctx);
 
-static int editions_module_handle_results(AlteratorCtlEditionsModule *module, alteratorctl_ctx_t **ctx);
-static int editions_module_handle_description_results(AlteratorCtlEditionsModule *module, alteratorctl_ctx_t **ctx);
-static int editions_module_handle_license_results(AlteratorCtlEditionsModule *module, alteratorctl_ctx_t **ctx);
-static int editions_module_handle_list_results(AlteratorCtlEditionsModule *module, alteratorctl_ctx_t **ctx);
-static int editions_module_handle_info_results(AlteratorCtlEditionsModule *module, alteratorctl_ctx_t **ctx);
-static int editions_module_handle_set_current_results(AlteratorCtlEditionsModule *module, alteratorctl_ctx_t **ctx);
-static int editions_module_handle_get_current_results(AlteratorCtlEditionsModule *module,
-                                                      alteratorctl_ctx_t **ctx,
-                                                      gchar **result_name);
+static int editions_module_handle_results(AlteratorCtlEditionsModule* module,
+                                          alteratorctl_ctx_t** ctx);
+static int editions_module_handle_description_results(AlteratorCtlEditionsModule* module,
+                                                      alteratorctl_ctx_t** ctx);
+static int editions_module_handle_license_results(AlteratorCtlEditionsModule* module,
+                                                  alteratorctl_ctx_t** ctx);
+static int editions_module_handle_list_results(AlteratorCtlEditionsModule* module,
+                                               alteratorctl_ctx_t** ctx);
+static int editions_module_handle_info_results(AlteratorCtlEditionsModule* module,
+                                               alteratorctl_ctx_t** ctx);
+static int editions_module_handle_set_current_results(AlteratorCtlEditionsModule* module,
+                                                      alteratorctl_ctx_t** ctx);
+static int editions_module_handle_get_current_results(AlteratorCtlEditionsModule* module,
+                                                      alteratorctl_ctx_t** ctx,
+                                                      gchar** result_name);
 
-static int editions_get_current(AlteratorCtlEditionsModule *module, gchar **result);
+static int editions_get_current(AlteratorCtlEditionsModule* module, gchar** result);
 
-static int editions_module_print_list_with_filters(AlteratorCtlEditionsModule *module, edition_data_t *edition_data);
+static int editions_module_print_list_with_filters(AlteratorCtlEditionsModule* module,
+                                                   edition_data_t* edition_data);
 
-static int editions_module_validate_object_and_iface(AlteratorCtlEditionsModule *module,
-                                                     const gchar *object,
-                                                     const gchar *iface);
+static int editions_module_validate_object_and_iface(AlteratorCtlEditionsModule* module,
+                                                     const gchar* object, const gchar* iface);
 
 GType alterator_ctl_editions_module_get_type(void)
 {
@@ -105,54 +113,55 @@ GType alterator_ctl_editions_module_get_type(void)
 
     if (!editions_module_type)
     {
-        static const GTypeInfo editions_module_info
-            = {sizeof(AlteratorCtlEditionsModuleClass),     /* class structure size */
-               NULL,                                        /* base class initializer */
-               NULL,                                        /* base class finalizer */
-               (GClassInitFunc) editions_module_class_init, /* class initializer */
-               NULL,                                        /* class finalizer */
-               NULL,                                        /* class data */
-               sizeof(AlteratorCtlEditionsModule),          /* instance structure size */
-               1,                                           /* preallocated instances */
-               NULL,                                        /* instance initializers */
-               NULL};
+        static const GTypeInfo editions_module_info =
+            {sizeof(AlteratorCtlEditionsModuleClass),     /* class structure size */
+             NULL,                                        /* base class initializer */
+             NULL,                                        /* base class finalizer */
+             (GClassInitFunc) editions_module_class_init, /* class initializer */
+             NULL,                                        /* class finalizer */
+             NULL,                                        /* class data */
+             sizeof(AlteratorCtlEditionsModule),          /* instance structure size */
+             1,                                           /* preallocated instances */
+             NULL,                                        /* instance initializers */
+             NULL};
 
         const GInterfaceInfo alterator_module_interface_info = {
-            (GInterfaceInitFunc) editions_module_alterator_interface_init,         /* interface_init */
-            (GInterfaceFinalizeFunc) editions_module_alterator_interface_finalize, /* interface_finalize */
-            NULL                                                                   /* interface_data */
+            (GInterfaceInitFunc) editions_module_alterator_interface_init, /* interface_init */
+            (GInterfaceFinalizeFunc)
+                editions_module_alterator_interface_finalize, /* interface_finalize */
+            NULL                                              /* interface_data */
         };
 
         editions_module_type = g_type_register_static(G_TYPE_OBJECT, /* parent class */
                                                       "AlteratorCtlEditionsModule",
-                                                      &editions_module_info,
-                                                      0);
+                                                      &editions_module_info, 0);
 
-        g_type_add_interface_static(editions_module_type, TYPE_ALTERATOR_CTL_MODULE, &alterator_module_interface_info);
+        g_type_add_interface_static(editions_module_type, TYPE_ALTERATOR_CTL_MODULE,
+                                    &alterator_module_interface_info);
     }
 
     return editions_module_type;
 }
 
-static void editions_module_class_init(AlteratorCtlEditionsModuleClass *klass)
+static void editions_module_class_init(AlteratorCtlEditionsModuleClass* klass)
 {
-    GObjectClass *obj_class = G_OBJECT_CLASS(klass);
+    GObjectClass* obj_class = G_OBJECT_CLASS(klass);
 
     obj_class->finalize = editions_ctl_class_finalize;
 
     editions_module_parent_class = g_type_class_peek_parent(klass);
 }
 
-static void editions_ctl_class_finalize(GObject *klass)
+static void editions_ctl_class_finalize(GObject* klass)
 {
-    AlteratorCtlEditionsModuleClass *obj = (AlteratorCtlEditionsModuleClass *) klass;
+    AlteratorCtlEditionsModuleClass* obj = (AlteratorCtlEditionsModuleClass*) klass;
 
     G_OBJECT_CLASS(editions_module_parent_class)->finalize(klass);
 }
 
 static void editions_module_alterator_interface_init(gpointer iface, gpointer iface_data)
 {
-    AlteratorCtlModuleInterface *interface = iface;
+    AlteratorCtlModuleInterface* interface = iface;
 
     interface->run_with_args = editions_module_run_with_args;
 
@@ -163,19 +172,19 @@ static void editions_module_alterator_interface_init(gpointer iface, gpointer if
 
 static void editions_module_alterator_interface_finalize(gpointer iface, gpointer iface_data) {}
 
-alterator_ctl_module_t *get_editions_module()
+alterator_ctl_module_t* get_editions_module()
 {
     int ret                               = 0;
     static gsize editions_ctl_module_init = 0;
     if (g_once_init_enter(&editions_ctl_module_init))
     {
-        gsize module_id_size = g_strlcpy(editions_module.id,
-                                         ALTERATOR_CTL_EDITIONS_MODULE_NAME,
+        gsize module_id_size = g_strlcpy(editions_module.id, ALTERATOR_CTL_EDITIONS_MODULE_NAME,
                                          strlen(ALTERATOR_CTL_EDITIONS_MODULE_NAME) + 1);
 
         if (module_id_size != strlen(ALTERATOR_CTL_EDITIONS_MODULE_NAME))
         {
-            g_printerr(_("Internal error in get_editions_module: unvaliable id of editions module.\n"));
+            g_printerr(
+                _("Internal error in get_editions_module: unvaliable id of editions module.\n"));
             ERR_EXIT();
         }
 
@@ -193,21 +202,22 @@ end:
     return NULL;
 }
 
-AlteratorCtlEditionsModule *editions_module_new(gpointer app)
+AlteratorCtlEditionsModule* editions_module_new(gpointer app)
 {
-    AlteratorCtlEditionsModule *object = g_object_new(TYPE_ALTERATOR_CTL_EDITIONS_MODULE, NULL);
+    AlteratorCtlEditionsModule* object = g_object_new(TYPE_ALTERATOR_CTL_EDITIONS_MODULE, NULL);
 
     object->commands = g_hash_table_new(g_str_hash, g_str_equal);
     fill_command_hash_table(object->commands);
 
-    object->alterator_ctl_app = (AlteratorCtlApp *) app;
+    object->alterator_ctl_app = (AlteratorCtlApp*) app;
 
-    object->gdbus_source = alterator_gdbus_source_new(object->alterator_ctl_app->arguments->verbose, G_BUS_TYPE_SYSTEM);
+    object->gdbus_source = alterator_gdbus_source_new(object->alterator_ctl_app->arguments->verbose,
+                                                      G_BUS_TYPE_SYSTEM);
 
     return object;
 }
 
-void editions_module_free(AlteratorCtlEditionsModule *module)
+void editions_module_free(AlteratorCtlEditionsModule* module)
 {
     g_hash_table_destroy(module->commands);
 
@@ -219,37 +229,40 @@ void editions_module_free(AlteratorCtlEditionsModule *module)
     g_object_unref(module);
 }
 
-static void fill_command_hash_table(GHashTable *command)
+static void fill_command_hash_table(GHashTable* command)
 {
-    for (int i = 0; i < sizeof(editions_module_subcommands_list) / sizeof(editions_module_subcommands_t); i++)
-        g_hash_table_insert(command,
-                            editions_module_subcommands_list[i].subcommand,
+    for (int i = 0;
+         i < sizeof(editions_module_subcommands_list) / sizeof(editions_module_subcommands_t); i++)
+        g_hash_table_insert(command, editions_module_subcommands_list[i].subcommand,
                             &editions_module_subcommands_list[i].id);
 }
 
-static int editions_module_description_subcommand(AlteratorCtlEditionsModule *module, alteratorctl_ctx_t **ctx)
+static int editions_module_description_subcommand(AlteratorCtlEditionsModule* module,
+                                                  alteratorctl_ctx_t** ctx)
 {
     int ret                     = 0;
-    const gchar *edition_str_id = NULL;
-    GError *dbus_call_error     = NULL;
-    gchar *locale               = NULL;
-    dbus_ctx_t *d_ctx           = NULL;
+    const gchar* edition_str_id = NULL;
+    GError* dbus_call_error     = NULL;
+    gchar* locale               = NULL;
+    dbus_ctx_t* d_ctx           = NULL;
 
     if (!module)
     {
-        g_printerr(_("The call to the editions description method failed. The module doesn't exist.\n"));
+        g_printerr(
+            _("The call to the editions description method failed. The module doesn't exist.\n"));
         ERR_EXIT();
     }
 
     g_variant_get((*ctx)->parameters, "(ms)", &edition_str_id);
     if (!edition_str_id)
     {
-        alteratorctl_ctx_t *e_ctx = alteratorctl_ctx_init_editions(EDITIONS_GET, NULL, NULL, NULL);
+        alteratorctl_ctx_t* e_ctx = alteratorctl_ctx_init_editions(EDITIONS_GET, NULL, NULL, NULL);
 
         if (editions_module_get_current_subcommand(module, &e_ctx))
             ERR_EXIT();
 
-        if (editions_module_handle_get_current_results(module, &e_ctx, (gchar **) &edition_str_id) < 0)
+        if (editions_module_handle_get_current_results(module, &e_ctx, (gchar**) &edition_str_id)
+            < 0)
             ERR_EXIT();
 
         alteratorctl_ctx_free(e_ctx);
@@ -280,11 +293,14 @@ static int editions_module_description_subcommand(AlteratorCtlEditionsModule *mo
     if (!(locale = alterator_ctl_get_effective_locale()))
         ERR_EXIT();
 
-    if (module->gdbus_source->alterator_gdbus_source_set_env_value(module->gdbus_source, "LC_ALL", locale) < 0)
+    if (module->gdbus_source->alterator_gdbus_source_set_env_value(module->gdbus_source, "LC_ALL",
+                                                                   locale)
+        < 0)
         ERR_EXIT();
 
     d_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME,
-                          edition_str_id && strlen(edition_str_id) ? edition_str_id : ALTERATOR_GLOBAL_PATH,
+                          edition_str_id && strlen(edition_str_id) ? edition_str_id
+                                                                   : ALTERATOR_GLOBAL_PATH,
                           edition_str_id && strlen(edition_str_id) ? EDITIONS_INTERFACE_NAME
                                                                    : CURRENT_EDITION_INTERFACE_NAME,
                           CURRENT_EDITION_DESCRIPTION_METHOD_NAME,
@@ -325,29 +341,32 @@ end:
     return ret;
 }
 
-static int editions_module_license_subcommand(AlteratorCtlEditionsModule *module, alteratorctl_ctx_t **ctx)
+static int editions_module_license_subcommand(AlteratorCtlEditionsModule* module,
+                                              alteratorctl_ctx_t** ctx)
 {
     int ret                     = 0;
-    const gchar *edition_str_id = NULL;
-    GError *dbus_call_error     = NULL;
-    gchar *locale               = NULL;
-    dbus_ctx_t *d_ctx           = NULL;
+    const gchar* edition_str_id = NULL;
+    GError* dbus_call_error     = NULL;
+    gchar* locale               = NULL;
+    dbus_ctx_t* d_ctx           = NULL;
 
     if (!module)
     {
-        g_printerr(_("The call to the editions license method failed. The module doesn't exist.\n"));
+        g_printerr(
+            _("The call to the editions license method failed. The module doesn't exist.\n"));
         ERR_EXIT();
     }
 
     g_variant_get((*ctx)->parameters, "(ms)", &edition_str_id);
     if (!edition_str_id)
     {
-        alteratorctl_ctx_t *e_ctx = alteratorctl_ctx_init_editions(EDITIONS_GET, NULL, NULL, NULL);
+        alteratorctl_ctx_t* e_ctx = alteratorctl_ctx_init_editions(EDITIONS_GET, NULL, NULL, NULL);
 
         if (editions_module_get_current_subcommand(module, &e_ctx))
             ERR_EXIT();
 
-        if (editions_module_handle_get_current_results(module, &e_ctx, (gchar **) &edition_str_id) < 0)
+        if (editions_module_handle_get_current_results(module, &e_ctx, (gchar**) &edition_str_id)
+            < 0)
             ERR_EXIT();
 
         alteratorctl_ctx_free(e_ctx);
@@ -378,11 +397,14 @@ static int editions_module_license_subcommand(AlteratorCtlEditionsModule *module
     if (!(locale = alterator_ctl_get_effective_locale()))
         ERR_EXIT();
 
-    if (module->gdbus_source->alterator_gdbus_source_set_env_value(module->gdbus_source, "LC_ALL", locale) < 0)
+    if (module->gdbus_source->alterator_gdbus_source_set_env_value(module->gdbus_source, "LC_ALL",
+                                                                   locale)
+        < 0)
         ERR_EXIT();
 
     d_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME,
-                          edition_str_id && strlen(edition_str_id) ? edition_str_id : ALTERATOR_GLOBAL_PATH,
+                          edition_str_id && strlen(edition_str_id) ? edition_str_id
+                                                                   : ALTERATOR_GLOBAL_PATH,
                           edition_str_id && strlen(edition_str_id) ? EDITIONS_INTERFACE_NAME
                                                                    : CURRENT_EDITION_INTERFACE_NAME,
                           CURRENT_EDITION_LICENSE_METHOD_NAME,
@@ -423,24 +445,29 @@ end:
     return ret;
 }
 
-static int editions_module_list_subcommand(AlteratorCtlEditionsModule *module, alteratorctl_ctx_t **ctx)
+static int editions_module_list_subcommand(AlteratorCtlEditionsModule* module,
+                                           alteratorctl_ctx_t** ctx)
 {
     int ret                                   = 0;
     gsize editions_amount                     = 0;
-    GNode **editions_parsed_objects           = NULL;
-    GError *dbus_call_error                   = NULL;
-    GPtrArray *result                         = NULL;
-    AlteratorCtlModuleInfoParser *info_parser = (AlteratorCtlModuleInfoParser *) module->gdbus_source->info_parser;
+    GNode** editions_parsed_objects           = NULL;
+    GError* dbus_call_error                   = NULL;
+    GPtrArray* result                         = NULL;
+    AlteratorCtlModuleInfoParser* info_parser = (AlteratorCtlModuleInfoParser*)
+                                                    module->gdbus_source->info_parser;
 
     if (!module)
     {
-        g_printerr(_("Internal error in editions module - AlteratorCtlEditionsModule *module is NULL in \"editions "
+        g_printerr(_("Internal error in editions module - AlteratorCtlEditionsModule *module is "
+                     "NULL in \"editions "
                      "list\".\n"));
         ERR_EXIT();
     }
 
-    //Check object
-    if (editions_module_validate_object_and_iface(module, ALTERATOR_GLOBAL_PATH, CURRENT_EDITION_INTERFACE_NAME) < 0)
+    // Check object
+    if (editions_module_validate_object_and_iface(module, ALTERATOR_GLOBAL_PATH,
+                                                  CURRENT_EDITION_INTERFACE_NAME)
+        < 0)
         ERR_EXIT();
 
     if (!(editions_parsed_objects = info_parser->alterator_ctl_module_info_parser_get_objects_data(
@@ -451,21 +478,22 @@ static int editions_module_list_subcommand(AlteratorCtlEditionsModule *module, a
         ERR_EXIT();
     }
 
-    result = g_ptr_array_new_full(editions_amount, (GDestroyNotify) editions_module_edition_data_free);
+    result = g_ptr_array_new_full(editions_amount,
+                                  (GDestroyNotify) editions_module_edition_data_free);
 
     for (guint i = 0; i < editions_amount; i++)
     {
-        alterator_entry_node *edition_data = (alterator_entry_node *) editions_parsed_objects[i]->data;
-        toml_value *edition_name = g_hash_table_lookup(edition_data->toml_pairs, EDITIONS_ALTERATOR_ENTRY_KEY_NAME);
+        alterator_entry_node* edition_data = (alterator_entry_node*) editions_parsed_objects[i]
+                                                 ->data;
+        toml_value* edition_name = g_hash_table_lookup(edition_data->toml_pairs,
+                                                       EDITIONS_ALTERATOR_ENTRY_KEY_NAME);
 
-        edition_data_t *data = editions_module_edition_data_new(module,
-                                                                edition_name->str_value,
+        edition_data_t* data = editions_module_edition_data_new(module, edition_name->str_value,
                                                                 editions_parsed_objects[i]);
         g_ptr_array_add(result, data);
     }
 
-    g_ptr_array_sort_with_data(result,
-                               editions_module_sort_result,
+    g_ptr_array_sort_with_data(result, editions_module_sort_result,
                                (gpointer) &module->alterator_ctl_app->arguments->verbose);
 
     for (guint i = 0; i < result->len; i++)
@@ -473,7 +501,8 @@ static int editions_module_list_subcommand(AlteratorCtlEditionsModule *module, a
 
 end:
     if (editions_parsed_objects)
-        alterator_ctl_module_info_parser_result_trees_free(editions_parsed_objects, editions_amount);
+        alterator_ctl_module_info_parser_result_trees_free(editions_parsed_objects,
+                                                           editions_amount);
 
     if (result)
         g_ptr_array_unref(result);
@@ -483,12 +512,13 @@ end:
     return ret;
 }
 
-static int editions_module_info_subcommand(AlteratorCtlEditionsModule *module, alteratorctl_ctx_t **ctx)
+static int editions_module_info_subcommand(AlteratorCtlEditionsModule* module,
+                                           alteratorctl_ctx_t** ctx)
 {
     int ret                 = 0;
-    gchar *edition_str_id   = NULL;
-    GError *dbus_call_error = NULL;
-    dbus_ctx_t *d_ctx       = NULL;
+    gchar* edition_str_id   = NULL;
+    GError* dbus_call_error = NULL;
+    dbus_ctx_t* d_ctx       = NULL;
 
     if (!module)
     {
@@ -499,7 +529,7 @@ static int editions_module_info_subcommand(AlteratorCtlEditionsModule *module, a
     g_variant_get((*ctx)->parameters, "(ms)", &edition_str_id);
     if (!edition_str_id)
     {
-        alteratorctl_ctx_t *e_ctx = alteratorctl_ctx_init_editions(EDITIONS_GET, NULL, NULL, NULL);
+        alteratorctl_ctx_t* e_ctx = alteratorctl_ctx_init_editions(EDITIONS_GET, NULL, NULL, NULL);
 
         if (editions_module_get_current_subcommand(module, &e_ctx))
             ERR_EXIT();
@@ -511,7 +541,8 @@ static int editions_module_info_subcommand(AlteratorCtlEditionsModule *module, a
     }
 
     d_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME,
-                          edition_str_id && strlen(edition_str_id) ? edition_str_id : ALTERATOR_GLOBAL_PATH,
+                          edition_str_id && strlen(edition_str_id) ? edition_str_id
+                                                                   : ALTERATOR_GLOBAL_PATH,
                           edition_str_id && strlen(edition_str_id) ? EDITIONS_INTERFACE_NAME
                                                                    : CURRENT_EDITION_INTERFACE_NAME,
                           CURRENT_EDITION_INFO_METHOD_NAME,
@@ -555,17 +586,19 @@ end:
     return ret;
 }
 
-static int editions_module_set_current_subcommand(AlteratorCtlEditionsModule *module, alteratorctl_ctx_t **ctx)
+static int editions_module_set_current_subcommand(AlteratorCtlEditionsModule* module,
+                                                  alteratorctl_ctx_t** ctx)
 {
     int ret                     = 0;
-    const gchar *edition_str_id = NULL;
-    gchar *edition_name         = NULL;
-    GError *dbus_call_error     = NULL;
-    dbus_ctx_t *d_ctx           = NULL;
+    const gchar* edition_str_id = NULL;
+    gchar* edition_name         = NULL;
+    GError* dbus_call_error     = NULL;
+    dbus_ctx_t* d_ctx           = NULL;
 
     if (!module)
     {
-        g_printerr(_("Internal error in editions module - AlteratorCtlEditionsModule *module is NULL in \"editions "
+        g_printerr(_("Internal error in editions module - AlteratorCtlEditionsModule *module is "
+                     "NULL in \"editions "
                      "set\".\n"));
         ERR_EXIT();
     }
@@ -578,15 +611,15 @@ static int editions_module_set_current_subcommand(AlteratorCtlEditionsModule *mo
     }
 
     edition_name = edition_str_id[0] == '/'
-                       ? g_strdup(module->gdbus_source->alterator_gdbus_source_get_name_by_path(module->gdbus_source,
-                                                                                                edition_str_id,
-                                                                                                EDITIONS_INTERFACE_NAME))
+                       ? g_strdup(
+                             module->gdbus_source
+                                 ->alterator_gdbus_source_get_name_by_path(module->gdbus_source,
+                                                                           edition_str_id,
+                                                                           EDITIONS_INTERFACE_NAME))
                        : g_strdup(edition_str_id);
 
-    d_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME,
-                          ALTERATOR_GLOBAL_PATH,
-                          CURRENT_EDITION_INTERFACE_NAME,
-                          CURRENT_EDITION_SET_CURRENT_METHOD_NAME,
+    d_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME, ALTERATOR_GLOBAL_PATH,
+                          CURRENT_EDITION_INTERFACE_NAME, CURRENT_EDITION_SET_CURRENT_METHOD_NAME,
                           module->alterator_ctl_app->arguments->verbose);
 
     if (!d_ctx)
@@ -632,22 +665,22 @@ end:
     return ret;
 }
 
-static int editions_module_get_current_subcommand(AlteratorCtlEditionsModule *module, alteratorctl_ctx_t **ctx)
+static int editions_module_get_current_subcommand(AlteratorCtlEditionsModule* module,
+                                                  alteratorctl_ctx_t** ctx)
 {
     int ret                 = 0;
-    dbus_ctx_t *d_ctx       = NULL;
-    GError *dbus_call_error = NULL;
+    dbus_ctx_t* d_ctx       = NULL;
+    GError* dbus_call_error = NULL;
     if (!module)
     {
-        g_printerr(_("Internal error in editions module - AlteratorCtlEditionsModule *module is NULL in \"editions "
+        g_printerr(_("Internal error in editions module - AlteratorCtlEditionsModule *module is "
+                     "NULL in \"editions "
                      "get\".\n"));
         ERR_EXIT();
     }
 
-    d_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME,
-                          ALTERATOR_GLOBAL_PATH,
-                          CURRENT_EDITION_INTERFACE_NAME,
-                          CURRENT_EDITION_GET_CURRENT_METHOD_NAME,
+    d_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME, ALTERATOR_GLOBAL_PATH,
+                          CURRENT_EDITION_INTERFACE_NAME, CURRENT_EDITION_GET_CURRENT_METHOD_NAME,
                           module->alterator_ctl_app->arguments->verbose);
 
     if (!d_ctx)
@@ -680,16 +713,16 @@ end:
     return ret;
 }
 
-int editions_module_run_with_args(gpointer self, int argc, char **argv)
+int editions_module_run_with_args(gpointer self, int argc, char** argv)
 {
     int ret                            = 0;
-    alteratorctl_ctx_t *ctx            = NULL;
-    AlteratorCtlEditionsModule *module = ALTERATOR_CTL_EDITIONS_MODULE(self);
+    alteratorctl_ctx_t* ctx            = NULL;
+    AlteratorCtlEditionsModule* module = ALTERATOR_CTL_EDITIONS_MODULE(self);
 
     if (!module)
     {
-        g_printerr(
-            _("Internal data error in editions module with args: AlteratorCtlEditionsModule *module is NULL.\n"));
+        g_printerr(_("Internal data error in editions module with args: AlteratorCtlEditionsModule "
+                     "*module is NULL.\n"));
         ERR_EXIT();
     }
 
@@ -711,8 +744,8 @@ end:
 int editions_module_run(gpointer self, gpointer data)
 {
     int ret                            = 0;
-    AlteratorCtlModuleInterface *iface = GET_ALTERATOR_CTL_MODULE_INTERFACE(self);
-    AlteratorCtlEditionsModule *module = ALTERATOR_CTL_EDITIONS_MODULE(self);
+    AlteratorCtlModuleInterface* iface = GET_ALTERATOR_CTL_MODULE_INTERFACE(self);
+    AlteratorCtlEditionsModule* module = ALTERATOR_CTL_EDITIONS_MODULE(self);
 
     if (!self)
     {
@@ -729,7 +762,7 @@ int editions_module_run(gpointer self, gpointer data)
         ERR_EXIT();
     }
 
-    alteratorctl_ctx_t *ctx = (alteratorctl_ctx_t *) data;
+    alteratorctl_ctx_t* ctx = (alteratorctl_ctx_t*) data;
 
     int subcommand_id = g_variant_get_int32(ctx->subcommands_ids);
 
@@ -779,7 +812,8 @@ end:
     return ret;
 }
 
-static int editions_module_handle_results(AlteratorCtlEditionsModule *module, alteratorctl_ctx_t **ctx)
+static int editions_module_handle_results(AlteratorCtlEditionsModule* module,
+                                          alteratorctl_ctx_t** ctx)
 {
     int ret = 0;
     if (!module)
@@ -849,12 +883,13 @@ end:
     return ret;
 }
 
-static int editions_module_handle_description_results(AlteratorCtlEditionsModule *module, alteratorctl_ctx_t **ctx)
+static int editions_module_handle_description_results(AlteratorCtlEditionsModule* module,
+                                                      alteratorctl_ctx_t** ctx)
 {
     int ret                 = 0;
-    gchar *edition_str_id   = NULL;
-    gchar *dbus_result_text = NULL;
-    gchar *result           = NULL;
+    gchar* edition_str_id   = NULL;
+    gchar* dbus_result_text = NULL;
+    gchar* result           = NULL;
 
     if (!(*ctx)->results)
     {
@@ -868,8 +903,8 @@ static int editions_module_handle_description_results(AlteratorCtlEditionsModule
         ERR_EXIT();
     }
 
-    GVariant *answer_array = g_variant_get_child_value((*ctx)->results, 0);
-    GVariant *exit_code    = g_variant_get_child_value((*ctx)->results, 1);
+    GVariant* answer_array = g_variant_get_child_value((*ctx)->results, 0);
+    GVariant* exit_code    = g_variant_get_child_value((*ctx)->results, 1);
 
     if (!exit_code)
     {
@@ -901,12 +936,13 @@ end:
     return ret;
 }
 
-static int editions_module_handle_license_results(AlteratorCtlEditionsModule *module, alteratorctl_ctx_t **ctx)
+static int editions_module_handle_license_results(AlteratorCtlEditionsModule* module,
+                                                  alteratorctl_ctx_t** ctx)
 {
     int ret                 = 0;
-    gchar *edition_str_id   = NULL;
-    gchar *dbus_result_text = NULL;
-    gchar *result           = NULL;
+    gchar* edition_str_id   = NULL;
+    gchar* dbus_result_text = NULL;
+    gchar* result           = NULL;
 
     if (!(*ctx)->results)
     {
@@ -920,8 +956,8 @@ static int editions_module_handle_license_results(AlteratorCtlEditionsModule *mo
         ERR_EXIT();
     }
 
-    GVariant *answer_array = g_variant_get_child_value((*ctx)->results, 0);
-    GVariant *exit_code    = g_variant_get_child_value((*ctx)->results, 1);
+    GVariant* answer_array = g_variant_get_child_value((*ctx)->results, 0);
+    GVariant* exit_code    = g_variant_get_child_value((*ctx)->results, 1);
 
     if (!exit_code)
     {
@@ -953,7 +989,8 @@ end:
     return ret;
 }
 
-static int editions_module_handle_list_results(AlteratorCtlEditionsModule *module, alteratorctl_ctx_t **ctx)
+static int editions_module_handle_list_results(AlteratorCtlEditionsModule* module,
+                                               alteratorctl_ctx_t** ctx)
 {
     int ret = 0;
 
@@ -961,12 +998,13 @@ end:
     return ret;
 }
 
-static int editions_module_handle_info_results(AlteratorCtlEditionsModule *module, alteratorctl_ctx_t **ctx)
+static int editions_module_handle_info_results(AlteratorCtlEditionsModule* module,
+                                               alteratorctl_ctx_t** ctx)
 {
     int ret                = 0;
-    GVariant *exit_code    = NULL;
-    GVariant *info_array   = NULL;
-    gchar *alterator_entry = NULL;
+    GVariant* exit_code    = NULL;
+    GVariant* info_array   = NULL;
+    gchar* alterator_entry = NULL;
 
     if (!(*ctx)->results)
     {
@@ -1001,10 +1039,11 @@ end:
     return ret;
 }
 
-static int editions_module_handle_set_current_results(AlteratorCtlEditionsModule *module, alteratorctl_ctx_t **ctx)
+static int editions_module_handle_set_current_results(AlteratorCtlEditionsModule* module,
+                                                      alteratorctl_ctx_t** ctx)
 {
     int ret             = 0;
-    GVariant *exit_code = NULL;
+    GVariant* exit_code = NULL;
 
     if (!(*ctx)->results)
     {
@@ -1022,8 +1061,9 @@ static int editions_module_handle_set_current_results(AlteratorCtlEditionsModule
 
     if (!exit_code)
     {
-        const gchar *parameter1 = g_variant_get_string((*ctx)->parameters, NULL);
-        g_printerr(_("Error while running Current() method in %s: exit_code is NULL.\n"), parameter1);
+        const gchar* parameter1 = g_variant_get_string((*ctx)->parameters, NULL);
+        g_printerr(_("Error while running Current() method in %s: exit_code is NULL.\n"),
+                   parameter1);
         ERR_EXIT();
     }
 
@@ -1041,13 +1081,12 @@ end:
     return ret;
 }
 
-static int editions_module_handle_get_current_results(AlteratorCtlEditionsModule *module,
-                                                      alteratorctl_ctx_t **ctx,
-                                                      gchar **result_name)
+static int editions_module_handle_get_current_results(AlteratorCtlEditionsModule* module,
+                                                      alteratorctl_ctx_t** ctx, gchar** result_name)
 {
     int ret                = 0;
-    GVariant *answer_array = NULL;
-    GVariant *exit_code    = NULL;
+    GVariant* answer_array = NULL;
+    GVariant* exit_code    = NULL;
 
     if (!(*ctx)->results)
     {
@@ -1066,15 +1105,16 @@ static int editions_module_handle_get_current_results(AlteratorCtlEditionsModule
 
     if (!exit_code)
     {
-        const gchar *parameter1 = g_variant_get_string((*ctx)->parameters, NULL);
-        g_printerr(_("Error while running Current() method in %s: exit_code is NULL.\n"), parameter1);
+        const gchar* parameter1 = g_variant_get_string((*ctx)->parameters, NULL);
+        g_printerr(_("Error while running Current() method in %s: exit_code is NULL.\n"),
+                   parameter1);
         ERR_EXIT();
     }
 
     ret = g_variant_get_int32(exit_code);
 
-    GVariantIter *iter = NULL;
-    gchar *str         = NULL;
+    GVariantIter* iter = NULL;
+    gchar* str         = NULL;
 
     g_variant_get(answer_array, "as", &iter);
     while (g_variant_iter_loop(iter, "s", &str))
@@ -1097,27 +1137,28 @@ end:
     return ret;
 }
 
-static int editions_get_current(AlteratorCtlEditionsModule *module, gchar **result)
+static int editions_get_current(AlteratorCtlEditionsModule* module, gchar** result)
 {
     int ret                = 0;
-    dbus_ctx_t *d_ctx      = NULL;
-    GVariant *answer_array = NULL;
-    GVariant *exit_code    = NULL;
+    dbus_ctx_t* d_ctx      = NULL;
+    GVariant* answer_array = NULL;
+    GVariant* exit_code    = NULL;
     if (!module)
     {
-        g_printerr(_("Internal error in editions module - AlteratorCtlEditionsModule *module is NULL in \"editions "
+        g_printerr(_("Internal error in editions module - AlteratorCtlEditionsModule *module is "
+                     "NULL in \"editions "
                      "get\".\n"));
         ERR_EXIT();
     }
 
-    //Check object
-    if (editions_module_validate_object_and_iface(module, ALTERATOR_GLOBAL_PATH, CURRENT_EDITION_INTERFACE_NAME) < 0)
+    // Check object
+    if (editions_module_validate_object_and_iface(module, ALTERATOR_GLOBAL_PATH,
+                                                  CURRENT_EDITION_INTERFACE_NAME)
+        < 0)
         ERR_EXIT();
 
-    d_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME,
-                          ALTERATOR_GLOBAL_PATH,
-                          CURRENT_EDITION_INTERFACE_NAME,
-                          CURRENT_EDITION_GET_CURRENT_METHOD_NAME,
+    d_ctx = dbus_ctx_init(ALTERATOR_SERVICE_NAME, ALTERATOR_GLOBAL_PATH,
+                          CURRENT_EDITION_INTERFACE_NAME, CURRENT_EDITION_GET_CURRENT_METHOD_NAME,
                           module->alterator_ctl_app->arguments->verbose);
 
     if (!d_ctx)
@@ -1132,7 +1173,8 @@ static int editions_get_current(AlteratorCtlEditionsModule *module, gchar **resu
 
     if (!d_ctx->result)
     {
-        g_printerr(_("D-Bus error in editions module while calling Current(): failed to produce a result.\n"));
+        g_printerr(_("D-Bus error in editions module while calling Current(): failed to produce a "
+                     "result.\n"));
         ERR_EXIT();
     }
 
@@ -1153,8 +1195,8 @@ static int editions_get_current(AlteratorCtlEditionsModule *module, gchar **resu
 
     ret = g_variant_get_int32(exit_code);
 
-    GVariantIter *iter = NULL;
-    gchar *str         = NULL;
+    GVariantIter* iter = NULL;
+    gchar* str         = NULL;
 
     g_variant_get(answer_array, "as", &iter);
     while (g_variant_iter_loop(iter, "s", &str))
@@ -1175,10 +1217,10 @@ end:
     return ret;
 }
 
-static int editions_module_parse_options(AlteratorCtlEditionsModule *module, int *argc, char **argv)
+static int editions_module_parse_options(AlteratorCtlEditionsModule* module, int* argc, char** argv)
 {
     int ret                        = 0;
-    GOptionContext *option_context = NULL;
+    GOptionContext* option_context = NULL;
 
     // clang-format off
     static GOptionEntry editions_module_options[]
@@ -1201,7 +1243,7 @@ static int editions_module_parse_options(AlteratorCtlEditionsModule *module, int
            {NULL}};
     // clang-format on
 
-    GError *error  = NULL;
+    GError* error  = NULL;
     option_context = g_option_context_new("Editions module options");
     g_option_context_add_main_entries(option_context, editions_module_options, NULL);
     if (!g_option_context_parse(option_context, argc, &argv, &error))
@@ -1219,28 +1261,32 @@ static int editions_module_parse_options(AlteratorCtlEditionsModule *module, int
     }
     else if (name_only & display_name_only)
     {
-        g_printerr(_("It is not possible to use options --name-only and --display-name-only together.\n"));
+        g_printerr(
+            _("It is not possible to use options --name-only and --display-name-only together.\n"));
         ERR_EXIT();
     }
     else if (display_name_only & path_only)
     {
-        g_printerr(_("It is not possible to use options --display-name-only and --path-only together.\n"));
+        g_printerr(
+            _("It is not possible to use options --display-name-only and --path-only together.\n"));
         ERR_EXIT();
     }
     else if (name_only & path_only & display_name_only)
     {
-        g_printerr(
-            _("It is not possible to use options --name-only and --path-only and --display-name-only together.\n"));
+        g_printerr(_("It is not possible to use options --name-only and --path-only and "
+                     "--display-name-only together.\n"));
         ERR_EXIT();
     }
     else if (display_name_only & no_display_name)
     {
-        g_printerr(_("It is not possible to use options --display-name-only and --no-display-name together.\n"));
+        g_printerr(_("It is not possible to use options --display-name-only and --no-display-name "
+                     "together.\n"));
         ERR_EXIT();
     }
     else if (module->alterator_ctl_app->arguments->verbose && display_name_only)
     {
-        g_printerr(_("It is not possible to use options --verbose and --display-name-only together.\n"));
+        g_printerr(
+            _("It is not possible to use options --verbose and --display-name-only together.\n"));
         ERR_EXIT();
     }
     else if (module->alterator_ctl_app->arguments->verbose && name_only)
@@ -1260,7 +1306,8 @@ static int editions_module_parse_options(AlteratorCtlEditionsModule *module, int
     }
     else if (no_name && no_display_name)
     {
-        g_printerr(_("It is not possible to use options --no-name and --no-display-name together.\n"));
+        g_printerr(
+            _("It is not possible to use options --no-name and --no-display-name together.\n"));
         ERR_EXIT();
     }
     else if (no_name && module->alterator_ctl_app->arguments->verbose)
@@ -1276,17 +1323,16 @@ end:
     return ret;
 }
 
-static int editions_module_parse_arguments(AlteratorCtlEditionsModule *module,
-                                           int argc,
-                                           char **argv,
-                                           alteratorctl_ctx_t **ctx)
+static int editions_module_parse_arguments(AlteratorCtlEditionsModule* module, int argc,
+                                           char** argv, alteratorctl_ctx_t** ctx)
 {
     int ret                            = 0;
-    AlteratorCtlModuleInterface *iface = GET_ALTERATOR_CTL_MODULE_INTERFACE((void *) module);
+    AlteratorCtlModuleInterface* iface = GET_ALTERATOR_CTL_MODULE_INTERFACE((void*) module);
 
     if (!iface)
     {
-        g_printerr(_("Internal error in editions module while parsing arguments: *iface is NULL.\n"));
+        g_printerr(
+            _("Internal error in editions module while parsing arguments: *iface is NULL.\n"));
         ERR_EXIT();
     }
 
@@ -1398,16 +1444,18 @@ end:
     return ret;
 }
 
-static int editions_module_print_list_with_filters(AlteratorCtlEditionsModule *module, edition_data_t *edition_data)
+static int editions_module_print_list_with_filters(AlteratorCtlEditionsModule* module,
+                                                   edition_data_t* edition_data)
 {
     int ret                 = 0;
-    gchar *current_edition  = NULL;
-    gchar *installed_marker = NULL;
+    gchar* current_edition  = NULL;
+    gchar* installed_marker = NULL;
 
     if (!hide_installed_markers)
     {
         editions_get_current(module, &current_edition);
-        installed_marker = g_strcmp0(edition_data->name, current_edition) == 0 ? g_strdup("* ") : g_strdup("  ");
+        installed_marker = g_strcmp0(edition_data->name, current_edition) == 0 ? g_strdup("* ")
+                                                                               : g_strdup("  ");
     }
     else
         installed_marker = g_strdup("");
@@ -1415,13 +1463,11 @@ static int editions_module_print_list_with_filters(AlteratorCtlEditionsModule *m
     if (module->alterator_ctl_app->arguments->verbose)
     {
         if (!no_display_name)
-            g_print("%s%s (%s : %s)\n",
-                    installed_marker,
-                    edition_data->display_name,
-                    edition_data->name,
-                    edition_data->path);
+            g_print("%s%s (%s : %s)\n", installed_marker, edition_data->display_name,
+                    edition_data->name, edition_data->path);
         else
-            g_print("%s%s : %s\n", installed_marker, edition_data->display_name, edition_data->name, edition_data->path);
+            g_print("%s%s : %s\n", installed_marker, edition_data->display_name, edition_data->name,
+                    edition_data->path);
     }
     else if (path_only)
         g_print("%s%s\n", installed_marker, edition_data->path);
@@ -1440,35 +1486,32 @@ end:
     return ret;
 }
 
-static int editions_module_get_display_name(AlteratorCtlEditionsModule *module,
-                                            const gchar *edition_str_id,
-                                            GNode *data,
-                                            gchar **result)
+static int editions_module_get_display_name(AlteratorCtlEditionsModule* module,
+                                            const gchar* edition_str_id, GNode* data,
+                                            gchar** result)
 {
     int ret                                   = 0;
-    gchar *locale                             = NULL;
-    AlteratorCtlModuleInfoParser *info_parser = (AlteratorCtlModuleInfoParser *) module->gdbus_source->info_parser;
+    gchar* locale                             = NULL;
+    AlteratorCtlModuleInfoParser* info_parser = (AlteratorCtlModuleInfoParser*)
+                                                    module->gdbus_source->info_parser;
 
     if (!(locale = alterator_ctl_get_effective_language()))
         ERR_EXIT();
 
-    GHashTable *display_name = NULL;
-    if (!info_parser->alterator_ctl_module_info_parser_find_table(info_parser,
-                                                                  data,
-                                                                  &display_name,
-                                                                  -1,
-                                                                  EDITIONS_ALTERATOR_ENTRY_DISPLAY_NAME_TABLE_NAME,
-                                                                  NULL))
+    GHashTable* display_name = NULL;
+    if (!info_parser->alterator_ctl_module_info_parser_find_table(
+            info_parser, data, &display_name, -1, EDITIONS_ALTERATOR_ENTRY_DISPLAY_NAME_TABLE_NAME,
+            NULL))
     {
-        g_printerr(_("Can't get display name of edition %s. Display name data by key %s is empty.\n"),
-                   edition_str_id,
-                   EDITIONS_ALTERATOR_ENTRY_DISPLAY_NAME_TABLE_NAME);
+        g_printerr(_("Can't get display name of edition %s. Display name data by key %s is "
+                     "empty.\n"),
+                   edition_str_id, EDITIONS_ALTERATOR_ENTRY_DISPLAY_NAME_TABLE_NAME);
         ERR_EXIT();
     }
 
-    toml_value *display_name_locale_value = g_hash_table_lookup(display_name, locale);
+    toml_value* display_name_locale_value = g_hash_table_lookup(display_name, locale);
     if (!display_name_locale_value)
-        display_name_locale_value = g_hash_table_lookup(display_name, LOCALE_FALLBACK);
+        display_name_locale_value = g_hash_table_lookup(display_name, LANG_FALLBACK);
 
     (*result) = g_strdup(display_name_locale_value->str_value);
 
@@ -1478,21 +1521,22 @@ end:
     return ret;
 }
 
-static edition_data_t *editions_module_edition_data_new(AlteratorCtlEditionsModule *module,
-                                                        const gchar *edition_str_id,
-                                                        GNode *edition_node)
+static edition_data_t* editions_module_edition_data_new(AlteratorCtlEditionsModule* module,
+                                                        const gchar* edition_str_id,
+                                                        GNode* edition_node)
 {
-    edition_data_t *result = g_malloc0(sizeof(edition_data_t));
+    edition_data_t* result = g_malloc0(sizeof(edition_data_t));
     result->name           = g_strdup(edition_str_id);
     editions_module_get_display_name(module, edition_str_id, edition_node, &result->display_name);
-    result->path = g_strdup(module->gdbus_source->alterator_gdbus_source_get_path_by_name(module->gdbus_source,
-                                                                                          edition_str_id,
-                                                                                          EDITIONS_INTERFACE_NAME));
+    result->path = g_strdup(
+        module->gdbus_source->alterator_gdbus_source_get_path_by_name(module->gdbus_source,
+                                                                      edition_str_id,
+                                                                      EDITIONS_INTERFACE_NAME));
 
     return result;
 }
 
-static int editions_module_edition_data_free(edition_data_t *data)
+static int editions_module_edition_data_free(edition_data_t* data)
 {
     int ret = 0;
     if (!data)
@@ -1508,24 +1552,25 @@ end:
 
 static gint editions_module_sort_result(gconstpointer a, gconstpointer b, gpointer user_data)
 {
-    edition_data_t *edition_data_first  = (edition_data_t *) ((GPtrArray *) a)->pdata;
-    edition_data_t *edition_data_second = (edition_data_t *) ((GPtrArray *) b)->pdata;
+    edition_data_t* edition_data_first  = (edition_data_t*) ((GPtrArray*) a)->pdata;
+    edition_data_t* edition_data_second = (edition_data_t*) ((GPtrArray*) b)->pdata;
 
-    const gchar *first_comparable_data  = NULL;
-    const gchar *second_comparable_data = NULL;
-    gboolean is_verbose                 = *((gboolean *) user_data);
+    const gchar* first_comparable_data  = NULL;
+    const gchar* second_comparable_data = NULL;
+    gboolean is_verbose                 = *((gboolean*) user_data);
 
     if ((display_name_only || no_name) && !no_display_name && !path_only && !name_only)
     {
-        first_comparable_data  = g_strdup((const gchar *) edition_data_first->display_name);
-        second_comparable_data = g_strdup((const gchar *) edition_data_second->display_name);
+        first_comparable_data  = g_strdup((const gchar*) edition_data_first->display_name);
+        second_comparable_data = g_strdup((const gchar*) edition_data_second->display_name);
     }
     else if ((no_display_name || name_only) && !path_only && !display_name_only)
     {
-        first_comparable_data  = g_strdup((const gchar *) edition_data_first->name);
-        second_comparable_data = g_strdup((const gchar *) edition_data_second->name);
+        first_comparable_data  = g_strdup((const gchar*) edition_data_first->name);
+        second_comparable_data = g_strdup((const gchar*) edition_data_second->name);
     }
-    else if ((no_display_name || (is_verbose && no_name) || path_only) && !name_only && !display_name_only)
+    else if ((no_display_name || (is_verbose && no_name) || path_only) && !name_only
+             && !display_name_only)
     {
         first_comparable_data  = g_strdup(edition_data_first->path);
         second_comparable_data = g_strdup(edition_data_second->path);
@@ -1569,16 +1614,16 @@ end:
     return ret;
 }
 
-static int editions_module_validate_object_and_iface(AlteratorCtlEditionsModule *module,
-                                                     const gchar *object,
-                                                     const gchar *iface)
+static int editions_module_validate_object_and_iface(AlteratorCtlEditionsModule* module,
+                                                     const gchar* object, const gchar* iface)
 {
     int ret          = 0;
     int object_exist = 0;
     int iface_exists = 0;
 
-    //Check object
-    if (module->gdbus_source->alterator_gdbus_source_check_object_by_path(module->gdbus_source, object, &object_exist)
+    // Check object
+    if (module->gdbus_source->alterator_gdbus_source_check_object_by_path(module->gdbus_source,
+                                                                          object, &object_exist)
         < 0)
     {
         g_printerr(_("The object %s doesn't exist.\n"), object);
@@ -1591,10 +1636,9 @@ static int editions_module_validate_object_and_iface(AlteratorCtlEditionsModule 
         ERR_EXIT();
     }
 
-    //check interface of the object
+    // check interface of the object
     if (module->gdbus_source->alterator_gdbus_source_check_object_by_iface(module->gdbus_source,
-                                                                           object,
-                                                                           iface,
+                                                                           object, iface,
                                                                            &iface_exists)
         < 0)
     {

@@ -1,0 +1,8 @@
+type = "Application"
+name = "alterator-application-framework"
+display_name.en = "Alterator framework runner"
+display_name.ru = "Запуск объектов Альтератора (alterator-framework)"
+comment.en = "Application for running alterator-framework objects"
+comment.ru = "Приложение запускающее объекты Альтератора через alterator-framework"
+exec = "/usr/lib/alterator-application-framework/alterator-application-framework %o"
+interface = "org.altlinux.alterator.framework1"

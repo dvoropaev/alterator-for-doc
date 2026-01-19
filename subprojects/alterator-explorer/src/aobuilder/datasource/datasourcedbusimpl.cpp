@@ -40,7 +40,7 @@ bool DataSourceDBusImpl::ping()
                                                   "org.freedesktop.DBus.Peer",
                                                   "Ping");
 
-    QDBusReply<void> reply = d->m_dbusConnection.call(message, QDBus::Block, DBUS_TIMEOUT);
+    QDBusReply<void> reply = d->m_dbusConnection.call(message, QDBus::BlockWithGui, DBUS_TIMEOUT);
 
     return reply.isValid();
 }
@@ -102,7 +102,7 @@ QStringList DataSourceDBusImpl::getPathsByInterface(const QString &ifaceName)
                                                   dbus::method::GET_OBJECTS);
 
     message.setArguments({ifaceName});
-    QDBusReply<QList<QDBusObjectPath>> reply = d->m_dbusConnection.call(message, QDBus::Block, DBUS_TIMEOUT);
+    QDBusReply<QList<QDBusObjectPath>> reply = d->m_dbusConnection.call(message, QDBus::BlockWithGui, DBUS_TIMEOUT);
 
     if (!reply.isValid())
     {
@@ -125,7 +125,7 @@ QStringList DataSourceDBusImpl::getObjectsList(const QString &listMethodName,
 {
     auto message = QDBusMessage::createMethodCall(d->m_serviceName, path, interfaceName, listMethodName);
 
-    QDBusReply<QStringList> reply = d->m_dbusConnection.call(message, QDBus::Block, DBUS_TIMEOUT);
+    QDBusReply<QStringList> reply = d->m_dbusConnection.call(message, QDBus::BlockWithGui, DBUS_TIMEOUT);
     if (!reply.isValid())
     {
         return {};
@@ -138,7 +138,7 @@ QByteArray DataSourceDBusImpl::getObjectInfo(const QString &ifaceName, const QSt
 {
     auto message = QDBusMessage::createMethodCall(d->m_serviceName, path, ifaceName, methodName);
 
-    QDBusReply<QByteArray> reply = d->m_dbusConnection.call(message, QDBus::Block, DBUS_TIMEOUT);
+    QDBusReply<QByteArray> reply = d->m_dbusConnection.call(message, QDBus::BlockWithGui, DBUS_TIMEOUT);
 
     if (!reply.isValid())
     {
@@ -161,7 +161,7 @@ QByteArray DataSourceDBusImpl::getObjectInfoByName(const QString &ifaceName,
 
     message.setArguments({param});
 
-    const QDBusReply<QByteArray> reply = d->m_dbusConnection.call(message, QDBus::Block, DBUS_TIMEOUT);
+    const QDBusReply<QByteArray> reply = d->m_dbusConnection.call(message, QDBus::BlockWithGui, DBUS_TIMEOUT);
 
     if (!reply.isValid())
     {

@@ -1,15 +1,14 @@
 #pragma once
 
-#include <QtSolutions/QtSingleApplication>
+#include <QApplication>
 #include <QObject>
 #include "AppSettings.h"
 #include "data/Service.h"
-#include "data/Action.h"
 
 class Service;
 class Controller;
 
-class ServicesApp : public QtSingleApplication
+class ServicesApp : public QApplication
 {
     Q_OBJECT
 public:
@@ -25,14 +24,27 @@ public:
         return (ServicesApp*)QApplication::instance();
     }
 
-    bool notify(QObject*, QEvent*) override;
+    bool event(QEvent* event) override;
 
-    std::optional<Action> importParameters(const QString& fileName);
+    class QuitLock
+    {
+    private:
+        bool& m_flag;
+    protected:
+        friend class ServicesApp;
+
+        QuitLock(bool& flag);
+    public:
+        ~QuitLock();
+    };
+    [[nodiscard]] QuitLock quitLock();
+
+private slots:
+    void raiseMainWindow();
 
 private:
     class Private;
     Private* d;
-
 };
 
 #if defined(qApp)

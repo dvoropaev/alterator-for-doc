@@ -1,7 +1,7 @@
 %define _unpackaged_files_terminate_build 1
 
 Name: alt-services
-Version: 0.1.9
+Version: 0.1.11
 Release: alt1
 Provides: alterator-application-services
 Obsoletes: alterator-application-services
@@ -15,6 +15,7 @@ Source0: %name-%version.tar
 
 BuildRequires(pre): rpm-macros-cmake
 BuildRequires(pre): rpm-macros-alterator
+BuildRequires(pre): rpm-build-kf6
 BuildRequires: cmake extra-cmake-modules
 BuildRequires: gcc-c++
 BuildRequires: qt6-base-devel
@@ -24,7 +25,8 @@ BuildRequires: libtoml11-devel
 BuildRequires: boost-devel-headers
 BuildRequires: kf6-kwidgetsaddons-devel
 BuildRequires: kf6-kitemmodels-devel
-BuildRequires: libqtsingleapplication-qt6-devel
+BuildRequires: kf6-kdbusaddons-devel
+BuildRequires: kf6-kwindowsystem-devel
 BuildRequires: librange-v3-devel
 
 Requires: alterator-interface-service >= 0.2.1
@@ -45,7 +47,10 @@ GUI utility for alterator service management.
 
 %install
 %cmakeinstall_std
-install -v -p -m 644 -D org.altlinux.alt-services.desktop %buildroot%_desktopdir/org.altlinux.alt-services.desktop
+install -v -p -m 644 -D data/org.altlinux.alt-services.desktop %buildroot%_desktopdir/org.altlinux.alt-services.desktop
+
+mkdir -p %buildroot%_iconsdir/hicolor/scalable/apps
+install -v -p -m 644 -D data/icons/org.altlinux.alt-services.svg %buildroot%_iconsdir/hicolor/scalable/apps
 
 mkdir -p %buildroot%_datadir/alterator/applications
 install -v -p -m 644 -D alterator/alt-services.application %buildroot%_datadir/alterator/applications
@@ -59,8 +64,29 @@ install -v -p -m 644 -D alterator/alt-services.backend %buildroot%_datadir/alter
 %_datadir/alterator/applications/alt-services.application
 %_datadir/alterator/backends/alt-services.backend
 %doc *.md
+%_K6dbus_srv/*.service
+%_iconsdir/hicolor/*/*/*.svg
 
 %changelog
+* Thu Jan 15 2026 Maria Alexeeva <alxvmr@altlinux.org> 0.1.11-alt1
+- Added:
+  + app icon
+
+* Fri Dec 26 2025 Maria Alexeeva <alxvmr@altlinux.org> 0.1.10-alt1
+- Changed (thx Andrey Alekseev):
+  + tables are now compact by default
+  + resource values are now top-aligned
+  + added word-wrap for tooltips
+- Fixed (thx Andrey Alekseev):
+  + html journal displayed with wrong encoding in some browsers
+  + brought back forgotten menu items in mainwindow
+  + validation messages blinking while changing enum parameters
+  + application coud not raise its window on Wayland
+  + process could continue when window is closed by user immediately after start
+  + minor memory leaks
+- Added (thx Andrey Alekseev):
+  + --replace commandline option for replacing existing window
+
 * Thu Dec 04 2025 Maria Alexeeva <alxvmr@altlinux.org> 0.1.9-alt1
 - Added (thx Andrey Alekseev):
   + password confirmation

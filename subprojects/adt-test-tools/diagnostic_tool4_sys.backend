@@ -6,11 +6,13 @@ interface = "diag1"
 [methods.Info]
 execute = "cat /usr/share/alterator/diagnostic_tool4/diagnostic_tool4_sys.diag"
 stdout_bytes = true
+exit_status = true
 thread_limit = 3
 action_id = "Info"
 
 [methods.Run]
 execute = "/usr/lib/adt-test-tools/adt-test-tool {param}"
+exit_status = true
 stdout_signal_name = "diag1_stdout_signal"
 stderr_signal_name = "diag1_stderr_signal"
 action_id = "Run"
@@ -18,11 +20,13 @@ action_id = "Run"
 [methods.List]
 execute = "/usr/lib/adt-test-tools/adt-test-tool -l"
 stdout_strings = true
+exit_status = true
 action_id = "List"
 
 [methods.Report]
 execute = "/usr/lib/adt-test-tools/adt-test-tool -r"
 stdout_bytes = true
+exit_status = true
 action_id = "Report"
 
 [methods.Run.environment.common]

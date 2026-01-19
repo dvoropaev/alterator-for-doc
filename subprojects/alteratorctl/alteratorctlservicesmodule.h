@@ -10,15 +10,19 @@
 #include "json-glib/json-glib.h"
 
 #define TYPE_ALTERATOR_CTL_SERVICES_MODULE (alterator_ctl_services_module_get_type())
-#define ALTERATOR_CTL_SERVICES_MODULE(obj) \
-    (G_TYPE_CHECK_INSTANCE_CAST((obj), TYPE_ALTERATOR_CTL_SERVICES_MODULE, AlteratorCtlServicesModule))
-#define IS_ALTERATOR_CTL_SERVICES_MODULE(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), TYPE_ALTERATOR_CTL_SERVICES_MODULE))
-#define ALTERATOR_CTL_SERVICES_MODULE_CLASS(klass) \
-    (G_TYPE_CHECK_CLASS_CAST((klass), TYPE_ALTERATOR_CTL_SERVICES_MODULE, AlteratorCtlServicesModuleClass))
+#define ALTERATOR_CTL_SERVICES_MODULE(obj)                                 \
+    (G_TYPE_CHECK_INSTANCE_CAST((obj), TYPE_ALTERATOR_CTL_SERVICES_MODULE, \
+                                AlteratorCtlServicesModule))
+#define IS_ALTERATOR_CTL_SERVICES_MODULE(obj) \
+    (G_TYPE_CHECK_INSTANCE_TYPE((obj), TYPE_ALTERATOR_CTL_SERVICES_MODULE))
+#define ALTERATOR_CTL_SERVICES_MODULE_CLASS(klass)                        \
+    (G_TYPE_CHECK_CLASS_CAST((klass), TYPE_ALTERATOR_CTL_SERVICES_MODULE, \
+                             AlteratorCtlServicesModuleClass))
 #define IS_ALTERATOR_CTL_SERVICES_MODULE_CLASS(klass) \
     (G_TYPE_CHECK_CLASS_TYPE((klass), TYPE_ALTERATOR_CTL_SERVICES_MODULE))
-#define ALTERATOR_CTL_SERVICES_MODULE_GET_CLASS(obj) \
-    (G_TYPE_INSTANCE_GET_CLASS((obj), TYPE_ALTERATOR_CTL_SERVICES_MODULE, AlteratorCtlServicesModuleClass))
+#define ALTERATOR_CTL_SERVICES_MODULE_GET_CLASS(obj)                      \
+    (G_TYPE_INSTANCE_GET_CLASS((obj), TYPE_ALTERATOR_CTL_SERVICES_MODULE, \
+                               AlteratorCtlServicesModuleClass))
 
 enum services_sub_commands
 {
@@ -49,28 +53,28 @@ typedef struct
 {
     GObject parnet_instance;
 
-    GHashTable *commands;
+    GHashTable* commands;
 
-    AlteratorGDBusSource *gdbus_source;
+    AlteratorGDBusSource* gdbus_source;
 
-    JsonNode *json;
+    JsonNode* json;
 
-    GNode *info;
+    GNode* info;
 
-    AlteratorCtlApp *alterator_ctl_app;
+    AlteratorCtlApp* alterator_ctl_app;
 
-    ServicesPlayPlan *play_plan;
+    ServicesPlayPlan* play_plan;
 
-    GHashTable *required_params_cache;
+    GHashTable* required_params_cache;
 
 } AlteratorCtlServicesModule;
 
-alterator_ctl_module_t *get_services_module();
+alterator_ctl_module_t* get_services_module();
 
-int services_module_run_with_args(gpointer self, int argc, char **argv);
+int services_module_run_with_args(gpointer self, int argc, char** argv);
 
 int services_module_run(gpointer self, gpointer data);
 
 int services_module_print_help(gpointer self);
 
-#endif //ALTERATORCTL_SERVICES_H
+#endif // ALTERATORCTL_SERVICES_H

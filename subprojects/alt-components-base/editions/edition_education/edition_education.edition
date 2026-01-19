@@ -3,7 +3,7 @@ name = "edition_education"
 display_name.en = "ALT Education"
 display_name.ru = "Альт Образование"
 
-license = "ALT_Education_License/11.0"
+license = "ALT_Education_License/11.1"
 arches = [ "x86_64", "aarch64" ]
 
 desktop_environment = "KDE6"

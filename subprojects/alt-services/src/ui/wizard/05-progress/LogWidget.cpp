@@ -26,8 +26,8 @@ class LogSearcher : public ItemModelSearcher {
     int m_currentPosition{0};
 
 public:
-    explicit LogSearcher(CustomTreeView& target)
-        : ItemModelSearcher{target.model()}
+    explicit LogSearcher(CustomTreeView& target, QObject* parent = nullptr)
+        : ItemModelSearcher{target.model(), parent}
         , m_tree{target}
     {}
 
@@ -293,7 +293,7 @@ LogWidget::LogWidget(QWidget *parent)
     d->m_tree->verticalScrollBar()->setSingleStep(d->m_tree->horizontalScrollBar()->singleStep());
     d->m_tree->verticalScrollBar()->setPageStep(d->m_tree->horizontalScrollBar()->pageStep());
 
-    searchBar->setAdapter(new LogSearcher{*d->m_tree});
+    searchBar->setAdapter(new LogSearcher{*d->m_tree, searchBar});
 
     layout->addWidget(searchBar);
     layout->addWidget(d->m_tree);
@@ -304,7 +304,7 @@ LogWidget::LogWidget(QWidget *parent)
 
     connect(d->m_search, &QAction::triggered, searchBar, &QWidget::show);
 
-    d->m_export = new QAction{QIcon::fromTheme(QIcon::ThemeIcon::DocumentSaveAs), tr("&Save journal...")};
+    d->m_export = new QAction{QIcon::fromTheme(QIcon::ThemeIcon::DocumentSaveAs), tr("&Save journal..."), this};
 
     connect(qApp->controller(), &Controller::beginRefresh, this, [=]{d->m_export->setDisabled(true );});
     connect(qApp->controller(), &Controller::endRefresh,   this, [=]{d->m_export->setDisabled(false);});

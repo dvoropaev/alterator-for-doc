@@ -2,4 +2,8 @@
 
 if grep -qs '^/usr/share/alterator/applications'; then
     /usr/lib/alterator-backend-legacy/alterator-generate-legacy-backends
+elif grep -qs '^/usr/share/alterator-framework/modules'; then
+    /usr/lib/alterator-backend-legacy/alterator-generate-legacy-backends
+elif grep -Eqs '^/usr/bin/alterator-framework$'; then
+    /usr/lib/alterator-backend-legacy/alterator-generate-legacy-backends
 fi

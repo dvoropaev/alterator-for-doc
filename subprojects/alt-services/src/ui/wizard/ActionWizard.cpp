@@ -3,6 +3,7 @@
 #include "controller/Controller.h"
 #include "app/ServicesApp.h"
 #include "data/Service.h"
+#include "app/DropEventFilter.h"
 
 #include <QPushButton>
 #include <QMessageBox>
@@ -63,6 +64,7 @@ ActionWizard::ActionWizard(QWidget *parent)
     : QWizard{parent}
     , d{new Private{}}
 {
+    installEventFilter(dropEventFilter);
     setAttribute(Qt::WA_AlwaysShowToolTips);
     setWizardStyle(QWizard::ClassicStyle);
 
@@ -96,7 +98,7 @@ ActionWizard::ActionWizard(QWidget *parent)
             "JSON files (*.json)"
         );
 
-        if ( auto parameters = qApp->importParameters(fileName) )
+        if ( auto parameters = Action::importFromFile(fileName) )
             open(parameters.value());
     });
     connect(paramsExportBtn, &QPushButton::clicked, this, &ActionWizard::exportParameters);
@@ -280,7 +282,7 @@ void ActionWizard::exportParameters()
 
 void ActionWizard::dropEvent(QDropEvent* event)
 {
-    if ( auto parameters = qApp->importParameters(event->mimeData()->urls().at(0).toLocalFile()) )
+    if ( auto parameters = Action::importFromFile(event->mimeData()->urls().at(0).toLocalFile()) )
         open(parameters.value());
 }
 

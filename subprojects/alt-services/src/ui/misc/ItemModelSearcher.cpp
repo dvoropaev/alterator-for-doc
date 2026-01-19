@@ -13,8 +13,9 @@ public:
     QString m_text;
 };
 
-ItemModelSearcher::ItemModelSearcher(QAbstractItemModel* model)
-    : d{new Private}
+ItemModelSearcher::ItemModelSearcher(QAbstractItemModel* model, QObject* parent)
+    : SearchAdapter{parent}
+    , d{new Private}
 {
     if (model)
         setModel(*model);

@@ -8,18 +8,18 @@
 
 // TO DO add logging in ERR_EXIT
 #define ERR_EXIT_MESSAGE(format, ...) \
-    do \
-    { \
-        ret = -1; \
-        g_printerr(format); \
-        goto end; \
+    do                                \
+    {                                 \
+        ret = -1;                     \
+        g_printerr(format);           \
+        goto end;                     \
     } while (0)
 
 #define ERR_EXIT() \
-    do \
-    { \
-        ret = -1; \
-        goto end; \
+    do             \
+    {              \
+        ret = -1;  \
+        goto end;  \
     } while (0)
 
 typedef enum
@@ -37,6 +37,13 @@ typedef enum is_tty_status
     TTY     = 1,
     INCORRECT_FILE_DESCRIPTOR
 } is_tty_status;
+
+typedef enum
+{
+    NOT_A_PATH,
+    ABSOLUTE_PATH,
+    RELATIVE_PATH
+} path_type;
 
 #define DIAG_SUBCOMMAND_MAX_LENGTH 50
 #define DIAG_PATH_MAX_LENGTH 255
@@ -70,6 +77,7 @@ typedef enum is_tty_status
 #define TOML_ERROR_BUFFER_SIZE 512
 
 #define LOCALE_FALLBACK "en_US.UTF-8"
+#define LANG_FALLBACK "en"
 
 #define ALTERATOR_CTL_SECRET_ERROR (alterator_ctl_secret_error_quark())
 
@@ -102,13 +110,13 @@ typedef struct alteratorctl_arguments_t
     enum alteratorctl_help_type help_type;
     gboolean module_help;
     gboolean verbose;
-    gchar *module;
+    gchar* module;
 } alteratorctl_arguments_t;
 
 typedef struct alteratorctl_ctx_t
 {
-    GVariant *subcommands_ids;
-    GVariant *parameters;
+    GVariant* subcommands_ids;
+    GVariant* parameters;
     gpointer results;
     void (*free_results)(gpointer results);
     gpointer additional_data;
@@ -117,92 +125,81 @@ typedef struct alteratorctl_ctx_t
 typedef struct alterator_ctl_module_t
 {
     gchar id[ALTERATOR_CTL_MODULE_NAME_MAX_LENGTH];
-    gpointer *(*new_object_func)(gpointer);
+    gpointer* (*new_object_func)(gpointer);
     void (*free_object_func)(gpointer);
 } alterator_ctl_module_t;
 
 typedef struct dbus_ctx_t
 {
-    gchar *service_name;
-    gchar *path;
-    gchar *interface;
-    gchar *method;
-    GVariant *parameters;
-    const GVariantType *reply_type;
-    GVariant *result;
+    gchar* service_name;
+    gchar* path;
+    gchar* interface;
+    gchar* method;
+    GVariant* parameters;
+    const GVariantType* reply_type;
+    GVariant* result;
     gint timeout_msec;
     gboolean verbose;
     gboolean disable_output;
 } dbus_ctx_t;
 
-dbus_ctx_t *dbus_ctx_init(
-    const gchar *service, const gchar *path, const gchar *interface, const gchar *method, gboolean verbose);
+dbus_ctx_t* dbus_ctx_init(const gchar* service, const gchar* path, const gchar* interface,
+                          const gchar* method, gboolean verbose);
 
-int dbus_ctx_set_timeout(dbus_ctx_t *ctx, gint milliseconds);
+int dbus_ctx_set_timeout(dbus_ctx_t* ctx, gint milliseconds);
 
-void dbus_ctx_free(dbus_ctx_t *ctx);
+void dbus_ctx_free(dbus_ctx_t* ctx);
 
-alteratorctl_ctx_t *alteratorctl_context_init(GVariant *subcommands_ids,
-                                              GVariant *parameters,
+alteratorctl_ctx_t* alteratorctl_context_init(GVariant* subcommands_ids, GVariant* parameters,
                                               void (*free_results)(gpointer results),
-                                              void *additional_data);
+                                              void* additional_data);
 
-alteratorctl_ctx_t *alteratorctl_ctx_init_manager(gint subcommand_id,
-                                                  const gchar *param1,
-                                                  const gchar *param2,
-                                                  const gchar *param3,
-                                                  const gchar *param4,
+alteratorctl_ctx_t* alteratorctl_ctx_init_manager(gint subcommand_id, const gchar* param1,
+                                                  const gchar* param2, const gchar* param3,
+                                                  const gchar* param4,
                                                   void (*free_results)(gpointer results),
-                                                  void *additional_data);
+                                                  void* additional_data);
 
-alteratorctl_ctx_t *alteratorctl_ctx_init_packages(gint submodule_id,
-                                                   gint subcommand_id,
-                                                   const gchar *param1,
+alteratorctl_ctx_t* alteratorctl_ctx_init_packages(gint submodule_id, gint subcommand_id,
+                                                   const gchar* param1,
                                                    void (*free_results)(gpointer results),
-                                                   void *additional_data);
+                                                   void* additional_data);
 
-alteratorctl_ctx_t *alteratorctl_ctx_init_editions(gint subcommand_id,
-                                                   const gchar *param1,
+alteratorctl_ctx_t* alteratorctl_ctx_init_editions(gint subcommand_id, const gchar* param1,
                                                    void (*free_results)(gpointer results),
-                                                   void *additional_data);
+                                                   void* additional_data);
 
-alteratorctl_ctx_t *alteratorctl_ctx_init_components(gint subcommand_id,
-                                                     const gchar *param1,
+alteratorctl_ctx_t* alteratorctl_ctx_init_components(gint subcommand_id, const gchar* param1,
                                                      void (*free_results)(gpointer results),
-                                                     void *additional_data);
+                                                     void* additional_data);
 
-alteratorctl_ctx_t *alteratorctl_ctx_init_diag(gint subcommand_id,
-                                               const gchar *param1,
-                                               const gchar *param2,
-                                               const gchar *param3,
+alteratorctl_ctx_t* alteratorctl_ctx_init_diag(gint subcommand_id, const gchar* param1,
+                                               const gchar* param2, const gchar* param3,
                                                void (*free_results)(gpointer results),
-                                               void *additional_data);
+                                               void* additional_data);
 
-alteratorctl_ctx_t *alteratorctl_ctx_init_systeminfo(gint subcommand_id,
+alteratorctl_ctx_t* alteratorctl_ctx_init_systeminfo(gint subcommand_id,
                                                      void (*free_results)(gpointer results),
-                                                     void *additional_data);
+                                                     void* additional_data);
 
-alteratorctl_ctx_t *alteratorctl_ctx_init_remote(gint subcommand_id,
-                                                 const gchar *param1,
-                                                 const gchar *param2,
-                                                 const gchar *param3,
-                                                 const gchar *param4,
+alteratorctl_ctx_t* alteratorctl_ctx_init_remote(gint subcommand_id, const gchar* param1,
+                                                 const gchar* param2, const gchar* param3,
+                                                 const gchar* param4,
                                                  void (*free_results)(gpointer results),
-                                                 void *additional_data);
+                                                 void* additional_data);
 
-alteratorctl_ctx_t *alteratorctl_ctx_init_services(gint subcommand_id,
-                                                   const gchar *param1,
-                                                   const gchar *param2,
+alteratorctl_ctx_t* alteratorctl_ctx_init_services(gint subcommand_id, const gchar* param1,
+                                                   const gchar* param2,
                                                    void (*free_results)(gpointer results),
-                                                   void *additional_data);
+                                                   void* additional_data);
 
-void alteratorctl_ctx_free(alteratorctl_ctx_t *ctx);
+void alteratorctl_ctx_free(alteratorctl_ctx_t* ctx);
 
-int alterator_ctl_print_html(const gchar *html);
+int alterator_ctl_print_html(const gchar* html);
 
-gchar *alterator_ctl_get_locale();
+gchar* alterator_ctl_get_locale();
 
-gchar *alterator_ctl_get_language();
+gchar* alterator_ctl_get_language();
 
 // Returns TRUE if current locale encoding is UTF-8 according to GLib
 gboolean alterator_ctl_is_utf8_locale();
@@ -210,43 +207,43 @@ gboolean alterator_ctl_is_utf8_locale();
 // Effective helpers for ASCII-safe mode
 // If current locale is not UTF-8, these functions return English/"C" values.
 // Callers must g_free() the returned strings.
-gchar *alterator_ctl_get_effective_locale();
+gchar* alterator_ctl_get_effective_locale();
 
-gchar *alterator_ctl_get_effective_language();
+gchar* alterator_ctl_get_effective_language();
 
-void print_hash_table(GHashTable *table, gboolean with_values);
+void print_hash_table(GHashTable* table, gboolean with_values);
 
-gchar *read_file(gchar *filepath);
+gchar* read_file(gchar* filepath);
 
 int disable_output();
 
 int enable_output();
 
-gchar *stylize_text(const gchar *text, text_style style);
+gchar* stylize_text(const gchar* text, text_style style);
 
-gchar *call_bash_command(const gchar *cmd, GError **error);
+gchar* call_bash_command(const gchar* cmd, GError** error);
 
 gboolean alterator_ctl_is_root();
 
 is_tty_status isatty_safe(guint fd);
 
-gchar *columnize_text(gchar **text);
+gchar* columnize_text(gchar** text);
 
-int print_with_pager(const gchar *text);
+int print_with_pager(const gchar* text);
 
-GHashTable *hash_table_invert(GHashTable *original_table);
+GHashTable* hash_table_invert(GHashTable* original_table);
 
-GHashTable *hash_table_str2str_invert(GHashTable *original_table);
+GHashTable* hash_table_str2str_invert(GHashTable* original_table);
 
-GHashTable *g_hash_table_copy_table(GHashTable *orig,
-                                    GCopyFunc key_copy_func,
-                                    gpointer key_user_data,
-                                    GCopyFunc value_copy_func,
+GHashTable* g_hash_table_copy_table(GHashTable* orig, GCopyFunc key_copy_func,
+                                    gpointer key_user_data, GCopyFunc value_copy_func,
                                     gpointer value_user_data);
 
 // Read a secret from /dev/tty with echo disabled and confirm it.
 // Returns TRUE on success with secret in *out_secret (caller must g_free()).
 // Returns FALSE on failure with error set (empty, mismatch, or I/O error).
-gboolean alterator_ctl_read_secret(const gchar *label, gchar **out_secret, GError **error);
+gboolean alterator_ctl_read_secret(const gchar* label, gchar** out_secret, GError** error);
+
+int is_path(const gchar* string, path_type* result, GError** error);
 
 #endif // ALTERATORCTL_COMMON_H

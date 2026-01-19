@@ -7,6 +7,6 @@ comment.en = "Software for robotics (gz-sim, arduino)"
 comment.ru = "Программное обеспечение для робототехники (gz-sim, arduino)"
 
 [packages]
-gz-sim = {}
+gz-sim = { arch = ["x86_64"] }
 arduino = {}
 trikStudio = { arch = ["x86_64", "aarch64"] }

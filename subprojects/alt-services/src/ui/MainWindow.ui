@@ -14,7 +14,8 @@
    <string>Service Management</string>
   </property>
   <property name="windowIcon">
-   <iconset theme="alterator"/>
+   <iconset resource="../../data/icons.qrc">
+    <normaloff>:/icons/org.altlinux.alt-services.svg</normaloff>:/icons/org.altlinux.alt-services.svg</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
@@ -266,7 +267,8 @@
   </action>
   <action name="actionAbout">
    <property name="icon">
-    <iconset theme="alterator"/>
+    <iconset resource="../../data/icons.qrc">
+     <normaloff>:/icons/org.altlinux.alt-services.svg</normaloff>:/icons/org.altlinux.alt-services.svg</iconset>
    </property>
    <property name="text">
     <string>&amp;About...</string>
@@ -459,6 +461,8 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="../../data/icons.qrc"/>
+ </resources>
  <connections/>
 </ui>

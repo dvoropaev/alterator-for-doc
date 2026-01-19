@@ -5,6 +5,7 @@
 #include "wizard/ActionWizard.h"
 
 #include "controller/Controller.h"
+#include "app/DropEventFilter.h"
 
 #include <QDropEvent>
 #include <QMimeData>
@@ -38,7 +39,7 @@ public:
     }
 
     void importParameters(const QString& filename) {
-        if ( auto playfile = qApp->importParameters(filename) )
+        if ( auto playfile = Action::importFromFile(filename) )
         {
             qApp->controller()->selectByPath(playfile->service->dbusPath());
             m_wizard.open(playfile.value());
@@ -58,6 +59,7 @@ MainWindow::MainWindow(QWidget *parent)
     , d{ new Private{this} }
 {
     d->ui.setupUi(this);
+    installEventFilter(dropEventFilter);
 
     d->ui.searchBar->addAction(QIcon::fromTheme(QIcon::ThemeIcon::EditFind), QLineEdit::LeadingPosition)
         ->setDisabled(true);

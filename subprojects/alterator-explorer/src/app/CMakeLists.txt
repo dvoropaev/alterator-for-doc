@@ -18,6 +18,11 @@ endmacro()
 find_package(QT NAMES Qt6 Qt5      REQUIRED COMPONENTS Widgets Core Gui DBus Xml LinguistTools REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Core Gui DBus Xml LinguistTools REQUIRED)
 
+find_package(ECM REQUIRED NO_MODULE)
+set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
+include(ECMGenerateDBusServiceFile)
+find_package(KF6 REQUIRED COMPONENTS DBusAddons WindowSystem WidgetsAddons REQUIRED QUIET)
+
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set(CMAKE_AUTOMOC ON)
@@ -91,5 +96,13 @@ target_link_libraries(alterator-explorer alterator-explorer-core aobuilder
     Qt${QT_VERSION_MAJOR}::DBus
     Qt${QT_VERSION_MAJOR}::Xml
     Qt${QT_VERSION_MAJOR}::Gui
-    Qt6Solutions_SingleApplication-2.6
+    KF6::WindowSystem
+    KF6::DBusAddons
+    KF6::WidgetsAddons
+)
+
+ecm_generate_dbus_service_file(
+    NAME org.altlinux.alterartor-explorer
+    EXECUTABLE ${CMAKE_INSTALL_FULL_BINDIR}/alterator-explorer
+    DESTINATION ${CMAKE_INSTALL_FULL_DATAROOTDIR}/dbus-1/services/
 )

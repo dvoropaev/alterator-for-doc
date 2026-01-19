@@ -5,7 +5,7 @@ display_name.en = "Samba AD"
 display_name.ru = "Samba AD"
 comment.en = "Samba active directory"
 comment.ru = "Samba active directory"
-enable_force_deploy = false
+enable_force_deploy = true
 
 [diag_tools.diag_domain_controller]
 bus = "system"
@@ -91,6 +91,22 @@ required = [
     "undeploy"
 ]
 
+[parameters.hostNetBiosName]
+display_name.en = "Name of domain controller"
+display_name.ru = "Имя контроллера домена"
+comment.en = "Name of domain controller"
+comment.ru = "Имя контроллера домена"
+type = "string"
+context = [
+    "deploy",
+    "diag",
+    "status"
+]
+required = [
+    "deploy"
+]
+pattern = "^(?=.{1,15}$)(?!-)(?!.*-$)[a-z0-9-]+$"
+
 [parameters.netBiosName]
 display_name.en = "NetBios name"
 display_name.ru = "NetBios имя"
@@ -107,6 +123,7 @@ required = [
     "deploy",
     "restore"
 ]
+pattern = "^(?=.{1,15}$)(?!-)(?!.*-$)[a-z0-9-]+$"
 
 [parameters.realm]
 display_name.en = "Realm"
@@ -124,6 +141,7 @@ required = [
     "deploy",
     "restore"
 ]
+pattern = "^(?=.{1,253}$)(?!-)[a-z0-9-]{1,63}(?<!-)(?:\\.(?!-)[a-z0-9-]{1,63}(?<!-))+?$"
 
 [parameters.backendStore]
 display_name.en = "Backend store"
@@ -321,6 +339,20 @@ required = [
     "undeploy"
 ]
 
+[parameters.forceUndeploy]
+display_name.en = "Force undeploy"
+display_name.ru = "Принудительное удаление домена"
+comment.en = "Force undeploy even if errors occur during domain controller demotion"
+comment.ru = "Принудительно удалить домен, даже если при понижении контроллера домена возникнут ошибки"
+type = "boolean"
+default = false
+context = [
+    "undeploy"
+]
+required = [
+    "undeploy"
+]
+
 [parameters.saveCurrentConfig]
 display_name.en = "Save current configuration"
 display_name.ru = "Сохранить текущую конфигурацию"
@@ -435,14 +467,6 @@ display_name.ru = "Kerberos kpasswd"
 type = "port"
 inet_service.value = 464
 tcp = true
-udp = true
-
-[resources.ntp]
-display_name.en = "SSH"
-display_name.ru = "SSH"
-type = "port"
-inet_service.value = 123
-tcp = false
 udp = true
 
 [resources.NetBiosName]

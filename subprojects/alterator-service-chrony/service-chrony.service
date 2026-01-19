@@ -5,6 +5,10 @@ display_name.en = "Chrony service"
 display_name.ru = "Сервис Chrony"
 no_default_diag = true
 
+[diag_tools.diag_chrony]
+bus = "system"
+path = "/org/altlinux/alterator/diag_chrony"
+
 [parameters.disableDefaultPoll]
 display_name.en = "Disable default poll"
 display_name.ru = "Убрать пул по умолчанию"
@@ -28,9 +32,6 @@ context = [
     "status",
     "configure"
 ]
-required = [
-    "deploy"
-]
 
 [parameters.ntpPoolsSettings]
 display_name.en = "Settings of NTP pools"
@@ -44,9 +45,6 @@ context = [
     "deploy",
     "status",
     "configure"
-]
-required = [
-    "deploy"
 ]
 
 [parameters.ntpServer]
@@ -217,6 +215,9 @@ context = [
     "configure",
     "status" 
 ]
+required = [
+    "deploy"
+]
 [parameters.ntpDefaultPool.properties.bursts]
 display_name.en = "burst/iburst"
 display_name.ru = "burst/iburst"
@@ -367,6 +368,7 @@ required = [
 display_name.en = "Reset to defaults"
 display_name.ru = "Сбросить настройки к значениям по умолчанию"
 type = "boolean"
+default = false
 context = [
     "undeploy"
 ]
@@ -378,6 +380,7 @@ required = [
 display_name.en = "Save current configuration"
 display_name.ru = "Сохранить текущую конфигурацию"
 type = "boolean"
+default = false
 context = [
     "undeploy"
 ]

@@ -12,9 +12,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5      REQUIRED COMPONENTS Core Widgets DBus LinguistTools Xml)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Widgets DBus LinguistTools Xml)
 
+include(GNUInstallDirs)
 find_package(ECM REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
-find_package(KF6                   REQUIRED COMPONENTS WidgetsAddons ItemModels)
+include(ECMGenerateDBusServiceFile)
+find_package(KF6                   REQUIRED COMPONENTS WidgetsAddons ItemModels DBusAddons WindowSystem QUIET)
 
 find_package(range-v3 REQUIRED)
 
@@ -37,6 +39,9 @@ set(PROJECT_SOURCES
 
     src/app/RichToolTipEventFilter.h
     src/app/RichToolTipEventFilter.cpp
+
+    src/app/DropEventFilter.h
+    src/app/DropEventFilter.cpp
 
     src/controller/Controller.h
     src/controller/Controller.cpp
@@ -250,7 +255,13 @@ else()
     add_translation_resource(RESOURCES_SRC ${PROJECT_NAME} ${QM_FILES})
 endif()
 
-add_executable(${PROJECT_NAME} ${PROJECT_SOURCES} ${RESOURCES_SRC})
+qt_add_resources(data/icons.qrc)
+
+add_executable(${PROJECT_NAME}
+    ${PROJECT_SOURCES}
+    ${RESOURCES_SRC}
+    data/icons.qrc
+)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt${QT_VERSION_MAJOR}::Core
@@ -259,13 +270,19 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt${QT_VERSION_MAJOR}::Xml
     KF6::WidgetsAddons
     KF6::ItemModels
-    Qt6Solutions_SingleApplication-2.6
+    KF6::DBusAddons
+    KF6::WindowSystem
 )
 
 
-include(GNUInstallDirs)
 install(TARGETS ${PROJECT_NAME}
     BUNDLE DESTINATION .
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+
+ecm_generate_dbus_service_file(
+    NAME org.altlinux.alt-services
+    EXECUTABLE ${CMAKE_INSTALL_FULL_BINDIR}/${PROJECT_NAME}
+    DESTINATION ${CMAKE_INSTALL_FULL_DATAROOTDIR}/dbus-1/services/
 )

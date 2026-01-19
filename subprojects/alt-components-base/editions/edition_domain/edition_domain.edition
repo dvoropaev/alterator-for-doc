@@ -79,7 +79,7 @@ components = [
     "scsi-utils",
     "multipath-tools",
 # system-infra:
-#!  "bind",
+    "bind",
     "ssh-server",
     "postfix-server",
     "dhcp-kea",
@@ -221,35 +221,18 @@ components = [
     "tokens-auth-esmart",
     "tokens-p11-kit-proxy-auth",
 # system-infra/containers:
-    "docker",
     "podman",
-    "kubernetes1_31",
     "lxc",
 # system-infra:
-    "apache2",
-    "dovecot",
     "freerdp3-server",
     "git-server",
     "icinga2",
     "icingaweb2",
     "keycloak",
-    "nginx",
-    "openuds",
-    "openuds-tunnel",
     "rsyslog",
     "samba",
-    "sogo",
-    "squid",
     "tftp-server",
-    "tigervnc-server",
-    "trivy-server",
     "usbip",
-    "zabbix-server",
-# system-infra/databases:
-    "mariadb",
-    "postgresql17",
-    "postgresql17-1c",
-    "postgresql-jdbc",
 # domain-infra:
     "freeipa-server",
 # apps/system-apps:
@@ -267,7 +250,7 @@ components = [
     "remmina",
     "tigervnc-client",
 # apps/browsers-apps:
-    "base-browser",
+    "chromium",
 # graphics:
     "xorg-base",
     "xorg-other",
