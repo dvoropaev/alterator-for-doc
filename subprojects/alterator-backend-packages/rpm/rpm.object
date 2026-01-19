@@ -1,0 +1,6 @@
+type            = "Object"
+name            = "amp-rpm"
+display_name.en = "RPM"
+comment.en      = "Alterator interface for rpm"
+comment.ru      = "Интерфейс Альтератора для rpm"
+category        = "componentsCategory"
