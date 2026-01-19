@@ -16,7 +16,8 @@
       </arg>
     </method>
     <method name="UpdateAsync">
-      <doc:summary>Run apt-get update in background; progress is emitted through signals.</doc:summary>
+      <doc:summary>Run apt-get update in background.</doc:summary>
+      <doc:detail>Signals: apt1_update_stdout_signal, apt1_update_stderr_signal.</doc:detail>
       <arg type="i" name="response" direction="out">
         <doc:summary>Exit code of apt-get update.</doc:summary>
         <doc:detail>0 — success, != 0 — error.</doc:detail>
@@ -24,9 +25,13 @@
     </method>
     <method name="ApplyAsync">
       <doc:summary>Apply install/remove transaction via apt-wrapper apply using pkgpriorities.</doc:summary>
+      <doc:detail>Creates a temporary pkgpriorities file (mktemp "${TMPDIR:-/tmp}/alterator-pkgpriorities.XXXXXXXXXXXX") and uses it instead of /etc/apt/pkgpriorities. The file contains packages marked as manual by apt-mark showmanual. This prevents dependency removal of manually installed packages unless the package is explicitly requested for removal in pkgnames or excluded from the generated file via exclude_pkgnames. The temporary file is removed when apt-wrapper finishes.</doc:detail>
+      <doc:detail>Signals: apt1_install_stdout_signal, apt1_install_stderr_signal, apt1_remove_stdout_signal, apt1_remove_stderr_signal.</doc:detail>
       <arg type="s" name="exclude_pkgnames" direction="in">
         <doc:summary>Whitespace-separated package names to exclude from pkgpriorities.</doc:summary>
-        <doc:detail>Each name is converted to a newline list before pkgpriorities creation.</doc:detail>
+        <doc:detail>Input is passed as a single string. To pass an empty list, use &quot;\&quot;''\&quot;&quot; instead of an empty string to keep the first element of pkgnames intact.</doc:detail>
+        <doc:detail>Example: busctl call org.altlinux.alterator /org/altlinux/alterator/apt org.altlinux.alterator.apt1 ApplyAsync ss &quot;pkg1 pkg2&quot; &quot;pkg3 pkg4 pkg5-&quot;.</doc:detail>
+        <doc:detail>Example (empty exclude list): busctl call org.altlinux.alterator /org/altlinux/alterator/apt org.altlinux.alterator.apt1 ApplyAsync ss &quot;\&quot;''\&quot;&quot; &quot;pkg1- pkg2- pkg3-&quot;.</doc:detail>
       </arg>
       <arg type="s" name="pkgnames" direction="in">
         <doc:summary>Whitespace-separated packages to process.</doc:summary>
@@ -39,6 +44,7 @@
     </method>
     <method name="ReinstallAsync">
       <doc:summary>Reinstall packages asynchronously via apt-get reinstall -y -q.</doc:summary>
+      <doc:detail>Signals: apt1_reinstall_stdout_signal, apt1_reinstall_stderr_signal.</doc:detail>
       <arg type="s" name="pkgnames" direction="in">
         <doc:summary>Whitespace-separated package names to reinstall.</doc:summary>
       </arg>
@@ -150,6 +156,7 @@
     </method>
     <method name="DistUpgradeAsync">
       <doc:summary>Perform dist-upgrade asynchronously via apt-get dist-upgrade -y -q.</doc:summary>
+      <doc:detail>Signals: apt1_dist_upgrade_stdout_signal, apt1_dist_upgrade_stderr_signal.</doc:detail>
       <arg type="i" name="response" direction="out">
         <doc:summary>Exit code of the upgrade command.</doc:summary>
         <doc:detail>0 — success, != 0 — error.</doc:detail>
