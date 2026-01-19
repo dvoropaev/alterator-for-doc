@@ -3,19 +3,29 @@
   "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
 <node name="/" xmlns:doc="http://www.freedesktop.org/dbus/1.0/doc.dtd">
   <interface name="org.altlinux.alterator.apt1">
+    <doc:summary>Provide D-Bus methods for package operations via apt-get and apt-wrapper, plus signals for async command output.</doc:summary>
     <method name="Info">
       <arg type="ay" name="stdout_bytes" direction="out"></arg>
       <arg type="i" name="response" direction="out"></arg>
     </method>
     <method name="UpdateAsync">
+      <doc:summary>Run apt-get update in background; progress is emitted through signals.</doc:summary>
+      <doc:detail>Signals: apt1_update_stdout_signal, apt1_update_stderr_signal.</doc:detail>
       <arg type="i" name="response" direction="out"></arg>
     </method>
     <method name="ApplyAsync">
+      <doc:summary>Apply install/remove transaction via apt-wrapper apply using pkgpriorities.</doc:summary>
+      <doc:detail>Principle: apt-wrapper replaces /etc/apt/pkgpriorities with a temporary file created by mktemp "${TMPDIR:-/tmp}/alterator-pkgpriorities.XXXXXXXXXXXX". This file contains packages marked as manual (apt-mark showmanual) so that manually installed packages are not removed as dependencies. If a package is explicitly listed in pkgnames, it can still be removed. The temporary file is deleted when apt-wrapper finishes.</doc:detail>
+      <doc:detail>Signals: apt1_install_stdout_signal, apt1_install_stderr_signal.</doc:detail>
+      <doc:detail>exclude_pkgnames lists packages to exclude from the generated pkgpriorities (use when removal of a manually installed package is allowed). pkgnames lists packages for install/remove; both parameters are space-separated strings.</doc:detail>
+      <doc:detail>Important: to pass an empty exclude_pkgnames, send the string "''" (two single quotes). An empty string shifts the first token of pkgnames into exclude_pkgnames. Example: busctl call org.altlinux.alterator /org/altlinux/alterator/apt org.altlinux.alterator.apt1 ApplyAsync ss "\"''\"" "pkg1- pkg2-".</doc:detail>
       <arg type="s" name="exclude_pkgnames" direction="in"></arg>
       <arg type="s" name="pkgnames" direction="in"></arg>
       <arg type="i" name="response" direction="out"></arg>
     </method>
     <method name="ReinstallAsync">
+      <doc:summary>Run apt-get reinstall in background.</doc:summary>
+      <doc:detail>Signals: apt1_reinstall_stdout_signal, apt1_reinstall_stderr_signal.</doc:detail>
       <arg type="s" name="pkgnames" direction="in"></arg>
       <arg type="i" name="response" direction="out"></arg>
     </method>
@@ -58,6 +68,8 @@
       <arg type="i" name="response" direction="out"></arg>
     </method>
     <method name="DistUpgradeAsync">
+      <doc:summary>Run apt-get dist-upgrade in background.</doc:summary>
+      <doc:detail>Signals: apt1_dist_upgrade_stdout_signal, apt1_dist_upgrade_stderr_signal.</doc:detail>
       <arg type="i" name="response" direction="out"></arg>
     </method>
     <signal name="apt1_update_stderr_signal">
