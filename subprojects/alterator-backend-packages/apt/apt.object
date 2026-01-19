@@ -1,6 +1,0 @@
-type            = "Object"
-name            = "amp-apt"
-display_name.en = "APT"
-comment.en      = "Alterator interface for apt-get"
-comment.ru      = "Интерфейс Альтератора для apt-get"
-category        = "componentsCategory"

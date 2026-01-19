@@ -1,9 +1,0 @@
-# -*- mode: conf -*-
-
-/var/log/alterator/apt/dist-upgrades.log {
-                 compress
-                 create 0644 root root
-                 monthly
-                 missingok
-                 notifempty
-}

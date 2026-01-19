@@ -1,3 +1,0 @@
-[remote "upstream"]
-	url = https://altlinux.space/alterator/alterator-backend-packages.git
-	fetch = +refs/heads/*:refs/remotes/upstream/*
