@@ -17,7 +17,7 @@
     </method>
     <method name="UpdateAsync">
       <doc:summary>Run apt-get update in background; progress is emitted through signals.</doc:summary>
-      <doc:detail>Signals emitted: apt1_update_stdout_signal (stdout stream), apt1_update_stderr_signal (stderr stream).</doc:detail>
+      <doc:detail>Signals emitted: apt1_update_stdout_signal, apt1_update_stderr_signals.</doc:detail>
       <arg type="i" name="response" direction="out">
         <doc:summary>Exit code of apt-get update.</doc:summary>
         <doc:detail>0 — success, != 0 — error.</doc:detail>
