@@ -1,3 +1,5 @@
+[English](./rpm1.md) | [Русский](./rpm1.ru_RU.md)
+
 # Interface **org.altlinux.alterator.rpm1**
 
 Expose rpm backend commands for listing, installing, and removing RPM packages.

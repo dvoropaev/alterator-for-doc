@@ -1,3 +1,5 @@
+[English](./apt1.md) | [Русский](./apt1.ru_RU.md)
+
 # Interface **org.altlinux.alterator.apt1**
 
 Expose apt backend commands for package search, install, reinstall, and upgrade with streaming signals for long-running operations.

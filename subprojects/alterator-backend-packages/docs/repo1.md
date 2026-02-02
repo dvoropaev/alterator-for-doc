@@ -1,3 +1,5 @@
+[English](./repo1.md) | [Русский](./repo1.ru_RU.md)
+
 # Interface **org.altlinux.alterator.repo1**
 
 Expose repository management commands backed by apt-repo.
