@@ -206,7 +206,7 @@
         <doc:summary xml:lang="en_US">Connector names and resolutions from /sys/class/drm/*/modes.</doc:summary>
         <doc:summary xml:lang="ru_RU">Списки коннекторов и разрешений из `/sys/class/drm/*/modes`.</doc:summary>
         <doc:detail xml:lang="en_US">Entries formatted as &lt;device&gt;-&lt;connector&gt; &lt;width&gt;x&lt;height&gt;.</doc:detail>
-        <doc:detail xml:lang="ru_RU">Элементы формата `<устройство>-<коннектор> <ширина>x<высота>`.</doc:detail>
+        <doc:detail xml:lang="ru_RU">Элементы формата `&lt;устройство&gt;-&lt;коннектор&gt; &lt;ширина&gt;x&lt;высота&gt;`.</doc:detail>
       </arg>
       <arg type="i" name="response" direction="out">
         <doc:summary xml:lang="en_US">Exit code of the helper.</doc:summary>
