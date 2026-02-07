@@ -4,6 +4,41 @@
     xmlns:doc="http://www.freedesktop.org/dbus/1.0/doc.dtd">
 
     <xsl:output method="text" encoding="UTF-8"/>
+    <xsl:param name="lang" select="'en_US'"/>
+
+    <xsl:template name="tr">
+        <xsl:param name="key"/>
+        <xsl:choose>
+            <xsl:when test="$lang = 'ru' or $lang = 'ru_RU'">
+                <xsl:choose>
+                    <xsl:when test="$key = 'interface'">Интерфейс</xsl:when>
+                    <xsl:when test="$key = 'methods'">Методы</xsl:when>
+                    <xsl:when test="$key = 'signals'">Сигналы</xsl:when>
+                    <xsl:when test="$key = 'method'">Метод</xsl:when>
+                    <xsl:when test="$key = 'signal'">Сигнал</xsl:when>
+                    <xsl:when test="$key = 'summary'">Описание</xsl:when>
+                    <xsl:when test="$key = 'input_arguments'">Входные аргументы</xsl:when>
+                    <xsl:when test="$key = 'output_arguments'">Выходные аргументы</xsl:when>
+                    <xsl:when test="$key = 'argument'">Аргумент</xsl:when>
+                    <xsl:otherwise><xsl:value-of select="$key"/></xsl:otherwise>
+                </xsl:choose>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:choose>
+                    <xsl:when test="$key = 'interface'">Interface</xsl:when>
+                    <xsl:when test="$key = 'methods'">Methods</xsl:when>
+                    <xsl:when test="$key = 'signals'">Signals</xsl:when>
+                    <xsl:when test="$key = 'method'">Method</xsl:when>
+                    <xsl:when test="$key = 'signal'">Signal</xsl:when>
+                    <xsl:when test="$key = 'summary'">Summary</xsl:when>
+                    <xsl:when test="$key = 'input_arguments'">Input arguments</xsl:when>
+                    <xsl:when test="$key = 'output_arguments'">Output arguments</xsl:when>
+                    <xsl:when test="$key = 'argument'">Argument</xsl:when>
+                    <xsl:otherwise><xsl:value-of select="$key"/></xsl:otherwise>
+                </xsl:choose>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
 	
     <!-- ROOT TEMPLATE -->
     <xsl:template match="/node">
@@ -12,10 +47,8 @@
     </xsl:template>
 
     <!-- INTERFACE TEMPLATE -->
-    <xsl:template match="interface"># Interface **<xsl:value-of select="@name"/>**<xsl:text>&#10;</xsl:text>
-		<xsl:if test="doc:summary"><xsl:text>&#10;</xsl:text></xsl:if>
+    <xsl:template match="interface"># <xsl:call-template name="tr"><xsl:with-param name="key" select="'interface'"/></xsl:call-template> **<xsl:value-of select="@name"/>**<xsl:text>&#10;</xsl:text>
 		<xsl:apply-templates select="doc:summary"/>
-		<xsl:if test="doc:detail"><xsl:text>&#10;</xsl:text></xsl:if>
 		<xsl:apply-templates select="doc:detail"/>
 		<xsl:if test="method">
 			<xsl:call-template name="methods-navigation-table"/>
@@ -25,12 +58,12 @@
 		</xsl:if>
 		<xsl:if test="method">
 			<xsl:text>&#10;</xsl:text>
-			<xsl:text>## Methods&#10;</xsl:text>
+			<xsl:text>## </xsl:text><xsl:call-template name="tr"><xsl:with-param name="key" select="'methods'"/></xsl:call-template><xsl:text>&#10;</xsl:text>
 			<xsl:text>&#10;</xsl:text>
 		</xsl:if>
         <xsl:apply-templates select="method"/>
 		<xsl:if test="signal">
-			<xsl:text>&#10;## Signals&#10;&#10;</xsl:text>
+			<xsl:text>&#10;## </xsl:text><xsl:call-template name="tr"><xsl:with-param name="key" select="'signals'"/></xsl:call-template><xsl:text>&#10;&#10;</xsl:text>
 		</xsl:if>
         <xsl:apply-templates select="signal"/>
         <xsl:if test="position() != last()"><xsl:text>&#10;</xsl:text></xsl:if>
@@ -38,21 +71,79 @@
 
     <!-- DOC-SUMMARY TEMPLATE -->
     <xsl:template match="doc:summary">
-        <xsl:for-each select="text()">
-            <xsl:value-of select="translate(., '&#13;&#9;', '')"/>
-            <xsl:text>&#10;</xsl:text>
-        </xsl:for-each>
-        <xsl:if test="position() != last()"><xsl:text>&#10;</xsl:text></xsl:if>
+		<xsl:choose>
+			<xsl:when test="$lang = 'en_US'">
+				<xsl:choose>
+					<xsl:when test="@xml:lang = 'en_US'">
+						<xsl:call-template name="emit-summary"/>
+					</xsl:when>
+					<xsl:when test="not(@xml:lang) and not(../doc:summary[@xml:lang = 'en_US'])">
+						<xsl:call-template name="emit-summary"/>
+					</xsl:when>
+				</xsl:choose>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:if test="@xml:lang = $lang">
+					<xsl:call-template name="emit-summary"/>
+				</xsl:if>
+			</xsl:otherwise>
+		</xsl:choose>
     </xsl:template>
 	
 	<!-- DOC-DETAIL TEMPLATE -->
 	<xsl:template match="doc:detail">
+		<xsl:choose>
+			<xsl:when test="$lang = 'en_US'">
+				<xsl:choose>
+					<xsl:when test="@xml:lang = 'en_US'">
+						<xsl:call-template name="emit-detail"/>
+					</xsl:when>
+					<xsl:when test="not(@xml:lang) and not(../doc:detail[@xml:lang = 'en_US'])">
+						<xsl:call-template name="emit-detail"/>
+					</xsl:when>
+				</xsl:choose>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:if test="@xml:lang = $lang">
+					<xsl:call-template name="emit-detail"/>
+				</xsl:if>
+			</xsl:otherwise>
+		</xsl:choose>
+    </xsl:template>
+
+	<xsl:template name="emit-summary">
+		<xsl:text>&#10;</xsl:text>
+		<xsl:for-each select="text()">
+			<xsl:value-of select="translate(., '&#13;&#9;', '')"/>
+			<xsl:text>&#10;</xsl:text>
+		</xsl:for-each>
+	</xsl:template>
+
+	<xsl:template name="emit-detail">
+		<xsl:text>&#10;</xsl:text>
 		<xsl:variable name="txt" select="."/>
 		<xsl:call-template name="clean-text">
 			<xsl:with-param name="text" select="$txt"/>
 		</xsl:call-template>
-        <xsl:if test="position() != last()"><xsl:text>&#10;</xsl:text></xsl:if>
-    </xsl:template>
+	</xsl:template>
+
+	<xsl:template name="summary-text">
+		<xsl:choose>
+			<xsl:when test="$lang = 'en_US'">
+				<xsl:choose>
+					<xsl:when test="doc:summary[@xml:lang = 'en_US']">
+						<xsl:value-of select="normalize-space(doc:summary[@xml:lang = 'en_US'][1])"/>
+					</xsl:when>
+					<xsl:when test="doc:summary[not(@xml:lang)]">
+						<xsl:value-of select="normalize-space(doc:summary[not(@xml:lang)][1])"/>
+					</xsl:when>
+				</xsl:choose>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="normalize-space(doc:summary[@xml:lang = $lang][1])"/>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
 
 	<!-- CLEAN TEXT TEMPLATE -->
 	<xsl:template name="clean-text">
@@ -72,16 +163,16 @@
 	</xsl:template>
 
 	<xsl:template name="methods-navigation-table">
-| Method | Summary |
+| <xsl:call-template name="tr"><xsl:with-param name="key" select="'method'"/></xsl:call-template> | <xsl:call-template name="tr"><xsl:with-param name="key" select="'summary'"/></xsl:call-template> |
 |--------|---------|<xsl:for-each select="method">
-| [<xsl:value-of select="@name"/>]<xsl:call-template name="method-link"><xsl:with-param name="method_name" select="@name"/><xsl:with-param name="interface_name" select="''"/></xsl:call-template> | <xsl:value-of select="normalize-space(doc:summary)"/> |</xsl:for-each>
+| [<xsl:value-of select="@name"/>]<xsl:call-template name="method-link"><xsl:with-param name="method_name" select="@name"/><xsl:with-param name="interface_name" select="''"/></xsl:call-template> | <xsl:call-template name="summary-text"/> |</xsl:for-each>
 		<xsl:text>&#10;&#10;</xsl:text>
 	</xsl:template>
 	
 	<xsl:template name="signals-navigation-table">
-| Signal | Summary |
+| <xsl:call-template name="tr"><xsl:with-param name="key" select="'signal'"/></xsl:call-template> | <xsl:call-template name="tr"><xsl:with-param name="key" select="'summary'"/></xsl:call-template> |
 |--------|---------|<xsl:for-each select="signal">
-| [<xsl:value-of select="@name"/>]<xsl:call-template name="signal-link"><xsl:with-param name="signal_name" select="@name"/><xsl:with-param name="interface_name" select="''"/></xsl:call-template> | <xsl:value-of select="normalize-space(doc:summary)"/> |</xsl:for-each>
+| [<xsl:value-of select="@name"/>]<xsl:call-template name="signal-link"><xsl:with-param name="signal_name" select="@name"/><xsl:with-param name="interface_name" select="''"/></xsl:call-template> | <xsl:call-template name="summary-text"/> |</xsl:for-each>
 		<xsl:text>&#10;</xsl:text>
 	</xsl:template>
 
@@ -142,18 +233,16 @@
 		</xsl:call-template>
 		<xsl:text>"&gt;&lt;/a&gt;</xsl:text>
 		<xsl:text>&#10;</xsl:text>
-		<xsl:if test="doc:summary"><xsl:text>&#10;</xsl:text></xsl:if>
         <xsl:apply-templates select="doc:summary"/>
-		<xsl:if test="doc:detail"><xsl:text>&#10;</xsl:text></xsl:if>
 		<xsl:apply-templates select="doc:detail"/>
 		<xsl:if test="arg[@direction='in']">
-			<xsl:text>&#10;#### Input arguments&#10;&#10;</xsl:text>
+			<xsl:text>&#10;#### </xsl:text><xsl:call-template name="tr"><xsl:with-param name="key" select="'input_arguments'"/></xsl:call-template><xsl:text>&#10;&#10;</xsl:text>
 		</xsl:if>
 		<xsl:apply-templates select="arg[@direction='in']">
 			<xsl:with-param name="method_name" select="@name"/>
 		</xsl:apply-templates>
 		<xsl:if test="arg[@direction='out']">
-			<xsl:text>&#10;#### Output arguments&#10;&#10;</xsl:text>
+			<xsl:text>&#10;#### </xsl:text><xsl:call-template name="tr"><xsl:with-param name="key" select="'output_arguments'"/></xsl:call-template><xsl:text>&#10;&#10;</xsl:text>
 		</xsl:if>
 		<xsl:apply-templates select="arg[@direction='out']">
 			<xsl:with-param name="method_name" select="@name"/>
@@ -176,11 +265,9 @@
 		</xsl:call-template>
 		<xsl:text>"&gt;&lt;/a&gt;</xsl:text>
         <xsl:text>&#10;</xsl:text>
-		<xsl:if test="doc:summary"><xsl:text>&#10;</xsl:text></xsl:if>
         <xsl:apply-templates select="doc:summary"/>
-		<xsl:if test="doc:detail"><xsl:text>&#10;</xsl:text></xsl:if>
 		<xsl:apply-templates select="doc:detail"/>
-		<xsl:if test="arg"><xsl:text>&#10;#### Output arguments&#10;&#10;</xsl:text></xsl:if>
+		<xsl:if test="arg"><xsl:text>&#10;#### </xsl:text><xsl:call-template name="tr"><xsl:with-param name="key" select="'output_arguments'"/></xsl:call-template><xsl:text>&#10;&#10;</xsl:text></xsl:if>
 		<xsl:apply-templates select="arg">
 			<xsl:with-param name="method_name" select="@name"/>
 		</xsl:apply-templates>
@@ -189,10 +276,8 @@
 
     <!-- ARGUMENT TEMPLATE -->
 	<xsl:template match="arg">
-		<xsl:param name="method_name"/>##### <xsl:if test="string-length(@name) = 0">Argument </xsl:if><xsl:if test="string-length(@name) != 0">**<xsl:value-of select="@name"/>** : </xsl:if>`<xsl:value-of select="@type"/>`<xsl:if test="string-length(@name) != 0"> &lt;a id="argument-<xsl:value-of select="@name"/>-of-<xsl:value-of select="$method_name"/>"&gt;&lt;/a&gt;</xsl:if><xsl:text>&#10;</xsl:text>
-		<xsl:if test="doc:summary"><xsl:text>&#10;</xsl:text></xsl:if>
+		<xsl:param name="method_name"/>##### <xsl:if test="string-length(@name) = 0"><xsl:call-template name="tr"><xsl:with-param name="key" select="'argument'"/></xsl:call-template><xsl:text> </xsl:text></xsl:if><xsl:if test="string-length(@name) != 0">**<xsl:value-of select="@name"/>** : </xsl:if>`<xsl:value-of select="@type"/>`<xsl:if test="string-length(@name) != 0"> &lt;a id="argument-<xsl:value-of select="@name"/>-of-<xsl:value-of select="$method_name"/>"&gt;&lt;/a&gt;</xsl:if><xsl:text>&#10;</xsl:text>
         <xsl:apply-templates select="doc:summary"/>
-		<xsl:if test="doc:detail"><xsl:text>&#10;</xsl:text></xsl:if>
 		<xsl:apply-templates select="doc:detail"/>
         <xsl:if test="position() != last()"><xsl:text>&#10;</xsl:text></xsl:if>
     </xsl:template>
