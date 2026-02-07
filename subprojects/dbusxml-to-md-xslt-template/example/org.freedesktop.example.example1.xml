@@ -4,39 +4,55 @@
 <node name="/" xmlns:doc="http://www.freedesktop.org/dbus/1.0/doc.dtd">
   <interface name="org.freedesktop.example.example1">
 	<doc:summary>Some summary of example</doc:summary>
+	<doc:summary xml:lang="ru_RU">Краткое описание примера</doc:summary>
     <method name="Foo">
       <doc:summary>Some summary of Foo</doc:summary>
+      <doc:summary xml:lang="ru_RU">Краткое описание Foo</doc:summary>
       <arg type="as" name="arg1" direction="in">
         <doc:summary>Some summary of arg1</doc:summary>
+        <doc:summary xml:lang="ru_RU">Краткое описание arg1</doc:summary>
       </arg>
       <arg type="s" name="arg2" direction="in">
         <doc:summary>Some summary of arg2</doc:summary>
+        <doc:summary xml:lang="ru_RU">Краткое описание arg2</doc:summary>
       </arg>
     </method>
     <method name="EmptyFoo">
 	  <doc:summary>Some summary of EmptyFoo</doc:summary>
+      <doc:summary xml:lang="ru_RU">Краткое описание EmptyFoo</doc:summary>
     </method>
     <method name="DetailFoo">
       <doc:summary>Some summary of DetailFoo</doc:summary>
+      <doc:summary xml:lang="ru_RU">Краткое описание DetailFoo</doc:summary>
       <arg type="s" name="action_id" direction="in">
         <doc:summary>Some summary of action_id</doc:summary>
+        <doc:summary xml:lang="ru_RU">Краткое описание action_id</doc:summary>
         <doc:detail>
 		  Some list:
 		  - `some first item`;
 		  - `some second item`.
         </doc:detail> 
+        <doc:detail xml:lang="ru_RU">
+		  Список:
+		  - `первый пункт`;
+		  - `второй пункт`.
+        </doc:detail>
       </arg>
       <arg type="as" name="out1" direction="out">
         <doc:summary>Some summary of out1</doc:summary>
+        <doc:summary xml:lang="ru_RU">Краткое описание out1</doc:summary>
       </arg>
       <arg type="i" name="out2" direction="out">
         <doc:summary>Some summary of out2</doc:summary>
+        <doc:summary xml:lang="ru_RU">Краткое описание out2</doc:summary>
       </arg>
     </method>
     <signal name="OnSomething">
       <doc:summary>Some summary of OnSomething</doc:summary>
+      <doc:summary xml:lang="ru_RU">Краткое описание OnSomething</doc:summary>
       <arg type="s" name="">
         <doc:summary>Some summary of ... what?</doc:summary>
+        <doc:summary xml:lang="ru_RU">Краткое описание сигнала</doc:summary>
       </arg>
     </signal>
   </interface>
