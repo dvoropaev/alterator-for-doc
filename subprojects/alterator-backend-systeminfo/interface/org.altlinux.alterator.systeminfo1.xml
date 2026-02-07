@@ -3,185 +3,262 @@
   "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
 <node name="/" xmlns:doc="http://www.freedesktop.org/dbus/1.0/doc.dtd">
   <interface name="org.altlinux.alterator.systeminfo1">
-    <doc:summary>Expose systeminfo backend methods that provide system data by running /usr/lib/alterator/backends/systeminfo helpers; each method returns stdout and the underlying command response code.</doc:summary>
+    <doc:summary xml:lang="en_US">Expose systeminfo backend methods that provide system data by running /usr/lib/alterator/backends/systeminfo helpers; each method returns stdout and the underlying command response code.</doc:summary>
+    <doc:summary xml:lang="ru_RU">Предоставляет методы бэкенда systeminfo для получения данных о системе через помощники `/usr/lib/alterator/backends/systeminfo`; каждый метод возвращает stdout и код завершения базовой команды.</doc:summary>
     <method name="GetAll">
-      <doc:summary>Collect consolidated system data in key/value form.</doc:summary>
+      <doc:summary xml:lang="en_US">Collect consolidated system data in key/value form.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Собирает сводные сведения о системе в формате ключ/значение.</doc:summary>
       <arg type="ay" name="stdout_bytes" direction="out">
-        <doc:summary>Raw output of the systeminfo get-all helper.</doc:summary>
-        <doc:detail>Lines KEY="value" ordered as HOSTNAME, OS_NAME, BRANCH, KERNEL, CPU, ARCH, GPU, MEMORY, DRIVE, MOTHERBOARD, MONITOR.</doc:detail>
+        <doc:summary xml:lang="en_US">Raw output of the systeminfo get-all helper.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Сырые данные, выводимые помощником `systeminfo get-all`.</doc:summary>
+        <doc:detail xml:lang="en_US">Lines KEY="value" ordered as HOSTNAME, OS_NAME, BRANCH, KERNEL, CPU, ARCH, GPU, MEMORY, DRIVE, MOTHERBOARD, MONITOR.</doc:detail>
+        <doc:detail xml:lang="ru_RU">Строки `KEY="value"` в порядке: HOSTNAME, OS_NAME, BRANCH, KERNEL, CPU, ARCH, GPU, MEMORY, DRIVE, MOTHERBOARD, MONITOR.</doc:detail>
       </arg>
       <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of the helper.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
+        <doc:summary xml:lang="en_US">Exit code of the helper.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения помощника.</doc:summary>
+        <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+        <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
     </method>
     <method name="GetCPU">
-      <doc:summary>Return CPU model, logical core count, and frequency via systeminfo cpu.</doc:summary>
+      <doc:summary xml:lang="en_US">Return CPU model, logical core count, and frequency via systeminfo cpu.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Возвращает модель CPU, число логических ядер и частоту, полученные через `systeminfo cpu`.</doc:summary>
       <arg type="as" name="stdout_strings" direction="out">
-        <doc:summary>CPU properties reported by the helper.</doc:summary>
-        <doc:detail>stdout_strings entries: model; logical cores; frequency in MHz.</doc:detail>
+        <doc:summary xml:lang="en_US">CPU properties reported by the helper.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Параметры CPU, возвращаемые помощником.</doc:summary>
+        <doc:detail xml:lang="en_US">stdout_strings entries: model; logical cores; frequency in MHz.</doc:detail>
+        <doc:detail xml:lang="ru_RU">Элементы stdout_strings: модель; число логических ядер; частота в МГц.</doc:detail>
       </arg>
       <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of the helper.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
+        <doc:summary xml:lang="en_US">Exit code of the helper.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения помощника.</doc:summary>
+        <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+        <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
     </method>
     <method name="GetHostName">
-      <doc:summary>Return the host name from systeminfo host-name.</doc:summary>
+      <doc:summary xml:lang="en_US">Return the host name from systeminfo host-name.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Возвращает имя хоста, полученное через `systeminfo host-name`.</doc:summary>
       <arg type="as" name="stdout_strings" direction="out">
-        <doc:summary>Hostname string from the hostname command.</doc:summary>
+        <doc:summary xml:lang="en_US">Hostname string from the hostname command.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Имя хоста из команды `hostname`.</doc:summary>
       </arg>
       <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of the helper.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
+        <doc:summary xml:lang="en_US">Exit code of the helper.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения помощника.</doc:summary>
+        <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+        <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
     </method>
     <method name="GetDrive">
-      <doc:summary>Return total storage size via systeminfo drive.</doc:summary>
+      <doc:summary xml:lang="en_US">Return total storage size via systeminfo drive.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Возвращает суммарный объём накопителей, полученный через `systeminfo drive`.</doc:summary>
       <arg type="as" name="stdout_strings" direction="out">
-        <doc:summary>Aggregated storage size from /proc/partitions.</doc:summary>
-        <doc:detail>Single entry with size in bytes.</doc:detail>
+        <doc:summary xml:lang="en_US">Aggregated storage size from /proc/partitions.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Суммарный объём накопителей в байтах, вычисленный по `/proc/partitions`.</doc:summary>
+        <doc:detail xml:lang="en_US">Single entry with size in bytes.</doc:detail>
       </arg>
       <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of the helper.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
+        <doc:summary xml:lang="en_US">Exit code of the helper.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения помощника.</doc:summary>
+        <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+        <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
     </method>
     <method name="GetGPU">
-      <doc:summary>List VGA adapters reported by systeminfo gpu.</doc:summary>
+      <doc:summary xml:lang="en_US">List VGA adapters reported by systeminfo gpu.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Перечисляет VGA-адаптеры, сообщаемые `systeminfo gpu`.</doc:summary>
       <arg type="as" name="stdout_strings" direction="out">
-        <doc:summary>Adapter descriptions parsed from lspci output.</doc:summary>
+        <doc:summary xml:lang="en_US">Adapter descriptions parsed from lspci output.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Описания адаптеров, полученные из вывода `lspci`.</doc:summary>
       </arg>
       <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of the helper.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
+        <doc:summary xml:lang="en_US">Exit code of the helper.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения помощника.</doc:summary>
+        <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+        <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
     </method>
     <method name="GetMemory">
-      <doc:summary>Report RAM size using systeminfo memory.</doc:summary>
+      <doc:summary xml:lang="en_US">Report RAM size using systeminfo memory.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Сообщает объём RAM, полученный через `systeminfo memory`.</doc:summary>
       <arg type="as" name="stdout_strings" direction="out">
-        <doc:summary>Total memory calculated as MemTotal * 1024.</doc:summary>
-        <doc:detail>Single entry with size in bytes.</doc:detail>
+        <doc:summary xml:lang="en_US">Total memory calculated as MemTotal * 1024.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Объём памяти в байтах, вычисленный как `MemTotal * 1024` из `/proc/meminfo`.</doc:summary>
+        <doc:detail xml:lang="en_US">Single entry with size in bytes.</doc:detail>
       </arg>
       <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of the helper.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
+        <doc:summary xml:lang="en_US">Exit code of the helper.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения помощника.</doc:summary>
+        <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+        <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
     </method>
     <method name="GetBranch">
-      <doc:summary>Return the distribution branch via systeminfo branch.</doc:summary>
+      <doc:summary xml:lang="en_US">Return the distribution branch via systeminfo branch.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Возвращает ветку дистрибутива, полученную через `systeminfo branch`.</doc:summary>
       <arg type="as" name="stdout_strings" direction="out">
-        <doc:summary>Value of the RPM macro %_priority_distbranch.</doc:summary>
+        <doc:summary xml:lang="en_US">Value of the RPM macro %_priority_distbranch.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Значение rpm-макроса `%_priority_distbranch`.</doc:summary>
       </arg>
       <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of the helper.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
+        <doc:summary xml:lang="en_US">Exit code of the helper.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения помощника.</doc:summary>
+        <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+        <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
     </method>
     <method name="GetKernel">
-      <doc:summary>Return the kernel version via systeminfo kernel.</doc:summary>
+      <doc:summary xml:lang="en_US">Return the kernel version via systeminfo kernel.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Возвращает версию ядра, полученную через `systeminfo kernel`.</doc:summary>
       <arg type="as" name="stdout_strings" direction="out">
-        <doc:summary>Kernel release string read from /proc/sys/kernel/osrelease.</doc:summary>
+        <doc:summary xml:lang="en_US">Kernel release string read from /proc/sys/kernel/osrelease.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Строка выпуска ядра из `/proc/sys/kernel/osrelease`.</doc:summary>
       </arg>
       <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of the helper.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
+        <doc:summary xml:lang="en_US">Exit code of the helper.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения помощника.</doc:summary>
+        <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+        <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
     </method>
     <method name="GetOperationSystemName">
-      <doc:summary>Return a human-readable operating system name via systeminfo os-name.</doc:summary>
+      <doc:summary xml:lang="en_US">Return a human-readable operating system name via systeminfo os-name.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Возвращает человекочитаемое имя операционной системы, полученное через `systeminfo os-name`.</doc:summary>
       <arg type="as" name="stdout_strings" direction="out">
-        <doc:summary>PRETTY_NAME value from /etc/os-release.</doc:summary>
+        <doc:summary xml:lang="en_US">PRETTY_NAME value from /etc/os-release.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Значение `PRETTY_NAME` из `/etc/os-release`.</doc:summary>
       </arg>
       <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of the helper.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
+        <doc:summary xml:lang="en_US">Exit code of the helper.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения помощника.</doc:summary>
+        <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+        <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
     </method>
     <method name="GetLicense">
-      <doc:summary>Return the license text selected by locale and edition via systeminfo os-license.</doc:summary>
+      <doc:summary xml:lang="en_US">Return the license text selected by locale and edition via systeminfo os-license.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Возвращает текст лицензии с учётом локали и редакции, полученный через `systeminfo os-license`.</doc:summary>
       <arg type="ay" name="stdout_bytes" direction="out">
-        <doc:summary>License content chosen by the helper.</doc:summary>
-        <doc:detail>Search order: /usr/lib/alterator/backends/edition (when alterator-backend-edition-utils is present), license.&lt;lang&gt;.html in /usr/share/alt-notes, /usr/share/alt-license, /var/lib/install3/licenses; fallback to license.all.html. LC_ALL is unset before execution.</doc:detail>
+        <doc:summary xml:lang="en_US">License content chosen by the helper.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Содержимое лицензии, выбранное помощником.</doc:summary>
+        <doc:detail xml:lang="en_US">Search order: /usr/lib/alterator/backends/edition (when alterator-backend-edition-utils is present), license.&lt;lang&gt;.html in /usr/share/alt-notes, /usr/share/alt-license, /var/lib/install3/licenses; fallback to license.all.html. LC_ALL is unset before execution.</doc:detail>
+        <doc:detail xml:lang="ru_RU">Порядок поиска: `/usr/lib/alterator/backends/edition` (если установлен `alterator-backend-edition-utils`), `license.&lt;lang&gt;.html` в `/usr/share/alt-notes`, `/usr/share/alt-license`, `/var/lib/install3/licenses`; запасной файл — `license.all.html`. Перед запуском LC_ALL очищается.</doc:detail>
       </arg>
       <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of the helper.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
+        <doc:summary xml:lang="en_US">Exit code of the helper.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения помощника.</doc:summary>
+        <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+        <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
     </method>
     <method name="GetReleaseNotes">
-      <doc:summary>Return release notes produced by systeminfo release-notes.</doc:summary>
+      <doc:summary xml:lang="en_US">Return release notes produced by systeminfo release-notes.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Возвращает релиз-ноты, сформированные `systeminfo release-notes`.</doc:summary>
       <arg type="ay" name="stdout_bytes" direction="out">
-        <doc:summary>Release notes text emitted by the helper.</doc:summary>
-        <doc:detail>Notes may be HTML or plain text; LC_ALL is unset before execution.</doc:detail>
+        <doc:summary xml:lang="en_US">Release notes text emitted by the helper.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Текст релиз-нот, возвращаемый помощником (HTML или текст).</doc:summary>
+        <doc:detail xml:lang="en_US">Notes may be HTML or plain text; LC_ALL is unset before execution.</doc:detail>
+        <doc:detail xml:lang="ru_RU">Перед запуском LC_ALL очищается.</doc:detail>
       </arg>
       <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of the helper.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
+        <doc:summary xml:lang="en_US">Exit code of the helper.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения помощника.</doc:summary>
+        <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+        <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
     </method>
     <method name="GetFinalNotes">
-      <doc:summary>Return installer final notes via systeminfo final-notes.</doc:summary>
+      <doc:summary xml:lang="en_US">Return installer final notes via systeminfo final-notes.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Возвращает финальные заметки инсталлятора, сформированные `systeminfo final-notes`.</doc:summary>
       <arg type="ay" name="stdout_bytes" direction="out">
-        <doc:summary>Final notes produced by the helper.</doc:summary>
-        <doc:detail>LC_ALL is unset before execution.</doc:detail>
+        <doc:summary xml:lang="en_US">Final notes produced by the helper.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Текст финальных заметок, формируемый помощником.</doc:summary>
+        <doc:detail xml:lang="en_US">LC_ALL is unset before execution.</doc:detail>
+        <doc:detail xml:lang="ru_RU">Перед запуском LC_ALL очищается.</doc:detail>
       </arg>
       <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of the helper.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
+        <doc:summary xml:lang="en_US">Exit code of the helper.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения помощника.</doc:summary>
+        <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+        <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
     </method>
     <method name="GetArch">
-      <doc:summary>Return system architecture via systeminfo arch.</doc:summary>
+      <doc:summary xml:lang="en_US">Return system architecture via systeminfo arch.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Возвращает архитектуру системы, полученную через `systeminfo arch`.</doc:summary>
       <arg type="as" name="stdout_strings" direction="out">
-        <doc:summary>Architecture string read from /proc/sys/kernel/arch.</doc:summary>
+        <doc:summary xml:lang="en_US">Architecture string read from /proc/sys/kernel/arch.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Строка архитектуры из `/proc/sys/kernel/arch`.</doc:summary>
       </arg>
       <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of the helper.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
+        <doc:summary xml:lang="en_US">Exit code of the helper.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения помощника.</doc:summary>
+        <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+        <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
     </method>
     <method name="GetMonitor">
-      <doc:summary>List connected monitors and resolutions via systeminfo monitor.</doc:summary>
+      <doc:summary xml:lang="en_US">List connected monitors and resolutions via systeminfo monitor.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Перечисляет подключённые мониторы и разрешения, полученные через `systeminfo monitor`.</doc:summary>
       <arg type="as" name="stdout_strings" direction="out">
-        <doc:summary>Connector names and resolutions from /sys/class/drm/*/modes.</doc:summary>
-        <doc:detail>Entries formatted as &lt;device&gt;-&lt;connector&gt; &lt;width&gt;x&lt;height&gt;.</doc:detail>
+        <doc:summary xml:lang="en_US">Connector names and resolutions from /sys/class/drm/*/modes.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Списки коннекторов и разрешений из `/sys/class/drm/*/modes`.</doc:summary>
+        <doc:detail xml:lang="en_US">Entries formatted as &lt;device&gt;-&lt;connector&gt; &lt;width&gt;x&lt;height&gt;.</doc:detail>
+        <doc:detail xml:lang="ru_RU">Элементы формата `<устройство>-<коннектор> <ширина>x<высота>`.</doc:detail>
       </arg>
       <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of the helper.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
+        <doc:summary xml:lang="en_US">Exit code of the helper.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения помощника.</doc:summary>
+        <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+        <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
     </method>
     <method name="GetMotherboard">
-      <doc:summary>Return motherboard vendor, model, and version via systeminfo motherboard.</doc:summary>
+      <doc:summary xml:lang="en_US">Return motherboard vendor, model, and version via systeminfo motherboard.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Возвращает производителя, модель и версию системной платы, полученные через `systeminfo motherboard`.</doc:summary>
       <arg type="as" name="stdout_strings" direction="out">
-        <doc:summary>Board identification read from DMI.</doc:summary>
-        <doc:detail>stdout_strings entries: vendor; model; version.</doc:detail>
+        <doc:summary xml:lang="en_US">Board identification read from DMI.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Данные платы из `/sys/devices/virtual/dmi/id/board_vendor`, `board_name`, `board_version`.</doc:summary>
+        <doc:detail xml:lang="en_US">stdout_strings entries: vendor; model; version.</doc:detail>
+        <doc:detail xml:lang="ru_RU">Элементы stdout_strings: производитель; модель; версия.</doc:detail>
       </arg>
       <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of the helper.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
+        <doc:summary xml:lang="en_US">Exit code of the helper.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения помощника.</doc:summary>
+        <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+        <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
     </method>
     <method name="GetLocale">
-      <doc:summary>Return the system locale via systeminfo locale.</doc:summary>
+      <doc:summary xml:lang="en_US">Return the system locale via systeminfo locale.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Возвращает системную локаль, полученную через `systeminfo locale`.</doc:summary>
       <arg type="as" name="stdout_strings" direction="out">
-        <doc:summary>Locale string read from /etc/locale.conf.</doc:summary>
+        <doc:summary xml:lang="en_US">Locale string read from /etc/locale.conf.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Значение локали из `/etc/locale.conf`, например `ru_RU.UTF-8`.</doc:summary>
       </arg>
       <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of the helper.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
+        <doc:summary xml:lang="en_US">Exit code of the helper.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения помощника.</doc:summary>
+        <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+        <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
     </method>
     <method name="ListDesktopEnvironments">
-      <doc:summary>List available desktop sessions via systeminfo list-desktop-environments.</doc:summary>
+      <doc:summary xml:lang="en_US">List available desktop sessions via systeminfo list-desktop-environments.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Перечисляет доступные сеансы рабочего стола, полученные через `systeminfo list-desktop-environments`.</doc:summary>
       <arg type="as" name="stdout_strings" direction="out">
-        <doc:summary>Desktop session identifiers discovered from .desktop entries.</doc:summary>
-        <doc:detail>stdout_strings may include CINNAMON, GNOME, KDE5, KDE6, MATE, XFCE entries.</doc:detail>
+        <doc:summary xml:lang="en_US">Desktop session identifiers discovered from .desktop entries.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Список сеансов, собранный по `.desktop`-файлам (plasma, gnome, mate, cinnamon, xfce).</doc:summary>
+        <doc:detail xml:lang="en_US">stdout_strings may include CINNAMON, GNOME, KDE5, KDE6, MATE, XFCE entries.</doc:detail>
+        <doc:detail xml:lang="ru_RU">Возможные записи stdout_strings: `CINNAMON`, `GNOME`, `KDE5`, `KDE6`, `MATE`, `XFCE`.</doc:detail>
       </arg>
       <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of the helper.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
+        <doc:summary xml:lang="en_US">Exit code of the helper.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения помощника.</doc:summary>
+        <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+        <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
     </method>
   </interface>
