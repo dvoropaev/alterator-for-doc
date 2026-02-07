@@ -4,6 +4,10 @@ set -euo pipefail
 # При ошибке показываем строку
 trap 'echo "❌ Ошибка при выполнении скрипта (строка $LINENO)"; exit 1' ERR
 
+IGNORE_REPOS=(
+  "https://altlinux.space/alterator/alterator-backend-packages.git"
+)
+
 REPOS=(
   "https://altlinux.space/sheriffkorov/dbusxml-to-md-xslt-template.git"
   "https://altlinux.space/alterator/alt-components.git"
@@ -51,14 +55,45 @@ REPOS=(
 
 TARGET_DIR="./subprojects"
 
-echo "🧹 Полностью очищаю $TARGET_DIR ..."
-rm -rf "$TARGET_DIR"
+ignore_name_match=false
+IGNORE_NAMES=()
+for ignore_repo in "${IGNORE_REPOS[@]}"; do
+    IGNORE_NAMES+=("$(basename "$ignore_repo" .git)")
+done
+
+echo "🧹 Очищаю $TARGET_DIR (кроме игнорируемых репозиториев)..."
 mkdir -p "$TARGET_DIR"
+for repo_dir in "$TARGET_DIR"/*; do
+    [ -d "$repo_dir" ] || continue
+    repo_name="$(basename "$repo_dir")"
+    ignore_name_match=false
+    for ignore_name in "${IGNORE_NAMES[@]}"; do
+        if [[ "$repo_name" == "$ignore_name" ]]; then
+            ignore_name_match=true
+            break
+        fi
+    done
+    if [[ "$ignore_name_match" == false ]]; then
+        rm -rf "$repo_dir"
+    fi
+done
 
 echo "⬇️ Клонирую репозитории..."
 for repo in "${REPOS[@]}"; do
     name=$(basename "$repo" .git)
     path="$TARGET_DIR/$name"
+
+    ignore_name_match=false
+    for ignore_name in "${IGNORE_NAMES[@]}"; do
+        if [[ "$name" == "$ignore_name" ]]; then
+            ignore_name_match=true
+            break
+        fi
+    done
+    if [[ "$ignore_name_match" == true ]]; then
+        echo "⏭️  Пропускаю $name (в IGNORE_REPOS)"
+        continue
+    fi
 
     echo "➡️  Клонирую $name ..."
     git clone --depth=1 "$repo" "$path"
