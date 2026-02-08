@@ -2,25 +2,27 @@
 
 # Interface **org.altlinux.alterator.apt1**
 
-Expose apt backend commands for package search, install, reinstall, and upgrade with streaming signals for long-running operations.
+Provides apt backend commands to search, install, reinstall, and update packages with streaming signals for long-running operations.
 
-| Method | Summary |
+Current specification: https://altlinux.space/alterator/alterator-entry/src/branch/master/doc
+
+| Method | Description |
 |--------|---------|
-| [Info](#method-Info) | Return static descriptor of the apt backend object. |
-| [UpdateAsync](#method-UpdateAsync) | Run apt-get update in background; progress is emitted through signals. |
-| [ApplyAsync](#method-ApplyAsync) | Apply install/remove transaction via apt-wrapper apply using generated pkgpriorities. |
-| [ReinstallAsync](#method-ReinstallAsync) | Reinstall packages asynchronously via apt-get reinstall -y -q. |
-| [ListAllPackages](#method-ListAllPackages) | List all available package names using apt-cache search . --names-only. |
-| [Search](#method-Search) | Search packages by pattern via apt-wrapper search (apt-cache search). |
-| [LastUpdate](#method-LastUpdate) | Report last update timestamp for /var/lib/apt/lists in UTC. |
-| [LastDistUpgrade](#method-LastDistUpgrade) | Return last dist-upgrade log entry from /var/log/alterator/apt/dist-upgrades.log. |
-| [CheckApply](#method-CheckApply) | Simulate install/remove transaction and return planned changes. |
-| [CheckReinstall](#method-CheckReinstall) | Simulate reinstall transaction for selected packages. |
-| [CheckDistUpgrade](#method-CheckDistUpgrade) | Simulate dist-upgrade and report planned installs/removals. |
-| [DistUpgradeAsync](#method-DistUpgradeAsync) | Perform dist-upgrade asynchronously via apt-get dist-upgrade -y -q. |
+| [Info](#method-Info) | Returns contents of the apt.object descriptor file. |
+| [UpdateAsync](#method-UpdateAsync) | Update package lists. |
+| [ApplyAsync](#method-ApplyAsync) | Applies install/remove transaction using generated pkgpriorities. |
+| [ReinstallAsync](#method-ReinstallAsync) | Reinstalls packages asynchronously via apt-get reinstall -y -q. |
+| [ListAllPackages](#method-ListAllPackages) | Lists all available package names via apt-cache search . --names-only. |
+| [Search](#method-Search) | Searches packages by pattern via apt-wrapper search (apt-cache search). |
+| [LastUpdate](#method-LastUpdate) | Reports last update time from /var/lib/apt/lists in UTC. |
+| [LastDistUpgrade](#method-LastDistUpgrade) | Get date of the last system update. |
+| [CheckApply](#method-CheckApply) | Simulates install/remove transaction and returns planned changes. |
+| [CheckReinstall](#method-CheckReinstall) | Simulates reinstall transaction for selected packages. |
+| [CheckDistUpgrade](#method-CheckDistUpgrade) | Simulates dist-upgrade and reports planned installs/removals. |
+| [DistUpgradeAsync](#method-DistUpgradeAsync) | Performs dist-upgrade asynchronously via apt-get dist-upgrade -y -q. |
 
 
-| Signal | Summary |
+| Signal | Description |
 |--------|---------|
 | [apt1_update_stderr_signal](#signal-apt1_update_stderr_signal) | stderr stream from apt-get update. |
 | [apt1_update_stdout_signal](#signal-apt1_update_stdout_signal) | stdout stream from apt-get update. |
@@ -37,25 +39,25 @@ Expose apt backend commands for package search, install, reinstall, and upgrade 
 
 ### **Info**() -> ([stdout_bytes](#argument-stdout_bytes-of-Info) : `ay`, [response](#argument-response-of-Info) : `i`)<a id="method-Info"></a>
 
-Return static descriptor of the apt backend object.
+Returns contents of the apt.object descriptor file.
 
 #### Output arguments
 
 ##### **stdout_bytes** : `ay` <a id="argument-stdout_bytes-of-Info"></a>
 
-Contents of /usr/share/alterator/objects/apt.object.
+Contents of `/usr/share/alterator/objects/apt.object`.
 
-TOML object definition with display_name and comments.
+TOML description of the object.
 ##### **response** : `i` <a id="argument-response-of-Info"></a>
 
-Exit code of the cat helper.
+Exit code of the cat utility.
 
 0 — success, != 0 — error.
 ### **UpdateAsync**() -> ([response](#argument-response-of-UpdateAsync) : `i`)<a id="method-UpdateAsync"></a>
 
-Run apt-get update in background; progress is emitted through signals.
+Runs apt-get update in the background; progress is delivered through signals.
 
-Signals emitted: apt1_update_stdout_signal, apt1_update_stderr_signals.
+Signals: apt1_update_stdout_signal, apt1_update_stderr_signals.
 #### Output arguments
 
 ##### **response** : `i` <a id="argument-response-of-UpdateAsync"></a>
@@ -65,38 +67,38 @@ Exit code of apt-get update.
 0 — success, != 0 — error.
 ### **ApplyAsync**([exclude_pkgnames](#argument-exclude_pkgnames-of-ApplyAsync) : `s`, [pkgnames](#argument-pkgnames-of-ApplyAsync) : `s`) -> ([response](#argument-response-of-ApplyAsync) : `i`)<a id="method-ApplyAsync"></a>
 
-Apply install/remove transaction via apt-wrapper apply using generated pkgpriorities.
+Applies install/remove transaction using generated pkgpriorities.
 
-Creates a temporary pkgpriorities file (mktemp "${TMPDIR:-/tmp}/alterator-pkgpriorities.XXXXXXXXXXXX") that lists packages marked manual by apt-mark showmanual; prevents implicit removal of those packages unless they are listed in exclude_pkgnames. The temporary file is removed when apt-wrapper exits.
+Creates temporary pkgpriorities file (mktemp "${TMPDIR:-/tmp}/alterator-pkgpriorities.XXXXXXXXXXXX"), which lists packages marked as manual by apt via apt-mark showmanual. The file is used by apt to protect manual packages from implicit removal if they are not specified in exclude_pkgnames. The temporary file is removed after the method completes.
 Signals: apt1_install_stdout_signal, apt1_install_stderr_signal, apt1_remove_stdout_signal, apt1_remove_stderr_signal.
 #### Input arguments
 
 ##### **exclude_pkgnames** : `s` <a id="argument-exclude_pkgnames-of-ApplyAsync"></a>
 
-Whitespace-separated package names to exclude from pkgpriorities.
+Space-separated package names to exclude from pkgpriorities.
 
-Use this list to allow removal of manual packages by dependencies. When calling via busctl, pass a literal '' string for an empty list; an empty string shifts the first pkgnames entry into exclude_pkgnames.
+This list allows removing manual packages by dependencies.
 ##### **pkgnames** : `s` <a id="argument-pkgnames-of-ApplyAsync"></a>
 
-Whitespace-separated packages to process.
+Space-separated package names to process.
 
-Names ending with "-" are removed; others are installed with apt-get install -y -q.
+Names ending with "-" are removed; others are installed via apt-get install -y -q.
 #### Output arguments
 
 ##### **response** : `i` <a id="argument-response-of-ApplyAsync"></a>
 
-Exit code of apt-wrapper apply.
+Exit code of the operation.
 
 0 — success, != 0 — error.
 ### **ReinstallAsync**([pkgnames](#argument-pkgnames-of-ReinstallAsync) : `s`) -> ([response](#argument-response-of-ReinstallAsync) : `i`)<a id="method-ReinstallAsync"></a>
 
-Reinstall packages asynchronously via apt-get reinstall -y -q.
+Reinstalls packages asynchronously via apt-get reinstall -y -q.
 
 #### Input arguments
 
 ##### **pkgnames** : `s` <a id="argument-pkgnames-of-ReinstallAsync"></a>
 
-Whitespace-separated package names to reinstall.
+Space-separated package names to reinstall.
 
 #### Output arguments
 
@@ -107,7 +109,7 @@ Exit code of the reinstall command.
 0 — success, != 0 — error.
 ### **ListAllPackages**() -> ([stdout_strings](#argument-stdout_strings-of-ListAllPackages) : `as`, [stderr_strings](#argument-stderr_strings-of-ListAllPackages) : `as`, [response](#argument-response-of-ListAllPackages) : `i`)<a id="method-ListAllPackages"></a>
 
-List all available package names using apt-cache search . --names-only.
+Lists all available package names via apt-cache search . --names-only.
 
 #### Output arguments
 
@@ -126,7 +128,7 @@ Exit code of the listall helper.
 0 — success, != 0 — error.
 ### **Search**([pattern](#argument-pattern-of-Search) : `s`) -> ([stdout_strings](#argument-stdout_strings-of-Search) : `as`, [stderr_strings](#argument-stderr_strings-of-Search) : `as`, [response](#argument-response-of-Search) : `i`)<a id="method-Search"></a>
 
-Search packages by pattern via apt-wrapper search (apt-cache search).
+Searches packages by pattern via apt-wrapper search (apt-cache search).
 
 #### Input arguments
 
@@ -142,7 +144,7 @@ Matching package names extracted from apt-cache output.
 
 ##### **stderr_strings** : `as` <a id="argument-stderr_strings-of-Search"></a>
 
-Errors from the search command.
+Search command errors.
 
 ##### **response** : `i` <a id="argument-response-of-Search"></a>
 
@@ -151,7 +153,7 @@ Exit code of the search helper.
 0 — success, != 0 — error.
 ### **LastUpdate**() -> ([stdout_strings](#argument-stdout_strings-of-LastUpdate) : `as`, [stderr_strings](#argument-stderr_strings-of-LastUpdate) : `as`, [response](#argument-response-of-LastUpdate) : `i`)<a id="method-LastUpdate"></a>
 
-Report last update timestamp for /var/lib/apt/lists in UTC.
+Reports last update time from /var/lib/apt/lists in UTC.
 
 #### Output arguments
 
@@ -161,7 +163,7 @@ Single entry with date-time string (YYYY-MM-DD HH:MM:SS UTC).
 
 ##### **stderr_strings** : `as` <a id="argument-stderr_strings-of-LastUpdate"></a>
 
-Errors when stat or parsing fails.
+Errors during stat or parsing.
 
 ##### **response** : `i` <a id="argument-response-of-LastUpdate"></a>
 
@@ -170,43 +172,43 @@ Exit code of the timestamp helper.
 0 — success, != 0 — error.
 ### **LastDistUpgrade**() -> ([stdout_strings](#argument-stdout_strings-of-LastDistUpgrade) : `as`, [stderr_strings](#argument-stderr_strings-of-LastDistUpgrade) : `as`, [response](#argument-response-of-LastDistUpgrade) : `i`)<a id="method-LastDistUpgrade"></a>
 
-Return last dist-upgrade log entry from /var/log/alterator/apt/dist-upgrades.log.
+Gets date of the last system update.
 
 #### Output arguments
 
 ##### **stdout_strings** : `as` <a id="argument-stdout_strings-of-LastDistUpgrade"></a>
 
-Tail line with timestamp from dist-upgrades.log.
+Last line with timestamp from dist-upgrades.log.
 
 ##### **stderr_strings** : `as` <a id="argument-stderr_strings-of-LastDistUpgrade"></a>
 
-Errors when the log is missing or unreadable.
+Errors if the log is missing or unavailable.
 
 ##### **response** : `i` <a id="argument-response-of-LastDistUpgrade"></a>
 
-Exit code of the log reader.
+Exit code of the log read.
 
 0 — success, != 0 — error.
 ### **CheckApply**([pkgnames](#argument-pkgnames-of-CheckApply) : `s`) -> ([stdout_strings](#argument-stdout_strings-of-CheckApply) : `as`, [stderr_strings](#argument-stderr_strings-of-CheckApply) : `as`, [response](#argument-response-of-CheckApply) : `i`)<a id="method-CheckApply"></a>
 
-Simulate install/remove transaction and return planned changes.
+Simulates install/remove transaction and returns planned changes.
 
 #### Input arguments
 
 ##### **pkgnames** : `s` <a id="argument-pkgnames-of-CheckApply"></a>
 
-Whitespace-separated packages for simulation.
+Space-separated package names for simulation.
 
 Names ending with "-" are treated as removals.
 #### Output arguments
 
 ##### **stdout_strings** : `as` <a id="argument-stdout_strings-of-CheckApply"></a>
 
-JSON line with install_packages, remove_packages, extra_remove_packages arrays.
+JSON string with install_packages, remove_packages, extra_remove_packages arrays.
 
 ##### **stderr_strings** : `as` <a id="argument-stderr_strings-of-CheckApply"></a>
 
-Diagnostic output from apt-get --just-print.
+Diagnostic output of apt-get --just-print.
 
 ##### **response** : `i` <a id="argument-response-of-CheckApply"></a>
 
@@ -215,13 +217,13 @@ Exit code of the simulation.
 0 — success, != 0 — error.
 ### **CheckReinstall**([pkgnames](#argument-pkgnames-of-CheckReinstall) : `s`) -> ([stdout_strings](#argument-stdout_strings-of-CheckReinstall) : `as`, [stderr_strings](#argument-stderr_strings-of-CheckReinstall) : `as`, [response](#argument-response-of-CheckReinstall) : `i`)<a id="method-CheckReinstall"></a>
 
-Simulate reinstall transaction for selected packages.
+Simulates reinstall transaction for selected packages.
 
 #### Input arguments
 
 ##### **pkgnames** : `s` <a id="argument-pkgnames-of-CheckReinstall"></a>
 
-Whitespace-separated package names to reinstall.
+Space-separated package names for reinstall.
 
 #### Output arguments
 
@@ -240,7 +242,7 @@ Exit code of the simulation.
 0 — success, != 0 — error.
 ### **CheckDistUpgrade**() -> ([stdout_strings](#argument-stdout_strings-of-CheckDistUpgrade) : `as`, [stderr_strings](#argument-stderr_strings-of-CheckDistUpgrade) : `as`, [response](#argument-response-of-CheckDistUpgrade) : `i`)<a id="method-CheckDistUpgrade"></a>
 
-Simulate dist-upgrade and report planned installs/removals.
+Simulates dist-upgrade and reports planned installs/removals.
 
 #### Output arguments
 
@@ -259,7 +261,7 @@ Exit code of apt-get dist-upgrade -s -q.
 0 — success, != 0 — error.
 ### **DistUpgradeAsync**() -> ([response](#argument-response-of-DistUpgradeAsync) : `i`)<a id="method-DistUpgradeAsync"></a>
 
-Perform dist-upgrade asynchronously via apt-get dist-upgrade -y -q.
+Performs dist-upgrade asynchronously via apt-get dist-upgrade -y -q.
 
 #### Output arguments
 
@@ -349,4 +351,3 @@ stdout stream from apt-get dist-upgrade.
 #### Output arguments
 
 ##### Argument `s`
-
