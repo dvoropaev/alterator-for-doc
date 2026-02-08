@@ -4,16 +4,18 @@
 
 Предоставляет команды бэкенда apt для поиска, установки, переустановки и обновления пакетов со стримингом сигналов для длительных операций.
 
+Актуальная спецификация: https://altlinux.space/alterator/alterator-entry/src/branch/master/doc
+
 | Метод | Описание |
 |--------|---------|
-| [Info](#method-Info) | Возвращает статический дескриптор объекта бэкенда apt. |
-| [UpdateAsync](#method-UpdateAsync) | Выполняет apt-get update в фоне; прогресс передаётся через сигналы. |
-| [ApplyAsync](#method-ApplyAsync) | Применяет транзакцию установки/удаления через apt-wrapper apply с использованием сгенерированных pkgpriorities. |
+| [Info](#method-Info) | Возвращает содержимое файла-описателя apt.object. |
+| [UpdateAsync](#method-UpdateAsync) | Обновить списки пакетов. |
+| [ApplyAsync](#method-ApplyAsync) | Применяет транзакцию установки/удаления с использованием сгенерированных pkgpriorities. |
 | [ReinstallAsync](#method-ReinstallAsync) | Переустанавливает пакеты асинхронно через apt-get reinstall -y -q. |
 | [ListAllPackages](#method-ListAllPackages) | Перечисляет все доступные имена пакетов через apt-cache search . --names-only. |
 | [Search](#method-Search) | Ищет пакеты по шаблону через apt-wrapper search (apt-cache search). |
-| [LastUpdate](#method-LastUpdate) | Сообщает время последнего обновления для /var/lib/apt/lists в UTC. |
-| [LastDistUpgrade](#method-LastDistUpgrade) | Возвращает последнюю запись dist-upgrade из /var/log/alterator/apt/dist-upgrades.log. |
+| [LastUpdate](#method-LastUpdate) | Сообщает время последнего обновления из /var/lib/apt/lists в UTC. |
+| [LastDistUpgrade](#method-LastDistUpgrade) | Получить дату последнего обновления системы. |
 | [CheckApply](#method-CheckApply) | Имитирует транзакцию установки/удаления и возвращает запланированные изменения. |
 | [CheckReinstall](#method-CheckReinstall) | Имитирует транзакцию переустановки для выбранных пакетов. |
 | [CheckDistUpgrade](#method-CheckDistUpgrade) | Имитирует dist-upgrade и сообщает запланированные установки/удаления. |
@@ -37,7 +39,7 @@
 
 ### **Info**() -> ([stdout_bytes](#argument-stdout_bytes-of-Info) : `ay`, [response](#argument-response-of-Info) : `i`)<a id="method-Info"></a>
 
-Возвращает статический дескриптор объекта бэкенда apt.
+Возвращает содержимое файла-описателя apt.object.
 
 #### Выходные аргументы
 
@@ -45,10 +47,10 @@
 
 Содержимое `/usr/share/alterator/objects/apt.object`.
 
-TOML-описание объекта с display_name и comments.
+TOML-описание объекта.
 ##### **response** : `i` <a id="argument-response-of-Info"></a>
 
-Код завершения помощника cat.
+Код завершения утилиты cat.
 
 0 — успех, != 0 — ошибка.
 ### **UpdateAsync**() -> ([response](#argument-response-of-UpdateAsync) : `i`)<a id="method-UpdateAsync"></a>
@@ -65,9 +67,9 @@ TOML-описание объекта с display_name и comments.
 0 — успех, != 0 — ошибка.
 ### **ApplyAsync**([exclude_pkgnames](#argument-exclude_pkgnames-of-ApplyAsync) : `s`, [pkgnames](#argument-pkgnames-of-ApplyAsync) : `s`) -> ([response](#argument-response-of-ApplyAsync) : `i`)<a id="method-ApplyAsync"></a>
 
-Применяет транзакцию установки/удаления через apt-wrapper apply с использованием сгенерированных pkgpriorities.
+Применяет транзакцию установки/удаления с использованием сгенерированных pkgpriorities.
 
-Создаёт временный файл pkgpriorities (mktemp "${TMPDIR:-/tmp}/alterator-pkgpriorities.XXXXXXXXXXXX"), который перечисляет пакеты, помеченные как manual командой apt-mark showmanual; предотвращает неявное удаление этих пакетов, если они не указаны в exclude_pkgnames. Временный файл удаляется при завершении apt-wrapper.
+Создаёт временный файл pkgpriorities (mktemp "${TMPDIR:-/tmp}/alterator-pkgpriorities.XXXXXXXXXXXX"), который перечисляет пакеты, помеченные системой apt как manual командой apt-mark showmanual. Файл используется apt для защиты manual-пакетов от неявного удаления, если они не указаны в exclude_pkgnames. Временный файл удаляется после выполнения метода.
 Сигналы: apt1_install_stdout_signal, apt1_install_stderr_signal, apt1_remove_stdout_signal, apt1_remove_stderr_signal.
 #### Входные аргументы
 
@@ -75,7 +77,7 @@ TOML-описание объекта с display_name и comments.
 
 Имена пакетов через пробел, которые нужно исключить из pkgpriorities.
 
-Этот список позволяет удалять manual-пакеты по зависимостям. При вызове через busctl передавайте литеральную строку '' для пустого списка; пустая строка сдвигает первый элемент pkgnames в exclude_pkgnames.
+Этот список позволяет удалять manual-пакеты по зависимостям.
 ##### **pkgnames** : `s` <a id="argument-pkgnames-of-ApplyAsync"></a>
 
 Имена пакетов через пробел для обработки.
@@ -85,7 +87,7 @@ TOML-описание объекта с display_name и comments.
 
 ##### **response** : `i` <a id="argument-response-of-ApplyAsync"></a>
 
-Код завершения apt-wrapper apply.
+Код завершения операции.
 
 0 — успех, != 0 — ошибка.
 ### **ReinstallAsync**([pkgnames](#argument-pkgnames-of-ReinstallAsync) : `s`) -> ([response](#argument-response-of-ReinstallAsync) : `i`)<a id="method-ReinstallAsync"></a>
@@ -151,7 +153,7 @@ TOML-описание объекта с display_name и comments.
 0 — успех, != 0 — ошибка.
 ### **LastUpdate**() -> ([stdout_strings](#argument-stdout_strings-of-LastUpdate) : `as`, [stderr_strings](#argument-stderr_strings-of-LastUpdate) : `as`, [response](#argument-response-of-LastUpdate) : `i`)<a id="method-LastUpdate"></a>
 
-Сообщает время последнего обновления для /var/lib/apt/lists в UTC.
+Сообщает время последнего обновления из /var/lib/apt/lists в UTC.
 
 #### Выходные аргументы
 
@@ -170,7 +172,7 @@ TOML-описание объекта с display_name и comments.
 0 — успех, != 0 — ошибка.
 ### **LastDistUpgrade**() -> ([stdout_strings](#argument-stdout_strings-of-LastDistUpgrade) : `as`, [stderr_strings](#argument-stderr_strings-of-LastDistUpgrade) : `as`, [response](#argument-response-of-LastDistUpgrade) : `i`)<a id="method-LastDistUpgrade"></a>
 
-Возвращает последнюю запись dist-upgrade из /var/log/alterator/apt/dist-upgrades.log.
+Получает дату последнего обновления системы.
 
 #### Выходные аргументы
 
