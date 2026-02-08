@@ -3,199 +3,274 @@
   "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
 <node name="/" xmlns:doc="http://www.freedesktop.org/dbus/1.0/doc.dtd">
   <interface name="org.altlinux.alterator.apt1">
-    <doc:summary>Expose apt backend commands for package search, install, reinstall, and upgrade with streaming signals for long-running operations.</doc:summary>
+    <doc:summary xml:lang="en_US">Provides apt backend commands to search, install, reinstall, and update packages with streaming signals for long-running operations.</doc:summary>
+    <doc:summary xml:lang="ru_RU">Предоставляет команды бэкенда apt для поиска, установки, переустановки и обновления пакетов со стримингом сигналов для длительных операций.</doc:summary>
     <method name="Info">
-      <doc:summary>Return static descriptor of the apt backend object.</doc:summary>
+      <doc:summary xml:lang="en_US">Returns contents of the apt.object descriptor file.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Возвращает содержимое файла-описателя apt.object.</doc:summary>
       <arg type="ay" name="stdout_bytes" direction="out">
-        <doc:summary>Contents of /usr/share/alterator/objects/apt.object.</doc:summary>
-        <doc:detail>TOML object definition with display_name and comments.</doc:detail>
+        <doc:summary xml:lang="en_US">Contents of /usr/share/alterator/objects/apt.object.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Содержимое `/usr/share/alterator/objects/apt.object`.</doc:summary>
+        <doc:detail xml:lang="en_US">TOML description of the object.</doc:detail>
+        <doc:detail xml:lang="ru_RU">TOML-описание объекта.</doc:detail>
       </arg>
       <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of the cat helper.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
+        <doc:summary xml:lang="en_US">Exit code of the cat utility.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения утилиты cat.</doc:summary>
+        <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+        <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
     </method>
     <method name="UpdateAsync">
-      <doc:summary>Run apt-get update in background; progress is emitted through signals.</doc:summary>
-      <doc:detail>Signals emitted: apt1_update_stdout_signal, apt1_update_stderr_signals.</doc:detail>
+      <doc:summary xml:lang="en_US">Runs apt-get update in the background; progress is delivered through signals.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Выполняет apt-get update в фоне; прогресс передаётся через сигналы.</doc:summary>
+      <doc:detail xml:lang="en_US">Signals: apt1_update_stdout_signal, apt1_update_stderr_signals.</doc:detail>
+      <doc:detail xml:lang="ru_RU">Сигналы: apt1_update_stdout_signal, apt1_update_stderr_signals.</doc:detail>
       <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of apt-get update.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
+        <doc:summary xml:lang="en_US">Exit code of apt-get update.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения apt-get update.</doc:summary>
+        <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+        <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
     </method>
     <method name="ApplyAsync">
-      <doc:summary>Apply install/remove transaction via apt-wrapper apply using generated pkgpriorities.</doc:summary>
-      <doc:detail>Creates a temporary pkgpriorities file (mktemp "${TMPDIR:-/tmp}/alterator-pkgpriorities.XXXXXXXXXXXX") that lists packages marked manual by apt-mark showmanual; prevents implicit removal of those packages unless they are listed in exclude_pkgnames. The temporary file is removed when apt-wrapper exits.</doc:detail>
-      <doc:detail>Signals: apt1_install_stdout_signal, apt1_install_stderr_signal, apt1_remove_stdout_signal, apt1_remove_stderr_signal.</doc:detail>
+      <doc:summary xml:lang="en_US">Applies install/remove transaction using generated pkgpriorities.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Применяет транзакцию установки/удаления с использованием сгенерированных pkgpriorities.</doc:summary>
+      <doc:detail xml:lang="en_US">Creates temporary pkgpriorities file (mktemp "${TMPDIR:-/tmp}/alterator-pkgpriorities.XXXXXXXXXXXX"), which lists packages marked as manual by apt via apt-mark showmanual. The file is used by apt to protect manual packages from implicit removal if they are not specified in exclude_pkgnames. The temporary file is removed after the method completes.</doc:detail>
+      <doc:detail xml:lang="ru_RU">Создаёт временный файл pkgpriorities (mktemp "${TMPDIR:-/tmp}/alterator-pkgpriorities.XXXXXXXXXXXX"), который перечисляет пакеты, помеченные системой apt как manual командой apt-mark showmanual. Файл используется apt для защиты manual-пакетов от неявного удаления, если они не указаны в exclude_pkgnames. Временный файл удаляется после выполнения метода.</doc:detail>
+      <doc:detail xml:lang="en_US">Signals: apt1_install_stdout_signal, apt1_install_stderr_signal, apt1_remove_stdout_signal, apt1_remove_stderr_signal.</doc:detail>
+      <doc:detail xml:lang="ru_RU">Сигналы: apt1_install_stdout_signal, apt1_install_stderr_signal, apt1_remove_stdout_signal, apt1_remove_stderr_signal.</doc:detail>
       <arg type="s" name="exclude_pkgnames" direction="in">
-        <doc:summary>Whitespace-separated package names to exclude from pkgpriorities.</doc:summary>
-        <doc:detail>Use this list to allow removal of manual packages by dependencies. When calling via busctl, pass a literal '' string for an empty list; an empty string shifts the first pkgnames entry into exclude_pkgnames.</doc:detail>
+        <doc:summary xml:lang="en_US">Space-separated package names to exclude from pkgpriorities.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Имена пакетов через пробел, которые нужно исключить из pkgpriorities.</doc:summary>
+        <doc:detail xml:lang="en_US">This list allows removing manual packages by dependencies.</doc:detail>
+        <doc:detail xml:lang="ru_RU">Этот список позволяет удалять manual-пакеты по зависимостям.</doc:detail>
       </arg>
       <arg type="s" name="pkgnames" direction="in">
-        <doc:summary>Whitespace-separated packages to process.</doc:summary>
-        <doc:detail>Names ending with "-" are removed; others are installed with apt-get install -y -q.</doc:detail>
+        <doc:summary xml:lang="en_US">Space-separated package names to process.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Имена пакетов через пробел для обработки.</doc:summary>
+        <doc:detail xml:lang="en_US">Names ending with "-" are removed; others are installed via apt-get install -y -q.</doc:detail>
+        <doc:detail xml:lang="ru_RU">Имена, заканчивающиеся на "-", удаляются; остальные устанавливаются через apt-get install -y -q.</doc:detail>
       </arg>
       <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of apt-wrapper apply.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
+        <doc:summary xml:lang="en_US">Exit code of the operation.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения операции.</doc:summary>
+        <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+        <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
     </method>
     <method name="ReinstallAsync">
-      <doc:summary>Reinstall packages asynchronously via apt-get reinstall -y -q.</doc:summary>
+      <doc:summary xml:lang="en_US">Reinstalls packages asynchronously via apt-get reinstall -y -q.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Переустанавливает пакеты асинхронно через apt-get reinstall -y -q.</doc:summary>
       <arg type="s" name="pkgnames" direction="in">
-        <doc:summary>Whitespace-separated package names to reinstall.</doc:summary>
+        <doc:summary xml:lang="en_US">Space-separated package names to reinstall.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Имена пакетов через пробел для переустановки.</doc:summary>
       </arg>
       <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of the reinstall command.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
+        <doc:summary xml:lang="en_US">Exit code of the reinstall command.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения команды переустановки.</doc:summary>
+        <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+        <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
     </method>
     <method name="ListAllPackages">
-      <doc:summary>List all available package names using apt-cache search . --names-only.</doc:summary>
+      <doc:summary xml:lang="en_US">Lists all available package names via apt-cache search . --names-only.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Перечисляет все доступные имена пакетов через apt-cache search . --names-only.</doc:summary>
       <arg type="as" name="stdout_strings" direction="out">
-        <doc:summary>Package names produced by apt-cache.</doc:summary>
+        <doc:summary xml:lang="en_US">Package names produced by apt-cache.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Имена пакетов, сформированные apt-cache.</doc:summary>
       </arg>
       <arg type="as" name="stderr_strings" direction="out">
-        <doc:summary>Errors or warnings from apt-cache.</doc:summary>
+        <doc:summary xml:lang="en_US">Errors or warnings from apt-cache.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Ошибки или предупреждения от apt-cache.</doc:summary>
       </arg>
       <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of the listall helper.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
+        <doc:summary xml:lang="en_US">Exit code of the listall helper.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения помощника listall.</doc:summary>
+        <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+        <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
     </method>
     <method name="Search">
-      <doc:summary>Search packages by pattern via apt-wrapper search (apt-cache search).</doc:summary>
+      <doc:summary xml:lang="en_US">Searches packages by pattern via apt-wrapper search (apt-cache search).</doc:summary>
+      <doc:summary xml:lang="ru_RU">Ищет пакеты по шаблону через apt-wrapper search (apt-cache search).</doc:summary>
       <arg type="s" name="pattern" direction="in">
-        <doc:summary>Search expression passed to apt-cache search.</doc:summary>
+        <doc:summary xml:lang="en_US">Search expression passed to apt-cache search.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Выражение поиска, передаваемое в apt-cache search.</doc:summary>
       </arg>
       <arg type="as" name="stdout_strings" direction="out">
-        <doc:summary>Matching package names extracted from apt-cache output.</doc:summary>
+        <doc:summary xml:lang="en_US">Matching package names extracted from apt-cache output.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Совпадающие имена пакетов, извлечённые из вывода apt-cache.</doc:summary>
       </arg>
       <arg type="as" name="stderr_strings" direction="out">
-        <doc:summary>Errors from the search command.</doc:summary>
+        <doc:summary xml:lang="en_US">Search command errors.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Ошибки команды поиска.</doc:summary>
       </arg>
       <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of the search helper.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
+        <doc:summary xml:lang="en_US">Exit code of the search helper.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения помощника поиска.</doc:summary>
+        <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+        <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
     </method>
     <method name="LastUpdate">
-      <doc:summary>Report last update timestamp for /var/lib/apt/lists in UTC.</doc:summary>
+      <doc:summary xml:lang="en_US">Reports last update time from /var/lib/apt/lists in UTC.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Сообщает время последнего обновления из /var/lib/apt/lists в UTC.</doc:summary>
       <arg type="as" name="stdout_strings" direction="out">
-        <doc:summary>Single entry with date-time string (YYYY-MM-DD HH:MM:SS UTC).</doc:summary>
+        <doc:summary xml:lang="en_US">Single entry with date-time string (YYYY-MM-DD HH:MM:SS UTC).</doc:summary>
+        <doc:summary xml:lang="ru_RU">Одна запись со строкой даты-времени (YYYY-MM-DD HH:MM:SS UTC).</doc:summary>
       </arg>
       <arg type="as" name="stderr_strings" direction="out">
-        <doc:summary>Errors when stat or parsing fails.</doc:summary>
+        <doc:summary xml:lang="en_US">Errors during stat or parsing.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Ошибки при stat или разборе.</doc:summary>
       </arg>
       <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of the timestamp helper.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
+        <doc:summary xml:lang="en_US">Exit code of the timestamp helper.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения помощника метки времени.</doc:summary>
+        <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+        <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
     </method>
     <method name="LastDistUpgrade">
-      <doc:summary>Return last dist-upgrade log entry from /var/log/alterator/apt/dist-upgrades.log.</doc:summary>
+      <doc:summary xml:lang="en_US">Gets date of the last system update.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Получает дату последнего обновления системы.</doc:summary>
       <arg type="as" name="stdout_strings" direction="out">
-        <doc:summary>Tail line with timestamp from dist-upgrades.log.</doc:summary>
+        <doc:summary xml:lang="en_US">Last line with timestamp from dist-upgrades.log.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Последняя строка с временной меткой из dist-upgrades.log.</doc:summary>
       </arg>
       <arg type="as" name="stderr_strings" direction="out">
-        <doc:summary>Errors when the log is missing or unreadable.</doc:summary>
+        <doc:summary xml:lang="en_US">Errors if the log is missing or unavailable.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Ошибки, если журнал отсутствует или недоступен.</doc:summary>
       </arg>
       <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of the log reader.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
+        <doc:summary xml:lang="en_US">Exit code of the log read.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения чтения журнала.</doc:summary>
+        <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+        <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
     </method>
     <method name="CheckApply">
-      <doc:summary>Simulate install/remove transaction and return planned changes.</doc:summary>
+      <doc:summary xml:lang="en_US">Simulates install/remove transaction and returns planned changes.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Имитирует транзакцию установки/удаления и возвращает запланированные изменения.</doc:summary>
       <arg type="s" name="pkgnames" direction="in">
-        <doc:summary>Whitespace-separated packages for simulation.</doc:summary>
-        <doc:detail>Names ending with "-" are treated as removals.</doc:detail>
+        <doc:summary xml:lang="en_US">Space-separated package names for simulation.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Имена пакетов через пробел для имитации.</doc:summary>
+        <doc:detail xml:lang="en_US">Names ending with "-" are treated as removals.</doc:detail>
+        <doc:detail xml:lang="ru_RU">Имена, заканчивающиеся на "-", трактуются как удаления.</doc:detail>
       </arg>
       <arg type="as" name="stdout_strings" direction="out">
-        <doc:summary>JSON line with install_packages, remove_packages, extra_remove_packages arrays.</doc:summary>
+        <doc:summary xml:lang="en_US">JSON string with install_packages, remove_packages, extra_remove_packages arrays.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Строка JSON с массивами install_packages, remove_packages, extra_remove_packages.</doc:summary>
       </arg>
       <arg type="as" name="stderr_strings" direction="out">
-        <doc:summary>Diagnostic output from apt-get --just-print.</doc:summary>
+        <doc:summary xml:lang="en_US">Diagnostic output of apt-get --just-print.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Диагностический вывод apt-get --just-print.</doc:summary>
       </arg>
       <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of the simulation.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
+        <doc:summary xml:lang="en_US">Exit code of the simulation.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения имитации.</doc:summary>
+        <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+        <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
     </method>
     <method name="CheckReinstall">
-      <doc:summary>Simulate reinstall transaction for selected packages.</doc:summary>
+      <doc:summary xml:lang="en_US">Simulates reinstall transaction for selected packages.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Имитирует транзакцию переустановки для выбранных пакетов.</doc:summary>
       <arg type="s" name="pkgnames" direction="in">
-        <doc:summary>Whitespace-separated package names to reinstall.</doc:summary>
+        <doc:summary xml:lang="en_US">Space-separated package names for reinstall.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Имена пакетов через пробел для переустановки.</doc:summary>
       </arg>
       <arg type="as" name="stdout_strings" direction="out">
-        <doc:summary>Packages scheduled for installation from apt-get -s output.</doc:summary>
+        <doc:summary xml:lang="en_US">Packages scheduled for installation from apt-get -s output.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Пакеты, запланированные к установке по выводу apt-get -s.</doc:summary>
       </arg>
       <arg type="as" name="stderr_strings" direction="out">
-        <doc:summary>Packages scheduled for removal or warnings.</doc:summary>
+        <doc:summary xml:lang="en_US">Packages scheduled for removal or warnings.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Пакеты, запланированные к удалению, или предупреждения.</doc:summary>
       </arg>
       <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of the simulation.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
+        <doc:summary xml:lang="en_US">Exit code of the simulation.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения имитации.</doc:summary>
+        <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+        <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
     </method>
     <method name="CheckDistUpgrade">
-      <doc:summary>Simulate dist-upgrade and report planned installs/removals.</doc:summary>
+      <doc:summary xml:lang="en_US">Simulates dist-upgrade and reports planned installs/removals.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Имитирует dist-upgrade и сообщает запланированные установки/удаления.</doc:summary>
       <arg type="as" name="stdout_strings" direction="out">
-        <doc:summary>Packages planned for installation.</doc:summary>
+        <doc:summary xml:lang="en_US">Packages planned for installation.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Пакеты, запланированные к установке.</doc:summary>
       </arg>
       <arg type="as" name="stderr_strings" direction="out">
-        <doc:summary>Packages planned for removal or errors.</doc:summary>
+        <doc:summary xml:lang="en_US">Packages planned for removal or errors.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Пакеты, запланированные к удалению, или ошибки.</doc:summary>
       </arg>
       <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of apt-get dist-upgrade -s -q.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
+        <doc:summary xml:lang="en_US">Exit code of apt-get dist-upgrade -s -q.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения apt-get dist-upgrade -s -q.</doc:summary>
+        <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+        <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
     </method>
     <method name="DistUpgradeAsync">
-      <doc:summary>Perform dist-upgrade asynchronously via apt-get dist-upgrade -y -q.</doc:summary>
+      <doc:summary xml:lang="en_US">Performs dist-upgrade asynchronously via apt-get dist-upgrade -y -q.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Выполняет dist-upgrade асинхронно через apt-get dist-upgrade -y -q.</doc:summary>
       <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of the upgrade command.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
+        <doc:summary xml:lang="en_US">Exit code of the upgrade command.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения команды обновления.</doc:summary>
+        <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+        <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
     </method>
     <signal name="apt1_update_stderr_signal">
-      <doc:summary>stderr stream from apt-get update.</doc:summary>
+      <doc:summary xml:lang="en_US">stderr stream from apt-get update.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Поток stderr от apt-get update.</doc:summary>
       <arg type="s" name=""/>
     </signal>
     <signal name="apt1_update_stdout_signal">
-      <doc:summary>stdout stream from apt-get update.</doc:summary>
+      <doc:summary xml:lang="en_US">stdout stream from apt-get update.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Поток stdout от apt-get update.</doc:summary>
       <arg type="s" name=""/>
     </signal>
     <signal name="apt1_install_stderr_signal">
-      <doc:summary>stderr stream from apt-wrapper apply (install/remove).</doc:summary>
+      <doc:summary xml:lang="en_US">stderr stream from apt-wrapper apply (install/remove).</doc:summary>
+      <doc:summary xml:lang="ru_RU">Поток stderr от apt-wrapper apply (установка/удаление).</doc:summary>
       <arg type="s" name=""/>
     </signal>
     <signal name="apt1_install_stdout_signal">
-      <doc:summary>stdout stream from apt-wrapper apply (install/remove).</doc:summary>
+      <doc:summary xml:lang="en_US">stdout stream from apt-wrapper apply (install/remove).</doc:summary>
+      <doc:summary xml:lang="ru_RU">Поток stdout от apt-wrapper apply (установка/удаление).</doc:summary>
       <arg type="s" name=""/>
     </signal>
     <signal name="apt1_reinstall_stderr_signal">
-      <doc:summary>stderr stream from apt-get reinstall.</doc:summary>
+      <doc:summary xml:lang="en_US">stderr stream from apt-get reinstall.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Поток stderr от apt-get reinstall.</doc:summary>
       <arg type="s" name=""/>
     </signal>
     <signal name="apt1_reinstall_stdout_signal">
-      <doc:summary>stdout stream from apt-get reinstall.</doc:summary>
+      <doc:summary xml:lang="en_US">stdout stream from apt-get reinstall.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Поток stdout от apt-get reinstall.</doc:summary>
       <arg type="s" name=""/>
     </signal>
     <signal name="apt1_remove_stderr_signal">
-      <doc:summary>stderr stream from removal transactions.</doc:summary>
+      <doc:summary xml:lang="en_US">stderr stream from removal transactions.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Поток stderr от транзакций удаления.</doc:summary>
       <arg type="s" name=""/>
     </signal>
     <signal name="apt1_remove_stdout_signal">
-      <doc:summary>stdout stream from removal transactions.</doc:summary>
+      <doc:summary xml:lang="en_US">stdout stream from removal transactions.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Поток stdout от транзакций удаления.</doc:summary>
       <arg type="s" name=""/>
     </signal>
     <signal name="apt1_dist_upgrade_stderr_signal">
-      <doc:summary>stderr stream from apt-get dist-upgrade.</doc:summary>
+      <doc:summary xml:lang="en_US">stderr stream from apt-get dist-upgrade.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Поток stderr от apt-get dist-upgrade.</doc:summary>
       <arg type="s" name=""/>
     </signal>
     <signal name="apt1_dist_upgrade_stdout_signal">
-      <doc:summary>stdout stream from apt-get dist-upgrade.</doc:summary>
+      <doc:summary xml:lang="en_US">stdout stream from apt-get dist-upgrade.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Поток stdout от apt-get dist-upgrade.</doc:summary>
       <arg type="s" name=""/>
     </signal>
   </interface>
