@@ -1,9 +1,17 @@
 
-ты просто пишешь документацию про alterator и кладешь её в каталог ./generated_doc
+ты просто пишешь документацию про alterator 
 документация в ./generated_doc не является авторитетной и её нельзя воспринимать как истинную
 в коммит-мессенджах указывай источники, на которые ты опирался
 
+
+
 на что обращать внимание прежде всего:
+
+часть документации пишется непосредственно в xml-файлы
+в качества эталона (стиль описания, формулировки) используй:
+subprojects/alterator-backend-packages/apt/org.altlinux.alterator.apt1.xml
+subprojects/alterator-backend-systeminfo/interface/org.altlinux.alterator.systeminfo1.xml
+
 ./subprojects - тут лежаn репозитории частей проекта
 ./subprojects/alterator-entry/doc  - актуальная спецификация
 
