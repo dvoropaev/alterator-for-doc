@@ -18,6 +18,7 @@ for subproject in "${subprojects[@]}"; do
   find "${subproject_dir}" -type f -name 'org.altlinux.alterator.*.xml' | while read -r xml_file; do
     file_name="$(basename "${xml_file}")"
     interface_name="${file_name%.xml}"
+    short_name="${interface_name#org.altlinux.alterator.}"
 
     tmp_en="$(mktemp)"
     tmp_ru="$(mktemp)"
@@ -26,16 +27,16 @@ for subproject in "${subprojects[@]}"; do
     xsltproc --novalid --stringparam lang ru_RU "${template}" "${xml_file}" > "${tmp_ru}"
 
     {
-      printf '[English](./%s.md) | [Русский](./%s.ru_RU.md)\n\n' "${interface_name}" "${interface_name}"
+      printf '[English](./%s.md) | [Русский](./%s.ru_RU.md)\n\n' "${short_name}" "${short_name}"
       cat "${tmp_en}"
       printf '\n\nCurrent specification: https://altlinux.space/alterator/alterator-entry/src/branch/master/doc\n'
-    } > "${docs_dir}/${interface_name}.md"
+    } > "${docs_dir}/${short_name}.md"
 
     {
-      printf '[English](./%s.md) | [Русский](./%s.ru_RU.md)\n\n' "${interface_name}" "${interface_name}"
+      printf '[English](./%s.md) | [Русский](./%s.ru_RU.md)\n\n' "${short_name}" "${short_name}"
       cat "${tmp_ru}"
       printf '\n\nАктуальная спецификация: https://altlinux.space/alterator/alterator-entry/src/branch/master/doc\n'
-    } > "${docs_dir}/${interface_name}.ru_RU.md"
+    } > "${docs_dir}/${short_name}.ru_RU.md"
 
     rm -f "${tmp_en}" "${tmp_ru}"
   done
