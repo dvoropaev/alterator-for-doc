@@ -2,139 +2,54 @@
 "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
 "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
 <node name="/" xmlns:doc="http://www.freedesktop.org/dbus/1.0/doc.dtd">
-    <interface name="org.altlinux.alterator.service1">
-        <doc:summary xml:lang="en_US">Provides batch control backend methods for listing facilities and reading their control entries.</doc:summary>
-        <doc:summary xml:lang="ru_RU">Предоставляет методы бэкенда для пакетной работы с facility: список и чтение control-описаний.</doc:summary>
+    <interface name="org.altlinux.alterator.batch_control1">
+        <doc:doc>
+            <doc:description>
+                <doc:para>
+                    Service control interface.
+                </doc:para>
+            </doc:description>
+        </doc:doc>
 
         <method name="Info">
-            <doc:summary xml:lang="en_US">Returns contents of the control.object descriptor file.</doc:summary>
-            <doc:summary xml:lang="ru_RU">Возвращает содержимое файла-описателя control.object.</doc:summary>
-            <arg type='ay' name='stdout_bytes' direction='out'>
-                <doc:summary xml:lang="en_US">Contents of /usr/share/alterator/objects/control.object.</doc:summary>
-                <doc:summary xml:lang="ru_RU">Содержимое `/usr/share/alterator/objects/control.object`.</doc:summary>
-            </arg>
-            <arg type="i" name="response" direction="out">
-                <doc:summary xml:lang="en_US">Exit code of the cat utility.</doc:summary>
-                <doc:summary xml:lang="ru_RU">Код завершения.</doc:summary>
-                <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
-                <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
-            </arg>
+            <arg type='ay' name='stdout_bytes' direction='out'></arg>
+            <arg type="i" name="response" direction="out"></arg>
         </method>
 
         <method name="ListFacilities">
-            <doc:summary xml:lang="en_US">Lists facility identifiers from /etc/control.d/facilities.</doc:summary>
-            <doc:summary xml:lang="ru_RU">Перечисляет идентификаторы facility из `/etc/control.d/facilities`.</doc:summary>
-            <arg type='as' name='stdout_strings' direction='out'>
-                <doc:summary xml:lang="en_US">Facility names (directory entries).</doc:summary>
-                <doc:summary xml:lang="ru_RU">Имена facility (записи каталога).</doc:summary>
-            </arg>
-            <arg type='i' name='response' direction='out'>
-                <doc:summary xml:lang="en_US">Exit code of the helper.</doc:summary>
-                <doc:summary xml:lang="ru_RU">Код завершения помощника.</doc:summary>
-                <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
-                <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
-            </arg>
+            <arg type='as' name='stdout_strings' direction='out'></arg>
+            <arg type='i' name='response' direction='out'></arg>
         </method>
 
         <method name="FacilityInfo">
-            <doc:summary xml:lang="en_US">Reserved for returning a single facility control entry; not implemented by control.backend in this package.</doc:summary>
-            <doc:summary xml:lang="ru_RU">Зарезервирован для выдачи control-описания одной facility; в control.backend этого пакета не реализован.</doc:summary>
-            <arg type='s' name='facility' direction='in'>
-                <doc:summary xml:lang="en_US">Facility identifier (as in /etc/control.d/facilities).</doc:summary>
-                <doc:summary xml:lang="ru_RU">Идентификатор facility (как в `/etc/control.d/facilities`).</doc:summary>
-            </arg>
-            <arg type='ay' name='stdout_bytes' direction='out'>
-                <doc:summary xml:lang="en_US">Control entry data when the method is implemented by the service.</doc:summary>
-                <doc:summary xml:lang="ru_RU">Данные control-описания, если метод реализован в сервисе.</doc:summary>
-            </arg>
-            <arg type='i' name='response' direction='out'>
-                <doc:summary xml:lang="en_US">Exit code when the method is implemented.</doc:summary>
-                <doc:summary xml:lang="ru_RU">Код завершения при наличии реализации.</doc:summary>
-                <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
-                <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
-            </arg>
+            <arg type='s' name='facility' direction='in'></arg>
+            <arg type='ay' name='stdout_bytes' direction='out'></arg>
+            <arg type='i' name='response' direction='out'></arg>
         </method>
 
         <method name="FacilitiesInfo">
-            <doc:summary xml:lang="en_US">Returns control entries for all facilities.</doc:summary>
-            <doc:summary xml:lang="ru_RU">Возвращает control-описания для всех facility.</doc:summary>
-            <arg type="as" name="stdout_string_array" direction="out">
-                <doc:summary xml:lang="en_US">Array of control entry texts produced by control-helper batch-info.</doc:summary>
-                <doc:summary xml:lang="ru_RU">Массив текстов control-описаний, полученных от control-helper batch-info.</doc:summary>
-                <doc:detail xml:lang="en_US">Entries follow the order of /etc/control.d/facilities.</doc:detail>
-                <doc:detail xml:lang="ru_RU">Порядок соответствует `/etc/control.d/facilities`.</doc:detail>
-            </arg>
-            <arg type="i" name="response" direction="out">
-                <doc:summary xml:lang="en_US">Exit code of the helper.</doc:summary>
-                <doc:summary xml:lang="ru_RU">Код завершения помощника.</doc:summary>
-                <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
-                <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
-            </arg>
+            <arg type="as" name="stdout_string_array" direction="out"></arg>
+            <arg type="i" name="response" direction="out"></arg>
         </method>
 
         <method name="Get">
-            <doc:summary xml:lang="en_US">Reserved for reading facility status; not implemented by control.backend in this package.</doc:summary>
-            <doc:summary xml:lang="ru_RU">Зарезервирован для чтения статуса facility; в control.backend этого пакета не реализован.</doc:summary>
-            <arg type='s' name='facility' direction='in'>
-                <doc:summary xml:lang="en_US">Facility identifier (as in /etc/control.d/facilities).</doc:summary>
-                <doc:summary xml:lang="ru_RU">Идентификатор facility (как в `/etc/control.d/facilities`).</doc:summary>
-            </arg>
-            <arg type='ay' name='stdout_bytes' direction='out'>
-                <doc:summary xml:lang="en_US">Status data when the method is implemented by the service.</doc:summary>
-                <doc:summary xml:lang="ru_RU">Данные статуса, если метод реализован в сервисе.</doc:summary>
-            </arg>
-            <arg type='as' name='stderr_strings' direction='out'>
-                <doc:summary xml:lang="en_US">Errors from the backend when implemented.</doc:summary>
-                <doc:summary xml:lang="ru_RU">Ошибки бэкенда при наличии реализации.</doc:summary>
-            </arg>
-            <arg type='i' name='response' direction='out'>
-                <doc:summary xml:lang="en_US">Exit code when the method is implemented.</doc:summary>
-                <doc:summary xml:lang="ru_RU">Код завершения при наличии реализации.</doc:summary>
-                <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
-                <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
-            </arg>
+            <arg type='s' name='facility' direction='in'></arg>
+            <arg type='ay' name='stdout_bytes' direction='out'></arg>
+            <arg type='as' name='stderr_strings' direction='out'></arg>
+            <arg type='i' name='response' direction='out'></arg>
         </method>
 
         <method name="GetAll">
-            <doc:summary xml:lang="en_US">Reserved for reading statuses of all facilities; not implemented by control.backend in this package.</doc:summary>
-            <doc:summary xml:lang="ru_RU">Зарезервирован для чтения статусов всех facility; в control.backend этого пакета не реализован.</doc:summary>
-            <arg type='as' name='stdout_strings' direction='out'>
-                <doc:summary xml:lang="en_US">Status values when the method is implemented by the service.</doc:summary>
-                <doc:summary xml:lang="ru_RU">Значения статусов, если метод реализован в сервисе.</doc:summary>
-            </arg>
-            <arg type='as' name='stderr_strings' direction='out'>
-                <doc:summary xml:lang="en_US">Errors from the backend when implemented.</doc:summary>
-                <doc:summary xml:lang="ru_RU">Ошибки бэкенда при наличии реализации.</doc:summary>
-            </arg>
-            <arg type='i' name='response' direction='out'>
-                <doc:summary xml:lang="en_US">Exit code when the method is implemented.</doc:summary>
-                <doc:summary xml:lang="ru_RU">Код завершения при наличии реализации.</doc:summary>
-                <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
-                <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
-            </arg>
+            <arg type='as' name='stdout_strings' direction='out'></arg>
+            <arg type='as' name='stderr_strings' direction='out'></arg>
+            <arg type='i' name='response' direction='out'></arg>
         </method>
 
         <method name="Set">
-            <doc:summary xml:lang="en_US">Reserved for setting facility status; not implemented by control.backend in this package.</doc:summary>
-            <doc:summary xml:lang="ru_RU">Зарезервирован для установки статуса facility; в control.backend этого пакета не реализован.</doc:summary>
-            <arg type='s' name='facility' direction='in'>
-                <doc:summary xml:lang="en_US">Facility identifier (as in /etc/control.d/facilities).</doc:summary>
-                <doc:summary xml:lang="ru_RU">Идентификатор facility (как в `/etc/control.d/facilities`).</doc:summary>
-            </arg>
-            <arg type='s' name='status' direction='in'>
-                <doc:summary xml:lang="en_US">Target status value when the method is implemented.</doc:summary>
-                <doc:summary xml:lang="ru_RU">Целевое значение статуса при наличии реализации.</doc:summary>
-            </arg>
-            <arg type='as' name='stderr_strings' direction='out'>
-                <doc:summary xml:lang="en_US">Errors from the backend when implemented.</doc:summary>
-                <doc:summary xml:lang="ru_RU">Ошибки бэкенда при наличии реализации.</doc:summary>
-            </arg>
-            <arg type='i' name='response' direction='out'>
-                <doc:summary xml:lang="en_US">Exit code when the method is implemented.</doc:summary>
-                <doc:summary xml:lang="ru_RU">Код завершения при наличии реализации.</doc:summary>
-                <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
-                <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
-            </arg>
+            <arg type='s' name='facility' direction='in'></arg>
+            <arg type='s' name='status' direction='in'></arg>
+            <arg type='as' name='stderr_strings' direction='out'></arg>
+            <arg type='i' name='response' direction='out'></arg>
         </method>
     </interface>
 </node>
