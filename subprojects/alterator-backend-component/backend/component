@@ -97,12 +97,13 @@ def extract_packages_from_component(
     return needed_packages
 
 
-def get_localized_file(base_path: Path) -> Optional[Path]:
+def get_localized_file(base_path: Path, raw: bool) -> Optional[Path]:
     locale = os.getenv("LC_ALL", "en_US").split(".")[0]
+    file_extension = "md" if raw else "html"
     variants = [
-        f"description.{locale}.html",
-        f"description.{locale.split('_')[0]}.html",
-        "description.html",
+        f"description.{locale}.{file_extension}",
+        f"description.{locale.split('_')[0]}.{file_extension}",
+        f"description.{file_extension}",
     ]
 
     for variant in variants:
@@ -185,20 +186,23 @@ def info_command(args: argparse.Namespace) -> None:
     if args.all:
         print(info_all(dir, ext))
     else:
-        with open(dir / f"{args.name}/{args.name}.{ext}", "r") as f:
-            if args.path:
-                print(f.name)
-            else:
-                print(f.read())
+        try:
+            with open(dir / f"{args.name}/{args.name}.{ext}", "r") as f:
+                if args.path:
+                    print(f.name)
+                else:
+                    print(f.read())
+        except Exception as e:
+            sys.exit(f"{e}")
 
 
 def description_command(args: argparse.Namespace) -> None:
-    path = get_localized_file(
-        Path(CATEGORIES_DIR if args.category else COMPONENTS_DIR / args.name)
-    )
-
+    dir = Path(CATEGORIES_DIR if args.category else COMPONENTS_DIR) / args.name
+    path = get_localized_file(dir, args.raw)
     if path is None:
-        sys.exit("Erorr: description not found")
+        sys.exit(
+            f"Error: description file not found. Expected one of files {(dir / 'description.{html,md}').as_posix()}"
+        )
 
     if args.path:
         print(path)
@@ -331,7 +335,7 @@ def main():
     info_parser.add_argument(
         "--category", action="store_true", help="search category instead component"
     )
-    info_parser.add_argument("--path", action="store_true")
+    info_parser.add_argument("--path", action="store_true", help="get info file path")
     info_parser.set_defaults(function=info_command)
 
     description_parser = subparsers.add_parser(
@@ -341,7 +345,12 @@ def main():
     description_parser.add_argument(
         "--category", action="store_true", help="search category instead component"
     )
-    description_parser.add_argument("--path", action="store_true")
+    description_parser.add_argument(
+        "--path", action="store_true", help="get description file path"
+    )
+    description_parser.add_argument(
+        "--raw", action="store_true", help="get raw description (in markdown format)"
+    )
     description_parser.set_defaults(function=description_command)
 
     packages_parser = subparsers.add_parser(

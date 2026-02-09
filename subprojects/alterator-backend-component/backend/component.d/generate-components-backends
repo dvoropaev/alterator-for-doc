@@ -34,6 +34,12 @@ stdout_bytes = true
 exit_status  = true
 environment.LC_ALL = {}
 
+[methods.DescriptionRaw]
+execute = "$exec_dir/component description $component_name --raw"
+stdout_bytes = true
+exit_status  = true
+environment.LC_ALL = {}
+
 [methods.Status]
 execute = "$exec_dir/component status $component_name"
 stdout_strings = true
