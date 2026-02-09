@@ -3,56 +3,78 @@
   "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
 <node name="/" xmlns:doc="http://www.freedesktop.org/dbus/1.0/doc.dtd">
   <interface name="org.altlinux.alterator.repo1">
-    <doc:summary>Expose repository management commands backed by apt-repo.</doc:summary>
+    <doc:summary xml:lang="en_US">Expose repository management commands backed by apt-repo.</doc:summary>
+    <doc:summary xml:lang="ru_RU">Предоставляет команды управления репозиториями на основе apt-repo.</doc:summary>
     <method name="Info">
-      <doc:summary>Return static descriptor of the repo backend object.</doc:summary>
+      <doc:summary xml:lang="en_US">Return static descriptor of the repo backend object.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Возвращает статический описатель объекта бэкенда repo.</doc:summary>
       <arg type="ay" name="stdout_bytes" direction="out">
-        <doc:summary>Contents of /usr/share/alterator/objects/repo.object.</doc:summary>
-        <doc:detail>TOML object definition with display_name and comments.</doc:detail>
+        <doc:summary xml:lang="en_US">Contents of /usr/share/alterator/objects/repo.object.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Содержимое `/usr/share/alterator/objects/repo.object`.</doc:summary>
+        <doc:detail xml:lang="en_US">TOML object definition with display_name and comments.</doc:detail>
+        <doc:detail xml:lang="ru_RU">TOML-описание объекта с display_name и comments.</doc:detail>
       </arg>
       <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of the cat helper.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
+        <doc:summary xml:lang="en_US">Exit code of the cat helper.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения помощника cat.</doc:summary>
+        <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+        <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
     </method>
     <method name="List">
-      <doc:summary>List configured repositories via apt-repo list.</doc:summary>
+      <doc:summary xml:lang="en_US">List configured repositories via apt-repo list.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Перечисляет настроенные репозитории через `apt-repo list`.</doc:summary>
       <arg type="as" name="stdout_strings" direction="out">
-        <doc:summary>Repository entries printed by apt-repo list.</doc:summary>
+        <doc:summary xml:lang="en_US">Repository entries printed by apt-repo list.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Записи репозиториев, выводимые `apt-repo list`.</doc:summary>
       </arg>
       <arg type="as" name="stderr_strings" direction="out">
-        <doc:summary>Errors from apt-repo list.</doc:summary>
+        <doc:summary xml:lang="en_US">Errors from apt-repo list.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Ошибки выполнения `apt-repo list`.</doc:summary>
       </arg>
       <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of the list command.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
+        <doc:summary xml:lang="en_US">Exit code of the list command.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения команды списка.</doc:summary>
+        <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+        <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
     </method>
     <method name="Add">
-      <doc:summary>Add repository source via apt-repo add.</doc:summary>
+      <doc:summary xml:lang="en_US">Add repository source via apt-repo add.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Добавляет источник репозитория через `apt-repo add`.</doc:summary>
       <arg type="s" name="source" direction="in">
-        <doc:summary>Source definition passed directly to apt-repo add.</doc:summary>
-        <doc:detail>Supports file paths or URI strings accepted by apt-repo.</doc:detail>
+        <doc:summary xml:lang="en_US">Source definition passed directly to apt-repo add.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Определение источника, передаваемое напрямую в `apt-repo add`.</doc:summary>
+        <doc:detail xml:lang="en_US">Supports file paths or URI strings accepted by apt-repo.</doc:detail>
+        <doc:detail xml:lang="ru_RU">Поддерживает пути к файлам или URI-строки, принимаемые apt-repo.</doc:detail>
       </arg>
       <arg type="as" name="stderr_strings" direction="out">
-        <doc:summary>apt-repo warnings or errors.</doc:summary>
+        <doc:summary xml:lang="en_US">apt-repo warnings or errors.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Предупреждения или ошибки apt-repo.</doc:summary>
       </arg>
       <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of the add command.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
+        <doc:summary xml:lang="en_US">Exit code of the add command.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения команды добавления.</doc:summary>
+        <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+        <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
     </method>
     <method name="Remove">
-      <doc:summary>Remove repository source via apt-repo rm.</doc:summary>
+      <doc:summary xml:lang="en_US">Remove repository source via apt-repo rm.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Удаляет источник репозитория через `apt-repo rm`.</doc:summary>
       <arg type="s" name="source" direction="in">
-        <doc:summary>Identifier or path of the repository to drop.</doc:summary>
+        <doc:summary xml:lang="en_US">Identifier or path of the repository to drop.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Идентификатор или путь к удаляемому репозиторию.</doc:summary>
       </arg>
       <arg type="as" name="stderr_strings" direction="out">
-        <doc:summary>apt-repo errors during removal.</doc:summary>
+        <doc:summary xml:lang="en_US">apt-repo errors during removal.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Ошибки apt-repo при удалении.</doc:summary>
       </arg>
       <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of the remove command.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
+        <doc:summary xml:lang="en_US">Exit code of the remove command.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения команды удаления.</doc:summary>
+        <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+        <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
     </method>
   </interface>

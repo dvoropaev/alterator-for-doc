@@ -3,87 +3,120 @@
   "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
 <node name="/" xmlns:doc="http://www.freedesktop.org/dbus/1.0/doc.dtd">
   <interface name="org.altlinux.alterator.rpm1">
-    <doc:summary>Expose rpm backend commands for listing, installing, and removing RPM packages.</doc:summary>
+    <doc:summary xml:lang="en_US">Expose rpm backend commands for listing, installing, and removing RPM packages.</doc:summary>
+    <doc:summary xml:lang="ru_RU">Предоставляет команды бэкенда rpm для перечисления, установки и удаления RPM-пакетов.</doc:summary>
     <method name="Info">
-      <doc:summary>Return static descriptor of the rpm backend object.</doc:summary>
+      <doc:summary xml:lang="en_US">Return static descriptor of the rpm backend object.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Возвращает статический описатель объекта бэкенда rpm.</doc:summary>
       <arg type="ay" name="stdout_bytes" direction="out">
-        <doc:summary>Contents of /usr/share/alterator/objects/rpm.object.</doc:summary>
-        <doc:detail>TOML object definition with display_name and comments.</doc:detail>
+        <doc:summary xml:lang="en_US">Contents of /usr/share/alterator/objects/rpm.object.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Содержимое `/usr/share/alterator/objects/rpm.object`.</doc:summary>
+        <doc:detail xml:lang="en_US">TOML object definition with display_name and comments.</doc:detail>
+        <doc:detail xml:lang="ru_RU">TOML-описание объекта с display_name и comments.</doc:detail>
       </arg>
       <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of the cat helper.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
+        <doc:summary xml:lang="en_US">Exit code of the cat helper.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения помощника cat.</doc:summary>
+        <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+        <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
     </method>
     <method name="List">
-      <doc:summary>List installed packages via rpm -qa with name, version, release, arch, and group.</doc:summary>
+      <doc:summary xml:lang="en_US">List installed packages via rpm -qa with name, version, release, arch, and group.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Перечисляет установленные пакеты через `rpm -qa` с именем, версией, релизом, архитектурой и группой.</doc:summary>
       <arg type="as" name="stdout_strings" direction="out">
-        <doc:summary>Package entries formatted as “name version release arch group”.</doc:summary>
+        <doc:summary xml:lang="en_US">Package entries formatted as “name version release arch group”.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Записи пакетов в формате “name version release arch group”.</doc:summary>
       </arg>
       <arg type="as" name="stderr_strings" direction="out">
-        <doc:summary>Errors from rpm -qa.</doc:summary>
+        <doc:summary xml:lang="en_US">Errors from rpm -qa.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Ошибки выполнения `rpm -qa`.</doc:summary>
       </arg>
       <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of the list command.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
+        <doc:summary xml:lang="en_US">Exit code of the list command.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения команды списка.</doc:summary>
+        <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+        <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
     </method>
     <method name="Install">
-      <doc:summary>Install or upgrade a package file via rpm -U.</doc:summary>
+      <doc:summary xml:lang="en_US">Install or upgrade a package file via rpm -U.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Устанавливает или обновляет пакетный файл через `rpm -U`.</doc:summary>
       <arg type="s" name="pkgpath" direction="in">
-        <doc:summary>Filesystem path to the RPM file.</doc:summary>
+        <doc:summary xml:lang="en_US">Filesystem path to the RPM file.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Путь к RPM-файлу в файловой системе.</doc:summary>
       </arg>
       <arg type="as" name="stderr_strings" direction="out">
-        <doc:summary>rpm installation errors.</doc:summary>
+        <doc:summary xml:lang="en_US">rpm installation errors.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Ошибки установки rpm.</doc:summary>
       </arg>
       <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of rpm -U.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
+        <doc:summary xml:lang="en_US">Exit code of rpm -U.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения `rpm -U`.</doc:summary>
+        <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+        <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
     </method>
     <method name="Remove">
-      <doc:summary>Erase an installed package via rpm -e.</doc:summary>
+      <doc:summary xml:lang="en_US">Erase an installed package via rpm -e.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Удаляет установленный пакет через `rpm -e`.</doc:summary>
       <arg type="s" name="pkgname" direction="in">
-        <doc:summary>Name of the package to remove.</doc:summary>
+        <doc:summary xml:lang="en_US">Name of the package to remove.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Имя пакета для удаления.</doc:summary>
       </arg>
       <arg type="as" name="stderr_strings" direction="out">
-        <doc:summary>rpm removal errors.</doc:summary>
+        <doc:summary xml:lang="en_US">rpm removal errors.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Ошибки удаления rpm.</doc:summary>
       </arg>
       <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of rpm -e.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
+        <doc:summary xml:lang="en_US">Exit code of rpm -e.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения `rpm -e`.</doc:summary>
+        <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+        <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
     </method>
     <method name="PackageInfo">
-      <doc:summary>Show package metadata via rpm -qi.</doc:summary>
+      <doc:summary xml:lang="en_US">Show package metadata via rpm -qi.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Показывает метаданные пакета через `rpm -qi`.</doc:summary>
       <arg type="s" name="pkgname" direction="in">
-        <doc:summary>Name of the installed package to query.</doc:summary>
+        <doc:summary xml:lang="en_US">Name of the installed package to query.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Имя установленного пакета для запроса.</doc:summary>
       </arg>
       <arg type="as" name="stdout_strings" direction="out">
-        <doc:summary>rpm -qi output split into lines.</doc:summary>
+        <doc:summary xml:lang="en_US">rpm -qi output split into lines.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Вывод `rpm -qi`, разбитый на строки.</doc:summary>
       </arg>
       <arg type="as" name="stderr_strings" direction="out">
-        <doc:summary>rpm query errors.</doc:summary>
+        <doc:summary xml:lang="en_US">rpm query errors.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Ошибки запроса rpm.</doc:summary>
       </arg>
       <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of the query.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
+        <doc:summary xml:lang="en_US">Exit code of the query.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения запроса.</doc:summary>
+        <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+        <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
     </method>
     <method name="Files">
-      <doc:summary>List files installed by a package via rpm -ql.</doc:summary>
+      <doc:summary xml:lang="en_US">List files installed by a package via rpm -ql.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Перечисляет файлы, установленные пакетом, через `rpm -ql`.</doc:summary>
       <arg type="s" name="pkgname" direction="in">
-        <doc:summary>Name of the installed package.</doc:summary>
+        <doc:summary xml:lang="en_US">Name of the installed package.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Имя установленного пакета.</doc:summary>
       </arg>
       <arg type="as" name="stdout_strings" direction="out">
-        <doc:summary>File paths reported by rpm -ql.</doc:summary>
+        <doc:summary xml:lang="en_US">File paths reported by rpm -ql.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Пути файлов, возвращаемые `rpm -ql`.</doc:summary>
       </arg>
       <arg type="as" name="stderr_strings" direction="out">
-        <doc:summary>rpm errors while reading the package database.</doc:summary>
+        <doc:summary xml:lang="en_US">rpm errors while reading the package database.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Ошибки rpm при чтении базы пакетов.</doc:summary>
       </arg>
       <arg type="i" name="response" direction="out">
-        <doc:summary>Exit code of the file listing.</doc:summary>
-        <doc:detail>0 — success, != 0 — error.</doc:detail>
+        <doc:summary xml:lang="en_US">Exit code of the file listing.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения выдачи списка файлов.</doc:summary>
+        <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+        <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
     </method>
   </interface>
