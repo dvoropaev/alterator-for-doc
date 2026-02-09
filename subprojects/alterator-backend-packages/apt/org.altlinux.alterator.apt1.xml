@@ -16,7 +16,7 @@
       </arg>
       <arg type="i" name="response" direction="out">
         <doc:summary xml:lang="en_US">Exit code of the cat utility.</doc:summary>
-        <doc:summary xml:lang="ru_RU">Код завершения утилиты cat.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения.</doc:summary>
         <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
         <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
@@ -28,7 +28,7 @@
       <doc:detail xml:lang="ru_RU">Сигналы: apt1_update_stdout_signal, apt1_update_stderr_signals.</doc:detail>
       <arg type="i" name="response" direction="out">
         <doc:summary xml:lang="en_US">Exit code of apt-get update.</doc:summary>
-        <doc:summary xml:lang="ru_RU">Код завершения apt-get update.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения.</doc:summary>
         <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
         <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
@@ -54,7 +54,7 @@
       </arg>
       <arg type="i" name="response" direction="out">
         <doc:summary xml:lang="en_US">Exit code of the operation.</doc:summary>
-        <doc:summary xml:lang="ru_RU">Код завершения операции.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения.</doc:summary>
         <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
         <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
@@ -68,7 +68,7 @@
       </arg>
       <arg type="i" name="response" direction="out">
         <doc:summary xml:lang="en_US">Exit code of the reinstall command.</doc:summary>
-        <doc:summary xml:lang="ru_RU">Код завершения команды переустановки.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения.</doc:summary>
         <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
         <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
@@ -86,7 +86,7 @@
       </arg>
       <arg type="i" name="response" direction="out">
         <doc:summary xml:lang="en_US">Exit code of the listall helper.</doc:summary>
-        <doc:summary xml:lang="ru_RU">Код завершения помощника listall.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения.</doc:summary>
         <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
         <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
@@ -108,7 +108,7 @@
       </arg>
       <arg type="i" name="response" direction="out">
         <doc:summary xml:lang="en_US">Exit code of the search helper.</doc:summary>
-        <doc:summary xml:lang="ru_RU">Код завершения помощника поиска.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения.</doc:summary>
         <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
         <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
@@ -117,16 +117,16 @@
       <doc:summary xml:lang="en_US">Reports last update time from /var/lib/apt/lists in UTC.</doc:summary>
       <doc:summary xml:lang="ru_RU">Сообщает время последнего обновления из /var/lib/apt/lists в UTC.</doc:summary>
       <arg type="as" name="stdout_strings" direction="out">
-        <doc:summary xml:lang="en_US">Single entry with date-time string (YYYY-MM-DD HH:MM:SS UTC).</doc:summary>
-        <doc:summary xml:lang="ru_RU">Одна запись со строкой даты-времени (YYYY-MM-DD HH:MM:SS UTC).</doc:summary>
+        <doc:summary xml:lang="en_US">Date-time string from the helper (format is not validated).</doc:summary>
+        <doc:summary xml:lang="ru_RU">Строка с датой и временем от помощника (формат не валидируется).</doc:summary>
       </arg>
       <arg type="as" name="stderr_strings" direction="out">
         <doc:summary xml:lang="en_US">Errors during stat or parsing.</doc:summary>
         <doc:summary xml:lang="ru_RU">Ошибки при stat или разборе.</doc:summary>
       </arg>
       <arg type="i" name="response" direction="out">
-        <doc:summary xml:lang="en_US">Exit code of the timestamp helper.</doc:summary>
-        <doc:summary xml:lang="ru_RU">Код завершения помощника метки времени.</doc:summary>
+        <doc:summary xml:lang="en_US">Exit code of the time lookup.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения.</doc:summary>
         <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
         <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
@@ -144,7 +144,7 @@
       </arg>
       <arg type="i" name="response" direction="out">
         <doc:summary xml:lang="en_US">Exit code of the log read.</doc:summary>
-        <doc:summary xml:lang="ru_RU">Код завершения чтения журнала.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения.</doc:summary>
         <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
         <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
@@ -168,7 +168,7 @@
       </arg>
       <arg type="i" name="response" direction="out">
         <doc:summary xml:lang="en_US">Exit code of the simulation.</doc:summary>
-        <doc:summary xml:lang="ru_RU">Код завершения имитации.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения.</doc:summary>
         <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
         <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
@@ -190,7 +190,7 @@
       </arg>
       <arg type="i" name="response" direction="out">
         <doc:summary xml:lang="en_US">Exit code of the simulation.</doc:summary>
-        <doc:summary xml:lang="ru_RU">Код завершения имитации.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения.</doc:summary>
         <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
         <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
@@ -208,7 +208,7 @@
       </arg>
       <arg type="i" name="response" direction="out">
         <doc:summary xml:lang="en_US">Exit code of apt-get dist-upgrade -s -q.</doc:summary>
-        <doc:summary xml:lang="ru_RU">Код завершения apt-get dist-upgrade -s -q.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения.</doc:summary>
         <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
         <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
@@ -218,7 +218,7 @@
       <doc:summary xml:lang="ru_RU">Выполняет dist-upgrade асинхронно через apt-get dist-upgrade -y -q.</doc:summary>
       <arg type="i" name="response" direction="out">
         <doc:summary xml:lang="en_US">Exit code of the upgrade command.</doc:summary>
-        <doc:summary xml:lang="ru_RU">Код завершения команды обновления.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения.</doc:summary>
         <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
         <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
