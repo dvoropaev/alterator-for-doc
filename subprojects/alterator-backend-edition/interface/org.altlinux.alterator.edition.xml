@@ -1,27 +1,89 @@
 <!DOCTYPE node PUBLIC
     "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
     "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
-<node>
+<node name="/" xmlns:doc="http://www.freedesktop.org/dbus/1.0/doc.dtd">
     <interface name="org.altlinux.alterator.edition1">
+        <doc:summary xml:lang="en_US">Exposes edition-specific backend methods that return metadata and texts for a selected product edition.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Предоставляет методы бэкенда для выбранной редакции продукта; возвращает метаданные и тексты.</doc:summary>
         <method name="Info">
-            <arg type="ay" name="stdout_bytes" direction="out"></arg>
-            <arg type="i" name="response" direction="out"></arg>
+            <doc:summary xml:lang="en_US">Return the .edition descriptor for the requested edition.</doc:summary>
+            <doc:summary xml:lang="ru_RU">Возвращает файл-описатель `.edition` для запрошенной редакции.</doc:summary>
+            <arg type="ay" name="stdout_bytes" direction="out">
+                <doc:summary xml:lang="en_US">Contents of the .edition file.</doc:summary>
+                <doc:summary xml:lang="ru_RU">Содержимое файла `.edition`.</doc:summary>
+                <doc:detail xml:lang="en_US">TOML text with fields like name, display_name, license.</doc:detail>
+                <doc:detail xml:lang="ru_RU">TOML-текст с полями name, display_name, license.</doc:detail>
+            </arg>
+            <arg type="i" name="response" direction="out">
+                <doc:summary xml:lang="en_US">Exit code.</doc:summary>
+                <doc:summary xml:lang="ru_RU">Код завершения.</doc:summary>
+                <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+                <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
+            </arg>
         </method>
         <method name="Description">
-            <arg type="ay" name="stdout_bytes" direction="out"></arg>
-            <arg type="i" name="response" direction="out"></arg>
+            <doc:summary xml:lang="en_US">Return the description text for the edition.</doc:summary>
+            <doc:summary xml:lang="ru_RU">Возвращает текст описания редакции.</doc:summary>
+            <arg type="ay" name="stdout_bytes" direction="out">
+                <doc:summary xml:lang="en_US">Localized description file content.</doc:summary>
+                <doc:summary xml:lang="ru_RU">Содержимое локализованного файла описания.</doc:summary>
+                <doc:detail xml:lang="en_US">Lookup order: description.&lt;locale&gt;.html, description.&lt;lang&gt;.html, description.all.html, description.html in the edition directory.</doc:detail>
+                <doc:detail xml:lang="ru_RU">Порядок поиска: description.&lt;locale&gt;.html, description.&lt;lang&gt;.html, description.all.html, description.html в каталоге редакции.</doc:detail>
+            </arg>
+            <arg type="i" name="response" direction="out">
+                <doc:summary xml:lang="en_US">Exit code.</doc:summary>
+                <doc:summary xml:lang="ru_RU">Код завершения.</doc:summary>
+                <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+                <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
+            </arg>
         </method>
         <method name="License">
-            <arg type="ay" name="stdout_bytes" direction="out"></arg>
-            <arg type="i" name="response" direction="out"></arg>
+            <doc:summary xml:lang="en_US">Return the license text for the edition.</doc:summary>
+            <doc:summary xml:lang="ru_RU">Возвращает текст лицензии для редакции.</doc:summary>
+            <arg type="ay" name="stdout_bytes" direction="out">
+                <doc:summary xml:lang="en_US">Localized license file content.</doc:summary>
+                <doc:summary xml:lang="ru_RU">Содержимое локализованного файла лицензии.</doc:summary>
+                <doc:detail xml:lang="en_US">Lookup in /usr/share/distro-licenses/&lt;license&gt; using license.&lt;locale&gt;.html, license.&lt;lang&gt;.html, license.all.html, license.html.</doc:detail>
+                <doc:detail xml:lang="ru_RU">Поиск в `/usr/share/distro-licenses/&lt;license&gt;`: license.&lt;locale&gt;.html, license.&lt;lang&gt;.html, license.all.html, license.html.</doc:detail>
+            </arg>
+            <arg type="i" name="response" direction="out">
+                <doc:summary xml:lang="en_US">Exit code.</doc:summary>
+                <doc:summary xml:lang="ru_RU">Код завершения.</doc:summary>
+                <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+                <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
+            </arg>
         </method>
         <method name="ReleaseNotes">
-            <arg type="ay" name="stdout_bytes" direction="out"></arg>
-            <arg type="i" name="response" direction="out"></arg>
+            <doc:summary xml:lang="en_US">Return release notes for the edition.</doc:summary>
+            <doc:summary xml:lang="ru_RU">Возвращает релиз-ноты для редакции.</doc:summary>
+            <arg type="ay" name="stdout_bytes" direction="out">
+                <doc:summary xml:lang="en_US">Localized release-notes file content.</doc:summary>
+                <doc:summary xml:lang="ru_RU">Содержимое локализованного файла release-notes.</doc:summary>
+                <doc:detail xml:lang="en_US">Lookup order: release-notes.&lt;locale&gt;.html, release-notes.&lt;lang&gt;.html, release-notes.all.html, release-notes.html in the edition directory.</doc:detail>
+                <doc:detail xml:lang="ru_RU">Порядок поиска: release-notes.&lt;locale&gt;.html, release-notes.&lt;lang&gt;.html, release-notes.all.html, release-notes.html в каталоге редакции.</doc:detail>
+            </arg>
+            <arg type="i" name="response" direction="out">
+                <doc:summary xml:lang="en_US">Exit code.</doc:summary>
+                <doc:summary xml:lang="ru_RU">Код завершения.</doc:summary>
+                <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+                <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
+            </arg>
         </method>
         <method name="FinalNotes">
-            <arg type="ay" name="stdout_bytes" direction="out"></arg>
-            <arg type="i" name="response" direction="out"></arg>
+            <doc:summary xml:lang="en_US">Return final notes for the edition.</doc:summary>
+            <doc:summary xml:lang="ru_RU">Возвращает финальные заметки для редакции.</doc:summary>
+            <arg type="ay" name="stdout_bytes" direction="out">
+                <doc:summary xml:lang="en_US">Localized final-notes file content.</doc:summary>
+                <doc:summary xml:lang="ru_RU">Содержимое локализованного файла final-notes.</doc:summary>
+                <doc:detail xml:lang="en_US">Lookup order: final-notes.&lt;locale&gt;.html, final-notes.&lt;lang&gt;.html, final-notes.all.html, final-notes.html in the edition directory.</doc:detail>
+                <doc:detail xml:lang="ru_RU">Порядок поиска: final-notes.&lt;locale&gt;.html, final-notes.&lt;lang&gt;.html, final-notes.all.html, final-notes.html в каталоге редакции.</doc:detail>
+            </arg>
+            <arg type="i" name="response" direction="out">
+                <doc:summary xml:lang="en_US">Exit code.</doc:summary>
+                <doc:summary xml:lang="ru_RU">Код завершения.</doc:summary>
+                <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+                <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
+            </arg>
         </method>
     </interface>
 </node>
