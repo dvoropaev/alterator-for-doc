@@ -8,6 +8,7 @@ Provides access to a single component descriptor, description, and installation 
 |--------|---------|
 | [Info](#method-Info) | Returns the .component descriptor of the current component. |
 | [Description](#method-Description) | Returns the localized component description. |
+| [DescriptionRaw](#method-DescriptionRaw) | Returns the localized component description in raw format. |
 | [Status](#method-Status) | Returns installed packages that provide the component packages. |
 
 
@@ -39,6 +40,21 @@ Returns the localized component description.
 Contents of description.<locale>.html, description.<lang>.html, or description.html (selected by LC_ALL, default en_US).
 
 ##### **response** : `i` <a id="argument-response-of-Description"></a>
+
+Exit code of the helper.
+
+0 — success, != 0 — error.
+### **DescriptionRaw**() -> ([stdout_bytes](#argument-stdout_bytes-of-DescriptionRaw) : `ay`, [response](#argument-response-of-DescriptionRaw) : `i`)<a id="method-DescriptionRaw"></a>
+
+Returns the localized component description in raw format.
+
+#### Output arguments
+
+##### **stdout_bytes** : `ay` <a id="argument-stdout_bytes-of-DescriptionRaw"></a>
+
+Contents of description.<locale>.md, description.<lang>.md, or description.md (selected by LC_ALL, default en_US).
+
+##### **response** : `i` <a id="argument-response-of-DescriptionRaw"></a>
 
 Exit code of the helper.
 

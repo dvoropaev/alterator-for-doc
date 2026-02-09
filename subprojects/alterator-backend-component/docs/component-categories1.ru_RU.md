@@ -8,6 +8,7 @@
 |--------|---------|
 | [Info](#method-Info) | Возвращает описатель категории в формате .category. |
 | [Description](#method-Description) | Возвращает локализованное описание категории. |
+| [DescriptionRaw](#method-DescriptionRaw) | Возвращает локализованное описание категории в сыром формате. |
 | [List](#method-List) | Перечисляет категории компонентов. |
 
 
@@ -51,6 +52,27 @@
 Содержимое `description.<locale>.html`, `description.<lang>.html` или `description.html` (выбор по LC_ALL, по умолчанию en_US).
 
 ##### **response** : `i` <a id="argument-response-of-Description"></a>
+
+Код завершения помощника.
+
+0 — успех, != 0 — ошибка.
+### **DescriptionRaw**([name](#argument-name-of-DescriptionRaw) : `s`) -> ([stdout_bytes](#argument-stdout_bytes-of-DescriptionRaw) : `ay`, [response](#argument-response-of-DescriptionRaw) : `i`)<a id="method-DescriptionRaw"></a>
+
+Возвращает локализованное описание категории в сыром формате.
+
+#### Входные аргументы
+
+##### **name** : `s` <a id="argument-name-of-DescriptionRaw"></a>
+
+Имя категории.
+
+#### Выходные аргументы
+
+##### **stdout_bytes** : `ay` <a id="argument-stdout_bytes-of-DescriptionRaw"></a>
+
+Содержимое `description.<locale>.md`, `description.<lang>.md` или `description.md` (выбор по LC_ALL, по умолчанию en_US).
+
+##### **response** : `i` <a id="argument-response-of-DescriptionRaw"></a>
 
 Код завершения помощника.
 

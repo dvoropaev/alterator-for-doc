@@ -8,6 +8,7 @@ Provides access to component category descriptors, descriptions, and list of cat
 |--------|---------|
 | [Info](#method-Info) | Returns the .category descriptor of the specified category. |
 | [Description](#method-Description) | Returns the localized category description. |
+| [DescriptionRaw](#method-DescriptionRaw) | Returns the localized category description in raw format. |
 | [List](#method-List) | Lists component categories. |
 
 
@@ -51,6 +52,27 @@ Category name.
 Contents of description.<locale>.html, description.<lang>.html, or description.html (selected by LC_ALL, default en_US).
 
 ##### **response** : `i` <a id="argument-response-of-Description"></a>
+
+Exit code of the helper.
+
+0 — success, != 0 — error.
+### **DescriptionRaw**([name](#argument-name-of-DescriptionRaw) : `s`) -> ([stdout_bytes](#argument-stdout_bytes-of-DescriptionRaw) : `ay`, [response](#argument-response-of-DescriptionRaw) : `i`)<a id="method-DescriptionRaw"></a>
+
+Returns the localized category description in raw format.
+
+#### Input arguments
+
+##### **name** : `s` <a id="argument-name-of-DescriptionRaw"></a>
+
+Category name.
+
+#### Output arguments
+
+##### **stdout_bytes** : `ay` <a id="argument-stdout_bytes-of-DescriptionRaw"></a>
+
+Contents of description.<locale>.md, description.<lang>.md, or description.md (selected by LC_ALL, default en_US).
+
+##### **response** : `i` <a id="argument-response-of-DescriptionRaw"></a>
 
 Exit code of the helper.
 
