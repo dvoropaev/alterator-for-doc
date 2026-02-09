@@ -8,6 +8,7 @@ subprojects=(
   "alterator-backend-packages"
   "alterator-backend-edition"
   "alterator-backend-component"
+  "alterator-backend-systeminfo"
 )
 
 for subproject in "${subprojects[@]}"; do

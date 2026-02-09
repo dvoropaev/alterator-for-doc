@@ -5,8 +5,8 @@
 Предоставляет методы бэкенда systeminfo для получения данных о системе через помощники `/usr/lib/alterator/backends/systeminfo`; каждый метод возвращает stdout и код завершения базовой команды.
 
 | Метод | Описание |
-|--------|------------|
-| [GetAll](#method-GetAll) | Собирает данные о системе в виде пар ключ/значение. |
+|--------|---------|
+| [GetAll](#method-GetAll) | Собирает сводные сведения о системе в формате ключ/значение. |
 | [GetCPU](#method-GetCPU) | Возвращает модель CPU, число логических ядер и частоту, полученные через `systeminfo cpu`. |
 | [GetHostName](#method-GetHostName) | Возвращает имя хоста, полученное через `systeminfo host-name`. |
 | [GetDrive](#method-GetDrive) | Возвращает суммарный объём накопителей, полученный через `systeminfo drive`. |
@@ -14,7 +14,7 @@
 | [GetMemory](#method-GetMemory) | Сообщает объём RAM, полученный через `systeminfo memory`. |
 | [GetBranch](#method-GetBranch) | Возвращает ветку дистрибутива, полученную через `systeminfo branch`. |
 | [GetKernel](#method-GetKernel) | Возвращает версию ядра, полученную через `systeminfo kernel`. |
-| [GetOperationSystemName](#method-GetOperationSystemName) | Возвращает человекочитаемое имя ОС, полученное через `systeminfo os-name`. |
+| [GetOperationSystemName](#method-GetOperationSystemName) | Возвращает человекочитаемое имя операционной системы, полученное через `systeminfo os-name`. |
 | [GetLicense](#method-GetLicense) | Возвращает текст лицензии с учётом локали и редакции, полученный через `systeminfo os-license`. |
 | [GetReleaseNotes](#method-GetReleaseNotes) | Возвращает релиз-ноты, сформированные `systeminfo release-notes`. |
 | [GetFinalNotes](#method-GetFinalNotes) | Возвращает финальные заметки инсталлятора, сформированные `systeminfo final-notes`. |
@@ -68,6 +68,7 @@
 ##### **stdout_strings** : `as` <a id="argument-stdout_strings-of-GetHostName"></a>
 
 Имя хоста из команды `hostname`.
+
 ##### **response** : `i` <a id="argument-response-of-GetHostName"></a>
 
 Код завершения помощника.
@@ -82,6 +83,7 @@
 ##### **stdout_strings** : `as` <a id="argument-stdout_strings-of-GetDrive"></a>
 
 Суммарный объём накопителей в байтах, вычисленный по `/proc/partitions`.
+
 ##### **response** : `i` <a id="argument-response-of-GetDrive"></a>
 
 Код завершения помощника.
@@ -96,6 +98,7 @@
 ##### **stdout_strings** : `as` <a id="argument-stdout_strings-of-GetGPU"></a>
 
 Описания адаптеров, полученные из вывода `lspci`.
+
 ##### **response** : `i` <a id="argument-response-of-GetGPU"></a>
 
 Код завершения помощника.
@@ -110,6 +113,7 @@
 ##### **stdout_strings** : `as` <a id="argument-stdout_strings-of-GetMemory"></a>
 
 Объём памяти в байтах, вычисленный как `MemTotal * 1024` из `/proc/meminfo`.
+
 ##### **response** : `i` <a id="argument-response-of-GetMemory"></a>
 
 Код завершения помощника.
@@ -124,6 +128,7 @@
 ##### **stdout_strings** : `as` <a id="argument-stdout_strings-of-GetBranch"></a>
 
 Значение rpm-макроса `%_priority_distbranch`.
+
 ##### **response** : `i` <a id="argument-response-of-GetBranch"></a>
 
 Код завершения помощника.
@@ -138,6 +143,7 @@
 ##### **stdout_strings** : `as` <a id="argument-stdout_strings-of-GetKernel"></a>
 
 Строка выпуска ядра из `/proc/sys/kernel/osrelease`.
+
 ##### **response** : `i` <a id="argument-response-of-GetKernel"></a>
 
 Код завершения помощника.
@@ -152,6 +158,7 @@
 ##### **stdout_strings** : `as` <a id="argument-stdout_strings-of-GetOperationSystemName"></a>
 
 Значение `PRETTY_NAME` из `/etc/os-release`.
+
 ##### **response** : `i` <a id="argument-response-of-GetOperationSystemName"></a>
 
 Код завершения помощника.
@@ -214,6 +221,7 @@
 ##### **stdout_strings** : `as` <a id="argument-stdout_strings-of-GetArch"></a>
 
 Строка архитектуры из `/proc/sys/kernel/arch`.
+
 ##### **response** : `i` <a id="argument-response-of-GetArch"></a>
 
 Код завершения помощника.
@@ -260,6 +268,7 @@
 ##### **stdout_strings** : `as` <a id="argument-stdout_strings-of-GetLocale"></a>
 
 Значение локали из `/etc/locale.conf`, например `ru_RU.UTF-8`.
+
 ##### **response** : `i` <a id="argument-response-of-GetLocale"></a>
 
 Код завершения помощника.
@@ -281,3 +290,6 @@
 Код завершения помощника.
 
 0 — успех, != 0 — ошибка.
+
+
+Актуальная спецификация: https://altlinux.space/alterator/alterator-entry/src/branch/master/doc

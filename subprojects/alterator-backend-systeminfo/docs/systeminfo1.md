@@ -1,6 +1,5 @@
 [English](./systeminfo1.md) | [Русский](./systeminfo1.ru_RU.md)
 
-
 # Interface **org.altlinux.alterator.systeminfo1**
 
 Expose systeminfo backend methods that provide system data by running /usr/lib/alterator/backends/systeminfo helpers; each method returns stdout and the underlying command response code.
@@ -293,3 +292,6 @@ stdout_strings may include CINNAMON, GNOME, KDE5, KDE6, MATE, XFCE entries.
 Exit code of the helper.
 
 0 — success, != 0 — error.
+
+
+Current specification: https://altlinux.space/alterator/alterator-entry/src/branch/master/doc
