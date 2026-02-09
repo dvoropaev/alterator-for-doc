@@ -143,3 +143,6 @@ rpm errors while reading the package database.
 Exit code of the file listing.
 
 0 — success, != 0 — error.
+
+
+Current specification: https://altlinux.space/alterator/alterator-entry/src/branch/master/doc

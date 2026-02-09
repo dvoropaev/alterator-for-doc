@@ -92,3 +92,6 @@ apt-repo errors during removal.
 Exit code of the remove command.
 
 0 — success, != 0 — error.
+
+
+Current specification: https://altlinux.space/alterator/alterator-entry/src/branch/master/doc

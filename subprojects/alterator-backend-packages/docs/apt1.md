@@ -4,25 +4,23 @@
 
 Provides apt backend commands to search, install, reinstall, and update packages with streaming signals for long-running operations.
 
-Current specification: https://altlinux.space/alterator/alterator-entry/src/branch/master/doc
-
-| Method | Description |
+| Method | Summary |
 |--------|---------|
 | [Info](#method-Info) | Returns contents of the apt.object descriptor file. |
-| [UpdateAsync](#method-UpdateAsync) | Update package lists. |
+| [UpdateAsync](#method-UpdateAsync) | Runs apt-get update in the background; progress is delivered through signals. |
 | [ApplyAsync](#method-ApplyAsync) | Applies install/remove transaction using generated pkgpriorities. |
 | [ReinstallAsync](#method-ReinstallAsync) | Reinstalls packages asynchronously via apt-get reinstall -y -q. |
 | [ListAllPackages](#method-ListAllPackages) | Lists all available package names via apt-cache search . --names-only. |
 | [Search](#method-Search) | Searches packages by pattern via apt-wrapper search (apt-cache search). |
 | [LastUpdate](#method-LastUpdate) | Reports last update time from /var/lib/apt/lists in UTC. |
-| [LastDistUpgrade](#method-LastDistUpgrade) | Get date of the last system update. |
+| [LastDistUpgrade](#method-LastDistUpgrade) | Gets date of the last system update. |
 | [CheckApply](#method-CheckApply) | Simulates install/remove transaction and returns planned changes. |
 | [CheckReinstall](#method-CheckReinstall) | Simulates reinstall transaction for selected packages. |
 | [CheckDistUpgrade](#method-CheckDistUpgrade) | Simulates dist-upgrade and reports planned installs/removals. |
 | [DistUpgradeAsync](#method-DistUpgradeAsync) | Performs dist-upgrade asynchronously via apt-get dist-upgrade -y -q. |
 
 
-| Signal | Description |
+| Signal | Summary |
 |--------|---------|
 | [apt1_update_stderr_signal](#signal-apt1_update_stderr_signal) | stderr stream from apt-get update. |
 | [apt1_update_stdout_signal](#signal-apt1_update_stdout_signal) | stdout stream from apt-get update. |
@@ -45,7 +43,7 @@ Returns contents of the apt.object descriptor file.
 
 ##### **stdout_bytes** : `ay` <a id="argument-stdout_bytes-of-Info"></a>
 
-Contents of `/usr/share/alterator/objects/apt.object`.
+Contents of /usr/share/alterator/objects/apt.object.
 
 TOML description of the object.
 ##### **response** : `i` <a id="argument-response-of-Info"></a>
@@ -159,7 +157,7 @@ Reports last update time from /var/lib/apt/lists in UTC.
 
 ##### **stdout_strings** : `as` <a id="argument-stdout_strings-of-LastUpdate"></a>
 
-Single entry with date-time string (YYYY-MM-DD HH:MM:SS UTC).
+Date-time string from the helper (format is not validated).
 
 ##### **stderr_strings** : `as` <a id="argument-stderr_strings-of-LastUpdate"></a>
 
@@ -167,7 +165,7 @@ Errors during stat or parsing.
 
 ##### **response** : `i` <a id="argument-response-of-LastUpdate"></a>
 
-Exit code of the timestamp helper.
+Exit code of the time lookup.
 
 0 — success, != 0 — error.
 ### **LastDistUpgrade**() -> ([stdout_strings](#argument-stdout_strings-of-LastDistUpgrade) : `as`, [stderr_strings](#argument-stderr_strings-of-LastDistUpgrade) : `as`, [response](#argument-response-of-LastDistUpgrade) : `i`)<a id="method-LastDistUpgrade"></a>
@@ -351,3 +349,7 @@ stdout stream from apt-get dist-upgrade.
 #### Output arguments
 
 ##### Argument `s`
+
+
+
+Current specification: https://altlinux.space/alterator/alterator-entry/src/branch/master/doc

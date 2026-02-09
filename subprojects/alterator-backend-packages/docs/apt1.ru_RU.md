@@ -4,18 +4,16 @@
 
 Предоставляет команды бэкенда apt для поиска, установки, переустановки и обновления пакетов со стримингом сигналов для длительных операций.
 
-Актуальная спецификация: https://altlinux.space/alterator/alterator-entry/src/branch/master/doc
-
 | Метод | Описание |
 |--------|---------|
 | [Info](#method-Info) | Возвращает содержимое файла-описателя apt.object. |
-| [UpdateAsync](#method-UpdateAsync) | Обновить списки пакетов. |
+| [UpdateAsync](#method-UpdateAsync) | Выполняет apt-get update в фоне; прогресс передаётся через сигналы. |
 | [ApplyAsync](#method-ApplyAsync) | Применяет транзакцию установки/удаления с использованием сгенерированных pkgpriorities. |
 | [ReinstallAsync](#method-ReinstallAsync) | Переустанавливает пакеты асинхронно через apt-get reinstall -y -q. |
 | [ListAllPackages](#method-ListAllPackages) | Перечисляет все доступные имена пакетов через apt-cache search . --names-only. |
 | [Search](#method-Search) | Ищет пакеты по шаблону через apt-wrapper search (apt-cache search). |
 | [LastUpdate](#method-LastUpdate) | Сообщает время последнего обновления из /var/lib/apt/lists в UTC. |
-| [LastDistUpgrade](#method-LastDistUpgrade) | Получить дату последнего обновления системы. |
+| [LastDistUpgrade](#method-LastDistUpgrade) | Получает дату последнего обновления системы. |
 | [CheckApply](#method-CheckApply) | Имитирует транзакцию установки/удаления и возвращает запланированные изменения. |
 | [CheckReinstall](#method-CheckReinstall) | Имитирует транзакцию переустановки для выбранных пакетов. |
 | [CheckDistUpgrade](#method-CheckDistUpgrade) | Имитирует dist-upgrade и сообщает запланированные установки/удаления. |
@@ -50,7 +48,7 @@
 TOML-описание объекта.
 ##### **response** : `i` <a id="argument-response-of-Info"></a>
 
-Код завершения утилиты cat.
+Код завершения.
 
 0 — успех, != 0 — ошибка.
 ### **UpdateAsync**() -> ([response](#argument-response-of-UpdateAsync) : `i`)<a id="method-UpdateAsync"></a>
@@ -62,7 +60,7 @@ TOML-описание объекта.
 
 ##### **response** : `i` <a id="argument-response-of-UpdateAsync"></a>
 
-Код завершения apt-get update.
+Код завершения.
 
 0 — успех, != 0 — ошибка.
 ### **ApplyAsync**([exclude_pkgnames](#argument-exclude_pkgnames-of-ApplyAsync) : `s`, [pkgnames](#argument-pkgnames-of-ApplyAsync) : `s`) -> ([response](#argument-response-of-ApplyAsync) : `i`)<a id="method-ApplyAsync"></a>
@@ -87,7 +85,7 @@ TOML-описание объекта.
 
 ##### **response** : `i` <a id="argument-response-of-ApplyAsync"></a>
 
-Код завершения операции.
+Код завершения.
 
 0 — успех, != 0 — ошибка.
 ### **ReinstallAsync**([pkgnames](#argument-pkgnames-of-ReinstallAsync) : `s`) -> ([response](#argument-response-of-ReinstallAsync) : `i`)<a id="method-ReinstallAsync"></a>
@@ -104,7 +102,7 @@ TOML-описание объекта.
 
 ##### **response** : `i` <a id="argument-response-of-ReinstallAsync"></a>
 
-Код завершения команды переустановки.
+Код завершения.
 
 0 — успех, != 0 — ошибка.
 ### **ListAllPackages**() -> ([stdout_strings](#argument-stdout_strings-of-ListAllPackages) : `as`, [stderr_strings](#argument-stderr_strings-of-ListAllPackages) : `as`, [response](#argument-response-of-ListAllPackages) : `i`)<a id="method-ListAllPackages"></a>
@@ -123,7 +121,7 @@ TOML-описание объекта.
 
 ##### **response** : `i` <a id="argument-response-of-ListAllPackages"></a>
 
-Код завершения помощника listall.
+Код завершения.
 
 0 — успех, != 0 — ошибка.
 ### **Search**([pattern](#argument-pattern-of-Search) : `s`) -> ([stdout_strings](#argument-stdout_strings-of-Search) : `as`, [stderr_strings](#argument-stderr_strings-of-Search) : `as`, [response](#argument-response-of-Search) : `i`)<a id="method-Search"></a>
@@ -148,7 +146,7 @@ TOML-описание объекта.
 
 ##### **response** : `i` <a id="argument-response-of-Search"></a>
 
-Код завершения помощника поиска.
+Код завершения.
 
 0 — успех, != 0 — ошибка.
 ### **LastUpdate**() -> ([stdout_strings](#argument-stdout_strings-of-LastUpdate) : `as`, [stderr_strings](#argument-stderr_strings-of-LastUpdate) : `as`, [response](#argument-response-of-LastUpdate) : `i`)<a id="method-LastUpdate"></a>
@@ -159,7 +157,7 @@ TOML-описание объекта.
 
 ##### **stdout_strings** : `as` <a id="argument-stdout_strings-of-LastUpdate"></a>
 
-Одна запись со строкой даты-времени (YYYY-MM-DD HH:MM:SS UTC).
+Строка с датой и временем от помощника (формат не валидируется).
 
 ##### **stderr_strings** : `as` <a id="argument-stderr_strings-of-LastUpdate"></a>
 
@@ -167,7 +165,7 @@ TOML-описание объекта.
 
 ##### **response** : `i` <a id="argument-response-of-LastUpdate"></a>
 
-Код завершения помощника метки времени.
+Код завершения.
 
 0 — успех, != 0 — ошибка.
 ### **LastDistUpgrade**() -> ([stdout_strings](#argument-stdout_strings-of-LastDistUpgrade) : `as`, [stderr_strings](#argument-stderr_strings-of-LastDistUpgrade) : `as`, [response](#argument-response-of-LastDistUpgrade) : `i`)<a id="method-LastDistUpgrade"></a>
@@ -186,7 +184,7 @@ TOML-описание объекта.
 
 ##### **response** : `i` <a id="argument-response-of-LastDistUpgrade"></a>
 
-Код завершения чтения журнала.
+Код завершения.
 
 0 — успех, != 0 — ошибка.
 ### **CheckApply**([pkgnames](#argument-pkgnames-of-CheckApply) : `s`) -> ([stdout_strings](#argument-stdout_strings-of-CheckApply) : `as`, [stderr_strings](#argument-stderr_strings-of-CheckApply) : `as`, [response](#argument-response-of-CheckApply) : `i`)<a id="method-CheckApply"></a>
@@ -212,7 +210,7 @@ TOML-описание объекта.
 
 ##### **response** : `i` <a id="argument-response-of-CheckApply"></a>
 
-Код завершения имитации.
+Код завершения.
 
 0 — успех, != 0 — ошибка.
 ### **CheckReinstall**([pkgnames](#argument-pkgnames-of-CheckReinstall) : `s`) -> ([stdout_strings](#argument-stdout_strings-of-CheckReinstall) : `as`, [stderr_strings](#argument-stderr_strings-of-CheckReinstall) : `as`, [response](#argument-response-of-CheckReinstall) : `i`)<a id="method-CheckReinstall"></a>
@@ -237,7 +235,7 @@ TOML-описание объекта.
 
 ##### **response** : `i` <a id="argument-response-of-CheckReinstall"></a>
 
-Код завершения имитации.
+Код завершения.
 
 0 — успех, != 0 — ошибка.
 ### **CheckDistUpgrade**() -> ([stdout_strings](#argument-stdout_strings-of-CheckDistUpgrade) : `as`, [stderr_strings](#argument-stderr_strings-of-CheckDistUpgrade) : `as`, [response](#argument-response-of-CheckDistUpgrade) : `i`)<a id="method-CheckDistUpgrade"></a>
@@ -256,7 +254,7 @@ TOML-описание объекта.
 
 ##### **response** : `i` <a id="argument-response-of-CheckDistUpgrade"></a>
 
-Код завершения apt-get dist-upgrade -s -q.
+Код завершения.
 
 0 — успех, != 0 — ошибка.
 ### **DistUpgradeAsync**() -> ([response](#argument-response-of-DistUpgradeAsync) : `i`)<a id="method-DistUpgradeAsync"></a>
@@ -267,7 +265,7 @@ TOML-описание объекта.
 
 ##### **response** : `i` <a id="argument-response-of-DistUpgradeAsync"></a>
 
-Код завершения команды обновления.
+Код завершения.
 
 0 — успех, != 0 — ошибка.
 ## Сигналы
@@ -278,7 +276,7 @@ TOML-описание объекта.
 
 #### Выходные аргументы
 
-##### Argument `s`
+##### Аргумент `s`
 
 ### **apt1_update_stdout_signal**(`s`)<a id="signal-apt1_update_stdout_signal"></a>
 
@@ -286,7 +284,7 @@ TOML-описание объекта.
 
 #### Выходные аргументы
 
-##### Argument `s`
+##### Аргумент `s`
 
 ### **apt1_install_stderr_signal**(`s`)<a id="signal-apt1_install_stderr_signal"></a>
 
@@ -294,7 +292,7 @@ TOML-описание объекта.
 
 #### Выходные аргументы
 
-##### Argument `s`
+##### Аргумент `s`
 
 ### **apt1_install_stdout_signal**(`s`)<a id="signal-apt1_install_stdout_signal"></a>
 
@@ -302,7 +300,7 @@ TOML-описание объекта.
 
 #### Выходные аргументы
 
-##### Argument `s`
+##### Аргумент `s`
 
 ### **apt1_reinstall_stderr_signal**(`s`)<a id="signal-apt1_reinstall_stderr_signal"></a>
 
@@ -310,7 +308,7 @@ TOML-описание объекта.
 
 #### Выходные аргументы
 
-##### Argument `s`
+##### Аргумент `s`
 
 ### **apt1_reinstall_stdout_signal**(`s`)<a id="signal-apt1_reinstall_stdout_signal"></a>
 
@@ -318,7 +316,7 @@ TOML-описание объекта.
 
 #### Выходные аргументы
 
-##### Argument `s`
+##### Аргумент `s`
 
 ### **apt1_remove_stderr_signal**(`s`)<a id="signal-apt1_remove_stderr_signal"></a>
 
@@ -326,7 +324,7 @@ TOML-описание объекта.
 
 #### Выходные аргументы
 
-##### Argument `s`
+##### Аргумент `s`
 
 ### **apt1_remove_stdout_signal**(`s`)<a id="signal-apt1_remove_stdout_signal"></a>
 
@@ -334,7 +332,7 @@ TOML-описание объекта.
 
 #### Выходные аргументы
 
-##### Argument `s`
+##### Аргумент `s`
 
 ### **apt1_dist_upgrade_stderr_signal**(`s`)<a id="signal-apt1_dist_upgrade_stderr_signal"></a>
 
@@ -342,7 +340,7 @@ TOML-описание объекта.
 
 #### Выходные аргументы
 
-##### Argument `s`
+##### Аргумент `s`
 
 ### **apt1_dist_upgrade_stdout_signal**(`s`)<a id="signal-apt1_dist_upgrade_stdout_signal"></a>
 
@@ -350,4 +348,8 @@ TOML-описание объекта.
 
 #### Выходные аргументы
 
-##### Argument `s`
+##### Аргумент `s`
+
+
+
+Актуальная спецификация: https://altlinux.space/alterator/alterator-entry/src/branch/master/doc
