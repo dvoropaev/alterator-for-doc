@@ -118,7 +118,7 @@
       <doc:summary xml:lang="ru_RU">Сообщает время последнего обновления из /var/lib/apt/lists в UTC.</doc:summary>
       <arg type="as" name="stdout_strings" direction="out">
         <doc:summary xml:lang="en_US">Date-time string from the helper (format is not validated).</doc:summary>
-        <doc:summary xml:lang="ru_RU">Строка с датой и временем от помощника (формат не валидируется).</doc:summary>
+        <doc:summary xml:lang="ru_RU">Строка с датой и временем (формат не валидируется).</doc:summary>
       </arg>
       <arg type="as" name="stderr_strings" direction="out">
         <doc:summary xml:lang="en_US">Errors during stat or parsing.</doc:summary>
@@ -132,8 +132,8 @@
       </arg>
     </method>
     <method name="LastDistUpgrade">
-      <doc:summary xml:lang="en_US">Gets date of the last system update.</doc:summary>
-      <doc:summary xml:lang="ru_RU">Получает дату последнего обновления системы.</doc:summary>
+      <doc:summary xml:lang="en_US">Returns date of the last system update.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Возвращает дату последнего обновления системы.</doc:summary>
       <arg type="as" name="stdout_strings" direction="out">
         <doc:summary xml:lang="en_US">Last line with timestamp from dist-upgrades.log.</doc:summary>
         <doc:summary xml:lang="ru_RU">Последняя строка с временной меткой из dist-upgrades.log.</doc:summary>
@@ -159,12 +159,12 @@
         <doc:detail xml:lang="ru_RU">Имена, заканчивающиеся на "-", трактуются как удаления.</doc:detail>
       </arg>
       <arg type="as" name="stdout_strings" direction="out">
-        <doc:summary xml:lang="en_US">JSON string with install_packages, remove_packages, extra_remove_packages arrays.</doc:summary>
-        <doc:summary xml:lang="ru_RU">Строка JSON с массивами install_packages, remove_packages, extra_remove_packages.</doc:summary>
+        <doc:summary xml:lang="en_US">JSON string with arrays install_packages, remove_packages, extra_remove_packages.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Строка JSON с массивами install_packages, remove_packages, extra_remove_packages. install_packages — пакеты, которые будут установлены в транзакции (включая зависимости). remove_packages — пакеты, которые будут удалены в транзакции (включая зависимости). extra_remove_packages — пакеты с apt-меткой manual, которые будут удалены в транзакции (включая зависимости).</doc:summary>
       </arg>
       <arg type="as" name="stderr_strings" direction="out">
-        <doc:summary xml:lang="en_US">Diagnostic output of apt-get --just-print.</doc:summary>
-        <doc:summary xml:lang="ru_RU">Диагностический вывод apt-get --just-print.</doc:summary>
+        <doc:summary xml:lang="en_US">Diagnostic output of transaction check.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Диагностический вывод проверки транзакции.</doc:summary>
       </arg>
       <arg type="i" name="response" direction="out">
         <doc:summary xml:lang="en_US">Exit code of the simulation.</doc:summary>
@@ -181,8 +181,8 @@
         <doc:summary xml:lang="ru_RU">Имена пакетов через пробел для переустановки.</doc:summary>
       </arg>
       <arg type="as" name="stdout_strings" direction="out">
-        <doc:summary xml:lang="en_US">Packages scheduled for installation from apt-get -s output.</doc:summary>
-        <doc:summary xml:lang="ru_RU">Пакеты, запланированные к установке по выводу apt-get -s.</doc:summary>
+        <doc:summary xml:lang="en_US">Packages scheduled for installation from apt-get reinstall -s -q output.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Пакеты, запланированные к установке по выводу apt-get reinstall -s -q.</doc:summary>
       </arg>
       <arg type="as" name="stderr_strings" direction="out">
         <doc:summary xml:lang="en_US">Packages scheduled for removal or warnings.</doc:summary>
@@ -224,54 +224,84 @@
       </arg>
     </method>
     <signal name="apt1_update_stderr_signal">
-      <doc:summary xml:lang="en_US">stderr stream from apt-get update.</doc:summary>
-      <doc:summary xml:lang="ru_RU">Поток stderr от apt-get update.</doc:summary>
-      <arg type="s" name=""/>
+      <doc:summary xml:lang="en_US">Generated when method UpdateAsync is called; continues until the operation completes. Each signal carries one stderr output line.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Генерируется при вызове метода UpdateAsync. Продолжается до завершения операции. Каждый сигнал содержит 1 строку вывода stderr.</doc:summary>
+      <arg type="s" name="line">
+        <doc:summary xml:lang="en_US">Single output line.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Одна строка вывода.</doc:summary>
+      </arg>
     </signal>
     <signal name="apt1_update_stdout_signal">
-      <doc:summary xml:lang="en_US">stdout stream from apt-get update.</doc:summary>
-      <doc:summary xml:lang="ru_RU">Поток stdout от apt-get update.</doc:summary>
-      <arg type="s" name=""/>
+      <doc:summary xml:lang="en_US">Generated when method UpdateAsync is called; continues until the operation completes. Each signal carries one stdout output line.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Генерируется при вызове метода UpdateAsync. Продолжается до завершения операции. Каждый сигнал содержит 1 строку вывода stdout.</doc:summary>
+      <arg type="s" name="line">
+        <doc:summary xml:lang="en_US">Single output line.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Одна строка вывода.</doc:summary>
+      </arg>
     </signal>
     <signal name="apt1_install_stderr_signal">
-      <doc:summary xml:lang="en_US">stderr stream from apt-wrapper apply (install/remove).</doc:summary>
-      <doc:summary xml:lang="ru_RU">Поток stderr от apt-wrapper apply (установка/удаление).</doc:summary>
-      <arg type="s" name=""/>
+      <doc:summary xml:lang="en_US">Generated when method ApplyAsync is called; continues until the operation completes. Each signal carries one stderr output line.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Генерируется при вызове метода ApplyAsync. Продолжается до завершения операции. Каждый сигнал содержит 1 строку вывода stderr.</doc:summary>
+      <arg type="s" name="line">
+        <doc:summary xml:lang="en_US">Single output line.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Одна строка вывода.</doc:summary>
+      </arg>
     </signal>
     <signal name="apt1_install_stdout_signal">
-      <doc:summary xml:lang="en_US">stdout stream from apt-wrapper apply (install/remove).</doc:summary>
-      <doc:summary xml:lang="ru_RU">Поток stdout от apt-wrapper apply (установка/удаление).</doc:summary>
-      <arg type="s" name=""/>
+      <doc:summary xml:lang="en_US">Generated when method ApplyAsync is called; continues until the operation completes. Each signal carries one stdout output line.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Генерируется при вызове метода ApplyAsync. Продолжается до завершения операции. Каждый сигнал содержит 1 строку вывода stdout.</doc:summary>
+      <arg type="s" name="line">
+        <doc:summary xml:lang="en_US">Single output line.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Одна строка вывода.</doc:summary>
+      </arg>
     </signal>
     <signal name="apt1_reinstall_stderr_signal">
-      <doc:summary xml:lang="en_US">stderr stream from apt-get reinstall.</doc:summary>
-      <doc:summary xml:lang="ru_RU">Поток stderr от apt-get reinstall.</doc:summary>
-      <arg type="s" name=""/>
+      <doc:summary xml:lang="en_US">Generated when method ReinstallAsync is called; continues until the operation completes. Each signal carries one stderr output line.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Генерируется при вызове метода ReinstallAsync. Продолжается до завершения операции. Каждый сигнал содержит 1 строку вывода stderr.</doc:summary>
+      <arg type="s" name="line">
+        <doc:summary xml:lang="en_US">Single output line.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Одна строка вывода.</doc:summary>
+      </arg>
     </signal>
     <signal name="apt1_reinstall_stdout_signal">
-      <doc:summary xml:lang="en_US">stdout stream from apt-get reinstall.</doc:summary>
-      <doc:summary xml:lang="ru_RU">Поток stdout от apt-get reinstall.</doc:summary>
-      <arg type="s" name=""/>
+      <doc:summary xml:lang="en_US">Generated when method ReinstallAsync is called; continues until the operation completes. Each signal carries one stdout output line.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Генерируется при вызове метода ReinstallAsync. Продолжается до завершения операции. Каждый сигнал содержит 1 строку вывода stdout.</doc:summary>
+      <arg type="s" name="line">
+        <doc:summary xml:lang="en_US">Single output line.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Одна строка вывода.</doc:summary>
+      </arg>
     </signal>
     <signal name="apt1_remove_stderr_signal">
-      <doc:summary xml:lang="en_US">stderr stream from removal transactions.</doc:summary>
-      <doc:summary xml:lang="ru_RU">Поток stderr от транзакций удаления.</doc:summary>
-      <arg type="s" name=""/>
+      <doc:summary xml:lang="en_US">Generated when method ApplyAsync is called; continues until the operation completes. Each signal carries one stderr output line.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Генерируется при вызове метода ApplyAsync. Продолжается до завершения операции. Каждый сигнал содержит 1 строку вывода stderr.</doc:summary>
+      <arg type="s" name="line">
+        <doc:summary xml:lang="en_US">Single output line.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Одна строка вывода.</doc:summary>
+      </arg>
     </signal>
     <signal name="apt1_remove_stdout_signal">
-      <doc:summary xml:lang="en_US">stdout stream from removal transactions.</doc:summary>
-      <doc:summary xml:lang="ru_RU">Поток stdout от транзакций удаления.</doc:summary>
-      <arg type="s" name=""/>
+      <doc:summary xml:lang="en_US">Generated when method ApplyAsync is called; continues until the operation completes. Each signal carries one stdout output line.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Генерируется при вызове метода ApplyAsync. Продолжается до завершения операции. Каждый сигнал содержит 1 строку вывода stdout.</doc:summary>
+      <arg type="s" name="line">
+        <doc:summary xml:lang="en_US">Single output line.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Одна строка вывода.</doc:summary>
+      </arg>
     </signal>
     <signal name="apt1_dist_upgrade_stderr_signal">
-      <doc:summary xml:lang="en_US">stderr stream from apt-get dist-upgrade.</doc:summary>
-      <doc:summary xml:lang="ru_RU">Поток stderr от apt-get dist-upgrade.</doc:summary>
-      <arg type="s" name=""/>
+      <doc:summary xml:lang="en_US">Generated when method DistUpgradeAsync is called; continues until the operation completes. Each signal carries one stderr output line.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Генерируется при вызове метода DistUpgradeAsync. Продолжается до завершения операции. Каждый сигнал содержит 1 строку вывода stderr.</doc:summary>
+      <arg type="s" name="line">
+        <doc:summary xml:lang="en_US">Single output line.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Одна строка вывода.</doc:summary>
+      </arg>
     </signal>
     <signal name="apt1_dist_upgrade_stdout_signal">
-      <doc:summary xml:lang="en_US">stdout stream from apt-get dist-upgrade.</doc:summary>
-      <doc:summary xml:lang="ru_RU">Поток stdout от apt-get dist-upgrade.</doc:summary>
-      <arg type="s" name=""/>
+      <doc:summary xml:lang="en_US">Generated when method DistUpgradeAsync is called; continues until the operation completes. Each signal carries one stdout output line.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Генерируется при вызове метода DistUpgradeAsync. Продолжается до завершения операции. Каждый сигнал содержит 1 строку вывода stdout.</doc:summary>
+      <arg type="s" name="line">
+        <doc:summary xml:lang="en_US">Single output line.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Одна строка вывода.</doc:summary>
+      </arg>
     </signal>
   </interface>
 </node>
