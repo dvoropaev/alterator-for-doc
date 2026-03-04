@@ -6,17 +6,17 @@
     <doc:summary xml:lang="en_US">Expose rpm backend commands for listing, installing, and removing RPM packages.</doc:summary>
     <doc:summary xml:lang="ru_RU">Предоставляет команды бэкенда rpm для перечисления, установки и удаления RPM-пакетов.</doc:summary>
     <method name="Info">
-      <doc:summary xml:lang="en_US">Return static descriptor of the rpm backend object.</doc:summary>
-      <doc:summary xml:lang="ru_RU">Возвращает статический описатель объекта бэкенда rpm.</doc:summary>
+      <doc:summary xml:lang="en_US">Returns contents of the rpm.object descriptor file.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Возвращает содержимое файла-описателя rpm.object.</doc:summary>
       <arg type="ay" name="stdout_bytes" direction="out">
         <doc:summary xml:lang="en_US">Contents of /usr/share/alterator/objects/rpm.object.</doc:summary>
         <doc:summary xml:lang="ru_RU">Содержимое `/usr/share/alterator/objects/rpm.object`.</doc:summary>
-        <doc:detail xml:lang="en_US">TOML object definition with display_name and comments.</doc:detail>
-        <doc:detail xml:lang="ru_RU">TOML-описание объекта с display_name и comments.</doc:detail>
+        <doc:detail xml:lang="en_US">TOML object definition.</doc:detail>
+        <doc:detail xml:lang="ru_RU">TOML-описание объекта.</doc:detail>
       </arg>
       <arg type="i" name="response" direction="out">
-        <doc:summary xml:lang="en_US">Exit code of the cat helper.</doc:summary>
-        <doc:summary xml:lang="ru_RU">Код завершения помощника cat.</doc:summary>
+        <doc:summary xml:lang="en_US">Exit code of the cat command.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения команды cat.</doc:summary>
         <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
         <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
@@ -33,15 +33,15 @@
         <doc:summary xml:lang="ru_RU">Ошибки выполнения `rpm -qa`.</doc:summary>
       </arg>
       <arg type="i" name="response" direction="out">
-        <doc:summary xml:lang="en_US">Exit code of the list command.</doc:summary>
-        <doc:summary xml:lang="ru_RU">Код завершения команды списка.</doc:summary>
+        <doc:summary xml:lang="en_US">Exit code of the list operation.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения операции списка.</doc:summary>
         <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
         <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
     </method>
     <method name="Install">
-      <doc:summary xml:lang="en_US">Install or upgrade a package file via rpm -U.</doc:summary>
-      <doc:summary xml:lang="ru_RU">Устанавливает или обновляет пакетный файл через `rpm -U`.</doc:summary>
+      <doc:summary xml:lang="en_US">Install or upgrade a package via rpm -U.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Устанавливает или обновляет пакет через `rpm -U`.</doc:summary>
       <arg type="s" name="pkgpath" direction="in">
         <doc:summary xml:lang="en_US">Filesystem path to the RPM file.</doc:summary>
         <doc:summary xml:lang="ru_RU">Путь к RPM-файлу в файловой системе.</doc:summary>
@@ -76,8 +76,8 @@
       </arg>
     </method>
     <method name="PackageInfo">
-      <doc:summary xml:lang="en_US">Show package metadata via rpm -qi.</doc:summary>
-      <doc:summary xml:lang="ru_RU">Показывает метаданные пакета через `rpm -qi`.</doc:summary>
+      <doc:summary xml:lang="en_US">Show package information via rpm -qi.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Показывает информацию о пакете через `rpm -qi`.</doc:summary>
       <arg type="s" name="pkgname" direction="in">
         <doc:summary xml:lang="en_US">Name of the installed package to query.</doc:summary>
         <doc:summary xml:lang="ru_RU">Имя установленного пакета для запроса.</doc:summary>

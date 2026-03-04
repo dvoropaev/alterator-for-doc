@@ -6,24 +6,24 @@
     <doc:summary xml:lang="en_US">Expose repository management commands backed by apt-repo.</doc:summary>
     <doc:summary xml:lang="ru_RU">Предоставляет команды управления репозиториями на основе apt-repo.</doc:summary>
     <method name="Info">
-      <doc:summary xml:lang="en_US">Return static descriptor of the repo backend object.</doc:summary>
-      <doc:summary xml:lang="ru_RU">Возвращает статический описатель объекта бэкенда repo.</doc:summary>
+      <doc:summary xml:lang="en_US">Returns contents of the repo.object descriptor file.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Возвращает содержимое файла-описателя repo.object.</doc:summary>
       <arg type="ay" name="stdout_bytes" direction="out">
         <doc:summary xml:lang="en_US">Contents of /usr/share/alterator/objects/repo.object.</doc:summary>
         <doc:summary xml:lang="ru_RU">Содержимое `/usr/share/alterator/objects/repo.object`.</doc:summary>
-        <doc:detail xml:lang="en_US">TOML object definition with display_name and comments.</doc:detail>
-        <doc:detail xml:lang="ru_RU">TOML-описание объекта с display_name и comments.</doc:detail>
+        <doc:detail xml:lang="en_US">TOML object definition.</doc:detail>
+        <doc:detail xml:lang="ru_RU">TOML-описание объекта.</doc:detail>
       </arg>
       <arg type="i" name="response" direction="out">
-        <doc:summary xml:lang="en_US">Exit code of the cat helper.</doc:summary>
-        <doc:summary xml:lang="ru_RU">Код завершения помощника cat.</doc:summary>
+        <doc:summary xml:lang="en_US">Exit code of the cat command.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения команды cat.</doc:summary>
         <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
         <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
     </method>
     <method name="List">
       <doc:summary xml:lang="en_US">List configured repositories via apt-repo list.</doc:summary>
-      <doc:summary xml:lang="ru_RU">Перечисляет настроенные репозитории через `apt-repo list`.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Перечисляет подключенные репозитории через `apt-repo list`.</doc:summary>
       <arg type="as" name="stdout_strings" direction="out">
         <doc:summary xml:lang="en_US">Repository entries printed by apt-repo list.</doc:summary>
         <doc:summary xml:lang="ru_RU">Записи репозиториев, выводимые `apt-repo list`.</doc:summary>
@@ -33,8 +33,8 @@
         <doc:summary xml:lang="ru_RU">Ошибки выполнения `apt-repo list`.</doc:summary>
       </arg>
       <arg type="i" name="response" direction="out">
-        <doc:summary xml:lang="en_US">Exit code of the list command.</doc:summary>
-        <doc:summary xml:lang="ru_RU">Код завершения команды списка.</doc:summary>
+        <doc:summary xml:lang="en_US">Exit code of the list operation.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения `apt-repo list`.</doc:summary>
         <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
         <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
@@ -46,7 +46,7 @@
         <doc:summary xml:lang="en_US">Source definition passed directly to apt-repo add.</doc:summary>
         <doc:summary xml:lang="ru_RU">Определение источника, передаваемое напрямую в `apt-repo add`.</doc:summary>
         <doc:detail xml:lang="en_US">Supports file paths or URI strings accepted by apt-repo.</doc:detail>
-        <doc:detail xml:lang="ru_RU">Поддерживает пути к файлам или URI-строки, принимаемые apt-repo.</doc:detail>
+        <doc:detail xml:lang="ru_RU">Поддерживает пути к файлам или URI-строки, принимаемые apt-repo. Более подробная информация о поддерживаемых форматах приведена в `man apt-repo` (раздел SOURCE FORMAT).</doc:detail>
       </arg>
       <arg type="as" name="stderr_strings" direction="out">
         <doc:summary xml:lang="en_US">apt-repo warnings or errors.</doc:summary>
@@ -64,7 +64,7 @@
       <doc:summary xml:lang="ru_RU">Удаляет источник репозитория через `apt-repo rm`.</doc:summary>
       <arg type="s" name="source" direction="in">
         <doc:summary xml:lang="en_US">Identifier or path of the repository to drop.</doc:summary>
-        <doc:summary xml:lang="ru_RU">Идентификатор или путь к удаляемому репозиторию.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Идентификатор источника из `apt-repo list` или путь к файлу источника, который принимает `apt-repo rm`.</doc:summary>
       </arg>
       <arg type="as" name="stderr_strings" direction="out">
         <doc:summary xml:lang="en_US">apt-repo errors during removal.</doc:summary>
