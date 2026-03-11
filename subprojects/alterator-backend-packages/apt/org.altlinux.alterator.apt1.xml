@@ -196,19 +196,19 @@
       </arg>
     </method>
     <method name="CheckDistUpgrade">
-      <doc:summary xml:lang="en_US">Simulates dist-upgrade and reports planned installs/removals.</doc:summary>
-      <doc:summary xml:lang="ru_RU">Имитирует dist-upgrade и сообщает запланированные установки/удаления.</doc:summary>
+      <doc:summary xml:lang="en_US">Checks updates via PackageKit and reports planned installs/removals.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Проверяет обновления через PackageKit и сообщает запланированные установки/удаления.</doc:summary>
       <arg type="as" name="stdout_strings" direction="out">
         <doc:summary xml:lang="en_US">Packages planned for installation.</doc:summary>
         <doc:summary xml:lang="ru_RU">Пакеты, запланированные к установке.</doc:summary>
       </arg>
       <arg type="as" name="stderr_strings" direction="out">
-        <doc:summary xml:lang="en_US">Packages planned for removal or errors.</doc:summary>
-        <doc:summary xml:lang="ru_RU">Пакеты, запланированные к удалению, или ошибки.</doc:summary>
+        <doc:summary xml:lang="en_US">Packages planned for removal. On failure, contains PackageKit error message.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Пакеты, запланированные к удалению. При ошибке содержит сообщение PackageKit.</doc:summary>
       </arg>
       <arg type="i" name="response" direction="out">
-        <doc:summary xml:lang="en_US">Exit code of apt-get dist-upgrade -s -q.</doc:summary>
-        <doc:summary xml:lang="ru_RU">Код завершения.</doc:summary>
+        <doc:summary xml:lang="en_US">Exit code of the PackageKit request.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения вызова PackageKit.</doc:summary>
         <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
         <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
       </arg>
