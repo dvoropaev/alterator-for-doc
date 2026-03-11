@@ -2,7 +2,6 @@
 # This file is distributed under the same license as the alterator-backend-packages package.
 # Maria Alexeeva <alxvmr@altlinux.org>, 2025.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.2.8\n"
@@ -32,3 +31,23 @@ msgstr "Не удалось записать данные в файл pkgpriorit
 #: ../apt/apt-wrapper:122
 msgid "Preparing the transaction..."
 msgstr "Подготовка транзакции..."
+
+#: ../apt/apt-wrapper:101
+msgid "Error: cdrom: repository is configured, but required installation media is not available."
+msgstr "Ошибка: настроен cdrom-репозиторий, но требуемый установочный носитель недоступен."
+
+#: ../apt/apt-wrapper:102
+msgid "Configured media labels:"
+msgstr "Метки носителей:"
+
+#: ../apt/apt-wrapper:104
+msgid "Fix:"
+msgstr "Как исправить:"
+
+#: ../apt/apt-wrapper:105
+msgid "  - mount the installation medium/ISO and retry or"
+msgstr "  - смонтируйте установочный носитель/ISO и повторите попытку или"
+
+#: ../apt/apt-wrapper:106
+msgid "  - replace cdrom sources with an online repository."
+msgstr "  - замените cdrom-источники на сетевой репозиторий."

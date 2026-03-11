@@ -16,19 +16,39 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../apt/apt-wrapper:95
+#: ../apt/apt-wrapper:169
 msgid ""
 "The wrong number of arguments was passed to create the pkgpriorities file"
 msgstr ""
 
-#: ../apt/apt-wrapper:101
+#: ../apt/apt-wrapper:175
 msgid "Error creating temporary pkgpriorities file"
 msgstr ""
 
-#: ../apt/apt-wrapper:114
+#: ../apt/apt-wrapper:188
 msgid "Failed to populate the pkgpriorities file with data"
 msgstr ""
 
-#: ../apt/apt-wrapper:122
+#: ../apt/apt-wrapper:196
 msgid "Preparing the transaction..."
+msgstr ""
+
+#: ../apt/apt-wrapper:101
+msgid "Error: cdrom: repository is configured, but required installation media is not available."
+msgstr ""
+
+#: ../apt/apt-wrapper:102
+msgid "Configured media labels:"
+msgstr ""
+
+#: ../apt/apt-wrapper:104
+msgid "Fix:"
+msgstr ""
+
+#: ../apt/apt-wrapper:105
+msgid "  - mount the installation medium/ISO and retry or"
+msgstr ""
+
+#: ../apt/apt-wrapper:106
+msgid "  - replace cdrom sources with an online repository."
 msgstr ""

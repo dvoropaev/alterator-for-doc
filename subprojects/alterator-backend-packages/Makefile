@@ -1,4 +1,4 @@
-.PHONY: install
+.PHONY: install build
 
 PROJECT_NAME=alterator-backend-packages
 
@@ -15,6 +15,15 @@ SYS_CONFDIR=$(DESTDIR)/etc
 APT_CONFDIR=$(SYS_CONFDIR)/apt/apt.conf.d
 LOGROTATE_CONFDIR=$(SYS_CONFDIR)/logrotate.d/
 APT_DATADIR=$(DATADIR)/apt
+
+CFLAGS = -Wall -Wextra -O2 $(shell pkg-config --cflags glib-2.0 packagekit-glib2)
+LDFLAGS = $(shell pkg-config --libs glib-2.0 packagekit-glib2)
+
+all: build
+build: apt-check-dist-upgrade
+
+apt-check-dist-upgrade: apt/apt-check-dist-upgrade.c
+	gcc $(CFLAGS) apt/apt-check-dist-upgrade.c -o apt-check-dist-upgrade $(LDFLAGS)
 
 install_interface_prepare:
 	mkdir -p $(DATADIR)/dbus-1/interfaces
@@ -48,6 +57,7 @@ install_backend_apt:
 	install -v -p -m 755 -D apt/logger/*.lua $(APT_DATADIR)/scripts/
 	install -v -p -m 755 -D apt/logger/*.conf $(APT_CONFDIR)/
 	install -v -p -m 755 -D apt/logger/*.logrotate $(LOGROTATE_CONFDIR)/
+	install -v -p -m 755 -D apt-check-dist-upgrade $(LIBDIR)/$(PROJECT_NAME)/
 	touch $(ALTERATOR_LOGDIR)/apt/dist-upgrades.log
 	chmod 644 $(ALTERATOR_LOGDIR)/apt/dist-upgrades.log
 

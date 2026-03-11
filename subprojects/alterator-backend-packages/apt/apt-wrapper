@@ -1,4 +1,4 @@
-#!/bin/sh -fu
+#!/bin/sh -efu
 #
 # Copyright (C) 2023 Evgeny Sinelnikov <sin@altlinux.org>
 #
@@ -34,6 +34,79 @@ trap cleanup EXIT
 
 verbose=
 
+# cdrom:[LABEL] sources can make apt-get loop forever on "Insert the media" when it runs non-interactively.
+cdrom_source_labels() {
+	local files="/etc/apt/sources.list"
+	local f
+
+	for f in /etc/apt/sources.list.d/*.list; do
+		[ -e "$f" ] && files="$files $f"
+	done
+
+	awk '
+		/^[[:space:]]*#/ { next }
+		{
+			prefix = "cdrom:["
+			if (match($0, /cdrom:\[[^]]+\]/)) {
+				label = substr($0, RSTART + length(prefix), RLENGTH - length(prefix) - 1)
+				if (label != "") print label
+			}
+		}
+	' $files 2>/dev/null | sort -u
+}
+
+cdrom_normalize_label() {
+	# Normalize a label for comparison (case, '_' vs ' ', extra whitespace).
+	printf "%s" "$1" \
+		| tr '_' ' ' \
+		| tr '[:upper:]' '[:lower:]' \
+		| sed -e 's/[[:space:]][[:space:]]*/ /g' -e 's/^ //;s/ $//'
+}
+
+cdrom_label_is_available() {
+	# Check mounted iso9660/udf media by reading .disk/info, not by device LABEL.
+	local want_norm
+	want_norm="$(cdrom_normalize_label "$1")"
+
+	local target info
+	while IFS= read -r target; do
+		[ -n "$target" ] || continue
+		[ -r "$target/.disk/info" ] || continue
+		IFS= read -r info < "$target/.disk/info" || continue
+		[ -n "$info" ] || continue
+		[[ "$(cdrom_normalize_label "$info")" == "$want_norm" ]] && return 0
+	done < <(findmnt -rn -t iso9660,udf -o TARGET 2>/dev/null || true)
+
+	return 1
+}
+
+cdrom_check_noninteractive() {
+	[ -t 0 ] && return 0
+
+	local labels label
+	labels="$(cdrom_source_labels)"
+	[ -n "${labels}" ] || return 0
+
+	while IFS= read -r label; do
+		[ -n "${label}" ] || continue
+		if cdrom_label_is_available "${label}" 2>/dev/null; then
+			return 0
+		fi
+	done <<-EOF
+	${labels}
+	EOF
+
+	{
+		echo $"Error: cdrom: repository is configured, but required installation media is not available."
+		echo $"Configured media labels:"
+		printf "%s\n" "${labels}" | sed 's/^/  /'
+		echo $"Fix:"
+		echo $"  - mount the installation medium/ISO and retry or"
+		echo $"  - replace cdrom sources with an online repository."
+	} 1>&2
+	exit 1
+}
+
 show_help() {
 	cat <<-EOF
 		Usage: $PROG [options] <command>
@@ -42,10 +115,10 @@ show_help() {
 		  check-apply             check the execution of the installation and removal transaction
 		  check-install           check packages list on installation and installation status
 		  check-reinstall         check packages list on reinstallation
-		  check-remove		  check packages list on removal
-		  check-dist-upgrade	  check packages list on removal and installation for upgrade
+		  check-remove            check packages list on removal
+		  check-dist-upgrade      check packages list on removal and installation for upgrade
 		  apply                   run an install/remove transaction using an exclude list of packages for pkgpriorities
-		  dist-upgrade		  upgrade for each installed packages
+		  dist-upgrade            upgrade for each installed packages
 		  listall                 list all available packages
 		  search <pattern>        search through all packages
 		  lastupdate              shows time of last update in format YYYY.MM.DD HH:MM:SS UTC
@@ -79,7 +152,7 @@ get_last_update_date() {
 	if [[ -z "${date_result}"  ]]; then
 		exit 1
 	fi
-		
+
 	local parse_result="$(echo "${date_result}" | cut -d '.' -f1)"
 	echo "${parse_result} UTC"
 }
@@ -97,18 +170,18 @@ create_pkgpriorities() {
 	fi
 
 	local pkgpriorities
-	pkgpriorities=$(mktemp "${TMPDIR:-/tmp/}alt-packages-pkgpriorities.XXXXXXXXXXXX") || {
+	pkgpriorities=$(mktemp "${TMPDIR:-/tmp}/alterator-pkgpriorities.XXXXXXXXXXXX") || {
 		echo $"Error creating temporary pkgpriorities file" 1>&2
 		exit 1
 	}
 
+	local -i exit_code=0
 	{
 		echo "Required:"
 		# get manually installed packages, filter out those to be removed
 		apt-mark showmanual | sed '1,2d' | grep -vFxf <(printf "%s" "${exclude_pkgs}") | sed -e 's/^/  /'
-	} > "$pkgpriorities"
+	} > "$pkgpriorities" || exit_code=${?}
 
-	local -i exit_code=${?}
 	if [[ ${exit_code} -ne 0 ]]; then
 		rm -f "$pkgpriorities"
 		echo $"Failed to populate the pkgpriorities file with data" 1>&2
@@ -124,6 +197,7 @@ transaction_start_signal() {
 
 apply() {
 	transaction_start_signal
+	cdrom_check_noninteractive
 	local to_remove=""
 	local exclude_pkgs
 	local pkgpriorities
@@ -137,9 +211,9 @@ apply() {
 	exclude_pkgs="$to_remove$exclude_pkgs"
 
 	# сreate pkgpriorities with manually installed packages
-	pkgpriorities=$(create_pkgpriorities "$exclude_pkgs")
+	local -i exit_code=0
+	pkgpriorities=$(create_pkgpriorities "$exclude_pkgs") || exit_code=${?}
 
-	local -i exit_code=${?}
 	if [[ ${exit_code} -ne 0 ]]; then
 		echo "${pkgpriorities}" 1>&2
 		exit ${exit_code}
@@ -162,9 +236,9 @@ check_apply() {
 	to_remove="${to_remove%$'\n'}"
 
 	# сreate pkgpriorities with manually installed packages
-	pkgpriorities=$(create_pkgpriorities "$to_remove")
+	local -i exit_code=0
+	pkgpriorities=$(create_pkgpriorities "$to_remove") || exit_code=${?}
 
-	local -i exit_code=${?}
 	if [[ ${exit_code} -ne 0 ]]; then
 		echo "${pkgpriorities}" 1>&2
 		exit ${exit_code}
@@ -172,9 +246,8 @@ check_apply() {
 
 	temp_files+=("$pkgpriorities")
 
-	reply="$(LANG=en apt-get install --just-print -q "${@}" -o Dir::Etc::pkgpriorities="$pkgpriorities")"
+	reply="$(LANG=en apt-get install --just-print -q "${@}" -o Dir::Etc::pkgpriorities="$pkgpriorities")" || exit_code=${?}
 
-	local -i exit_code=${?}
 	if [[ ${exit_code} -ne 0 ]]; then
 		echo "${reply}" 1>&2
 		exit ${exit_code}
@@ -201,20 +274,9 @@ check_apply() {
 }
 
 check_reinstall() {
-	reply="$(apt-get reinstall -s -q ${@})"
-	local -i exit_code=${?}
-	if [[ ${exit_code} -ne 0 ]]; then
-		echo "${reply}" 1>&2
-		exit ${exit_code}
-	fi
-
-        echo "${reply}" | awk '/Inst/ { print $2 }'
-        echo "${reply}" | awk '/Remv/ { print $2 }' 1>&2
-}
-
-check_dist_upgrade() {
-	reply="$(apt-get dist-upgrade -s -q)"
-	local -i exit_code=${?}
+	local reply
+	local -i exit_code=0
+	reply="$(apt-get reinstall -s -q ${@})" || exit_code=${?}
 	if [[ ${exit_code} -ne 0 ]]; then
 		echo "${reply}" 1>&2
 		exit ${exit_code}
@@ -226,8 +288,10 @@ check_dist_upgrade() {
 
 dist_upgrade() {
 	transaction_start_signal
-	reply="$(apt-get dist-upgrade --assume-yes -q)"
-	local -i exit_code=${?}
+	cdrom_check_noninteractive
+	local reply
+	local -i exit_code=0
+	reply="$(apt-get dist-upgrade --assume-yes -q)" || exit_code=${?}
 	if [[ ${exit_code} -ne 0 ]]; then
 		echo "${reply}" 1>&2
 		exit ${exit_code}
@@ -277,9 +341,6 @@ check-apply)
 	;;
 check-reinstall)
 	check_reinstall "${@:2}"
-	;;
-check-dist-upgrade)
-	check_dist_upgrade
 	;;
 dist-upgrade)
 	dist_upgrade

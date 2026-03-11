@@ -6,6 +6,7 @@ interface = "rpm1"
 [methods.Info]
 execute      = "cat /usr/share/alterator/objects/rpm.object"
 stdout_bytes = true
+exit_status  = true
 action_id    = "Info"
 
 [methods.List]
@@ -13,25 +14,30 @@ execute        = "/usr/lib/alterator-backend-packages/rpm-wrapper list"
 stdout_strings = true
 action_id      = "List"
 stderr_strings = true
+exit_status    = true
 
 [methods.Install]
 execute        = "rpm -U {pkgpath}"
 action_id      = "Install"
 stderr_strings = true
+exit_status    = true
 
 [methods.Remove]
 execute        = "rpm -e {pkgname}"
 action_id      = "Remove"
 stderr_strings = true
+exit_status    = true
 
 [methods.PackageInfo]
 execute        = "rpm -qi {pkgname}"
 stdout_strings = true
 action_id      = "Info"
 stderr_strings = true
+exit_status    = true
 
 [methods.Files]
 execute        = "rpm -ql {pkgname}"
 stdout_strings = true
 action_id      = "Files"
 stderr_strings = true
+exit_status    = true
