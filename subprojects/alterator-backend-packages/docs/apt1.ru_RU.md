@@ -16,7 +16,7 @@
 | [LastDistUpgrade](#method-LastDistUpgrade) | Возвращает дату последнего обновления системы. |
 | [CheckApply](#method-CheckApply) | Имитирует транзакцию установки/удаления и возвращает запланированные изменения. |
 | [CheckReinstall](#method-CheckReinstall) | Имитирует транзакцию переустановки для выбранных пакетов. |
-| [CheckDistUpgrade](#method-CheckDistUpgrade) | Имитирует dist-upgrade и сообщает запланированные установки/удаления. |
+| [CheckDistUpgrade](#method-CheckDistUpgrade) | Проверяет обновления через PackageKit и сообщает запланированные установки/удаления. |
 | [DistUpgradeAsync](#method-DistUpgradeAsync) | Выполняет dist-upgrade асинхронно через apt-get dist-upgrade -y -q. |
 
 
@@ -240,7 +240,7 @@ TOML-описание объекта.
 0 — успех, != 0 — ошибка.
 ### **CheckDistUpgrade**() -> ([stdout_strings](#argument-stdout_strings-of-CheckDistUpgrade) : `as`, [stderr_strings](#argument-stderr_strings-of-CheckDistUpgrade) : `as`, [response](#argument-response-of-CheckDistUpgrade) : `i`)<a id="method-CheckDistUpgrade"></a>
 
-Имитирует dist-upgrade и сообщает запланированные установки/удаления.
+Проверяет обновления через PackageKit и сообщает запланированные установки/удаления.
 
 #### Выходные аргументы
 
@@ -250,11 +250,11 @@ TOML-описание объекта.
 
 ##### **stderr_strings** : `as` <a id="argument-stderr_strings-of-CheckDistUpgrade"></a>
 
-Пакеты, запланированные к удалению, или ошибки.
+Пакеты, запланированные к удалению. При ошибке содержит сообщение PackageKit.
 
 ##### **response** : `i` <a id="argument-response-of-CheckDistUpgrade"></a>
 
-Код завершения.
+Код завершения вызова PackageKit.
 
 0 — успех, != 0 — ошибка.
 ### **DistUpgradeAsync**() -> ([response](#argument-response-of-DistUpgradeAsync) : `i`)<a id="method-DistUpgradeAsync"></a>
@@ -369,4 +369,3 @@ TOML-описание объекта.
 ##### **line** : `s` <a id="argument-line-of-apt1_dist_upgrade_stdout_signal"></a>
 
 Одна строка вывода.
-

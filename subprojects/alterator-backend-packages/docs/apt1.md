@@ -16,7 +16,7 @@ Provides apt backend commands to search, install, reinstall, and update packages
 | [LastDistUpgrade](#method-LastDistUpgrade) | Returns date of the last system update. |
 | [CheckApply](#method-CheckApply) | Simulates install/remove transaction and returns planned changes. |
 | [CheckReinstall](#method-CheckReinstall) | Simulates reinstall transaction for selected packages. |
-| [CheckDistUpgrade](#method-CheckDistUpgrade) | Simulates dist-upgrade and reports planned installs/removals. |
+| [CheckDistUpgrade](#method-CheckDistUpgrade) | Checks updates via PackageKit and reports planned installs/removals. |
 | [DistUpgradeAsync](#method-DistUpgradeAsync) | Performs dist-upgrade asynchronously via apt-get dist-upgrade -y -q. |
 
 
@@ -240,7 +240,7 @@ Exit code of the simulation.
 0 — success, != 0 — error.
 ### **CheckDistUpgrade**() -> ([stdout_strings](#argument-stdout_strings-of-CheckDistUpgrade) : `as`, [stderr_strings](#argument-stderr_strings-of-CheckDistUpgrade) : `as`, [response](#argument-response-of-CheckDistUpgrade) : `i`)<a id="method-CheckDistUpgrade"></a>
 
-Simulates dist-upgrade and reports planned installs/removals.
+Checks updates via PackageKit and reports planned installs/removals.
 
 #### Output arguments
 
@@ -250,11 +250,11 @@ Packages planned for installation.
 
 ##### **stderr_strings** : `as` <a id="argument-stderr_strings-of-CheckDistUpgrade"></a>
 
-Packages planned for removal or errors.
+Packages planned for removal. On failure, contains PackageKit error message.
 
 ##### **response** : `i` <a id="argument-response-of-CheckDistUpgrade"></a>
 
-Exit code of apt-get dist-upgrade -s -q.
+Exit code of the PackageKit request.
 
 0 — success, != 0 — error.
 ### **DistUpgradeAsync**() -> ([response](#argument-response-of-DistUpgradeAsync) : `i`)<a id="method-DistUpgradeAsync"></a>
