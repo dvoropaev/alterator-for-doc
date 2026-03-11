@@ -6,8 +6,8 @@
 
 | Метод | Описание |
 |--------|---------|
-| [Info](#method-Info) | Возвращает статический описатель объекта бэкенда repo. |
-| [List](#method-List) | Перечисляет настроенные репозитории через `apt-repo list`. |
+| [Info](#method-Info) | Возвращает содержимое файла-описателя repo.object. |
+| [List](#method-List) | Перечисляет подключенные репозитории через `apt-repo list`. |
 | [Add](#method-Add) | Добавляет источник репозитория через `apt-repo add`. |
 | [Remove](#method-Remove) | Удаляет источник репозитория через `apt-repo rm`. |
 
@@ -16,7 +16,7 @@
 
 ### **Info**() -> ([stdout_bytes](#argument-stdout_bytes-of-Info) : `ay`, [response](#argument-response-of-Info) : `i`)<a id="method-Info"></a>
 
-Возвращает статический описатель объекта бэкенда repo.
+Возвращает содержимое файла-описателя repo.object.
 
 #### Выходные аргументы
 
@@ -24,15 +24,15 @@
 
 Содержимое `/usr/share/alterator/objects/repo.object`.
 
-TOML-описание объекта с display_name и comments.
+TOML-описание объекта.
 ##### **response** : `i` <a id="argument-response-of-Info"></a>
 
-Код завершения помощника cat.
+Код завершения команды cat.
 
 0 — успех, != 0 — ошибка.
 ### **List**() -> ([stdout_strings](#argument-stdout_strings-of-List) : `as`, [stderr_strings](#argument-stderr_strings-of-List) : `as`, [response](#argument-response-of-List) : `i`)<a id="method-List"></a>
 
-Перечисляет настроенные репозитории через `apt-repo list`.
+Перечисляет подключенные репозитории через `apt-repo list`.
 
 #### Выходные аргументы
 
@@ -46,7 +46,7 @@ TOML-описание объекта с display_name и comments.
 
 ##### **response** : `i` <a id="argument-response-of-List"></a>
 
-Код завершения команды списка.
+Код завершения `apt-repo list`.
 
 0 — успех, != 0 — ошибка.
 ### **Add**([source](#argument-source-of-Add) : `s`) -> ([stderr_strings](#argument-stderr_strings-of-Add) : `as`, [response](#argument-response-of-Add) : `i`)<a id="method-Add"></a>
@@ -59,7 +59,7 @@ TOML-описание объекта с display_name и comments.
 
 Определение источника, передаваемое напрямую в `apt-repo add`.
 
-Поддерживает пути к файлам или URI-строки, принимаемые apt-repo.
+Поддерживает пути к файлам или URI-строки, принимаемые apt-repo. Более подробная информация о поддерживаемых форматах приведена в `man apt-repo` (раздел SOURCE FORMAT).
 #### Выходные аргументы
 
 ##### **stderr_strings** : `as` <a id="argument-stderr_strings-of-Add"></a>
@@ -79,7 +79,7 @@ TOML-описание объекта с display_name и comments.
 
 ##### **source** : `s` <a id="argument-source-of-Remove"></a>
 
-Идентификатор или путь к удаляемому репозиторию.
+Идентификатор источника из `apt-repo list` или путь к файлу источника, который принимает `apt-repo rm`.
 
 #### Выходные аргументы
 
@@ -92,6 +92,3 @@ TOML-описание объекта с display_name и comments.
 Код завершения команды удаления.
 
 0 — успех, != 0 — ошибка.
-
-
-Актуальная спецификация: https://altlinux.space/alterator/alterator-entry/src/branch/master/doc

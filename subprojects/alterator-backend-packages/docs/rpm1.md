@@ -6,11 +6,11 @@ Expose rpm backend commands for listing, installing, and removing RPM packages.
 
 | Method | Summary |
 |--------|---------|
-| [Info](#method-Info) | Return static descriptor of the rpm backend object. |
+| [Info](#method-Info) | Returns contents of the rpm.object descriptor file. |
 | [List](#method-List) | List installed packages via rpm -qa with name, version, release, arch, and group. |
-| [Install](#method-Install) | Install or upgrade a package file via rpm -U. |
+| [Install](#method-Install) | Install or upgrade a package via rpm -U. |
 | [Remove](#method-Remove) | Erase an installed package via rpm -e. |
-| [PackageInfo](#method-PackageInfo) | Show package metadata via rpm -qi. |
+| [PackageInfo](#method-PackageInfo) | Show package information via rpm -qi. |
 | [Files](#method-Files) | List files installed by a package via rpm -ql. |
 
 
@@ -18,7 +18,7 @@ Expose rpm backend commands for listing, installing, and removing RPM packages.
 
 ### **Info**() -> ([stdout_bytes](#argument-stdout_bytes-of-Info) : `ay`, [response](#argument-response-of-Info) : `i`)<a id="method-Info"></a>
 
-Return static descriptor of the rpm backend object.
+Returns contents of the rpm.object descriptor file.
 
 #### Output arguments
 
@@ -26,10 +26,10 @@ Return static descriptor of the rpm backend object.
 
 Contents of /usr/share/alterator/objects/rpm.object.
 
-TOML object definition with display_name and comments.
+TOML object definition.
 ##### **response** : `i` <a id="argument-response-of-Info"></a>
 
-Exit code of the cat helper.
+Exit code of the cat command.
 
 0 — success, != 0 — error.
 ### **List**() -> ([stdout_strings](#argument-stdout_strings-of-List) : `as`, [stderr_strings](#argument-stderr_strings-of-List) : `as`, [response](#argument-response-of-List) : `i`)<a id="method-List"></a>
@@ -48,12 +48,12 @@ Errors from rpm -qa.
 
 ##### **response** : `i` <a id="argument-response-of-List"></a>
 
-Exit code of the list command.
+Exit code of the list operation.
 
 0 — success, != 0 — error.
 ### **Install**([pkgpath](#argument-pkgpath-of-Install) : `s`) -> ([stderr_strings](#argument-stderr_strings-of-Install) : `as`, [response](#argument-response-of-Install) : `i`)<a id="method-Install"></a>
 
-Install or upgrade a package file via rpm -U.
+Install or upgrade a package via rpm -U.
 
 #### Input arguments
 
@@ -95,7 +95,7 @@ Exit code of rpm -e.
 0 — success, != 0 — error.
 ### **PackageInfo**([pkgname](#argument-pkgname-of-PackageInfo) : `s`) -> ([stdout_strings](#argument-stdout_strings-of-PackageInfo) : `as`, [stderr_strings](#argument-stderr_strings-of-PackageInfo) : `as`, [response](#argument-response-of-PackageInfo) : `i`)<a id="method-PackageInfo"></a>
 
-Show package metadata via rpm -qi.
+Show package information via rpm -qi.
 
 #### Input arguments
 
@@ -143,6 +143,3 @@ rpm errors while reading the package database.
 Exit code of the file listing.
 
 0 — success, != 0 — error.
-
-
-Current specification: https://altlinux.space/alterator/alterator-entry/src/branch/master/doc

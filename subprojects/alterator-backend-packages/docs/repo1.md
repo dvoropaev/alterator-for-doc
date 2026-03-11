@@ -6,7 +6,7 @@ Expose repository management commands backed by apt-repo.
 
 | Method | Summary |
 |--------|---------|
-| [Info](#method-Info) | Return static descriptor of the repo backend object. |
+| [Info](#method-Info) | Returns contents of the repo.object descriptor file. |
 | [List](#method-List) | List configured repositories via apt-repo list. |
 | [Add](#method-Add) | Add repository source via apt-repo add. |
 | [Remove](#method-Remove) | Remove repository source via apt-repo rm. |
@@ -16,7 +16,7 @@ Expose repository management commands backed by apt-repo.
 
 ### **Info**() -> ([stdout_bytes](#argument-stdout_bytes-of-Info) : `ay`, [response](#argument-response-of-Info) : `i`)<a id="method-Info"></a>
 
-Return static descriptor of the repo backend object.
+Returns contents of the repo.object descriptor file.
 
 #### Output arguments
 
@@ -24,10 +24,10 @@ Return static descriptor of the repo backend object.
 
 Contents of /usr/share/alterator/objects/repo.object.
 
-TOML object definition with display_name and comments.
+TOML object definition.
 ##### **response** : `i` <a id="argument-response-of-Info"></a>
 
-Exit code of the cat helper.
+Exit code of the cat command.
 
 0 — success, != 0 — error.
 ### **List**() -> ([stdout_strings](#argument-stdout_strings-of-List) : `as`, [stderr_strings](#argument-stderr_strings-of-List) : `as`, [response](#argument-response-of-List) : `i`)<a id="method-List"></a>
@@ -46,7 +46,7 @@ Errors from apt-repo list.
 
 ##### **response** : `i` <a id="argument-response-of-List"></a>
 
-Exit code of the list command.
+Exit code of the list operation.
 
 0 — success, != 0 — error.
 ### **Add**([source](#argument-source-of-Add) : `s`) -> ([stderr_strings](#argument-stderr_strings-of-Add) : `as`, [response](#argument-response-of-Add) : `i`)<a id="method-Add"></a>
@@ -92,6 +92,3 @@ apt-repo errors during removal.
 Exit code of the remove command.
 
 0 — success, != 0 — error.
-
-
-Current specification: https://altlinux.space/alterator/alterator-entry/src/branch/master/doc

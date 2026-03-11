@@ -6,11 +6,11 @@
 
 | Метод | Описание |
 |--------|---------|
-| [Info](#method-Info) | Возвращает статический описатель объекта бэкенда rpm. |
+| [Info](#method-Info) | Возвращает содержимое файла-описателя rpm.object. |
 | [List](#method-List) | Перечисляет установленные пакеты через `rpm -qa` с именем, версией, релизом, архитектурой и группой. |
-| [Install](#method-Install) | Устанавливает или обновляет пакетный файл через `rpm -U`. |
+| [Install](#method-Install) | Устанавливает или обновляет пакет через `rpm -U`. |
 | [Remove](#method-Remove) | Удаляет установленный пакет через `rpm -e`. |
-| [PackageInfo](#method-PackageInfo) | Показывает метаданные пакета через `rpm -qi`. |
+| [PackageInfo](#method-PackageInfo) | Показывает информацию о пакете через `rpm -qi`. |
 | [Files](#method-Files) | Перечисляет файлы, установленные пакетом, через `rpm -ql`. |
 
 
@@ -18,7 +18,7 @@
 
 ### **Info**() -> ([stdout_bytes](#argument-stdout_bytes-of-Info) : `ay`, [response](#argument-response-of-Info) : `i`)<a id="method-Info"></a>
 
-Возвращает статический описатель объекта бэкенда rpm.
+Возвращает содержимое файла-описателя rpm.object.
 
 #### Выходные аргументы
 
@@ -26,10 +26,10 @@
 
 Содержимое `/usr/share/alterator/objects/rpm.object`.
 
-TOML-описание объекта с display_name и comments.
+TOML-описание объекта.
 ##### **response** : `i` <a id="argument-response-of-Info"></a>
 
-Код завершения помощника cat.
+Код завершения команды cat.
 
 0 — успех, != 0 — ошибка.
 ### **List**() -> ([stdout_strings](#argument-stdout_strings-of-List) : `as`, [stderr_strings](#argument-stderr_strings-of-List) : `as`, [response](#argument-response-of-List) : `i`)<a id="method-List"></a>
@@ -48,12 +48,12 @@ TOML-описание объекта с display_name и comments.
 
 ##### **response** : `i` <a id="argument-response-of-List"></a>
 
-Код завершения команды списка.
+Код завершения операции списка.
 
 0 — успех, != 0 — ошибка.
 ### **Install**([pkgpath](#argument-pkgpath-of-Install) : `s`) -> ([stderr_strings](#argument-stderr_strings-of-Install) : `as`, [response](#argument-response-of-Install) : `i`)<a id="method-Install"></a>
 
-Устанавливает или обновляет пакетный файл через `rpm -U`.
+Устанавливает или обновляет пакет через `rpm -U`.
 
 #### Входные аргументы
 
@@ -95,7 +95,7 @@ TOML-описание объекта с display_name и comments.
 0 — успех, != 0 — ошибка.
 ### **PackageInfo**([pkgname](#argument-pkgname-of-PackageInfo) : `s`) -> ([stdout_strings](#argument-stdout_strings-of-PackageInfo) : `as`, [stderr_strings](#argument-stderr_strings-of-PackageInfo) : `as`, [response](#argument-response-of-PackageInfo) : `i`)<a id="method-PackageInfo"></a>
 
-Показывает метаданные пакета через `rpm -qi`.
+Показывает информацию о пакете через `rpm -qi`.
 
 #### Входные аргументы
 
@@ -143,6 +143,3 @@ TOML-описание объекта с display_name и comments.
 Код завершения выдачи списка файлов.
 
 0 — успех, != 0 — ошибка.
-
-
-Актуальная спецификация: https://altlinux.space/alterator/alterator-entry/src/branch/master/doc

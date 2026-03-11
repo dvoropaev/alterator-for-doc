@@ -13,7 +13,7 @@ Provides apt backend commands to search, install, reinstall, and update packages
 | [ListAllPackages](#method-ListAllPackages) | Lists all available package names via apt-cache search . --names-only. |
 | [Search](#method-Search) | Searches packages by pattern via apt-wrapper search (apt-cache search). |
 | [LastUpdate](#method-LastUpdate) | Reports last update time from /var/lib/apt/lists in UTC. |
-| [LastDistUpgrade](#method-LastDistUpgrade) | Gets date of the last system update. |
+| [LastDistUpgrade](#method-LastDistUpgrade) | Returns date of the last system update. |
 | [CheckApply](#method-CheckApply) | Simulates install/remove transaction and returns planned changes. |
 | [CheckReinstall](#method-CheckReinstall) | Simulates reinstall transaction for selected packages. |
 | [CheckDistUpgrade](#method-CheckDistUpgrade) | Simulates dist-upgrade and reports planned installs/removals. |
@@ -22,16 +22,16 @@ Provides apt backend commands to search, install, reinstall, and update packages
 
 | Signal | Summary |
 |--------|---------|
-| [apt1_update_stderr_signal](#signal-apt1_update_stderr_signal) | stderr stream from apt-get update. |
-| [apt1_update_stdout_signal](#signal-apt1_update_stdout_signal) | stdout stream from apt-get update. |
-| [apt1_install_stderr_signal](#signal-apt1_install_stderr_signal) | stderr stream from apt-wrapper apply (install/remove). |
-| [apt1_install_stdout_signal](#signal-apt1_install_stdout_signal) | stdout stream from apt-wrapper apply (install/remove). |
-| [apt1_reinstall_stderr_signal](#signal-apt1_reinstall_stderr_signal) | stderr stream from apt-get reinstall. |
-| [apt1_reinstall_stdout_signal](#signal-apt1_reinstall_stdout_signal) | stdout stream from apt-get reinstall. |
-| [apt1_remove_stderr_signal](#signal-apt1_remove_stderr_signal) | stderr stream from removal transactions. |
-| [apt1_remove_stdout_signal](#signal-apt1_remove_stdout_signal) | stdout stream from removal transactions. |
-| [apt1_dist_upgrade_stderr_signal](#signal-apt1_dist_upgrade_stderr_signal) | stderr stream from apt-get dist-upgrade. |
-| [apt1_dist_upgrade_stdout_signal](#signal-apt1_dist_upgrade_stdout_signal) | stdout stream from apt-get dist-upgrade. |
+| [apt1_update_stderr_signal](#signal-apt1_update_stderr_signal) | Generated when method UpdateAsync is called; continues until the operation completes. Each signal carries one stderr output line. |
+| [apt1_update_stdout_signal](#signal-apt1_update_stdout_signal) | Generated when method UpdateAsync is called; continues until the operation completes. Each signal carries one stdout output line. |
+| [apt1_install_stderr_signal](#signal-apt1_install_stderr_signal) | Generated when method ApplyAsync is called; continues until the operation completes. Each signal carries one stderr output line. |
+| [apt1_install_stdout_signal](#signal-apt1_install_stdout_signal) | Generated when method ApplyAsync is called; continues until the operation completes. Each signal carries one stdout output line. |
+| [apt1_reinstall_stderr_signal](#signal-apt1_reinstall_stderr_signal) | Generated when method ReinstallAsync is called; continues until the operation completes. Each signal carries one stderr output line. |
+| [apt1_reinstall_stdout_signal](#signal-apt1_reinstall_stdout_signal) | Generated when method ReinstallAsync is called; continues until the operation completes. Each signal carries one stdout output line. |
+| [apt1_remove_stderr_signal](#signal-apt1_remove_stderr_signal) | Generated when method ApplyAsync is called; continues until the operation completes. Each signal carries one stderr output line. |
+| [apt1_remove_stdout_signal](#signal-apt1_remove_stdout_signal) | Generated when method ApplyAsync is called; continues until the operation completes. Each signal carries one stdout output line. |
+| [apt1_dist_upgrade_stderr_signal](#signal-apt1_dist_upgrade_stderr_signal) | Generated when method DistUpgradeAsync is called; continues until the operation completes. Each signal carries one stderr output line. |
+| [apt1_dist_upgrade_stdout_signal](#signal-apt1_dist_upgrade_stdout_signal) | Generated when method DistUpgradeAsync is called; continues until the operation completes. Each signal carries one stdout output line. |
 
 ## Methods
 
@@ -170,7 +170,7 @@ Exit code of the time lookup.
 0 — success, != 0 — error.
 ### **LastDistUpgrade**() -> ([stdout_strings](#argument-stdout_strings-of-LastDistUpgrade) : `as`, [stderr_strings](#argument-stderr_strings-of-LastDistUpgrade) : `as`, [response](#argument-response-of-LastDistUpgrade) : `i`)<a id="method-LastDistUpgrade"></a>
 
-Gets date of the last system update.
+Returns date of the last system update.
 
 #### Output arguments
 
@@ -202,11 +202,11 @@ Names ending with "-" are treated as removals.
 
 ##### **stdout_strings** : `as` <a id="argument-stdout_strings-of-CheckApply"></a>
 
-JSON string with install_packages, remove_packages, extra_remove_packages arrays.
+JSON string with arrays install_packages, remove_packages, extra_remove_packages.
 
 ##### **stderr_strings** : `as` <a id="argument-stderr_strings-of-CheckApply"></a>
 
-Diagnostic output of apt-get --just-print.
+Diagnostic output of transaction check.
 
 ##### **response** : `i` <a id="argument-response-of-CheckApply"></a>
 
@@ -227,7 +227,7 @@ Space-separated package names for reinstall.
 
 ##### **stdout_strings** : `as` <a id="argument-stdout_strings-of-CheckReinstall"></a>
 
-Packages scheduled for installation from apt-get -s output.
+Packages scheduled for installation from apt-get reinstall -s -q output.
 
 ##### **stderr_strings** : `as` <a id="argument-stderr_strings-of-CheckReinstall"></a>
 
@@ -272,84 +272,101 @@ Exit code of the upgrade command.
 
 ### **apt1_update_stderr_signal**(`s`)<a id="signal-apt1_update_stderr_signal"></a>
 
-stderr stream from apt-get update.
+Generated when method UpdateAsync is called; continues until the operation completes. Each signal carries one stderr output line.
 
 #### Output arguments
 
-##### Argument `s`
+##### **line** : `s` <a id="argument-line-of-apt1_update_stderr_signal"></a>
+
+Single output line.
 
 ### **apt1_update_stdout_signal**(`s`)<a id="signal-apt1_update_stdout_signal"></a>
 
-stdout stream from apt-get update.
+Generated when method UpdateAsync is called; continues until the operation completes. Each signal carries one stdout output line.
 
 #### Output arguments
 
-##### Argument `s`
+##### **line** : `s` <a id="argument-line-of-apt1_update_stdout_signal"></a>
+
+Single output line.
 
 ### **apt1_install_stderr_signal**(`s`)<a id="signal-apt1_install_stderr_signal"></a>
 
-stderr stream from apt-wrapper apply (install/remove).
+Generated when method ApplyAsync is called; continues until the operation completes. Each signal carries one stderr output line.
 
 #### Output arguments
 
-##### Argument `s`
+##### **line** : `s` <a id="argument-line-of-apt1_install_stderr_signal"></a>
+
+Single output line.
 
 ### **apt1_install_stdout_signal**(`s`)<a id="signal-apt1_install_stdout_signal"></a>
 
-stdout stream from apt-wrapper apply (install/remove).
+Generated when method ApplyAsync is called; continues until the operation completes. Each signal carries one stdout output line.
 
 #### Output arguments
 
-##### Argument `s`
+##### **line** : `s` <a id="argument-line-of-apt1_install_stdout_signal"></a>
+
+Single output line.
 
 ### **apt1_reinstall_stderr_signal**(`s`)<a id="signal-apt1_reinstall_stderr_signal"></a>
 
-stderr stream from apt-get reinstall.
+Generated when method ReinstallAsync is called; continues until the operation completes. Each signal carries one stderr output line.
 
 #### Output arguments
 
-##### Argument `s`
+##### **line** : `s` <a id="argument-line-of-apt1_reinstall_stderr_signal"></a>
+
+Single output line.
 
 ### **apt1_reinstall_stdout_signal**(`s`)<a id="signal-apt1_reinstall_stdout_signal"></a>
 
-stdout stream from apt-get reinstall.
+Generated when method ReinstallAsync is called; continues until the operation completes. Each signal carries one stdout output line.
 
 #### Output arguments
 
-##### Argument `s`
+##### **line** : `s` <a id="argument-line-of-apt1_reinstall_stdout_signal"></a>
+
+Single output line.
 
 ### **apt1_remove_stderr_signal**(`s`)<a id="signal-apt1_remove_stderr_signal"></a>
 
-stderr stream from removal transactions.
+Generated when method ApplyAsync is called; continues until the operation completes. Each signal carries one stderr output line.
 
 #### Output arguments
 
-##### Argument `s`
+##### **line** : `s` <a id="argument-line-of-apt1_remove_stderr_signal"></a>
+
+Single output line.
 
 ### **apt1_remove_stdout_signal**(`s`)<a id="signal-apt1_remove_stdout_signal"></a>
 
-stdout stream from removal transactions.
+Generated when method ApplyAsync is called; continues until the operation completes. Each signal carries one stdout output line.
 
 #### Output arguments
 
-##### Argument `s`
+##### **line** : `s` <a id="argument-line-of-apt1_remove_stdout_signal"></a>
+
+Single output line.
 
 ### **apt1_dist_upgrade_stderr_signal**(`s`)<a id="signal-apt1_dist_upgrade_stderr_signal"></a>
 
-stderr stream from apt-get dist-upgrade.
+Generated when method DistUpgradeAsync is called; continues until the operation completes. Each signal carries one stderr output line.
 
 #### Output arguments
 
-##### Argument `s`
+##### **line** : `s` <a id="argument-line-of-apt1_dist_upgrade_stderr_signal"></a>
+
+Single output line.
 
 ### **apt1_dist_upgrade_stdout_signal**(`s`)<a id="signal-apt1_dist_upgrade_stdout_signal"></a>
 
-stdout stream from apt-get dist-upgrade.
+Generated when method DistUpgradeAsync is called; continues until the operation completes. Each signal carries one stdout output line.
 
 #### Output arguments
 
-##### Argument `s`
+##### **line** : `s` <a id="argument-line-of-apt1_dist_upgrade_stdout_signal"></a>
 
+Single output line.
 
-
-Current specification: https://altlinux.space/alterator/alterator-entry/src/branch/master/doc

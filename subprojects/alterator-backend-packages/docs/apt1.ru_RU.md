@@ -13,7 +13,7 @@
 | [ListAllPackages](#method-ListAllPackages) | Перечисляет все доступные имена пакетов через apt-cache search . --names-only. |
 | [Search](#method-Search) | Ищет пакеты по шаблону через apt-wrapper search (apt-cache search). |
 | [LastUpdate](#method-LastUpdate) | Сообщает время последнего обновления из /var/lib/apt/lists в UTC. |
-| [LastDistUpgrade](#method-LastDistUpgrade) | Получает дату последнего обновления системы. |
+| [LastDistUpgrade](#method-LastDistUpgrade) | Возвращает дату последнего обновления системы. |
 | [CheckApply](#method-CheckApply) | Имитирует транзакцию установки/удаления и возвращает запланированные изменения. |
 | [CheckReinstall](#method-CheckReinstall) | Имитирует транзакцию переустановки для выбранных пакетов. |
 | [CheckDistUpgrade](#method-CheckDistUpgrade) | Имитирует dist-upgrade и сообщает запланированные установки/удаления. |
@@ -22,16 +22,16 @@
 
 | Сигнал | Описание |
 |--------|---------|
-| [apt1_update_stderr_signal](#signal-apt1_update_stderr_signal) | Поток stderr от apt-get update. |
-| [apt1_update_stdout_signal](#signal-apt1_update_stdout_signal) | Поток stdout от apt-get update. |
-| [apt1_install_stderr_signal](#signal-apt1_install_stderr_signal) | Поток stderr от apt-wrapper apply (установка/удаление). |
-| [apt1_install_stdout_signal](#signal-apt1_install_stdout_signal) | Поток stdout от apt-wrapper apply (установка/удаление). |
-| [apt1_reinstall_stderr_signal](#signal-apt1_reinstall_stderr_signal) | Поток stderr от apt-get reinstall. |
-| [apt1_reinstall_stdout_signal](#signal-apt1_reinstall_stdout_signal) | Поток stdout от apt-get reinstall. |
-| [apt1_remove_stderr_signal](#signal-apt1_remove_stderr_signal) | Поток stderr от транзакций удаления. |
-| [apt1_remove_stdout_signal](#signal-apt1_remove_stdout_signal) | Поток stdout от транзакций удаления. |
-| [apt1_dist_upgrade_stderr_signal](#signal-apt1_dist_upgrade_stderr_signal) | Поток stderr от apt-get dist-upgrade. |
-| [apt1_dist_upgrade_stdout_signal](#signal-apt1_dist_upgrade_stdout_signal) | Поток stdout от apt-get dist-upgrade. |
+| [apt1_update_stderr_signal](#signal-apt1_update_stderr_signal) | Генерируется при вызове метода UpdateAsync. Продолжается до завершения операции. Каждый сигнал содержит 1 строку вывода stderr. |
+| [apt1_update_stdout_signal](#signal-apt1_update_stdout_signal) | Генерируется при вызове метода UpdateAsync. Продолжается до завершения операции. Каждый сигнал содержит 1 строку вывода stdout. |
+| [apt1_install_stderr_signal](#signal-apt1_install_stderr_signal) | Генерируется при вызове метода ApplyAsync. Продолжается до завершения операции. Каждый сигнал содержит 1 строку вывода stderr. |
+| [apt1_install_stdout_signal](#signal-apt1_install_stdout_signal) | Генерируется при вызове метода ApplyAsync. Продолжается до завершения операции. Каждый сигнал содержит 1 строку вывода stdout. |
+| [apt1_reinstall_stderr_signal](#signal-apt1_reinstall_stderr_signal) | Генерируется при вызове метода ReinstallAsync. Продолжается до завершения операции. Каждый сигнал содержит 1 строку вывода stderr. |
+| [apt1_reinstall_stdout_signal](#signal-apt1_reinstall_stdout_signal) | Генерируется при вызове метода ReinstallAsync. Продолжается до завершения операции. Каждый сигнал содержит 1 строку вывода stdout. |
+| [apt1_remove_stderr_signal](#signal-apt1_remove_stderr_signal) | Генерируется при вызове метода ApplyAsync. Продолжается до завершения операции. Каждый сигнал содержит 1 строку вывода stderr. |
+| [apt1_remove_stdout_signal](#signal-apt1_remove_stdout_signal) | Генерируется при вызове метода ApplyAsync. Продолжается до завершения операции. Каждый сигнал содержит 1 строку вывода stdout. |
+| [apt1_dist_upgrade_stderr_signal](#signal-apt1_dist_upgrade_stderr_signal) | Генерируется при вызове метода DistUpgradeAsync. Продолжается до завершения операции. Каждый сигнал содержит 1 строку вывода stderr. |
+| [apt1_dist_upgrade_stdout_signal](#signal-apt1_dist_upgrade_stdout_signal) | Генерируется при вызове метода DistUpgradeAsync. Продолжается до завершения операции. Каждый сигнал содержит 1 строку вывода stdout. |
 
 ## Методы
 
@@ -157,7 +157,7 @@ TOML-описание объекта.
 
 ##### **stdout_strings** : `as` <a id="argument-stdout_strings-of-LastUpdate"></a>
 
-Строка с датой и временем от помощника (формат не валидируется).
+Строка с датой и временем (формат не валидируется).
 
 ##### **stderr_strings** : `as` <a id="argument-stderr_strings-of-LastUpdate"></a>
 
@@ -170,7 +170,7 @@ TOML-описание объекта.
 0 — успех, != 0 — ошибка.
 ### **LastDistUpgrade**() -> ([stdout_strings](#argument-stdout_strings-of-LastDistUpgrade) : `as`, [stderr_strings](#argument-stderr_strings-of-LastDistUpgrade) : `as`, [response](#argument-response-of-LastDistUpgrade) : `i`)<a id="method-LastDistUpgrade"></a>
 
-Получает дату последнего обновления системы.
+Возвращает дату последнего обновления системы.
 
 #### Выходные аргументы
 
@@ -202,11 +202,11 @@ TOML-описание объекта.
 
 ##### **stdout_strings** : `as` <a id="argument-stdout_strings-of-CheckApply"></a>
 
-Строка JSON с массивами install_packages, remove_packages, extra_remove_packages.
+Строка JSON с массивами install_packages, remove_packages, extra_remove_packages. install_packages — пакеты, которые будут установлены в транзакции (включая зависимости). remove_packages — пакеты, которые будут удалены в транзакции (включая зависимости). extra_remove_packages — пакеты с apt-меткой manual, которые будут удалены в транзакции (включая зависимости).
 
 ##### **stderr_strings** : `as` <a id="argument-stderr_strings-of-CheckApply"></a>
 
-Диагностический вывод apt-get --just-print.
+Диагностический вывод проверки транзакции.
 
 ##### **response** : `i` <a id="argument-response-of-CheckApply"></a>
 
@@ -227,7 +227,7 @@ TOML-описание объекта.
 
 ##### **stdout_strings** : `as` <a id="argument-stdout_strings-of-CheckReinstall"></a>
 
-Пакеты, запланированные к установке по выводу apt-get -s.
+Пакеты, запланированные к установке по выводу apt-get reinstall -s -q.
 
 ##### **stderr_strings** : `as` <a id="argument-stderr_strings-of-CheckReinstall"></a>
 
@@ -272,84 +272,101 @@ TOML-описание объекта.
 
 ### **apt1_update_stderr_signal**(`s`)<a id="signal-apt1_update_stderr_signal"></a>
 
-Поток stderr от apt-get update.
+Генерируется при вызове метода UpdateAsync. Продолжается до завершения операции. Каждый сигнал содержит 1 строку вывода stderr.
 
 #### Выходные аргументы
 
-##### Аргумент `s`
+##### **line** : `s` <a id="argument-line-of-apt1_update_stderr_signal"></a>
+
+Одна строка вывода.
 
 ### **apt1_update_stdout_signal**(`s`)<a id="signal-apt1_update_stdout_signal"></a>
 
-Поток stdout от apt-get update.
+Генерируется при вызове метода UpdateAsync. Продолжается до завершения операции. Каждый сигнал содержит 1 строку вывода stdout.
 
 #### Выходные аргументы
 
-##### Аргумент `s`
+##### **line** : `s` <a id="argument-line-of-apt1_update_stdout_signal"></a>
+
+Одна строка вывода.
 
 ### **apt1_install_stderr_signal**(`s`)<a id="signal-apt1_install_stderr_signal"></a>
 
-Поток stderr от apt-wrapper apply (установка/удаление).
+Генерируется при вызове метода ApplyAsync. Продолжается до завершения операции. Каждый сигнал содержит 1 строку вывода stderr.
 
 #### Выходные аргументы
 
-##### Аргумент `s`
+##### **line** : `s` <a id="argument-line-of-apt1_install_stderr_signal"></a>
+
+Одна строка вывода.
 
 ### **apt1_install_stdout_signal**(`s`)<a id="signal-apt1_install_stdout_signal"></a>
 
-Поток stdout от apt-wrapper apply (установка/удаление).
+Генерируется при вызове метода ApplyAsync. Продолжается до завершения операции. Каждый сигнал содержит 1 строку вывода stdout.
 
 #### Выходные аргументы
 
-##### Аргумент `s`
+##### **line** : `s` <a id="argument-line-of-apt1_install_stdout_signal"></a>
+
+Одна строка вывода.
 
 ### **apt1_reinstall_stderr_signal**(`s`)<a id="signal-apt1_reinstall_stderr_signal"></a>
 
-Поток stderr от apt-get reinstall.
+Генерируется при вызове метода ReinstallAsync. Продолжается до завершения операции. Каждый сигнал содержит 1 строку вывода stderr.
 
 #### Выходные аргументы
 
-##### Аргумент `s`
+##### **line** : `s` <a id="argument-line-of-apt1_reinstall_stderr_signal"></a>
+
+Одна строка вывода.
 
 ### **apt1_reinstall_stdout_signal**(`s`)<a id="signal-apt1_reinstall_stdout_signal"></a>
 
-Поток stdout от apt-get reinstall.
+Генерируется при вызове метода ReinstallAsync. Продолжается до завершения операции. Каждый сигнал содержит 1 строку вывода stdout.
 
 #### Выходные аргументы
 
-##### Аргумент `s`
+##### **line** : `s` <a id="argument-line-of-apt1_reinstall_stdout_signal"></a>
+
+Одна строка вывода.
 
 ### **apt1_remove_stderr_signal**(`s`)<a id="signal-apt1_remove_stderr_signal"></a>
 
-Поток stderr от транзакций удаления.
+Генерируется при вызове метода ApplyAsync. Продолжается до завершения операции. Каждый сигнал содержит 1 строку вывода stderr.
 
 #### Выходные аргументы
 
-##### Аргумент `s`
+##### **line** : `s` <a id="argument-line-of-apt1_remove_stderr_signal"></a>
+
+Одна строка вывода.
 
 ### **apt1_remove_stdout_signal**(`s`)<a id="signal-apt1_remove_stdout_signal"></a>
 
-Поток stdout от транзакций удаления.
+Генерируется при вызове метода ApplyAsync. Продолжается до завершения операции. Каждый сигнал содержит 1 строку вывода stdout.
 
 #### Выходные аргументы
 
-##### Аргумент `s`
+##### **line** : `s` <a id="argument-line-of-apt1_remove_stdout_signal"></a>
+
+Одна строка вывода.
 
 ### **apt1_dist_upgrade_stderr_signal**(`s`)<a id="signal-apt1_dist_upgrade_stderr_signal"></a>
 
-Поток stderr от apt-get dist-upgrade.
+Генерируется при вызове метода DistUpgradeAsync. Продолжается до завершения операции. Каждый сигнал содержит 1 строку вывода stderr.
 
 #### Выходные аргументы
 
-##### Аргумент `s`
+##### **line** : `s` <a id="argument-line-of-apt1_dist_upgrade_stderr_signal"></a>
+
+Одна строка вывода.
 
 ### **apt1_dist_upgrade_stdout_signal**(`s`)<a id="signal-apt1_dist_upgrade_stdout_signal"></a>
 
-Поток stdout от apt-get dist-upgrade.
+Генерируется при вызове метода DistUpgradeAsync. Продолжается до завершения операции. Каждый сигнал содержит 1 строку вывода stdout.
 
 #### Выходные аргументы
 
-##### Аргумент `s`
+##### **line** : `s` <a id="argument-line-of-apt1_dist_upgrade_stdout_signal"></a>
 
+Одна строка вывода.
 
-
-Актуальная спецификация: https://altlinux.space/alterator/alterator-entry/src/branch/master/doc
