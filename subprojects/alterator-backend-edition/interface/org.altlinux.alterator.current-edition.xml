@@ -1,121 +1,123 @@
 <!DOCTYPE node PUBLIC
-    "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
-    "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+  "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+  "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
 <node name="/" xmlns:doc="http://www.freedesktop.org/dbus/1.0/doc.dtd">
-    <interface name="org.altlinux.alterator.current-edition1">
-        <doc:summary xml:lang="en_US">Exposes backend methods for reading and updating the current product edition.</doc:summary>
-        <doc:summary xml:lang="ru_RU">Предоставляет методы бэкенда для чтения и обновления текущей редакции продукта.</doc:summary>
-        <method name="Info">
-            <doc:summary xml:lang="en_US">Return the .edition descriptor of the current edition.</doc:summary>
-            <doc:summary xml:lang="ru_RU">Возвращает файл-описатель `.edition` текущей редакции.</doc:summary>
-            <arg type="ay" name="stdout_bytes" direction="out">
-                <doc:summary xml:lang="en_US">Contents of the current .edition file.</doc:summary>
-                <doc:summary xml:lang="ru_RU">Содержимое файла `.edition` текущей редакции.</doc:summary>
-                <doc:detail xml:lang="en_US">TOML text with fields like name, display_name, license.</doc:detail>
-                <doc:detail xml:lang="ru_RU">TOML-текст с полями name, display_name, license.</doc:detail>
-            </arg>
-            <arg type="i" name="response" direction="out">
-                <doc:summary xml:lang="en_US">Exit code.</doc:summary>
-                <doc:summary xml:lang="ru_RU">Код завершения.</doc:summary>
-                <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
-                <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
-            </arg>
-        </method>
-        <method name="Description">
-            <doc:summary xml:lang="en_US">Return the description text for the current edition.</doc:summary>
-            <doc:summary xml:lang="ru_RU">Возвращает текст описания текущей редакции.</doc:summary>
-            <arg type="ay" name="stdout_bytes" direction="out">
-                <doc:summary xml:lang="en_US">Localized description file content.</doc:summary>
-                <doc:summary xml:lang="ru_RU">Содержимое локализованного файла описания.</doc:summary>
-                <doc:detail xml:lang="en_US">Lookup order: description.&lt;locale&gt;.html, description.&lt;lang&gt;.html, description.all.html, description.html in the edition directory.</doc:detail>
-                <doc:detail xml:lang="ru_RU">Порядок поиска: description.&lt;locale&gt;.html, description.&lt;lang&gt;.html, description.all.html, description.html в каталоге редакции.</doc:detail>
-            </arg>
-            <arg type="i" name="response" direction="out">
-                <doc:summary xml:lang="en_US">Exit code.</doc:summary>
-                <doc:summary xml:lang="ru_RU">Код завершения.</doc:summary>
-                <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
-                <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
-            </arg>
-        </method>
-        <method name="License">
-            <doc:summary xml:lang="en_US">Return the license text for the current edition.</doc:summary>
-            <doc:summary xml:lang="ru_RU">Возвращает текст лицензии текущей редакции.</doc:summary>
-            <arg type="ay" name="stdout_bytes" direction="out">
-                <doc:summary xml:lang="en_US">Localized license file content.</doc:summary>
-                <doc:summary xml:lang="ru_RU">Содержимое локализованного файла лицензии.</doc:summary>
-                <doc:detail xml:lang="en_US">Lookup in /usr/share/distro-licenses/&lt;license&gt; using license.&lt;locale&gt;.html, license.&lt;lang&gt;.html, license.all.html, license.html.</doc:detail>
-                <doc:detail xml:lang="ru_RU">Поиск в `/usr/share/distro-licenses/&lt;license&gt;`: license.&lt;locale&gt;.html, license.&lt;lang&gt;.html, license.all.html, license.html.</doc:detail>
-            </arg>
-            <arg type="i" name="response" direction="out">
-                <doc:summary xml:lang="en_US">Exit code.</doc:summary>
-                <doc:summary xml:lang="ru_RU">Код завершения.</doc:summary>
-                <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
-                <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
-            </arg>
-        </method>
-        <method name="ReleaseNotes">
-            <doc:summary xml:lang="en_US">Return release notes for the current edition.</doc:summary>
-            <doc:summary xml:lang="ru_RU">Возвращает релиз-ноты текущей редакции.</doc:summary>
-            <arg type="ay" name="stdout_bytes" direction="out">
-                <doc:summary xml:lang="en_US">Localized release-notes file content.</doc:summary>
-                <doc:summary xml:lang="ru_RU">Содержимое локализованного файла release-notes.</doc:summary>
-                <doc:detail xml:lang="en_US">Lookup order: release-notes.&lt;locale&gt;.html, release-notes.&lt;lang&gt;.html, release-notes.all.html, release-notes.html in the edition directory.</doc:detail>
-                <doc:detail xml:lang="ru_RU">Порядок поиска: release-notes.&lt;locale&gt;.html, release-notes.&lt;lang&gt;.html, release-notes.all.html, release-notes.html в каталоге редакции.</doc:detail>
-            </arg>
-            <arg type="i" name="response" direction="out">
-                <doc:summary xml:lang="en_US">Exit code.</doc:summary>
-                <doc:summary xml:lang="ru_RU">Код завершения.</doc:summary>
-                <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
-                <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
-            </arg>
-        </method>
-        <method name="FinalNotes">
-            <doc:summary xml:lang="en_US">Return final notes for the current edition.</doc:summary>
-            <doc:summary xml:lang="ru_RU">Возвращает финальные заметки текущей редакции.</doc:summary>
-            <arg type="ay" name="stdout_bytes" direction="out">
-                <doc:summary xml:lang="en_US">Localized final-notes file content.</doc:summary>
-                <doc:summary xml:lang="ru_RU">Содержимое локализованного файла final-notes.</doc:summary>
-                <doc:detail xml:lang="en_US">Lookup order: final-notes.&lt;locale&gt;.html, final-notes.&lt;lang&gt;.html, final-notes.all.html, final-notes.html in the edition directory.</doc:detail>
-                <doc:detail xml:lang="ru_RU">Порядок поиска: final-notes.&lt;locale&gt;.html, final-notes.&lt;lang&gt;.html, final-notes.all.html, final-notes.html в каталоге редакции.</doc:detail>
-            </arg>
-            <arg type="i" name="response" direction="out">
-                <doc:summary xml:lang="en_US">Exit code.</doc:summary>
-                <doc:summary xml:lang="ru_RU">Код завершения.</doc:summary>
-                <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
-                <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
-            </arg>
-        </method>
-        <method name="Get">
-            <doc:summary xml:lang="en_US">Return identifier of the current edition.</doc:summary>
-            <doc:summary xml:lang="ru_RU">Возвращает идентификатор текущей редакции.</doc:summary>
-            <arg type="as" name="stdout_strings" direction="out">
-                <doc:summary xml:lang="en_US">Edition identifier reported by the backend.</doc:summary>
-                <doc:summary xml:lang="ru_RU">Идентификатор редакции, возвращаемый бэкендом.</doc:summary>
-                <doc:detail xml:lang="en_US">Single string with the edition name.</doc:detail>
-                <doc:detail xml:lang="ru_RU">Одна строка с именем редакции.</doc:detail>
-            </arg>
-            <arg type="i" name="response" direction="out">
-                <doc:summary xml:lang="en_US">Exit code.</doc:summary>
-                <doc:summary xml:lang="ru_RU">Код завершения.</doc:summary>
-                <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
-                <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
-            </arg>
-        </method>
-        <method name="Set">
-            <doc:summary xml:lang="en_US">Set the current edition and update system metadata.</doc:summary>
-            <doc:summary xml:lang="ru_RU">Устанавливает текущую редакцию и обновляет системные метаданные.</doc:summary>
-            <arg type="s" name="edition_id" direction="in">
-                <doc:summary xml:lang="en_US">Edition identifier to set.</doc:summary>
-                <doc:summary xml:lang="ru_RU">Идентификатор редакции для установки.</doc:summary>
-                <doc:detail xml:lang="en_US">Must match the name field from a .edition file.</doc:detail>
-                <doc:detail xml:lang="ru_RU">Должен совпадать с полем name из файла `.edition`.</doc:detail>
-            </arg>
-            <arg type="i" name="response" direction="out">
-                <doc:summary xml:lang="en_US">Exit code.</doc:summary>
-                <doc:summary xml:lang="ru_RU">Код завершения.</doc:summary>
-                <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
-                <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
-            </arg>
-        </method>
-    </interface>
+  <interface name="org.altlinux.alterator.current-edition1">
+    <doc:summary xml:lang="en_US">Provides backend methods to read the current edition descriptor, read localized edition texts, get the current edition identifier, and set a new current edition.</doc:summary>
+    <doc:summary xml:lang="ru_RU">Предоставляет методы бэкенда для чтения описателя текущей редакции, чтения локализованных текстов редакции, получения идентификатора текущей редакции и установки новой текущей редакции.</doc:summary>
+    <method name="Info">
+      <doc:summary xml:lang="en_US">Returns contents of the .edition descriptor for the current edition.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Возвращает содержимое файла-описателя `.edition` для текущей редакции.</doc:summary>
+      <arg type="ay" name="stdout_bytes" direction="out">
+        <doc:summary xml:lang="en_US">Contents of the current .edition file.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Содержимое текущего файла `.edition`.</doc:summary>
+        <doc:detail xml:lang="en_US">The current edition name is obtained from VARIANT_ID in /etc/os-release; if it is missing, the backend reads /org/altlinux/product/edition/current from the system dconf database.</doc:detail>
+        <doc:detail xml:lang="ru_RU">Имя текущей редакции получается из `VARIANT_ID` в `/etc/os-release`; если поле отсутствует, бэкенд читает `/org/altlinux/product/edition/current` из системной базы `dconf`.</doc:detail>
+      </arg>
+      <arg type="i" name="response" direction="out">
+        <doc:summary xml:lang="en_US">Exit code of the helper.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения.</doc:summary>
+        <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+        <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
+      </arg>
+    </method>
+    <method name="Description">
+      <doc:summary xml:lang="en_US">Returns the localized HTML description of the current edition.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Возвращает локализованное HTML-описание текущей редакции.</doc:summary>
+      <arg type="ay" name="stdout_bytes" direction="out">
+        <doc:summary xml:lang="en_US">Contents of the selected description file.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Содержимое выбранного файла описания.</doc:summary>
+        <doc:detail xml:lang="en_US">If the current edition is set, search order in the edition directory is description.&lt;locale&gt;.html, description.&lt;lang&gt;.html, description.all.html, description.html. LC_ALL is used; default locale is en_US.</doc:detail>
+        <doc:detail xml:lang="ru_RU">Если текущая редакция задана, порядок поиска в её каталоге: `description.&lt;locale&gt;.html`, `description.&lt;lang&gt;.html`, `description.all.html`, `description.html`. Используется `LC_ALL`; локаль по умолчанию — `en_US`.</doc:detail>
+      </arg>
+      <arg type="i" name="response" direction="out">
+        <doc:summary xml:lang="en_US">Exit code of the helper.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения.</doc:summary>
+        <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+        <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
+      </arg>
+    </method>
+    <method name="License">
+      <doc:summary xml:lang="en_US">Returns the localized license text of the current edition.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Возвращает локализованный текст лицензии текущей редакции.</doc:summary>
+      <arg type="ay" name="stdout_bytes" direction="out">
+        <doc:summary xml:lang="en_US">Contents of the selected license file.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Содержимое выбранного файла лицензии.</doc:summary>
+        <doc:detail xml:lang="en_US">If the current edition is set, the license directory is /usr/share/distro-licenses/&lt;license&gt;, where &lt;license&gt; is taken from the TOML field license of the current .edition file. Search order: license.&lt;locale&gt;.html, license.&lt;lang&gt;.html, license.all.html, license.html.</doc:detail>
+        <doc:detail xml:lang="ru_RU">Если текущая редакция задана, каталог лицензии — `/usr/share/distro-licenses/&lt;license&gt;`, где `&lt;license&gt;` берётся из TOML-поля `license` текущего файла `.edition`. Порядок поиска: `license.&lt;locale&gt;.html`, `license.&lt;lang&gt;.html`, `license.all.html`, `license.html`.</doc:detail>
+        <doc:detail xml:lang="en_US">If the current edition is not set, fallback search is performed in /usr/share/alt-notes with the same locale order.</doc:detail>
+        <doc:detail xml:lang="ru_RU">Если текущая редакция не задана, выполняется резервный поиск в `/usr/share/alt-notes` с тем же порядком локалей.</doc:detail>
+      </arg>
+      <arg type="i" name="response" direction="out">
+        <doc:summary xml:lang="en_US">Exit code of the helper.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения.</doc:summary>
+        <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+        <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
+      </arg>
+    </method>
+    <method name="ReleaseNotes">
+      <doc:summary xml:lang="en_US">Returns the localized release notes of the current edition.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Возвращает локализованные release-notes текущей редакции.</doc:summary>
+      <arg type="ay" name="stdout_bytes" direction="out">
+        <doc:summary xml:lang="en_US">Contents of the selected release-notes file.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Содержимое выбранного файла `release-notes`.</doc:summary>
+        <doc:detail xml:lang="en_US">If the current edition is set, search order in the edition directory is release-notes.&lt;locale&gt;.html, release-notes.&lt;lang&gt;.html, release-notes.all.html, release-notes.html. LC_ALL is used; default locale is en_US.</doc:detail>
+        <doc:detail xml:lang="ru_RU">Если текущая редакция задана, порядок поиска в её каталоге: `release-notes.&lt;locale&gt;.html`, `release-notes.&lt;lang&gt;.html`, `release-notes.all.html`, `release-notes.html`. Используется `LC_ALL`; локаль по умолчанию — `en_US`.</doc:detail>
+      </arg>
+      <arg type="i" name="response" direction="out">
+        <doc:summary xml:lang="en_US">Exit code of the helper.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения.</doc:summary>
+        <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+        <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
+      </arg>
+    </method>
+    <method name="FinalNotes">
+      <doc:summary xml:lang="en_US">Returns the localized final notes of the current edition.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Возвращает локализованные final-notes текущей редакции.</doc:summary>
+      <arg type="ay" name="stdout_bytes" direction="out">
+        <doc:summary xml:lang="en_US">Contents of the selected final-notes file.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Содержимое выбранного файла `final-notes`.</doc:summary>
+        <doc:detail xml:lang="en_US">If the current edition is set, search order in the edition directory is final-notes.&lt;locale&gt;.html, final-notes.&lt;lang&gt;.html, final-notes.all.html, final-notes.html. LC_ALL is used; default locale is en_US.</doc:detail>
+        <doc:detail xml:lang="ru_RU">Если текущая редакция задана, порядок поиска в её каталоге: `final-notes.&lt;locale&gt;.html`, `final-notes.&lt;lang&gt;.html`, `final-notes.all.html`, `final-notes.html`. Используется `LC_ALL`; локаль по умолчанию — `en_US`.</doc:detail>
+      </arg>
+      <arg type="i" name="response" direction="out">
+        <doc:summary xml:lang="en_US">Exit code of the helper.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения.</doc:summary>
+        <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+        <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
+      </arg>
+    </method>
+    <method name="Get">
+      <doc:summary xml:lang="en_US">Returns the identifier of the current edition.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Возвращает идентификатор текущей редакции.</doc:summary>
+      <arg type="as" name="stdout_strings" direction="out">
+        <doc:summary xml:lang="en_US">Edition identifier returned by the helper.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Идентификатор редакции, возвращаемый помощником.</doc:summary>
+        <doc:detail xml:lang="en_US">The result contains one string with the edition name.</doc:detail>
+        <doc:detail xml:lang="ru_RU">Результат содержит одну строку с именем редакции.</doc:detail>
+      </arg>
+      <arg type="i" name="response" direction="out">
+        <doc:summary xml:lang="en_US">Exit code of the helper.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения.</doc:summary>
+        <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+        <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
+      </arg>
+    </method>
+    <method name="Set">
+      <doc:summary xml:lang="en_US">Sets the current edition and synchronizes system metadata.</doc:summary>
+      <doc:summary xml:lang="ru_RU">Устанавливает текущую редакцию и синхронизирует системные метаданные.</doc:summary>
+      <arg type="s" name="edition_id" direction="in">
+        <doc:summary xml:lang="en_US">Edition identifier to set.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Идентификатор редакции для установки.</doc:summary>
+        <doc:detail xml:lang="en_US">The value must match the TOML field name of one of the files from /usr/share/alterator/editions.</doc:detail>
+        <doc:detail xml:lang="ru_RU">Значение должно совпадать с TOML-полем `name` одного из файлов из `/usr/share/alterator/editions`.</doc:detail>
+      </arg>
+      <arg type="i" name="response" direction="out">
+        <doc:summary xml:lang="en_US">Exit code of the helper.</doc:summary>
+        <doc:summary xml:lang="ru_RU">Код завершения.</doc:summary>
+        <doc:detail xml:lang="en_US">0 — success, != 0 — error.</doc:detail>
+        <doc:detail xml:lang="ru_RU">0 — успех, != 0 — ошибка.</doc:detail>
+      </arg>
+    </method>
+  </interface>
 </node>
